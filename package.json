@@ -1,0 +1,62 @@
+{
+  "name": "@inworld/nodejs-sdk",
+  "version": "1.1.7",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "main": "build/src/index.js",
+  "types": "build/src/index.d.ts",
+  "engines": {
+    "node": ">=10.10.0"
+  },
+  "keywords": [
+    "inworld",
+    "ai",
+    "asr",
+    "character",
+    "npc",
+    "speech recognition",
+    "text to speech",
+    "tts",
+    "voice"
+  ],
+  "author": {
+    "name": "Theai, Inc.",
+    "url": "https://www.inworld.ai"
+  },
+  "scripts": {
+    "build": "tsc -p . && tsc-alias -p tsconfig.paths.json",
+    "release:pack": "yarn build && yarn pack",
+    "release:publish": "yarn build && yarn publish",
+    "test": "jest --no-cache --reporters=default --json --outputFile=build/jest-result.json",
+    "test:coverage": "jest --coverage",
+    "lint:check": "eslint --cache  \"./**/*.{js,jsx,ts,tsx}\"",
+    "lint:fix": "yarn run lint:check --fix",
+    "prettier:check": "yarn prettier --check \"./{src,__tests__,examples}/**/*.{js,jsx,ts,tsx}\" --ignore-path .gitignore",
+    "prettier:format": "yarn prettier --write \"./{src,__tests__,examples}/**/*.{js,jsx,ts,tsx}\" --ignore-path .gitignore"
+  },
+  "devDependencies": {
+    "@types/crypto-js": "^4.1.1",
+    "@types/google-protobuf": "^3.15.6",
+    "@types/jest": "^28.1.6",
+    "@types/node": "^18.0.3",
+    "@types/uuid": "^9.0.1",
+    "@typescript-eslint/eslint-plugin": "^5.30.5",
+    "@typescript-eslint/parser": "^5.30.5",
+    "eslint": ">=5.16.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-markdown": "^2.2.1",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-simple-import-sort": "^7.0.0",
+    "jest": "^28.1.3",
+    "prettier": "^2.7.1",
+    "ts-jest": "^28.0.7",
+    "tsc-alias": "^1.8.3",
+    "typescript": "^4.7.4"
+  },
+  "dependencies": {
+    "@grpc/grpc-js": "^1.6.7",
+    "crypto-js": "^4.1.1",
+    "google-protobuf": "^3.20.1",
+    "module-alias": "^2.2.2",
+    "uuid": "^9.0.0"
+  }
+}

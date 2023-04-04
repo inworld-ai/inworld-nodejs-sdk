@@ -1,0 +1,7 @@
+coverage
+build
+node_modules
+.eslintcache
+
+# Mac filesystem
+**/.DS_Store
