@@ -6,7 +6,7 @@ on:
       - '**/README.md'
       - '**/.gitignore'
       - '**/*.md'
-      - 'generated'
+      - 'proto'
 
 jobs:
   eslint:

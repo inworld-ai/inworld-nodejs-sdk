@@ -22,5 +22,5 @@
     "simple-import-sort/exports": "error",
     "no-throw-literal": "off"
   },
-  "ignorePatterns": ["generated/*"]
+  "ignorePatterns": ["proto", "build"]
 }

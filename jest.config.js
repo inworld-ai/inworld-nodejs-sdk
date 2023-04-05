@@ -1,8 +1,8 @@
 module.exports = {
-  coveragePathIgnorePatterns: ['/node_modules/', 'generated'],
+  coveragePathIgnorePatterns: ['node_modules', 'proto'],
   preset: 'ts-jest',
   moduleNameMapper: {
-    '@proto/(.*)': '<rootDir>/generated/proto/$1',
+    '@proto/(.*)': '<rootDir>/proto/$1',
     '@root/(.*)': '<rootDir>/$1',
   },
   modulePathIgnorePatterns: ['__tests__/helpers.ts'],

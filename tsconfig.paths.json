@@ -2,7 +2,7 @@
   "extends": "./tsconfig",
   "compilerOptions": {
     "paths": {
-      "@proto/*" :["../../../generated/proto/*"],
+      "@proto/*" :["../../../proto/*"],
       "@root/*": ["../../../*"]
     }
   },

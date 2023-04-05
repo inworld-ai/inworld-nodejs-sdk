@@ -10,12 +10,12 @@
     "target": "es6",
     "types": ["jest", "node"],
     "paths": {
-      "@proto/*" : ["../generated/proto/*"]
+      "@proto/*" : ["../proto/*"]
     }
   },
   "include": [
     "src/**/*",
-    "generated/**/*"
+    "proto/**/*"
   ],
   "exclude": [
     "node_modules",
