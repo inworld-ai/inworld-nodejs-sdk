@@ -1,20 +1,19 @@
-name: build
+name: release
 
 on:
-  pull_request:
+  release:
+    types: [published]
 
 jobs:
-  build-sdk:
+  release-sdk:
     runs-on: ubuntu-latest
-    concurrency:
-      group: build-a-${{ github.ref }}
-      cancel-in-progress: true
     steps:
       - uses: actions/checkout@v3
       - name: Setup node
         uses: actions/setup-node@v3
         with:
           node-version: '16.x'
+          registry-url: 'https://registry.npmjs.org'
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "dir=$(yarn cache dir)" >> "$GITHUB_OUTPUT"
@@ -28,7 +27,7 @@ jobs:
             ${{ runner.os }}-yarn-
       - name: Install dependencies
         run: yarn install --ignore-scripts --frozen-lockfile
-      - name: Build SDK
-        run: yarn build
-      - name: Run tests
-        run: yarn test
+      - name: Publish
+        run: yarn release:publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
