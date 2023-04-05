@@ -22,6 +22,10 @@
     "name": "Theai, Inc.",
     "url": "https://www.inworld.ai"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/inworld-ai/inworld-nodejs-sdk.git"
+  },
   "scripts": {
     "build": "tsc -p . && tsc-alias -p tsconfig.paths.json",
     "release:pack": "yarn build && yarn pack",
