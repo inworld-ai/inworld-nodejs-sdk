@@ -99,6 +99,7 @@ export const session = new SessionToken({
 export const capabilitiesProps: Capabilities = {
   emotions: true,
   audio: true,
+  interruptions: true,
 };
 
 export const capabilities = new CapabilitiesRequest()
