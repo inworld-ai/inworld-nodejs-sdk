@@ -72,10 +72,10 @@
     protobufjs "^7.0.0"
     yargs "^16.2.0"
 
-"@inworld/nodejs-sdk@^1.1.7":
-  version "1.1.7"
-  resolved "https://registry.yarnpkg.com/@inworld/nodejs-sdk/-/nodejs-sdk-1.1.7.tgz#9d2f0909354af10b9ce2163efffc903b1d16d32f"
-  integrity sha512-WLWwG0cLtYzPsl+pAG0/PpFfOciaMICSaEpI1dKQjZS7wph0VWXUF4VCvQTbViSxifoRimzv8yget4TkSXJESA==
+"@inworld/nodejs-sdk@^1.1.8":
+  version "1.1.8"
+  resolved "https://registry.yarnpkg.com/@inworld/nodejs-sdk/-/nodejs-sdk-1.1.8.tgz#4c998b574599923a962c99297187520bd6863d44"
+  integrity sha512-yptgr+r8+27SIuwFhJs2iBESsqKUKvlWGVnT4w+7BDLUpu+6ogfmKX4ebZB+jtRUcH6p1/FWH48qK7PKcuymxg==
   dependencies:
     "@grpc/grpc-js" "^1.6.7"
     crypto-js "^4.1.1"
