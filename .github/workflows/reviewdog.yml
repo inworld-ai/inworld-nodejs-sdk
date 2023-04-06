@@ -1,0 +1,49 @@
+name: review
+
+on:
+  pull_request:
+    paths-ignore:
+      - '**/README.md'
+      - '**/.gitignore'
+      - '**/*.md'
+      - 'proto'
+
+jobs:
+  eslint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            changed:
+              - './**/*.{js,jsx,ts,tsx}'
+      - name: Setup node
+        if: steps.changes.outputs.changed == 'true'
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+      - name: Get yarn cache directory path
+        if: steps.changes.outputs.changed == 'true'
+        id: yarn-cache-dir-path
+        run: echo "dir=$(yarn cache dir)" >> "$GITHUB_OUTPUT"
+      - name: Use yarn cache directory
+        if: steps.changes.outputs.changed == 'true'
+        uses: actions/cache@v3
+        id: yarn-cache
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: Install dependencies
+        if: steps.changes.outputs.changed == 'true'
+        run: yarn install --ignore-scripts --frozen-lockfile
+      - name: Review source code
+        if: steps.changes.outputs.changed == 'true'
+        uses: reviewdog/action-eslint@v1
+        with:
+          reporter: github-pr-review
+          workdir: ./
+          eslint_flags: "--cache ./**/*.{js,jsx,ts,tsx}"

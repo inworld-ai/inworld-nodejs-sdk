@@ -1,0 +1,14 @@
+coverage
+examples
+__tests__
+/src
+*/**/node_modules/*
+*/**/.eslintcache
+.eslintrc.json
+.prettierrc.json
+jest.config.js
+/tsconfig.json
+/tsconfig.paths.json
+build/jest-result.json
+*/**/yarn.lock
+*/**/package-lock.json
