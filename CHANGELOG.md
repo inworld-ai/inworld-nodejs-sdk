@@ -1,3 +1,5 @@
+## 2022-04-06 v1.1.8
+
 * Remove deprecated emotions attributes: joy, fear, trust and surprise
 
 ## 2022-03-14 v1.1.7
