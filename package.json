@@ -30,7 +30,7 @@
     "build": "tsc -p . && tsc-alias -p tsconfig.paths.json",
     "release:pack": "yarn build && yarn pack",
     "release:publish": "yarn build && yarn publish",
-    "test": "jest --no-cache --reporters=default --json --outputFile=build/jest-result.json",
+    "test": "jest --no-cache --reporters=default",
     "test:coverage": "jest --coverage",
     "lint:check": "eslint --cache  \"./**/*.{js,jsx,ts,tsx}\"",
     "lint:fix": "yarn run lint:check --fix",
