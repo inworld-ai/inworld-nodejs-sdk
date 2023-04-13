@@ -650,9 +650,7 @@ describe('message', () => {
     stream.emit('data', packet);
 
     expect(onMessage).toHaveBeenCalledTimes(1);
-    expect(onMessage).toHaveBeenCalledWith(
-      connection.getEventFactory().convertToInworldPacket(packet),
-    );
+    expect(onMessage).toHaveBeenCalledWith(EventFactory.fromProto(packet));
   });
 });
 

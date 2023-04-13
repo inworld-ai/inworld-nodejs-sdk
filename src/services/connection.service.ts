@@ -75,9 +75,7 @@ export class ConnectionService {
 
     if (this.connectionProps.onMessage) {
       this.onMessage = async (packet: ProtoPacket) =>
-        this.connectionProps.onMessage(
-          this.eventFactory.convertToInworldPacket(packet),
-        );
+        this.connectionProps.onMessage(EventFactory.fromProto(packet));
     }
   }
 
@@ -224,7 +222,7 @@ export class ConnectionService {
       new Promise<InworldPacket>((resolve) => {
         const done = (packet: ProtoPacket) => {
           this.scheduleDisconnect();
-          resolve(this.getEventFactory().convertToInworldPacket(packet));
+          resolve(EventFactory.fromProto(packet));
         };
 
         if (packet) {
