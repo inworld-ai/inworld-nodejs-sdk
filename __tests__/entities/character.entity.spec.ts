@@ -15,8 +15,8 @@ test('should get character fields', () => {
   };
   const character = new Character({ id, assets, resourceName, displayName });
 
-  expect(character.getId()).toEqual(id);
-  expect(character.getResourceName()).toEqual(resourceName);
-  expect(character.getDisplayName()).toEqual(displayName);
-  expect(character.getAssets()).toEqual(assets);
+  expect(character.id).toEqual(id);
+  expect(character.resourceName).toEqual(resourceName);
+  expect(character.displayName).toEqual(displayName);
+  expect(character.assets).toEqual(assets);
 });

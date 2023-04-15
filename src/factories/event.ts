@@ -165,7 +165,7 @@ export class EventFactory {
 
     const target = new Actor()
       .setType(Actor.Type.AGENT)
-      .setName(this.character?.getId());
+      .setName(this.character?.id);
 
     return new Routing().setSource(source).setTarget(target);
   }

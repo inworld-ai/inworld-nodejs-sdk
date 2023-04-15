@@ -28,7 +28,7 @@ test('should set and get character', () => {
   const found = factory.getCurrentCharacter();
 
   expect(found).toEqual(character);
-  expect(found.getId()).toEqual(character.getId());
+  expect(found.id).toEqual(character.id);
 });
 
 describe('event types', () => {
@@ -49,7 +49,7 @@ describe('event types', () => {
     expect(event.getDataChunk().getType()).toEqual(DataChunk.DataType.AUDIO);
     expect(event.hasPacketId()).toEqual(true);
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTarget().getName()).toEqual(character.getId());
+    expect(event.getRouting().getTarget().getName()).toEqual(character.id);
     expect(event.hasTimestamp()).toEqual(true);
   });
 
@@ -62,7 +62,7 @@ describe('event types', () => {
     );
     expect(event.hasPacketId()).toEqual(true);
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTarget().getName()).toEqual(character.getId());
+    expect(event.getRouting().getTarget().getName()).toEqual(character.id);
     expect(event.hasTimestamp()).toEqual(true);
   });
 
@@ -75,7 +75,7 @@ describe('event types', () => {
     );
     expect(event.hasPacketId()).toEqual(true);
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTarget().getName()).toEqual(character.getId());
+    expect(event.getRouting().getTarget().getName()).toEqual(character.id);
     expect(event.hasTimestamp()).toEqual(true);
   });
 
@@ -87,7 +87,7 @@ describe('event types', () => {
     expect(event.getText().getText()).toEqual(text);
     expect(event.hasPacketId()).toEqual(true);
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTarget().getName()).toEqual(character.getId());
+    expect(event.getRouting().getTarget().getName()).toEqual(character.id);
     expect(event.hasTimestamp()).toEqual(true);
   });
 
@@ -99,7 +99,7 @@ describe('event types', () => {
     expect(event.getCustom().getName()).toEqual(name);
     expect(event.hasPacketId()).toEqual(true);
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTarget().getName()).toEqual(character.getId());
+    expect(event.getRouting().getTarget().getName()).toEqual(character.id);
     expect(event.hasTimestamp()).toEqual(true);
   });
 
@@ -109,7 +109,7 @@ describe('event types', () => {
     expect(event.hasCancelresponses()).toEqual(true);
     expect(event.hasPacketId()).toEqual(true);
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTarget().getName()).toEqual(character.getId());
+    expect(event.getRouting().getTarget().getName()).toEqual(character.id);
     expect(event.hasTimestamp()).toEqual(true);
   });
 
@@ -122,7 +122,7 @@ describe('event types', () => {
     expect(event.hasCancelresponses()).toEqual(true);
     expect(event.hasPacketId()).toEqual(true);
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTarget().getName()).toEqual(character.getId());
+    expect(event.getRouting().getTarget().getName()).toEqual(character.id);
     expect(event.hasTimestamp()).toEqual(true);
   });
 

@@ -38,14 +38,16 @@ export const createCharacter = () =>
     displayName: v4(),
   });
 
-export const createAgent = () => {
+export const createAgent = (useAssets: boolean = true) => {
   const agent = new LoadSceneResponse.Agent();
-  const assets = new LoadSceneResponse.Agent.CharacterAssets()
-    .setAvatarImg(v4())
-    .setAvatarImgOriginal(v4())
-    .setRpmModelUri(v4())
-    .setRpmImageUriPortrait(v4())
-    .setRpmImageUriPosture(v4());
+  const assets = useAssets
+    ? new LoadSceneResponse.Agent.CharacterAssets()
+        .setAvatarImg(v4())
+        .setAvatarImgOriginal(v4())
+        .setRpmModelUri(v4())
+        .setRpmImageUriPortrait(v4())
+        .setRpmImageUriPosture(v4())
+    : undefined;
 
   return agent.setAgentId(v4()).setBrainName(v4()).setCharacterAssets(assets);
 };

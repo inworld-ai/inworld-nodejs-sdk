@@ -12,10 +12,13 @@ import {
   Client,
   ClientConfiguration,
   GenerateSessionTokenFn,
+  GetterSetter,
   InternalClientConfiguration,
   User,
 } from '../common/interfaces';
 import { InworldPacket } from '../entities/inworld_packet.entity';
+import { Scene } from '../entities/scene.entity';
+import { SessionToken } from '../entities/session_token.entity';
 import { ConnectionService } from '../services/connection.service';
 import { InworldConnectionService } from '../services/inworld_connection.service';
 
@@ -27,6 +30,8 @@ export class InworldClient {
   private config: InternalClientConfiguration;
 
   private generateSessionTokenFn: GenerateSessionTokenFn;
+  private sceneGetterSetter: GetterSetter<Scene>;
+  private tokenGetterSetter: GetterSetter<SessionToken>;
 
   private onDisconnect: (() => void) | undefined;
   private onError: ((err: ServiceError) => void) | undefined;
@@ -95,11 +100,23 @@ export class InworldClient {
     return this;
   }
 
+  setOnScene(props: GetterSetter<Scene>) {
+    this.sceneGetterSetter = props;
+
+    return this;
+  }
+
+  setOnSessionToken(props: GetterSetter<SessionToken>) {
+    this.tokenGetterSetter = props;
+
+    return this;
+  }
+
   async generateSessionToken() {
     this.validateApiKey();
 
     return new ConnectionService({
-      apiKey: this.apiKey!,
+      apiKey: this.apiKey,
     }).generateSessionToken();
   }
 
@@ -116,6 +133,8 @@ export class InworldClient {
       onMessage: this.onMessage,
       onDisconnect: this.onDisconnect,
       generateSessionToken: this.generateSessionTokenFn,
+      sceneGetterSetter: this.sceneGetterSetter,
+      tokenGetterSetter: this.tokenGetterSetter,
     });
 
     return new InworldConnectionService(connection);

@@ -1,11 +1,6 @@
 import { ClientDuplexStream, ServiceError } from '@grpc/grpc-js';
 import { InworldPacket as ProtoPacket } from '@proto/packets_pb';
-import {
-  ClientRequest,
-  LoadSceneResponse,
-  UserRequest,
-} from '@proto/world-engine_pb';
-import internal = require('stream');
+import { ClientRequest, UserRequest } from '@proto/world-engine_pb';
 import { clearTimeout } from 'timers';
 
 import {
@@ -13,10 +8,11 @@ import {
   Awaitable,
   ConnectionState,
   GenerateSessionTokenFn,
+  GetterSetter,
   InternalClientConfiguration,
 } from '../common/interfaces';
-import { Character } from '../entities/character.entity';
 import { InworldPacket } from '../entities/inworld_packet.entity';
+import { Scene } from '../entities/scene.entity';
 import { SessionToken } from '../entities/session_token.entity';
 import { EventFactory } from '../factories/event';
 import { TokenClientGrpcService } from './gprc/token_client_grpc.service';
@@ -28,6 +24,8 @@ interface ConnectionProps {
   user?: UserRequest;
   client?: ClientRequest;
   config?: InternalClientConfiguration;
+  sceneGetterSetter?: GetterSetter<Scene>;
+  tokenGetterSetter?: GetterSetter<SessionToken>;
   onDisconnect?: () => void;
   onError?: (err: ServiceError) => void;
   onMessage?: (message: InworldPacket) => Awaitable<void>;
@@ -39,17 +37,13 @@ export interface QueueItem {
   afterWriting?: (packet: ProtoPacket) => void;
 }
 
-const TIME_DIFF_MS = 50 * 60 * 1000; // 5 minutes
-
 export class ConnectionService {
   private state: ConnectionState = ConnectionState.INACTIVE;
 
-  private scene: LoadSceneResponse;
+  private scene: Scene;
   private session: SessionToken;
   private stream: ClientDuplexStream<ProtoPacket, ProtoPacket>;
   private connectionProps: ConnectionProps;
-
-  private characters: Array<Character> = [];
 
   private disconnectTimeoutId: NodeJS.Timeout;
 
@@ -57,6 +51,9 @@ export class ConnectionService {
 
   private intervals: NodeJS.Timeout[] = [];
   private packetQueue: QueueItem[] = [];
+
+  private tokenService = new TokenClientGrpcService();
+  private engineService = new WorldEngineClientGrpcService();
 
   private onDisconnect: () => void;
   private onError: (err: ServiceError) => void;
@@ -88,17 +85,11 @@ export class ConnectionService {
   }
 
   async generateSessionToken() {
-    const sessionToken =
-      await new TokenClientGrpcService().generateSessionToken(
-        this.connectionProps.apiKey,
-      );
+    const proto = await this.tokenService.generateSessionToken(
+      this.connectionProps.apiKey,
+    );
 
-    return new SessionToken({
-      token: sessionToken.getToken(),
-      type: sessionToken.getType(),
-      expirationTime: sessionToken.getExpirationTime().toDate(),
-      sessionId: sessionToken.getSessionId(),
-    });
+    return SessionToken.fromProto(proto);
   }
 
   async openManually() {
@@ -134,9 +125,11 @@ export class ConnectionService {
   }
 
   async getCharactersList() {
-    await this.loadScene();
+    if (!this.scene) {
+      await this.loadScene();
+    }
 
-    return this.characters;
+    return this.scene.characters;
   }
 
   async open() {
@@ -145,9 +138,8 @@ export class ConnectionService {
 
       if (this.state === ConnectionState.LOADED) {
         this.state = ConnectionState.ACTIVATING;
-        const engineService = new WorldEngineClientGrpcService();
 
-        this.stream = engineService.session({
+        this.stream = this.engineService.session({
           session: this.session,
           onError: this.onError,
           onDisconnect: this.onDisconnect,
@@ -175,43 +167,12 @@ export class ConnectionService {
 
       if (this.isAutoReconnected()) {
         await this.open();
-        await this.loadCharactersList();
-
         return this.write(getPacket);
       }
 
       throw Error('Unable to send data due inactive connection');
     } catch (err) {
       this.onError(err);
-    }
-  }
-
-  private async loadCharactersList() {
-    if (!this.scene) {
-      await this.loadScene();
-    }
-
-    this.characters = (this.scene?.getAgentsList() || []).map(
-      (agent: LoadSceneResponse.Agent) => {
-        const assets = agent.getCharacterAssets();
-
-        return new Character({
-          id: agent.getAgentId(),
-          resourceName: agent.getBrainName(),
-          displayName: agent.getGivenName(),
-          assets: {
-            avatarImg: assets?.getAvatarImg(),
-            avatarImgOriginal: assets?.getAvatarImgOriginal(),
-            rpmModelUri: assets?.getRpmModelUri(),
-            rpmImageUriPortrait: assets?.getRpmImageUriPortrait(),
-            rpmImageUriPosture: assets?.getRpmImageUriPosture(),
-          },
-        });
-      },
-    );
-
-    if (!this.getEventFactory().getCurrentCharacter() && this.characters[0]) {
-      this.getEventFactory().setCurrentCharacter(this.characters[0]);
     }
   }
 
@@ -268,47 +229,18 @@ export class ConnectionService {
   private async loadScene() {
     if (this.state === ConnectionState.LOADING) return;
 
-    const { client, name, user } = this.connectionProps;
-    const generateSessionToken =
-      this.connectionProps.generateSessionToken ||
-      this.generateSessionToken.bind(this);
-
     try {
-      const sessionId = this.session?.getSessionId();
-      const expirationTime = this.session?.getExpirationTime();
-
-      // Generate new session token is it's empty or expired
-      if (
-        !expirationTime ||
-        new Date(expirationTime).getTime() - new Date().getTime() <=
-          TIME_DIFF_MS
-      ) {
-        this.state = ConnectionState.LOADING;
-        this.session = await generateSessionToken();
-
-        // Reuse session id to keep context of previous conversation
-        if (sessionId) {
-          this.session = new SessionToken({
-            sessionId,
-            token: this.session.getToken(),
-            type: this.session.getType(),
-            expirationTime: this.session.getExpirationTime(),
-          });
-        }
-      }
-
-      const engineService = new WorldEngineClientGrpcService();
+      this.session = await this.getOrLoadSessionToken();
 
       if (!this.scene) {
-        this.scene = await engineService.loadScene({
-          capabilities: this.connectionProps.config.capabilities,
-          client,
-          name,
-          user,
-          session: this.session,
-        });
+        this.scene = await this.getOrLoadScene();
 
-        await this.loadCharactersList();
+        if (
+          !this.getEventFactory().getCurrentCharacter() &&
+          this.scene.characters.length
+        ) {
+          this.getEventFactory().setCurrentCharacter(this.scene.characters[0]);
+        }
       }
 
       if (
@@ -319,6 +251,70 @@ export class ConnectionService {
     } catch (err) {
       this.onError(err);
     }
+  }
+
+  private async getOrLoadSessionToken() {
+    let session: SessionToken = this.session;
+
+    // Try to get session token from provided storage
+    if (this.connectionProps.tokenGetterSetter) {
+      const saved = await this.connectionProps.tokenGetterSetter.get();
+      session = saved ?? session;
+    }
+
+    const { sessionId } = session || {};
+
+    // Generate new session token is it's empty or expired
+    if (!session || SessionToken.isExpired(session)) {
+      this.state = ConnectionState.LOADING;
+
+      const generateSessionToken =
+        this.connectionProps.generateSessionToken ??
+        this.generateSessionToken.bind(this);
+      session = await generateSessionToken();
+
+      // Reuse session id to keep context of previous conversation
+      if (sessionId) {
+        session = new SessionToken({
+          ...session,
+          sessionId,
+        });
+      }
+
+      // Try to save session token to provided storage
+      this.connectionProps.tokenGetterSetter?.set(session);
+    }
+
+    return session;
+  }
+
+  private async getOrLoadScene() {
+    let scene: Scene;
+
+    // Try to get scene from provided storage
+    if (this.connectionProps.sceneGetterSetter) {
+      scene = await this.connectionProps.sceneGetterSetter.get();
+    }
+
+    // Load scene
+    if (!scene) {
+      const { client, name, user } = this.connectionProps;
+
+      const proto = await this.engineService.loadScene({
+        client,
+        name,
+        user,
+        capabilities: this.connectionProps.config.capabilities,
+        session: this.session,
+      });
+
+      scene = Scene.fromProto(proto);
+
+      // Try to save scene to provided storage
+      this.connectionProps.sceneGetterSetter?.set(scene);
+    }
+
+    return scene;
   }
 
   private scheduleDisconnect() {

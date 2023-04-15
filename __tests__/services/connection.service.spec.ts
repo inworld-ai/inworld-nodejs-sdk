@@ -117,8 +117,8 @@ describe('open', () => {
       user,
     });
     expect(openSession).toHaveBeenCalledTimes(1);
-    expect(loaded[0].getId()).toBe(characters[0].getId());
-    expect(loaded[1].getId()).toBe(characters[1].getId());
+    expect(loaded[0].id).toBe(characters[0].id);
+    expect(loaded[1].id).toBe(characters[1].id);
   });
 
   test('should call external generate session token', async () => {
@@ -280,9 +280,7 @@ describe('open', () => {
 
   test('should regenerate expired token', async () => {
     const expiredSession = new SessionToken({
-      sessionId: session.getSessionId(),
-      token: session.getToken(),
-      type: session.getType(),
+      ...session,
       expirationTime: new Date(),
     });
     const generateSessionToken = jest.spyOn(connection, 'generateSessionToken');

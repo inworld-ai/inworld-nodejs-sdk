@@ -51,6 +51,11 @@ export interface SessionTokenProps {
   sessionId: string;
 }
 
+export interface GetterSetter<T> {
+  get: () => Awaitable<T> | Awaitable<undefined>;
+  set: (entity: T) => Awaitable<void>;
+}
+
 export enum ConnectionState {
   ACTIVE = 'ACTIVE',
   ACTIVATING = 'ACTIVATING',

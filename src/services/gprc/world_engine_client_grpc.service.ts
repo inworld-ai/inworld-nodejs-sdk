@@ -86,8 +86,8 @@ export class WorldEngineClientGrpcService {
   private getMetadata(session: SessionToken) {
     const metadata = new Metadata();
 
-    metadata.add('session-id', session.getSessionId());
-    metadata.add('authorization', `${session.getType()} ${session.getToken()}`);
+    metadata.add('session-id', session.sessionId);
+    metadata.add('authorization', `${session.type} ${session.token}`);
 
     return metadata;
   }
