@@ -91,7 +91,7 @@ export const sessionProto = new SessionAccessToken()
   .setType('Bearer')
   .setExpirationTime(protoTimestamp(today));
 
-export const session = new SessionToken({
+export const sessionToken = new SessionToken({
   sessionId: sessionProto.getSessionId(),
   token: sessionProto.getToken(),
   type: sessionProto.getType(),

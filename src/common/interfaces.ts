@@ -1,5 +1,6 @@
 import { CapabilitiesRequest } from '@proto/world-engine_pb';
 
+import { SceneProps } from '../entities/scene.entity';
 import { SessionToken } from '../entities/session_token.entity';
 
 export interface ApiKey {
@@ -49,6 +50,11 @@ export interface SessionTokenProps {
   type: string;
   expirationTime: Date;
   sessionId: string;
+}
+
+export interface Session {
+  sessionToken: SessionToken;
+  scene: SceneProps;
 }
 
 export interface GetterSetter<T> {

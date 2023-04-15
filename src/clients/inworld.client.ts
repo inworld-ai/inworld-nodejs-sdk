@@ -14,6 +14,7 @@ import {
   GenerateSessionTokenFn,
   GetterSetter,
   InternalClientConfiguration,
+  Session,
   User,
 } from '../common/interfaces';
 import { InworldPacket } from '../entities/inworld_packet.entity';
@@ -30,8 +31,7 @@ export class InworldClient {
   private config: InternalClientConfiguration;
 
   private generateSessionTokenFn: GenerateSessionTokenFn;
-  private sceneGetterSetter: GetterSetter<Scene>;
-  private tokenGetterSetter: GetterSetter<SessionToken>;
+  private sessionGetterSetter: GetterSetter<Session>;
 
   private onDisconnect: (() => void) | undefined;
   private onError: ((err: ServiceError) => void) | undefined;
@@ -100,14 +100,8 @@ export class InworldClient {
     return this;
   }
 
-  setOnScene(props: GetterSetter<Scene>) {
-    this.sceneGetterSetter = props;
-
-    return this;
-  }
-
-  setOnSessionToken(props: GetterSetter<SessionToken>) {
-    this.tokenGetterSetter = props;
+  setOnSession(props: GetterSetter<Session>) {
+    this.sessionGetterSetter = props;
 
     return this;
   }
@@ -133,8 +127,7 @@ export class InworldClient {
       onMessage: this.onMessage,
       onDisconnect: this.onDisconnect,
       generateSessionToken: this.generateSessionTokenFn,
-      sceneGetterSetter: this.sceneGetterSetter,
-      tokenGetterSetter: this.tokenGetterSetter,
+      sessionGetterSetter: this.sessionGetterSetter,
     });
 
     return new InworldConnectionService(connection);

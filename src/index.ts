@@ -21,6 +21,7 @@ import {
   Capabilities,
   ClientConfiguration,
   ConnectionConfig,
+  Session,
   SessionTokenProps,
   User,
 } from './common/interfaces';
@@ -67,6 +68,7 @@ export {
   Routing,
   Scene,
   ServiceError,
+  Session,
   SessionToken,
   SessionTokenProps,
   status,

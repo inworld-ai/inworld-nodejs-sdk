@@ -10,6 +10,7 @@ import {
   GenerateSessionTokenFn,
   GetterSetter,
   InternalClientConfiguration,
+  Session,
 } from '../common/interfaces';
 import { InworldPacket } from '../entities/inworld_packet.entity';
 import { Scene } from '../entities/scene.entity';
@@ -24,8 +25,7 @@ interface ConnectionProps {
   user?: UserRequest;
   client?: ClientRequest;
   config?: InternalClientConfiguration;
-  sceneGetterSetter?: GetterSetter<Scene>;
-  tokenGetterSetter?: GetterSetter<SessionToken>;
+  sessionGetterSetter?: GetterSetter<Session>;
   onDisconnect?: () => void;
   onError?: (err: ServiceError) => void;
   onMessage?: (message: InworldPacket) => Awaitable<void>;
@@ -41,7 +41,7 @@ export class ConnectionService {
   private state: ConnectionState = ConnectionState.INACTIVE;
 
   private scene: Scene;
-  private session: SessionToken;
+  private sessionToken: SessionToken;
   private stream: ClientDuplexStream<ProtoPacket, ProtoPacket>;
   private connectionProps: ConnectionProps;
 
@@ -140,7 +140,7 @@ export class ConnectionService {
         this.state = ConnectionState.ACTIVATING;
 
         this.stream = this.engineService.session({
-          session: this.session,
+          sessionToken: this.sessionToken,
           onError: this.onError,
           onDisconnect: this.onDisconnect,
           ...(this.onMessage && { onMessage: this.onMessage }),
@@ -229,11 +229,27 @@ export class ConnectionService {
   private async loadScene() {
     if (this.state === ConnectionState.LOADING) return;
 
+    let session: Session;
+    let changed = false;
+
+    // Try to get session from provided storage
+    if (this.connectionProps.sessionGetterSetter) {
+      session = await this.connectionProps.sessionGetterSetter.get();
+    }
+
     try {
-      this.session = await this.getOrLoadSessionToken();
+      const sessionToken = await this.getOrLoadSessionToken(
+        session?.sessionToken,
+      );
+      changed = sessionToken !== this.sessionToken || changed;
+
+      this.sessionToken = sessionToken;
 
       if (!this.scene) {
-        this.scene = await this.getOrLoadScene();
+        const scene = await this.getOrLoadScene(session?.scene);
+        changed = scene !== this.scene || changed;
+
+        this.scene = scene;
 
         if (
           !this.getEventFactory().getCurrentCharacter() &&
@@ -241,6 +257,14 @@ export class ConnectionService {
         ) {
           this.getEventFactory().setCurrentCharacter(this.scene.characters[0]);
         }
+      }
+
+      // Try to save session token to provided storage
+      if (changed) {
+        this.connectionProps.sessionGetterSetter?.set({
+          sessionToken: this.sessionToken,
+          scene: this.scene,
+        });
       }
 
       if (
@@ -253,48 +277,34 @@ export class ConnectionService {
     }
   }
 
-  private async getOrLoadSessionToken() {
-    let session: SessionToken = this.session;
+  private async getOrLoadSessionToken(savedSessionToken?: SessionToken) {
+    let sessionToken = savedSessionToken ?? this.sessionToken;
 
-    // Try to get session token from provided storage
-    if (this.connectionProps.tokenGetterSetter) {
-      const saved = await this.connectionProps.tokenGetterSetter.get();
-      session = saved ?? session;
-    }
-
-    const { sessionId } = session || {};
+    const { sessionId } = sessionToken || {};
 
     // Generate new session token is it's empty or expired
-    if (!session || SessionToken.isExpired(session)) {
+    if (!sessionToken || SessionToken.isExpired(sessionToken)) {
       this.state = ConnectionState.LOADING;
 
       const generateSessionToken =
         this.connectionProps.generateSessionToken ??
         this.generateSessionToken.bind(this);
-      session = await generateSessionToken();
+      sessionToken = await generateSessionToken();
 
       // Reuse session id to keep context of previous conversation
       if (sessionId) {
-        session = new SessionToken({
-          ...session,
+        sessionToken = new SessionToken({
+          ...sessionToken,
           sessionId,
         });
       }
-
-      // Try to save session token to provided storage
-      this.connectionProps.tokenGetterSetter?.set(session);
     }
 
-    return session;
+    return sessionToken;
   }
 
-  private async getOrLoadScene() {
-    let scene: Scene;
-
-    // Try to get scene from provided storage
-    if (this.connectionProps.sceneGetterSetter) {
-      scene = await this.connectionProps.sceneGetterSetter.get();
-    }
+  private async getOrLoadScene(savedScene?: Scene) {
+    let scene = savedScene;
 
     // Load scene
     if (!scene) {
@@ -305,13 +315,10 @@ export class ConnectionService {
         name,
         user,
         capabilities: this.connectionProps.config.capabilities,
-        session: this.session,
+        sessionToken: this.sessionToken,
       });
 
       scene = Scene.fromProto(proto);
-
-      // Try to save scene to provided storage
-      this.connectionProps.sceneGetterSetter?.set(scene);
     }
 
     return scene;

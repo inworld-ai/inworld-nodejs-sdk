@@ -3,9 +3,9 @@ import { v4 } from 'uuid';
 
 import { protoTimestamp } from '../../src/common/helpers';
 import { SessionToken } from '../../src/entities/session_token.entity';
-import { session } from '../helpers';
+import { sessionToken } from '../helpers';
 
-const json = JSON.stringify(session);
+const json = JSON.stringify(sessionToken);
 
 test('should get session fields', () => {
   const token = v4();
@@ -27,16 +27,16 @@ test('should get session fields', () => {
 });
 
 test('should serialize', () => {
-  expect(SessionToken.serialize(session)).toEqual(json);
+  expect(SessionToken.serialize(sessionToken)).toEqual(json);
 });
 
 test('should deserialize', () => {
   const result = SessionToken.deserialize(json);
 
-  expect(result.token).toEqual(session.token);
-  expect(result.type).toEqual(session.type);
-  expect(result.sessionId).toEqual(session.sessionId);
-  expect(result.expirationTime).toEqual(session.expirationTime);
+  expect(result.token).toEqual(sessionToken.token);
+  expect(result.type).toEqual(sessionToken.type);
+  expect(result.sessionId).toEqual(sessionToken.sessionId);
+  expect(result.expirationTime).toEqual(sessionToken.expirationTime);
 });
 
 test('should convert proto to token', () => {
@@ -76,6 +76,6 @@ describe('isExpired', () => {
   });
 
   test('should not detect expired session', () => {
-    expect(SessionToken.isExpired(session)).toEqual(false);
+    expect(SessionToken.isExpired(sessionToken)).toEqual(false);
   });
 });

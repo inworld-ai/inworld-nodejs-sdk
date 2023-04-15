@@ -19,11 +19,11 @@ export interface LoadSceneProps {
   name: string;
   client?: ClientRequest;
   user?: UserRequest;
-  session: SessionToken;
+  sessionToken: SessionToken;
   capabilities: CapabilitiesRequest;
 }
 export interface SessionProps {
-  session: SessionToken;
+  sessionToken: SessionToken;
   onDisconnect?: () => void;
   onError?: (err: ServiceError) => void;
   onMessage?: (message: InworldPacket) => Awaitable<void>;
@@ -40,7 +40,7 @@ export class WorldEngineClientGrpcService {
   );
 
   public async loadScene(props: LoadSceneProps) {
-    const { name, session, user, capabilities } = props;
+    const { name, sessionToken, user, capabilities } = props;
 
     const request = new LoadSceneRequest();
     request.setName(name);
@@ -56,14 +56,14 @@ export class WorldEngineClientGrpcService {
 
     return promisify(this.client.loadScene.bind(this.client))(
       request,
-      this.getMetadata(session),
+      this.getMetadata(sessionToken),
     );
   }
 
   public session(props: SessionProps) {
-    const { session, onDisconnect, onError, onMessage } = props;
+    const { sessionToken, onDisconnect, onError, onMessage } = props;
 
-    const connection = this.client.session(this.getMetadata(session));
+    const connection = this.client.session(this.getMetadata(sessionToken));
 
     if (onMessage) {
       connection.on('data', onMessage);
@@ -83,11 +83,11 @@ export class WorldEngineClientGrpcService {
     return connection;
   }
 
-  private getMetadata(session: SessionToken) {
+  private getMetadata(sessionToken: SessionToken) {
     const metadata = new Metadata();
 
-    metadata.add('session-id', session.sessionId);
-    metadata.add('authorization', `${session.type} ${session.token}`);
+    metadata.add('session-id', sessionToken.sessionId);
+    metadata.add('authorization', `${sessionToken.type} ${sessionToken.token}`);
 
     return metadata;
   }

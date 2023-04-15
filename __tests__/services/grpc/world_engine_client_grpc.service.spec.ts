@@ -14,7 +14,7 @@ import { v4 } from 'uuid';
 import { Config } from '../../../src/common/config';
 import { CLIENT_ID } from '../../../src/common/constants';
 import { WorldEngineClientGrpcService } from '../../../src/services/gprc/world_engine_client_grpc.service';
-import { createAgent, session, user } from '../../helpers';
+import { createAgent, sessionToken, user } from '../../helpers';
 const SCENE = v4();
 
 const agents = [createAgent(), createAgent()];
@@ -80,7 +80,7 @@ describe('load scene', () => {
     const result = await client.loadScene({
       name: SCENE,
       capabilities,
-      session,
+      sessionToken,
       user,
     });
 
@@ -113,7 +113,7 @@ describe('load scene', () => {
       name: SCENE,
       client: sceneClient,
       capabilities,
-      session,
+      sessionToken,
       user,
     });
 
@@ -140,7 +140,7 @@ describe('session', () => {
     const onDisconnect = jest.fn();
 
     const connection = client.session({
-      session,
+      sessionToken,
       onError,
       onMessage,
       onDisconnect,
@@ -163,7 +163,7 @@ describe('session', () => {
       .mockImplementation(() => stream);
 
     client.session({
-      session,
+      sessionToken,
       onError,
     });
 
@@ -181,7 +181,7 @@ describe('session', () => {
       .mockImplementation(() => stream);
 
     client.session({
-      session,
+      sessionToken,
       onMessage,
     });
 
@@ -198,7 +198,7 @@ describe('session', () => {
       .mockImplementation(() => stream);
 
     client.session({
-      session,
+      sessionToken,
       onDisconnect,
     });
 
