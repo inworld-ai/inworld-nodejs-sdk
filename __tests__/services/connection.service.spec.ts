@@ -10,6 +10,8 @@ import { LoadSceneResponse } from '@proto/world-engine_pb';
 import { v4 } from 'uuid';
 
 import { protoTimestamp } from '../../src/common/helpers';
+import { Session } from '../../src/common/interfaces';
+import { Scene } from '../../src/entities/scene.entity';
 import { SessionToken } from '../../src/entities/session_token.entity';
 import { EventFactory } from '../../src/factories/event';
 import { ConnectionService } from '../../src/services/connection.service';
@@ -154,6 +156,44 @@ describe('open', () => {
 
     expect(generateSessionToken).toHaveBeenCalledTimes(0);
     expect(generateSessionTokenFn).toHaveBeenCalledTimes(1);
+  });
+
+  test('should call getter and setter for session', async () => {
+    const sessionGetterSetter = {
+      get: jest.fn().mockImplementationOnce(() =>
+        Promise.resolve({
+          scene: Scene.fromProto(scene),
+          sessionToken,
+        } as Session),
+      ),
+      set: jest.fn(),
+    };
+    const connection = new ConnectionService({
+      apiKey: { key: KEY, secret: SECRET },
+      name: SCENE,
+      config: { capabilities },
+      user,
+      onError,
+      onMessage,
+      onDisconnect,
+      sessionGetterSetter,
+    });
+
+    jest
+      .spyOn(connection, 'generateSessionToken')
+      .mockImplementationOnce(() => Promise.resolve(sessionToken));
+
+    jest
+      .spyOn(WorldEngineClientGrpcService.prototype, 'session')
+      .mockImplementationOnce(() => stream);
+    jest
+      .spyOn(WorldEngineClientGrpcService.prototype, 'loadScene')
+      .mockImplementationOnce(() => Promise.resolve(scene));
+
+    await connection.open();
+
+    expect(sessionGetterSetter.get).toHaveBeenCalledTimes(1);
+    expect(sessionGetterSetter.set).toHaveBeenCalledTimes(1);
   });
 
   test('should catch error on load scene and pass it to handler', async () => {
