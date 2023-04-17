@@ -21,7 +21,6 @@ import {
   Capabilities,
   ClientConfiguration,
   ConnectionConfig,
-  Session,
   SessionTokenProps,
   User,
 } from './common/interfaces';
@@ -39,6 +38,7 @@ import {
   TextEvent,
 } from './entities/inworld_packet.entity';
 import { Scene } from './entities/scene.entity';
+import { Session } from './entities/session.entity';
 import { SessionToken } from './entities/session_token.entity';
 import { InworldConnectionService } from './services/inworld_connection.service';
 

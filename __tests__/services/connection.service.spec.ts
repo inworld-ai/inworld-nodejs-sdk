@@ -10,8 +10,8 @@ import { LoadSceneResponse } from '@proto/world-engine_pb';
 import { v4 } from 'uuid';
 
 import { protoTimestamp } from '../../src/common/helpers';
-import { Session } from '../../src/common/interfaces';
 import { Scene } from '../../src/entities/scene.entity';
+import { Session } from '../../src/entities/session.entity';
 import { SessionToken } from '../../src/entities/session_token.entity';
 import { EventFactory } from '../../src/factories/event';
 import { ConnectionService } from '../../src/services/connection.service';

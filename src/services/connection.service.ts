@@ -10,10 +10,10 @@ import {
   GenerateSessionTokenFn,
   GetterSetter,
   InternalClientConfiguration,
-  Session,
 } from '../common/interfaces';
 import { InworldPacket } from '../entities/inworld_packet.entity';
 import { Scene } from '../entities/scene.entity';
+import { Session } from '../entities/session.entity';
 import { SessionToken } from '../entities/session_token.entity';
 import { EventFactory } from '../factories/event';
 import { TokenClientGrpcService } from './gprc/token_client_grpc.service';

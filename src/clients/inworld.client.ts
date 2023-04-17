@@ -14,12 +14,10 @@ import {
   GenerateSessionTokenFn,
   GetterSetter,
   InternalClientConfiguration,
-  Session,
   User,
 } from '../common/interfaces';
 import { InworldPacket } from '../entities/inworld_packet.entity';
-import { Scene } from '../entities/scene.entity';
-import { SessionToken } from '../entities/session_token.entity';
+import { Session } from '../entities/session.entity';
 import { ConnectionService } from '../services/connection.service';
 import { InworldConnectionService } from '../services/inworld_connection.service';
 

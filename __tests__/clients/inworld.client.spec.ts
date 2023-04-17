@@ -1,5 +1,6 @@
 import { InworldClient } from '../../src/clients/inworld.client';
-import { GetterSetter, Session } from '../../src/common/interfaces';
+import { GetterSetter } from '../../src/common/interfaces';
+import { Session } from '../../src/entities/session.entity';
 import { TokenClientGrpcService } from '../../src/services/gprc/token_client_grpc.service';
 import {
   capabilitiesProps,

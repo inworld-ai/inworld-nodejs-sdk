@@ -52,11 +52,6 @@ export interface SessionTokenProps {
   sessionId: string;
 }
 
-export interface Session {
-  sessionToken: SessionToken;
-  scene: SceneProps;
-}
-
 export interface GetterSetter<T> {
   get: () => Awaitable<T> | Awaitable<undefined>;
   set: (entity: T) => Awaitable<void>;
