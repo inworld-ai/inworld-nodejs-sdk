@@ -26,6 +26,25 @@ test('should get session fields', () => {
   expect(session.expirationTime).toEqual(expirationTime);
 });
 
+test('should get session fields in the deprecated way', () => {
+  const token = v4();
+  const type = v4();
+  const sessionId = v4();
+  const expirationTime = new Date();
+
+  const session = new SessionToken({
+    token,
+    type,
+    sessionId,
+    expirationTime,
+  });
+
+  expect(session.getToken()).toEqual(token);
+  expect(session.getType()).toEqual(type);
+  expect(session.getSessionId()).toEqual(sessionId);
+  expect(session.getExpirationTime()).toEqual(expirationTime);
+});
+
 test('should serialize', () => {
   expect(SessionToken.serialize(sessionToken)).toEqual(json);
 });

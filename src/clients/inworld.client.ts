@@ -1,3 +1,4 @@
+import util = require('node:util');
 import { ServiceError } from '@grpc/grpc-js';
 import {
   CapabilitiesRequest,
@@ -156,3 +157,8 @@ export class InworldClient {
     }
   }
 }
+
+InworldClient.prototype.generateSessionToken = util.deprecate(
+  InworldClient.prototype.generateSessionToken,
+  'setGenerateSessionToken() is deprecated. Use setOnSession() instead to manage session.',
+);
