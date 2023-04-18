@@ -18,9 +18,29 @@
     "simple-import-sort"
   ],
   "rules": {
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      { 
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_"
+      }
+    ],
     "simple-import-sort/imports": "error",
     "simple-import-sort/exports": "error",
+    "no-console": ["error", { "allow": ["warn", "error"] }],
     "no-throw-literal": "off"
   },
+  "overrides": [
+    {
+     "files": [
+       "examples/**/*.ts",
+       "examples/**/*.tsx"
+      ],
+        "rules": {
+           "no-console": "off"   
+        }
+    }
+  ],
   "ignorePatterns": ["proto", "build"]
 }
