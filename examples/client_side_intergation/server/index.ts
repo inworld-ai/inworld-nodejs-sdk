@@ -11,12 +11,12 @@ import {
   InworldClient,
   InworldPacket,
   ServiceError,
-  SessionToken,
+  Session,
   status,
 } from '@inworld/nodejs-sdk';
-import { createClient as createRedisClient } from 'redis';
 import { RawData, WebSocketServer } from 'ws';
 
+import { Storage } from './storage';
 import {
   AUDIO_SESSION_STATE,
   Connections,
@@ -37,7 +37,7 @@ const DISCONNECT_TIMEOUT = 10 * 1000;
 const app = express();
 const server = createServer(app);
 const webSocket = new WebSocketServer({ noServer: true });
-const redisClient = createRedisClient();
+const storage = new Storage();
 
 app.use(cors());
 app.use(express.json());
@@ -54,8 +54,7 @@ webSocket.on('connection', (ws, request) => {
   ws.on('error', console.error);
 
   ws.on('message', async (data: RawData) => {
-    const saved = await redisClient.get(key);
-    const { sessionId, ...settings } = (saved && JSON.parse(saved)) || {};
+    const { player, scene, session: savedSession } = await storage.get(key);
 
     const message = JSON.parse(data.toString());
 
@@ -64,7 +63,18 @@ webSocket.on('connection', (ws, request) => {
         .setConfiguration({
           connection: { disconnectTimeout: DISCONNECT_TIMEOUT },
         })
-        .setGenerateSessionToken(generateSessionToken(sessionId, key, settings))
+        .setApiKey({
+          key: process.env.INWORLD_KEY!,
+          secret: process.env.INWORLD_SECRET!,
+        })
+        .setOnSession({
+          get: () => ({
+            sessionToken: savedSession?.sessionToken,
+            scene: savedSession?.scene,
+          }),
+          set: (session: Session) =>
+            storage.set(key, { player, scene, session }),
+        })
         .setOnMessage((packet: InworldPacket) => {
           ws.send(JSON.stringify(packet));
 
@@ -78,12 +88,12 @@ webSocket.on('connection', (ws, request) => {
           delete sent[key];
         });
 
-      if (settings.player) {
-        client.setUser({ fullName: settings.player });
+      if (player) {
+        client.setUser({ fullName: player });
       }
 
-      if (settings.scene) {
-        client.setScene(settings.scene);
+      if (scene) {
+        client.setScene(scene);
       }
 
       connections[key] = client.build();
@@ -127,19 +137,24 @@ app.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    await redisClient.set(req.query.key?.toString()!, JSON.stringify(req.body));
+    const { player, scene } = req.body;
+
+    await storage.set(req.query.key?.toString()!, {
+      player,
+      scene,
+    });
 
     const connection = new InworldClient()
       .setApiKey({
         key: process.env.INWORLD_KEY!,
         secret: process.env.INWORLD_SECRET!,
       })
-      .setScene(req.body.scene)
+      .setScene(scene)
       .build();
 
     const characters = await connection.getCharacters();
     const character = characters.find(
-      (c: Character) => c.getResourceName() === req.body.character,
+      (c: Character) => c.resourceName === req.body.character,
     );
 
     res.end(JSON.stringify({ character }));
@@ -159,7 +174,9 @@ server.on('upgrade', async (request, socket, head) => {
 });
 
 server.listen(4000, async () => {
-  await redisClient.connect();
+  await storage.connect({
+    onError: (err: Error) => console.log('Redis Client Error', err),
+  });
 });
 
 function handleError(key: string) {
@@ -168,41 +185,10 @@ function handleError(key: string) {
       case status.ABORTED:
       case status.CANCELLED:
         break;
-      case status.FAILED_PRECONDITION:
-        redisClient.del(key);
-        break;
       default:
         console.error(`Error: ${err.message}`);
+        storage.delete(key);
         break;
     }
-  };
-}
-
-function generateSessionToken(sessionId: string, key: string, settings: any) {
-  return async () => {
-    const client = new InworldClient().setApiKey({
-      key: process.env.INWORLD_KEY!,
-      secret: process.env.INWORLD_SECRET!,
-    });
-    const token = await client.generateSessionToken();
-
-    const actualToken = new SessionToken({
-      expirationTime: token.getExpirationTime(),
-      token: token.getToken(),
-      type: token.getType(),
-      sessionId: sessionId ?? token.getSessionId(),
-    });
-
-    if (!sessionId) {
-      redisClient.set(
-        key,
-        JSON.stringify({
-          sessionId: actualToken.getSessionId(),
-          ...settings,
-        }),
-      );
-    }
-
-    return actualToken;
   };
 }

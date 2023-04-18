@@ -1,23 +1,39 @@
 import 'dotenv/config';
 
+if (!process.env.INWORLD_KEY) {
+  throw new Error('INWORLD_KEY env variable is required');
+}
+
+if (!process.env.INWORLD_SECRET) {
+  throw new Error('INWORLD_SECRET env variable is required');
+}
+
+if (!process.env.INWORLD_SCENE) {
+  throw new Error('INWORLD_SCENE env variable is required');
+}
+
+if (!process.env.DISCORD_BOT_TOKEN) {
+  throw new Error('DISCORD_BOT_TOKEN env variable is required');
+}
+
 import {
   InworldClient,
   InworldPacket,
   ServiceError,
-  SessionToken,
+  Session,
   status,
 } from '@inworld/nodejs-sdk';
 import {
   Client,
-  DMChannel,
   GatewayIntentBits,
   Message,
   Partials,
   TextChannel,
 } from 'discord.js';
-import { createClient } from 'redis';
 
-const redisClient = createClient();
+import { Storage } from './storage';
+
+const storage = new Storage();
 const discordClient = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -31,7 +47,9 @@ const discordClient = new Client({
 });
 
 const run = async function () {
-  await redisClient.connect();
+  await storage.connect({
+    onError: (err: Error) => console.log('Redis Client Error', err),
+  });
 
   discordClient.on('ready', () => {
     console.log("I'm ready!");
@@ -40,34 +58,18 @@ const run = async function () {
   discordClient.on('messageCreate', async (message: Message) => {
     if (message.author.bot) return;
 
-    if (message.channel instanceof DMChannel) {
-      sendMessage(message, true);
-    } else if (discordClient.user && message.mentions.has(discordClient.user)) {
-      sendMessage(message);
-    }
+    sendMessage(message);
   });
 
   discordClient.login(process.env.DISCORD_BOT_TOKEN);
 };
 
-if (!process.env.INWORLD_KEY) {
-  throw new Error('INWORLD_KEY env variable is required');
-}
-
-if (!process.env.INWORLD_SECRET) {
-  throw new Error('INWORLD_SECRET env variable is required');
-}
-
-if (!process.env.INWORLD_SCENE) {
-  throw new Error('INWORLD_SCENE env variable is required');
-}
-
 run();
 
-const sendMessage = async (message: Message, direct?: boolean) => {
+const sendMessage = async (message: Message) => {
   const content = message.content.replace(`<@${discordClient.user?.id}>`, '');
 
-  const client = await createInworldClient({ direct, message });
+  const client = await createInworldClient(message);
 
   client.sendText(content);
 };
@@ -75,47 +77,22 @@ const sendMessage = async (message: Message, direct?: boolean) => {
 const getKey = (message: Message) =>
   `${message.channel.id}_${message.author.id}`;
 
-const generateSessionToken = (key: string) => {
-  return async () => {
-    const client = new InworldClient().setApiKey({
-      key: process.env.INWORLD_KEY!,
-      secret: process.env.INWORLD_SECRET!,
-    });
-    const token = await client.generateSessionToken();
-
-    const sessionId = await redisClient.get(key);
-    const actualToken = new SessionToken({
-      expirationTime: token.getExpirationTime(),
-      token: token.getToken(),
-      type: token.getType(),
-      sessionId: sessionId ?? token.getSessionId(),
-    });
-
-    if (!sessionId) {
-      redisClient.set(key, actualToken.getSessionId());
-    }
-
-    return actualToken;
-  };
-};
-
-const createInworldClient = async (props: {
-  message: Message;
-  direct?: boolean;
-}) => {
-  const { message, direct } = props;
-
+const createInworldClient = async (message: Message) => {
   const key = getKey(message);
   const client = new InworldClient()
-    .setGenerateSessionToken(generateSessionToken(key))
-    .setConfiguration({
-      capabilities: { audio: false },
-      ...(!direct && { connection: { disconnectTimeout: 5 * 1000 } }),
+    .setOnSession({
+      get: async () => storage.get(key),
+      set: (session: Session) => storage.set(key, session),
     })
-    .setScene(process.env.INWORLD_SCENE!)
+    .setApiKey({
+      key: process.env.INWORLD_KEY,
+      secret: process.env.INWORLD_SECRET,
+    })
+    .setConfiguration({ capabilities: { audio: false } })
+    .setScene(process.env.INWORLD_SCENE)
     .setOnError(handleError(message))
     .setOnMessage((packet: InworldPacket) => {
-      if (!direct && packet.isInteractionEnd()) {
+      if (packet.isInteractionEnd()) {
         client.close();
         return;
       }
@@ -129,29 +106,25 @@ const createInworldClient = async (props: {
   return client;
 };
 
-const handleError = (message: Message, direct?: boolean) => {
+const handleError = (message: Message) => {
   return (err: ServiceError) => {
     switch (err.code) {
       case status.ABORTED:
       case status.CANCELLED:
         break;
-      case status.FAILED_PRECONDITION:
-        redisClient.del(getKey(message));
-        sendMessage(message, direct);
-        break;
       default:
         console.error(`Error: ${err.message}`);
+        storage.delete(getKey(message));
+        sendMessage(message);
         break;
     }
   };
 };
 
 const done = () => {
-  redisClient.disconnect();
+  storage.disconnect();
   discordClient.destroy();
 };
-
-redisClient.on('error', (err) => console.log('Redis Client Error', err));
 
 process.on('SIGINT', done);
 process.on('SIGTERM', done);
