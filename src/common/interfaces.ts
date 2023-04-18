@@ -54,7 +54,7 @@ export interface SessionTokenProps {
 
 export interface GetterSetter<T> {
   get: () => Awaitable<T> | Awaitable<undefined>;
-  set: (entity: T) => Awaitable<void>;
+  set: (entity: T) => Awaitable<any>;
 }
 
 export enum ConnectionState {
