@@ -150,6 +150,11 @@ export class EventFactory {
           type: this.getControlType(proto),
         },
       }),
+      ...(type === InworldPacketType.SILENCE && {
+        silence: {
+          durationMs: proto.getDataChunk().getDurationMs(),
+        },
+      }),
       ...(type === InworldPacketType.EMOTION && {
         emotions: {
           behavior: new EmotionBehavior(emotionEvent.getBehavior()),
@@ -193,6 +198,9 @@ export class EventFactory {
       case packet.hasDataChunk() &&
         packet.getDataChunk().getType() === DataChunk.DataType.AUDIO:
         return InworldPacketType.AUDIO;
+      case packet.hasDataChunk() &&
+        packet.getDataChunk().getType() === DataChunk.DataType.SILENCE:
+        return InworldPacketType.SILENCE;
       case packet.hasCustom():
         return InworldPacketType.TRIGGER;
       case packet.hasControl():

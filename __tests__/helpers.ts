@@ -103,6 +103,7 @@ export const capabilitiesProps: Capabilities = {
   audio: true,
   interruptions: true,
   phonemes: true,
+  silence: true,
 };
 
 export const capabilities = new CapabilitiesRequest()
@@ -110,6 +111,7 @@ export const capabilities = new CapabilitiesRequest()
   .setEmotions(true)
   .setInterruptions(true)
   .setPhonemeInfo(true)
+  .setSilenceEvents(true)
   .setText(true)
   .setTriggers(true);
 

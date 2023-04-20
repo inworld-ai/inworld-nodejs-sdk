@@ -1,4 +1,5 @@
-* Add phonemes support
+* Add phonemes event support
+* Add silence event support
 
 ## 2022-04-06 v1.1.8
 

@@ -195,6 +195,24 @@ describe('convert packet to external one', () => {
     expect(result.isEmotion()).toEqual(true);
   });
 
+  test('silence', () => {
+    const rounting = new Routing()
+      .setSource(new Actor())
+      .setTarget(new Actor());
+    const dataChunk = new DataChunk()
+      .setType(DataChunk.DataType.SILENCE)
+      .setDurationMs(100);
+    const packet = new ProtoPacket()
+      .setPacketId(new PacketId().setPacketId(v4()))
+      .setRouting(rounting)
+      .setTimestamp(protoTimestamp())
+      .setDataChunk(dataChunk);
+    const result = EventFactory.fromProto(packet);
+
+    expect(result).toBeInstanceOf(InworldPacket);
+    expect(result.isSilence()).toEqual(true);
+  });
+
   test('unknown', () => {
     const rounting = new Routing()
       .setSource(new Actor())
