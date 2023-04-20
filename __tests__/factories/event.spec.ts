@@ -1,5 +1,6 @@
 import {
   Actor,
+  AdditionalPhonemeInfo,
   ControlEvent,
   DataChunk,
   EmotionEvent,
@@ -7,6 +8,7 @@ import {
   PacketId,
   Routing,
 } from '@proto/packets_pb';
+import { Duration } from 'google-protobuf/google/protobuf/duration_pb';
 import { v4 } from 'uuid';
 
 import { protoTimestamp } from '../../src/common/helpers';
@@ -28,7 +30,7 @@ test('should set and get character', () => {
   const found = factory.getCurrentCharacter();
 
   expect(found).toEqual(character);
-  expect(found.getId()).toEqual(character.getId());
+  expect(found.id).toEqual(character.id);
 });
 
 describe('event types', () => {
@@ -49,7 +51,7 @@ describe('event types', () => {
     expect(event.getDataChunk().getType()).toEqual(DataChunk.DataType.AUDIO);
     expect(event.hasPacketId()).toEqual(true);
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTarget().getName()).toEqual(character.getId());
+    expect(event.getRouting().getTarget().getName()).toEqual(character.id);
     expect(event.hasTimestamp()).toEqual(true);
   });
 
@@ -62,7 +64,7 @@ describe('event types', () => {
     );
     expect(event.hasPacketId()).toEqual(true);
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTarget().getName()).toEqual(character.getId());
+    expect(event.getRouting().getTarget().getName()).toEqual(character.id);
     expect(event.hasTimestamp()).toEqual(true);
   });
 
@@ -75,7 +77,7 @@ describe('event types', () => {
     );
     expect(event.hasPacketId()).toEqual(true);
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTarget().getName()).toEqual(character.getId());
+    expect(event.getRouting().getTarget().getName()).toEqual(character.id);
     expect(event.hasTimestamp()).toEqual(true);
   });
 
@@ -87,7 +89,7 @@ describe('event types', () => {
     expect(event.getText().getText()).toEqual(text);
     expect(event.hasPacketId()).toEqual(true);
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTarget().getName()).toEqual(character.getId());
+    expect(event.getRouting().getTarget().getName()).toEqual(character.id);
     expect(event.hasTimestamp()).toEqual(true);
   });
 
@@ -99,7 +101,7 @@ describe('event types', () => {
     expect(event.getCustom().getName()).toEqual(name);
     expect(event.hasPacketId()).toEqual(true);
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTarget().getName()).toEqual(character.getId());
+    expect(event.getRouting().getTarget().getName()).toEqual(character.id);
     expect(event.hasTimestamp()).toEqual(true);
   });
 
@@ -109,7 +111,7 @@ describe('event types', () => {
     expect(event.hasCancelresponses()).toEqual(true);
     expect(event.hasPacketId()).toEqual(true);
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTarget().getName()).toEqual(character.getId());
+    expect(event.getRouting().getTarget().getName()).toEqual(character.id);
     expect(event.hasTimestamp()).toEqual(true);
   });
 
@@ -122,7 +124,7 @@ describe('event types', () => {
     expect(event.hasCancelresponses()).toEqual(true);
     expect(event.hasPacketId()).toEqual(true);
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTarget().getName()).toEqual(character.getId());
+    expect(event.getRouting().getTarget().getName()).toEqual(character.id);
     expect(event.hasTimestamp()).toEqual(true);
   });
 
@@ -140,23 +142,37 @@ describe('event types', () => {
 
 describe('convert packet to external one', () => {
   test('audio', () => {
-    const result = factory.convertToInworldPacket(
-      factory.dataChunk(v4(), DataChunk.DataType.AUDIO),
-    );
+    const rounting = new Routing()
+      .setSource(new Actor())
+      .setTarget(new Actor());
+    const dataChunk = new DataChunk()
+      .setType(DataChunk.DataType.AUDIO)
+      .setChunk(v4())
+      .setAdditionalPhonemeInfoList([
+        new AdditionalPhonemeInfo()
+          .setPhoneme(v4())
+          .setStartOffset(new Duration().setSeconds(100).setNanos(10)),
+      ]);
+    const packet = new ProtoPacket()
+      .setPacketId(new PacketId().setPacketId(v4()))
+      .setRouting(rounting)
+      .setTimestamp(protoTimestamp())
+      .setDataChunk(dataChunk);
+    const result = EventFactory.fromProto(packet);
 
     expect(result).toBeInstanceOf(InworldPacket);
     expect(result.isAudio()).toEqual(true);
   });
 
   test('text', () => {
-    const result = factory.convertToInworldPacket(factory.text(v4()));
+    const result = EventFactory.fromProto(factory.text(v4()));
 
     expect(result).toBeInstanceOf(InworldPacket);
     expect(result.isText()).toEqual(true);
   });
 
   test('trigger', () => {
-    const result = factory.convertToInworldPacket(factory.trigger(v4()));
+    const result = EventFactory.fromProto(factory.trigger(v4()));
 
     expect(result).toBeInstanceOf(InworldPacket);
     expect(result.isTrigger()).toEqual(true);
@@ -173,10 +189,28 @@ describe('convert packet to external one', () => {
       .setTimestamp(protoTimestamp())
       .setEmotion(new EmotionEvent());
 
-    const result = factory.convertToInworldPacket(packet);
+    const result = EventFactory.fromProto(packet);
 
     expect(result).toBeInstanceOf(InworldPacket);
     expect(result.isEmotion()).toEqual(true);
+  });
+
+  test('silence', () => {
+    const rounting = new Routing()
+      .setSource(new Actor())
+      .setTarget(new Actor());
+    const dataChunk = new DataChunk()
+      .setType(DataChunk.DataType.SILENCE)
+      .setDurationMs(100);
+    const packet = new ProtoPacket()
+      .setPacketId(new PacketId().setPacketId(v4()))
+      .setRouting(rounting)
+      .setTimestamp(protoTimestamp())
+      .setDataChunk(dataChunk);
+    const result = EventFactory.fromProto(packet);
+
+    expect(result).toBeInstanceOf(InworldPacket);
+    expect(result.isSilence()).toEqual(true);
   });
 
   test('unknown', () => {
@@ -189,7 +223,7 @@ describe('convert packet to external one', () => {
       .setRouting(rounting)
       .setTimestamp(protoTimestamp());
 
-    const result = factory.convertToInworldPacket(packet);
+    const result = EventFactory.fromProto(packet);
 
     expect(result).toBeInstanceOf(InworldPacket);
     expect(result.isEmotion()).toEqual(false);
@@ -211,7 +245,7 @@ describe('convert packet to external one', () => {
         .setRouting(new Routing().setSource(new Actor()).setTarget(new Actor()))
         .setTimestamp(protoTimestamp(today));
 
-      const result = factory.convertToInworldPacket(packet);
+      const result = EventFactory.fromProto(packet);
 
       expect(result).toBeInstanceOf(InworldPacket);
       expect(result.isControl()).toEqual(true);
@@ -228,7 +262,7 @@ describe('convert packet to external one', () => {
         .setRouting(new Routing().setSource(new Actor()).setTarget(new Actor()))
         .setTimestamp(protoTimestamp(today));
 
-      const result = factory.convertToInworldPacket(packet);
+      const result = EventFactory.fromProto(packet);
 
       expect(result).toBeInstanceOf(InworldPacket);
       expect(result.isControl()).toEqual(true);

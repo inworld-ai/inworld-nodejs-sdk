@@ -1,3 +1,4 @@
+import util = require('node:util');
 import { ServiceError } from '@grpc/grpc-js';
 import {
   CapabilitiesRequest,
@@ -12,10 +13,12 @@ import {
   Client,
   ClientConfiguration,
   GenerateSessionTokenFn,
+  GetterSetter,
   InternalClientConfiguration,
   User,
 } from '../common/interfaces';
 import { InworldPacket } from '../entities/inworld_packet.entity';
+import { Session } from '../entities/session.entity';
 import { ConnectionService } from '../services/connection.service';
 import { InworldConnectionService } from '../services/inworld_connection.service';
 
@@ -27,6 +30,7 @@ export class InworldClient {
   private config: InternalClientConfiguration;
 
   private generateSessionTokenFn: GenerateSessionTokenFn;
+  private sessionGetterSetter: GetterSetter<Session>;
 
   private onDisconnect: (() => void) | undefined;
   private onError: ((err: ServiceError) => void) | undefined;
@@ -95,11 +99,17 @@ export class InworldClient {
     return this;
   }
 
+  setOnSession(props: GetterSetter<Session>) {
+    this.sessionGetterSetter = props;
+
+    return this;
+  }
+
   async generateSessionToken() {
     this.validateApiKey();
 
     return new ConnectionService({
-      apiKey: this.apiKey!,
+      apiKey: this.apiKey,
     }).generateSessionToken();
   }
 
@@ -116,6 +126,7 @@ export class InworldClient {
       onMessage: this.onMessage,
       onDisconnect: this.onDisconnect,
       generateSessionToken: this.generateSessionTokenFn,
+      sessionGetterSetter: this.sessionGetterSetter,
     });
 
     return new InworldConnectionService(connection);
@@ -126,6 +137,8 @@ export class InworldClient {
       .setAudio(capabilities?.audio ?? true)
       .setEmotions(capabilities?.emotions ?? false)
       .setInterruptions(capabilities?.interruptions ?? false)
+      .setPhonemeInfo(capabilities?.phonemes ?? false)
+      .setSilenceEvents(capabilities?.silence ?? false)
       .setText(true)
       .setTriggers(true);
   }
@@ -146,3 +159,8 @@ export class InworldClient {
     }
   }
 }
+
+InworldClient.prototype.generateSessionToken = util.deprecate(
+  InworldClient.prototype.generateSessionToken,
+  'setGenerateSessionToken() is deprecated. Use setOnSession() instead to manage session.',
+);

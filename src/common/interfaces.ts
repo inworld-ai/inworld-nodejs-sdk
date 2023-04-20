@@ -11,6 +11,8 @@ export interface Capabilities {
   audio?: boolean;
   emotions?: boolean;
   interruptions?: boolean;
+  phonemes?: boolean;
+  silence?: boolean;
 }
 
 export interface User {
@@ -49,6 +51,11 @@ export interface SessionTokenProps {
   type: string;
   expirationTime: Date;
   sessionId: string;
+}
+
+export interface GetterSetter<T> {
+  get: () => Awaitable<T> | Awaitable<undefined>;
+  set: (entity: T) => Awaitable<any>;
 }
 
 export enum ConnectionState {

@@ -8,6 +8,7 @@ export enum InworldPacketType {
   TRIGGER = 'TRIGGER',
   EMOTION = 'EMOTION',
   CONTROL = 'CONTROL',
+  SILENCE = 'SILENCE',
   CANCEL_RESPONSE = 'CANCEL_RESPONSE',
 }
 
@@ -22,6 +23,7 @@ export interface InworldPacketProps {
   control?: ControlEvent;
   trigger?: TriggerEvent;
   emotions?: EmotionEvent;
+  silence?: SilenceEvent;
   packetId: PacketId;
   routing: Routing;
   text?: TextEvent;
@@ -60,8 +62,18 @@ export interface TriggerEvent {
   name: string;
 }
 
+export interface AdditionalPhonemeInfo {
+  phoneme?: string;
+  startOffsetS?: number;
+}
+
 export interface AudioEvent {
   chunk: string;
+  additionalPhonemeInfo?: AdditionalPhonemeInfo[];
+}
+
+export interface SilenceEvent {
+  durationMs: number;
 }
 
 export interface CancelResponsesEvent {
@@ -86,6 +98,7 @@ export class InworldPacket {
   control: ControlEvent;
   trigger: TriggerEvent;
   emotions: EmotionEvent;
+  silence: SilenceEvent;
   cancelResponses: CancelResponsesEvent;
 
   constructor(props: InworldPacketProps) {
@@ -112,6 +125,10 @@ export class InworldPacket {
 
     if (this.isTrigger()) {
       this.trigger = props.trigger;
+    }
+
+    if (this.isSilence()) {
+      this.silence = props.silence;
     }
 
     if (this.isCancelResponse()) {
@@ -144,6 +161,10 @@ export class InworldPacket {
       this.isControl() &&
       this.control.type === InworlControlType.INTERACTION_END
     );
+  }
+
+  isSilence() {
+    return this.type === InworldPacketType.SILENCE;
   }
 
   isCancelResponse() {

@@ -37,6 +37,8 @@ import {
   Routing,
   TextEvent,
 } from './entities/inworld_packet.entity';
+import { Scene } from './entities/scene.entity';
+import { Session } from './entities/session.entity';
 import { SessionToken } from './entities/session_token.entity';
 import { InworldConnectionService } from './services/inworld_connection.service';
 
@@ -64,7 +66,9 @@ export {
   InworldPacketType,
   PacketId,
   Routing,
+  Scene,
   ServiceError,
+  Session,
   SessionToken,
   SessionTokenProps,
   status,
