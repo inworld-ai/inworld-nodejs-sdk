@@ -1,3 +1,5 @@
+import util = require('node:util');
+
 export interface CharacterProps {
   id: string;
   resourceName: string;
@@ -14,10 +16,10 @@ export interface Assets {
 }
 
 export class Character {
-  private id: string;
-  private resourceName: string;
-  private displayName: string;
-  private assets: Assets;
+  id: string;
+  resourceName: string;
+  displayName: string;
+  assets: Assets;
 
   constructor(props: CharacterProps) {
     this.id = props.id;
@@ -42,3 +44,23 @@ export class Character {
     return this.assets;
   }
 }
+
+Character.prototype.getId = util.deprecate(
+  Character.prototype.getId,
+  'getId() is deprecated. Use `id` property instead.',
+);
+
+Character.prototype.getDisplayName = util.deprecate(
+  Character.prototype.getDisplayName,
+  'getDisplayName() is deprecated. Use `displayName` property instead.',
+);
+
+Character.prototype.getResourceName = util.deprecate(
+  Character.prototype.getResourceName,
+  'getResourceName() is deprecated. Use `resourceName` property instead.',
+);
+
+Character.prototype.getAssets = util.deprecate(
+  Character.prototype.getAssets,
+  'getAssets() is deprecated. Use `assets` property instead.',
+);

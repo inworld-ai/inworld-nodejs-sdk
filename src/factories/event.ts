@@ -87,19 +87,19 @@ export class EventFactory {
     return this.protoPacket().setCancelresponses(event);
   }
 
-  convertToInworldPacket(packet: ProtoPacket): InworldPacket {
-    const packetId = packet.getPacketId();
-    const routing = packet.getRouting();
+  static fromProto(proto: ProtoPacket): InworldPacket {
+    const packetId = proto.getPacketId();
+    const routing = proto.getRouting();
     const source = routing.getSource();
     const target = routing.getTarget();
-    const type = this.getType(packet);
+    const type = this.getType(proto);
 
-    const textEvent = packet.getText();
-    const emotionEvent = packet.getEmotion();
+    const textEvent = proto.getText();
+    const emotionEvent = proto.getEmotion();
 
     return new InworldPacket({
       type,
-      date: packet.getTimestamp().toDate().toISOString(),
+      date: proto.getTimestamp().toDate().toISOString(),
       packetId: {
         packetId: packetId.getPacketId(),
         utteranceId: packetId.getUtteranceId(),
@@ -119,7 +119,7 @@ export class EventFactory {
       },
       ...(type === InworldPacketType.TRIGGER && {
         trigger: {
-          name: packet.getCustom().getName(),
+          name: proto.getCustom().getName(),
         },
       }),
       ...(type === InworldPacketType.TEXT && {
@@ -130,12 +130,12 @@ export class EventFactory {
       }),
       ...(type === InworldPacketType.AUDIO && {
         audio: {
-          chunk: packet.getDataChunk().getChunk_asB64(),
+          chunk: proto.getDataChunk().getChunk_asB64(),
         },
       }),
       ...(type === InworldPacketType.CONTROL && {
         control: {
-          type: this.getControlType(packet),
+          type: this.getControlType(proto),
         },
       }),
       ...(type === InworldPacketType.EMOTION && {
@@ -146,8 +146,8 @@ export class EventFactory {
       }),
       ...(type === InworldPacketType.CANCEL_RESPONSE && {
         cancelResponses: {
-          interactionId: packet.getCancelresponses().getInteractionId(),
-          utteranceId: packet.getCancelresponses().getUtteranceIdList(),
+          interactionId: proto.getCancelresponses().getInteractionId(),
+          utteranceId: proto.getCancelresponses().getUtteranceIdList(),
         },
       }),
     });
@@ -165,7 +165,7 @@ export class EventFactory {
 
     const target = new Actor()
       .setType(Actor.Type.AGENT)
-      .setName(this.character?.getId());
+      .setName(this.character?.id);
 
     return new Routing().setSource(source).setTarget(target);
   }
@@ -174,7 +174,7 @@ export class EventFactory {
     return new PacketId().setPacketId(v4());
   }
 
-  private getType(packet: ProtoPacket) {
+  private static getType(packet: ProtoPacket) {
     switch (true) {
       case packet.hasText():
         return InworldPacketType.TEXT;
@@ -194,7 +194,7 @@ export class EventFactory {
     }
   }
 
-  private getControlType(packet: ProtoPacket) {
+  private static getControlType(packet: ProtoPacket) {
     switch (packet.getControl().getAction()) {
       case ControlEvent.Action.INTERACTION_END:
         return InworlControlType.INTERACTION_END;

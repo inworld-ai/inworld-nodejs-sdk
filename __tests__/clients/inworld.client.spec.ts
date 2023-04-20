@@ -1,12 +1,14 @@
 import { InworldClient } from '../../src/clients/inworld.client';
+import { GetterSetter } from '../../src/common/interfaces';
+import { Session } from '../../src/entities/session.entity';
 import { TokenClientGrpcService } from '../../src/services/gprc/token_client_grpc.service';
 import {
   capabilitiesProps,
   KEY,
   SCENE,
   SECRET,
-  session,
   sessionProto,
+  sessionToken,
   user,
 } from '../helpers';
 
@@ -16,6 +18,10 @@ describe('should finish with success', () => {
   const onMessage = jest.fn();
   const onDisconnect = jest.fn();
   const generateSessionTokenFn = jest.fn();
+  const sessionGetterSetter = {
+    get: jest.fn(),
+    set: jest.fn(),
+  } as GetterSetter<Session>;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -28,7 +34,8 @@ describe('should finish with success', () => {
       .setOnDisconnect(onDisconnect)
       .setOnMessage(onMessage)
       .setOnError(onError)
-      .setGenerateSessionToken(generateSessionTokenFn);
+      .setGenerateSessionToken(generateSessionTokenFn)
+      .setOnSession(sessionGetterSetter);
   });
 
   test('should generate session token', async () => {
@@ -39,7 +46,7 @@ describe('should finish with success', () => {
     const result = await client.generateSessionToken();
 
     expect(generateSessionToken).toHaveBeenCalledTimes(1);
-    expect(result).toEqual(session);
+    expect(result).toEqual(sessionToken);
   });
 
   test('should build', async () => {
