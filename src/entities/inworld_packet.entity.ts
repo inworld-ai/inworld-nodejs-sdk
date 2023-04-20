@@ -60,8 +60,14 @@ export interface TriggerEvent {
   name: string;
 }
 
+export interface AdditionalPhonemeInfo {
+  phoneme?: string;
+  startOffsetS?: number;
+}
+
 export interface AudioEvent {
   chunk: string;
+  additionalPhonemeInfo?: AdditionalPhonemeInfo[];
 }
 
 export interface CancelResponsesEvent {

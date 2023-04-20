@@ -137,6 +137,7 @@ export class InworldClient {
       .setAudio(capabilities?.audio ?? true)
       .setEmotions(capabilities?.emotions ?? false)
       .setInterruptions(capabilities?.interruptions ?? false)
+      .setPhonemeInfo(capabilities?.phonemes ?? false)
       .setText(true)
       .setTriggers(true);
   }

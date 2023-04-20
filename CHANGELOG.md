@@ -1,3 +1,5 @@
+* Add phonemes support
+
 ## 2022-04-06 v1.1.8
 
 * Remove deprecated emotions attributes: joy, fear, trust and surprise

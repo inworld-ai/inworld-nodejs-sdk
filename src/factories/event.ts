@@ -1,5 +1,6 @@
 import {
   Actor,
+  AdditionalPhonemeInfo as ProtoAdditionalPhonemeInfo,
   CancelResponsesEvent,
   ControlEvent,
   CustomEvent,
@@ -9,6 +10,7 @@ import {
   Routing,
   TextEvent,
 } from '@proto/packets_pb';
+import { Duration } from 'google-protobuf/google/protobuf/duration_pb';
 import { v4 } from 'uuid';
 
 import { protoTimestamp } from '../common/helpers';
@@ -17,6 +19,7 @@ import { Character } from '../entities/character.entity';
 import { EmotionBehavior } from '../entities/emotion-behavior.entity';
 import { EmotionStrength } from '../entities/emotion-strength.entity';
 import {
+  AdditionalPhonemeInfo,
   InworlControlType,
   InworldPacket,
   InworldPacketType,
@@ -96,6 +99,8 @@ export class EventFactory {
 
     const textEvent = proto.getText();
     const emotionEvent = proto.getEmotion();
+    const additionalPhonemeInfo =
+      proto.getDataChunk()?.getAdditionalPhonemeInfoList() ?? [];
 
     return new InworldPacket({
       type,
@@ -131,6 +136,13 @@ export class EventFactory {
       ...(type === InworldPacketType.AUDIO && {
         audio: {
           chunk: proto.getDataChunk().getChunk_asB64(),
+          additionalPhonemeInfo: additionalPhonemeInfo.map(
+            (info: ProtoAdditionalPhonemeInfo) =>
+              ({
+                phoneme: info.getPhoneme(),
+                startOffsetS: this.durationToSeconds(info.getStartOffset()),
+              } as AdditionalPhonemeInfo),
+          ),
         },
       }),
       ...(type === InworldPacketType.CONTROL && {
@@ -201,5 +213,9 @@ export class EventFactory {
       default:
         return InworlControlType.UNKNOWN;
     }
+  }
+
+  private static durationToSeconds(duration: Duration) {
+    return duration.getSeconds() + duration.getNanos() / 1000000000;
   }
 }
