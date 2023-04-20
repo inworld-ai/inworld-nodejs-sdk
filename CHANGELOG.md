@@ -1,5 +1,8 @@
+## 2022-04-20 v1.2.0
+
 * Add phonemes event support
 * Add silence event support
+* Improve manual reconnect latency
 
 ## 2022-04-06 v1.1.8
 
