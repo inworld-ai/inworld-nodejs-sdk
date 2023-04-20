@@ -11,6 +11,8 @@ export interface Capabilities {
   audio?: boolean;
   emotions?: boolean;
   interruptions?: boolean;
+  phonemes?: boolean;
+  silence?: boolean;
 }
 
 export interface User {

@@ -98,6 +98,20 @@ test('should get emotion packet fields', () => {
   expect(packet.packetId).toEqual(packetId);
 });
 
+test('should get silence packet fields', () => {
+  const packet = new InworldPacket({
+    packetId,
+    routing,
+    date,
+    type: InworldPacketType.SILENCE,
+  });
+
+  expect(packet.isSilence()).toEqual(true);
+  expect(packet.routing).toEqual(routing);
+  expect(packet.date).toEqual(date);
+  expect(packet.packetId).toEqual(packetId);
+});
+
 describe('control', () => {
   test('should get interaction end packet fields', () => {
     const packet = new InworldPacket({

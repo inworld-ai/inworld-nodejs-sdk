@@ -1,5 +1,6 @@
 import {
   Actor,
+  AdditionalPhonemeInfo,
   ControlEvent,
   DataChunk,
   EmotionEvent,
@@ -7,6 +8,7 @@ import {
   PacketId,
   Routing,
 } from '@proto/packets_pb';
+import { Duration } from 'google-protobuf/google/protobuf/duration_pb';
 import { v4 } from 'uuid';
 
 import { protoTimestamp } from '../../src/common/helpers';
@@ -140,9 +142,23 @@ describe('event types', () => {
 
 describe('convert packet to external one', () => {
   test('audio', () => {
-    const result = EventFactory.fromProto(
-      factory.dataChunk(v4(), DataChunk.DataType.AUDIO),
-    );
+    const rounting = new Routing()
+      .setSource(new Actor())
+      .setTarget(new Actor());
+    const dataChunk = new DataChunk()
+      .setType(DataChunk.DataType.AUDIO)
+      .setChunk(v4())
+      .setAdditionalPhonemeInfoList([
+        new AdditionalPhonemeInfo()
+          .setPhoneme(v4())
+          .setStartOffset(new Duration().setSeconds(100).setNanos(10)),
+      ]);
+    const packet = new ProtoPacket()
+      .setPacketId(new PacketId().setPacketId(v4()))
+      .setRouting(rounting)
+      .setTimestamp(protoTimestamp())
+      .setDataChunk(dataChunk);
+    const result = EventFactory.fromProto(packet);
 
     expect(result).toBeInstanceOf(InworldPacket);
     expect(result.isAudio()).toEqual(true);
@@ -177,6 +193,24 @@ describe('convert packet to external one', () => {
 
     expect(result).toBeInstanceOf(InworldPacket);
     expect(result.isEmotion()).toEqual(true);
+  });
+
+  test('silence', () => {
+    const rounting = new Routing()
+      .setSource(new Actor())
+      .setTarget(new Actor());
+    const dataChunk = new DataChunk()
+      .setType(DataChunk.DataType.SILENCE)
+      .setDurationMs(100);
+    const packet = new ProtoPacket()
+      .setPacketId(new PacketId().setPacketId(v4()))
+      .setRouting(rounting)
+      .setTimestamp(protoTimestamp())
+      .setDataChunk(dataChunk);
+    const result = EventFactory.fromProto(packet);
+
+    expect(result).toBeInstanceOf(InworldPacket);
+    expect(result.isSilence()).toEqual(true);
   });
 
   test('unknown', () => {
