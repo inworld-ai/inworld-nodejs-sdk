@@ -131,7 +131,7 @@ describe('send', () => {
     expect(packet.isText()).toEqual(true);
   });
 
-  test('should send trigger', async () => {
+  test('should send trigger without parameters', async () => {
     const sendTrigger = jest.spyOn(eventFactory, 'trigger');
 
     const name = v4();
@@ -141,7 +141,24 @@ describe('send', () => {
     expect(open).toHaveBeenCalledTimes(0);
     expect(service.isActive()).toEqual(true);
     expect(sendTrigger).toHaveBeenCalledTimes(1);
-    expect(sendTrigger).toHaveBeenCalledWith(name);
+    expect(sendTrigger).toHaveBeenCalledWith(name, undefined);
+    expect(packet).toBeInstanceOf(InworldPacket);
+    expect(packet.trigger.name).toEqual(name);
+    expect(packet.isTrigger()).toEqual(true);
+  });
+
+  test('should send trigger with parameters', async () => {
+    const sendTrigger = jest.spyOn(eventFactory, 'trigger');
+
+    const name = v4();
+    const parameters = [{ name: v4(), value: v4() }];
+
+    const packet = await service.sendTrigger(name, parameters);
+
+    expect(open).toHaveBeenCalledTimes(0);
+    expect(service.isActive()).toEqual(true);
+    expect(sendTrigger).toHaveBeenCalledTimes(1);
+    expect(sendTrigger).toHaveBeenCalledWith(name, parameters);
     expect(packet).toBeInstanceOf(InworldPacket);
     expect(packet.trigger.name).toEqual(name);
     expect(packet.isTrigger()).toEqual(true);

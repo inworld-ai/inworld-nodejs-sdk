@@ -2,6 +2,7 @@ import { DataChunk } from '@proto/packets_pb';
 
 import { CancelResponsesProps } from '../common/interfaces';
 import { Character } from '../entities/character.entity';
+import { TriggerParameter } from '../entities/inworld_packet.entity';
 import { ConnectionService } from './connection.service';
 
 export class InworldConnectionService {
@@ -51,9 +52,9 @@ export class InworldConnectionService {
     );
   }
 
-  async sendTrigger(name: string) {
+  async sendTrigger(name: string, parameters?: TriggerParameter[]) {
     return this.connection.send(() =>
-      this.connection.getEventFactory().trigger(name),
+      this.connection.getEventFactory().trigger(name, parameters),
     );
   }
 

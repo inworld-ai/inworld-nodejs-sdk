@@ -1,3 +1,5 @@
+* Add parameters to triggers
+
 ## 2022-04-20 v1.2.0
 
 * Add phonemes event support

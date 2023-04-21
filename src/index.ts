@@ -36,6 +36,7 @@ import {
   PacketId,
   Routing,
   TextEvent,
+  TriggerParameter,
 } from './entities/inworld_packet.entity';
 import { Scene } from './entities/scene.entity';
 import { Session } from './entities/session.entity';
@@ -73,5 +74,6 @@ export {
   SessionTokenProps,
   status,
   TextEvent,
+  TriggerParameter,
   User,
 };
