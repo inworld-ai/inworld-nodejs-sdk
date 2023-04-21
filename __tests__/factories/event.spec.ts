@@ -93,6 +93,38 @@ describe('event types', () => {
     expect(event.hasTimestamp()).toEqual(true);
   });
 
+  test('should generate trigger event without parameters', () => {
+    const name = v4();
+    const event = factory.trigger(name);
+
+    expect(event.hasCustom()).toEqual(true);
+    expect(event.getCustom().getName()).toEqual(name);
+    expect(event.getCustom().getParametersList()).toEqual([]);
+    expect(event.hasPacketId()).toEqual(true);
+    expect(event.hasRouting()).toEqual(true);
+    expect(event.getRouting().getTarget().getName()).toEqual(character.id);
+    expect(event.hasTimestamp()).toEqual(true);
+  });
+
+  test('should generate trigger event with parameters', () => {
+    const name = v4();
+    const parameters = [{ name: v4(), value: v4() }];
+    const event = factory.trigger(name, parameters);
+
+    expect(event.hasCustom()).toEqual(true);
+    expect(event.getCustom().getName()).toEqual(name);
+    expect(event.getCustom().getParametersList()[0].getName()).toEqual(
+      parameters[0].name,
+    );
+    expect(event.getCustom().getParametersList()[0].getValue()).toEqual(
+      parameters[0].value,
+    );
+    expect(event.hasPacketId()).toEqual(true);
+    expect(event.hasRouting()).toEqual(true);
+    expect(event.getRouting().getTarget().getName()).toEqual(character.id);
+    expect(event.hasTimestamp()).toEqual(true);
+  });
+
   test('should generate trigger event', () => {
     const name = v4();
     const event = factory.trigger(name);
@@ -171,8 +203,17 @@ describe('convert packet to external one', () => {
     expect(result.isText()).toEqual(true);
   });
 
-  test('trigger', () => {
+  test('trigger without parameters', () => {
     const result = EventFactory.fromProto(factory.trigger(v4()));
+
+    expect(result).toBeInstanceOf(InworldPacket);
+    expect(result.isTrigger()).toEqual(true);
+  });
+
+  test('trigger with parameters', () => {
+    const result = EventFactory.fromProto(
+      factory.trigger(v4(), [{ name: v4(), value: v4() }]),
+    );
 
     expect(result).toBeInstanceOf(InworldPacket);
     expect(result.isTrigger()).toEqual(true);
