@@ -160,7 +160,7 @@ export class InworldClient {
   }
 }
 
-InworldClient.prototype.generateSessionToken = util.deprecate(
-  InworldClient.prototype.generateSessionToken,
+InworldClient.prototype.setGenerateSessionToken = util.deprecate(
+  InworldClient.prototype.setGenerateSessionToken,
   'setGenerateSessionToken() is deprecated. Use setOnSession() instead to manage session.',
 );
