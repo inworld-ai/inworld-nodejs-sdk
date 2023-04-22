@@ -34,6 +34,7 @@ process.on(
 
         break;
       case CONVERSATION_ACTION.PLAY_AUDIO:
+      case CONVERSATION_ACTION.SILENCE:
         conversation.playAudio(packet);
         break;
       case CONVERSATION_ACTION.SET_TEXT_DISPLAY_ORDER:

@@ -114,6 +114,13 @@ export class Client {
       console.log(`Trigger: ${packet.trigger.name}`);
     }
 
+    if (packet.isSilence()) {
+      this.conversationProcess.send({
+        action: CONVERSATION_ACTION.SILENCE,
+        packet,
+      });
+    }
+
     // INTERACTION_END
     if (packet.isInteractionEnd()) {
       this.conversationProcess.send({

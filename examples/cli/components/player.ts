@@ -94,6 +94,11 @@ export class Player {
           },
         );
       }
+    } else if (data?.packet?.silence?.durationMs) {
+      setTimeout(async () => {
+        this.resetCurrentItem();
+        await this.playQueue();
+      }, data.packet.silence.durationMs);
     }
   }
 }
