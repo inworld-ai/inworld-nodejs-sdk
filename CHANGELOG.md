@@ -1,4 +1,5 @@
 * Add parameters to triggers
+* Add packets to queue before open connection call
 
 ## 2022-04-20 v1.2.0
 
