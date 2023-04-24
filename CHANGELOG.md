@@ -1,4 +1,5 @@
 * Add parameters to triggers
+* Mark `setGenerateSessionToken` as deprecated instead of `generateSessionToken` 
 
 ## 2022-04-20 v1.2.0
 
