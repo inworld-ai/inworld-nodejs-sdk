@@ -161,22 +161,17 @@ export class ConnectionService {
     try {
       this.cancelScheduler();
 
-      if (this.isActive()) {
-        return this.write(getPacket);
+      if (!this.isActive() && !this.isAutoReconnected()) {
+        throw Error('Unable to send data due inactive connection');
       }
 
-      if (this.isAutoReconnected()) {
-        await this.open();
-        return this.write(getPacket);
-      }
-
-      throw Error('Unable to send data due inactive connection');
+      return this.write(getPacket);
     } catch (err) {
       this.onError(err);
     }
   }
 
-  private write(getPacket: () => ProtoPacket) {
+  private async write(getPacket: () => ProtoPacket) {
     let packet: ProtoPacket;
 
     const resolvePacket = () =>
@@ -213,6 +208,8 @@ export class ConnectionService {
           packet = protoPacket;
         },
       });
+
+      await this.open();
     }
 
     return resolvePacket();
