@@ -1,6 +1,7 @@
 * Add parameters to triggers
 * Mark `setGenerateSessionToken` as deprecated instead of `generateSessionToken` 
 * Add packets to queue before open connection call
+* Replace checking emotions behavior and strength by direct property access
 
 ## 2022-04-20 v1.2.0
 

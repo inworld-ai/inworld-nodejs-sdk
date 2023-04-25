@@ -25,8 +25,14 @@ import {
   User,
 } from './common/interfaces';
 import { Character } from './entities/character.entity';
-import { EmotionBehavior } from './entities/emotion-behavior.entity';
-import { EmotionStrength } from './entities/emotion-strength.entity';
+import {
+  EmotionBehavior,
+  EmotionBehaviorCode,
+} from './entities/emotion-behavior.entity';
+import {
+  EmotionStrength,
+  EmotionStrengthCode,
+} from './entities/emotion-strength.entity';
 import {
   Actor,
   AudioEvent,
@@ -57,7 +63,9 @@ export {
   ClientConfiguration,
   ConnectionConfig,
   EmotionBehavior,
+  EmotionBehaviorCode,
   EmotionStrength,
+  EmotionStrengthCode,
   getEngineHost,
   getStudioHost,
   InworlControlType,
