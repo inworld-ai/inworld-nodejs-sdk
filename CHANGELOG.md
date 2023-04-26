@@ -1,3 +1,5 @@
+## 2022-04-26 v1.3.0
+
 * Add parameters to triggers
 * Mark `setGenerateSessionToken` as deprecated instead of `generateSessionToken` 
 * Add packets to queue before open connection call
