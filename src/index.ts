@@ -25,8 +25,14 @@ import {
   User,
 } from './common/interfaces';
 import { Character } from './entities/character.entity';
-import { EmotionBehavior } from './entities/emotion-behavior.entity';
-import { EmotionStrength } from './entities/emotion-strength.entity';
+import {
+  EmotionBehavior,
+  EmotionBehaviorCode,
+} from './entities/emotion-behavior.entity';
+import {
+  EmotionStrength,
+  EmotionStrengthCode,
+} from './entities/emotion-strength.entity';
 import {
   Actor,
   AudioEvent,
@@ -36,6 +42,7 @@ import {
   PacketId,
   Routing,
   TextEvent,
+  TriggerParameter,
 } from './entities/inworld_packet.entity';
 import { Scene } from './entities/scene.entity';
 import { Session } from './entities/session.entity';
@@ -56,7 +63,9 @@ export {
   ClientConfiguration,
   ConnectionConfig,
   EmotionBehavior,
+  EmotionBehaviorCode,
   EmotionStrength,
+  EmotionStrengthCode,
   getEngineHost,
   getStudioHost,
   InworlControlType,
@@ -73,5 +82,6 @@ export {
   SessionTokenProps,
   status,
   TextEvent,
+  TriggerParameter,
   User,
 };

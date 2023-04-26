@@ -23,6 +23,7 @@ import {
   InworlControlType,
   InworldPacket,
   InworldPacketType,
+  TriggerParameter,
 } from '../entities/inworld_packet.entity';
 
 export class EventFactory {
@@ -68,8 +69,16 @@ export class EventFactory {
     return this.protoPacket().setPacketId(packet).setText(event);
   }
 
-  trigger(name: string): ProtoPacket {
+  trigger(name: string, parameters: TriggerParameter[] = []): ProtoPacket {
     const event = new CustomEvent().setName(name);
+
+    if (parameters.length) {
+      event.setParametersList(
+        parameters.map((p) =>
+          new CustomEvent.Parameter().setName(p.name).setValue(p.value),
+        ),
+      );
+    }
 
     const packet = this.packet().setUtteranceId(v4()).setInteractionId(v4());
 
@@ -125,6 +134,13 @@ export class EventFactory {
       ...(type === InworldPacketType.TRIGGER && {
         trigger: {
           name: proto.getCustom().getName(),
+          parameters: proto
+            .getCustom()
+            .getParametersList()
+            .map((p) => ({
+              name: p.getName(),
+              value: p.getValue(),
+            })),
         },
       }),
       ...(type === InworldPacketType.TEXT && {
@@ -157,8 +173,12 @@ export class EventFactory {
       }),
       ...(type === InworldPacketType.EMOTION && {
         emotions: {
-          behavior: new EmotionBehavior(emotionEvent.getBehavior()),
-          strength: new EmotionStrength(emotionEvent.getStrength()),
+          behavior: new EmotionBehavior(
+            EmotionBehavior.fromProto(emotionEvent.getBehavior()),
+          ),
+          strength: new EmotionStrength(
+            EmotionStrength.fromProto(emotionEvent.getStrength()),
+          ),
         },
       }),
       ...(type === InworldPacketType.CANCEL_RESPONSE && {

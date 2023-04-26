@@ -53,6 +53,11 @@ export interface Actor {
   isCharacter: boolean;
 }
 
+export interface TriggerParameter {
+  name: string;
+  value: string;
+}
+
 export interface TextEvent {
   text: string;
   final: boolean;
@@ -60,6 +65,7 @@ export interface TextEvent {
 
 export interface TriggerEvent {
   name: string;
+  parameters?: TriggerParameter[];
 }
 
 export interface AdditionalPhonemeInfo {
@@ -86,7 +92,7 @@ export interface ControlEvent {
 }
 
 export class InworldPacket {
-  private type: InworldPacketType;
+  private type: InworldPacketType = InworldPacketType.UNKNOWN;
 
   date: string;
   packetId: PacketId;
