@@ -81,15 +81,15 @@ const createInworldClient = async (message: Message) => {
   const key = getKey(message);
   const client = new InworldClient()
     .setOnSession({
-      get: async () => storage.get(key),
+      get: () => storage.get(key),
       set: (session: Session) => storage.set(key, session),
     })
     .setApiKey({
-      key: process.env.INWORLD_KEY,
-      secret: process.env.INWORLD_SECRET,
+      key: process.env.INWORLD_KEY!,
+      secret: process.env.INWORLD_SECRET!,
     })
     .setConfiguration({ capabilities: { audio: false } })
-    .setScene(process.env.INWORLD_SCENE)
+    .setScene(process.env.INWORLD_SCENE!)
     .setOnError(handleError(message))
     .setOnMessage((packet: InworldPacket) => {
       if (packet.isInteractionEnd()) {
