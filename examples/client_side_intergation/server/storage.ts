@@ -1,16 +1,20 @@
 import { Session } from '@inworld/nodejs-sdk';
 import { createClient } from 'redis';
 
+import { CHAT_VIEW } from './types';
+
 interface StorageValue {
   session: string;
   player?: string;
   scene?: string;
+  chatView?: CHAT_VIEW;
 }
 
 interface StorageRecord {
   session?: Session;
   player?: string;
   scene?: string;
+  chatView?: CHAT_VIEW;
 }
 
 export class Storage {
@@ -48,6 +52,7 @@ export class Storage {
       session,
       player: parsed.player,
       scene: parsed.scene,
+      chatView: parsed.chatView,
     } as StorageRecord;
   }
 
@@ -58,6 +63,7 @@ export class Storage {
         session: Session.serialize(entity.session),
         player: entity.player,
         scene: entity.scene,
+        chatView: entity.chatView,
       }),
     );
   }

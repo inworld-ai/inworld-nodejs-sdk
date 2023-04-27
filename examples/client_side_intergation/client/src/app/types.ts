@@ -1,3 +1,8 @@
+export enum CHAT_VIEW {
+  TEXT = 'Text',
+  AVATAR = 'Avatar',
+}
+
 export type ConfigurationCharacter = {
   name?: string;
 };
@@ -14,6 +19,7 @@ export type Configuration = {
   character?: ConfigurationCharacter;
   scene?: ConfigurationScene;
   player?: ConfigurationPlayer;
+  chatView?: CHAT_VIEW;
 };
 
 export type Assets = {
@@ -38,6 +44,7 @@ export type Actor = {
 };
 
 export enum CHAT_HISTORY_TYPE {
+  ACTOR = 'actor',
   TEXT = 'text',
   TRIGGER_EVENT = 'trigger',
   INTERACTION_END = 'interaction_end',
@@ -47,11 +54,12 @@ export type HistoryItemBase = {
   date: Date;
   id: string;
   interactionId?: string;
+  source: Actor;
   type: CHAT_HISTORY_TYPE;
 };
 
-export type HistoryItemText = HistoryItemBase & {
-  type: CHAT_HISTORY_TYPE.TEXT;
+export type HistoryItemActor = HistoryItemBase & {
+  type: CHAT_HISTORY_TYPE.ACTOR;
   text: string;
   isRecognizing?: boolean;
   author?: string;
@@ -62,7 +70,6 @@ export type HistoryItemTrigger = HistoryItemBase & {
   type: CHAT_HISTORY_TYPE.TRIGGER_EVENT;
   name: string;
   outgoing?: boolean;
-  source: Actor;
 };
 
 export type HistoryItemInteractionEnd = HistoryItemBase & {
@@ -70,6 +77,65 @@ export type HistoryItemInteractionEnd = HistoryItemBase & {
 };
 
 export type ChatHistoryItem =
-  | HistoryItemText
+  | HistoryItemActor
   | HistoryItemTrigger
   | HistoryItemInteractionEnd;
+
+export type AdditionalPhonemeInfo = {
+  phoneme?: string;
+  startOffsetS?: number;
+};
+
+export enum EmotionBehaviorCode {
+  NEUTRAL = 'NEUTRAL',
+  DISGUST = 'DISGUST',
+  CONTEMPT = 'CONTEMPT',
+  BELLIGERENCE = 'BELLIGERENCE',
+  DOMINEERING = 'DOMINEERING',
+  CRITICISM = 'CRITICISM',
+  ANGER = 'ANGER',
+  TENSION = 'TENSION',
+  TENSE_HUMOR = 'TENSE_HUMOR',
+  DEFENSIVENESS = 'DEFENSIVENESS',
+  WHINING = 'WHINING',
+  SADNESS = 'SADNESS',
+  STONEWALLING = 'STONEWALLING',
+  INTEREST = 'INTEREST',
+  VALIDATION = 'VALIDATION',
+  AFFECTION = 'AFFECTION',
+  HUMOR = 'HUMOR',
+  SURPRISE = 'SURPRISE',
+  JOY = 'JOY',
+}
+
+export enum EmotionStrengthCode {
+  UNSPECIFIED = 'UNSPECIFIED',
+  WEAK = 'WEAK',
+  STRONG = 'STRONG',
+  NORMAL = 'NORMAL',
+}
+
+export class EmotionBehavior {
+  readonly code: EmotionBehaviorCode;
+
+  constructor(code: EmotionBehaviorCode) {
+    this.code = code;
+  }
+}
+
+export class EmotionStrength {
+  private code: EmotionStrengthCode;
+
+  constructor(code: EmotionStrengthCode) {
+    this.code = code;
+  }
+}
+
+export type EmotionEvent = {
+  behavior: EmotionBehavior;
+  strength: EmotionStrength;
+};
+
+export interface EmotionsMap {
+  [key: string]: EmotionEvent;
+}

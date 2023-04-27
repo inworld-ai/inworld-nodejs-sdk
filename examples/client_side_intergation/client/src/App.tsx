@@ -1,11 +1,20 @@
 import './App.css';
 
+import { ArrowBackRounded } from '@mui/icons-material';
+import { Button, Grid } from '@mui/material';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { v4 } from 'uuid';
 
 import { Chat } from './app/chat/Chat';
+import { Avatar } from './app/components/3dAvatar/Avatar';
+import { CircularRpmAvatar } from './app/components/CircularRpmAvatar';
 import { Layout } from './app/components/Layout';
+import {
+  ChatWrapper,
+  MainWrapper,
+  SimulatorHeader,
+} from './app/components/Simulator';
 import { ConfigView } from './app/configuration/ConfigView';
 import {
   get as getConfiguration,
@@ -13,10 +22,14 @@ import {
 } from './app/helpers/configuration';
 import { Player } from './app/sound/Player';
 import {
+  AdditionalPhonemeInfo,
   Character,
   CHAT_HISTORY_TYPE,
+  CHAT_VIEW,
   ChatHistoryItem,
   Configuration,
+  EmotionEvent,
+  EmotionsMap,
 } from './app/types';
 import { config } from './config';
 import * as defaults from './defaults';
@@ -40,7 +53,12 @@ function App() {
   const [character, setCharacter] = useState<Character>();
   const [chatHistory, setChatHistory] = useState<ChatHistoryItem[]>([]);
   const [chatting, setChatting] = useState(false);
+  const [chatView, setChatView] = useState(CHAT_VIEW.TEXT);
   const [playerName, setPlayerName] = useState('');
+  const [phonemes, setPhonemes] = useState<AdditionalPhonemeInfo[]>([]);
+  const [avatar, setAvatar] = useState('');
+  const [emotions, setEmotions] = useState<EmotionsMap>({});
+  const [emotionEvent, setEmotionEvent] = useState<EmotionEvent>();
 
   const stateRef = useRef<CurrentContext>();
   stateRef.current = {
@@ -66,13 +84,18 @@ function App() {
     let chatItem: ChatHistoryItem | undefined = undefined;
 
     if (packet?.type === 'AUDIO') {
-      player.addToQueue(packet.audio?.chunk);
+      player.addToQueue({
+        audio: packet.audio,
+        onPlay: (packet) => {
+          setPhonemes(packet.additionalPhonemeInfo);
+        },
+      });
     } else if (packet?.type === 'TEXT') {
       const { character, playerName } = stateRef.current || {};
 
       chatItem = {
         id: packet.packetId?.utteranceId,
-        type: CHAT_HISTORY_TYPE.TEXT,
+        type: CHAT_HISTORY_TYPE.ACTOR,
         date: new Date(packet.date!),
         source: packet.routing?.source,
         text: packet.text.text,
@@ -87,8 +110,15 @@ function App() {
         id: packet.packetId?.utteranceId,
         type: CHAT_HISTORY_TYPE.INTERACTION_END,
         date: new Date(packet.date!),
+        source: packet.routing?.source,
         interactionId: packet.packetId?.interactionId,
       };
+    } else if (packet?.emotions) {
+      setEmotionEvent(packet.emotions);
+      setEmotions((currentState) => ({
+        ...currentState,
+        [packet.packetId.interactionId]: packet.emotions,
+      }));
     }
 
     if (chatItem) {
@@ -111,9 +141,10 @@ function App() {
 
   const openConnection = useCallback(async () => {
     const key = v4();
-    const { character, player, scene } = formMethods.getValues();
+    const { character, chatView, player, scene } = formMethods.getValues();
 
     setChatting(true);
+    setChatView(chatView!);
     setPlayerName(player?.name!);
 
     const response = await fetch(`${config.LOAD_URL}?key=${key}`, {
@@ -123,6 +154,7 @@ function App() {
         scene: scene?.name,
         player: player?.name,
         character: character?.name,
+        chatView: chatView,
       }),
     });
     const data = await response.json();
@@ -132,7 +164,12 @@ function App() {
     }
 
     if (data.character) {
+      const assets = data.character.assets;
+      const rpmImageUri = assets?.rpmImageUriPortrait;
+      const avatarImg = assets?.avatarImg;
+
       setCharacter(data.character as Character);
+      setAvatar(avatarImg || rpmImageUri || '');
     }
 
     const ws = new WebSocket(`${config.SESSION_URL}?key=${key}`);
@@ -191,18 +228,63 @@ function App() {
   const content = chatting ? (
     <>
       {open && character ? (
-        <Chat
-          character={character}
-          chatHistory={chatHistory}
-          connection={connection!}
-          onStopChatting={stopChatting}
-        />
+        <MainWrapper>
+          <ChatWrapper>
+            <Avatar
+              emotionEvent={emotionEvent}
+              phonemes={phonemes}
+              visible={chatView === CHAT_VIEW.AVATAR}
+              url={
+                config.RPM_AVATAR ||
+                character.assets?.rpmModelUri ||
+                defaults.DEFAULT_RPM_AVATAR
+              }
+            />
+            <SimulatorHeader>
+              <Grid container>
+                <Grid item sm={6}>
+                  <Button
+                    startIcon={<ArrowBackRounded />}
+                    onClick={stopChatting}
+                    variant="outlined"
+                  >
+                    Back to settings
+                  </Button>
+                </Grid>
+                {chatView === CHAT_VIEW.TEXT && (
+                  <Grid item sm={6}>
+                    {avatar && (
+                      <CircularRpmAvatar
+                        src={avatar}
+                        name={character.displayName}
+                        size="48px"
+                        sx={{ display: ['none', 'flex'] }}
+                      />
+                    )}
+                  </Grid>
+                )}
+              </Grid>
+            </SimulatorHeader>
+            <Chat
+              chatView={chatView}
+              chatHistory={chatHistory}
+              connection={connection!}
+              emotions={emotions}
+              onStopChatting={stopChatting}
+              playerName={playerName}
+            />
+          </ChatWrapper>
+        </MainWrapper>
       ) : (
         'Loading...'
       )}
     </>
   ) : (
-    <ConfigView onStart={openConnection} onResetForm={resetForm} />
+    <ConfigView
+      canStart={formMethods.formState.isValid}
+      onStart={openConnection}
+      onResetForm={resetForm}
+    />
   );
 
   return (

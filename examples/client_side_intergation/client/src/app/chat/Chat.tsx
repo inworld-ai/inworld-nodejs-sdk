@@ -1,24 +1,24 @@
 import { CopyAll, Mic, Send } from '@mui/icons-material';
-import {
-  Button,
-  Grid,
-  IconButton,
-  InputAdornment,
-  TextField,
-} from '@mui/material';
-import { Stack } from '@mui/system';
+import { Box, IconButton, InputAdornment, TextField } from '@mui/material';
 import { useCallback, useState } from 'react';
 
-import { Character, CHAT_HISTORY_TYPE, ChatHistoryItem } from '../types';
-import { RecordIcon } from './Chat.styled';
+import {
+  CHAT_HISTORY_TYPE,
+  CHAT_VIEW,
+  ChatHistoryItem,
+  EmotionsMap,
+} from '../types';
+import { ActionsStyled, RecordIcon } from './Chat.styled';
 import { CopyConfirmedDialog } from './CopyConfirmedDialog';
 import { History } from './History';
 
 interface ChatProps {
-  character: Character;
+  chatView: CHAT_VIEW;
   chatHistory: ChatHistoryItem[];
   connection: WebSocket;
+  emotions: EmotionsMap;
   onStopChatting: () => void;
+  playerName: string;
 }
 
 let interval: NodeJS.Timeout;
@@ -26,7 +26,7 @@ let stream: MediaStream;
 let audioCtx: AudioContext;
 
 export function Chat(props: ChatProps) {
-  const { character, chatHistory, connection, onStopChatting } = props;
+  const { chatHistory, connection } = props;
 
   const [text, setText] = useState('');
   const [copyDestination, setCopyDestination] = useState('');
@@ -46,7 +46,7 @@ export function Chat(props: ChatProps) {
 
     messages.forEach((item) => {
       switch (item.type) {
-        case CHAT_HISTORY_TYPE.TEXT:
+        case CHAT_HISTORY_TYPE.ACTOR:
           const isCharacter = item.source.isCharacter;
 
           transcript +=
@@ -219,99 +219,61 @@ export function Chat(props: ChatProps) {
   }, [isRecording, startRecording, stopRecording]);
 
   return (
-    <>
-      <Grid container sx={{ mb: 2, mt: 10 }}>
-        <Grid
-          item
-          xs={12}
-          sm={6}
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        width: '100%',
+        height: '100%',
+        position: 'relative',
+        paddingBottom: '4.5rem',
+        overflow: 'hidden',
+        zIndex: 2,
+      }}
+    >
+      <History
+        history={chatHistory}
+        chatView={props.chatView}
+        emotions={props.emotions}
+      />
+      <ActionsStyled>
+        <TextField
+          variant="standard"
+          fullWidth
+          value={text}
+          onChange={handleTextChange}
+          onKeyPress={handleTextKeyPress}
           sx={{
-            backgroundColor: 'white',
-            padding: '0.5rem 1.5rem',
+            backgroundColor: (theme) => theme.palette.grey[100],
             borderRadius: '1rem',
-            textAlign: 'center',
-            display: 'flex',
-            flexDirection: 'column',
+            padding: '1rem',
           }}
-        >
-          <History history={chatHistory} />
-          <Stack direction="row-reverse" sx={{ mb: '1' }}>
-            <IconButton onClick={handleCopyClick}>
-              <CopyAll fontSize="small" />
-            </IconButton>
-          </Stack>
-          <Stack direction="row" alignItems="center" gap={1}>
-            <TextField
-              variant="standard"
-              fullWidth
-              value={text}
-              onChange={handleTextChange}
-              onKeyPress={handleTextKeyPress}
-              sx={{
-                backgroundColor: (theme) => theme.palette.grey[100],
-                borderRadius: '1rem',
-                padding: '1rem',
-              }}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton onClick={handleSend}>
-                      <Send />
-                    </IconButton>
-                  </InputAdornment>
-                ),
-                disableUnderline: true,
-              }}
-            />
-            <IconButton
-              onClick={handleSpeakClick}
-              sx={{ height: '3rem', width: '3rem', backgroundColor: '#F1F5F9' }}
-            >
-              {isRecording ? <RecordIcon /> : <Mic />}
-            </IconButton>
-          </Stack>
-        </Grid>
-        <Grid item xs={12} sm={1} />
-        <Grid
-          item
-          xs={12}
-          sm={5}
-          sx={{
-            backgroundColor: 'white',
-            padding: '0.5rem 1.5rem',
-            borderRadius: '1rem',
-            textAlign: 'center',
-            display: 'flex',
-            flexDirection: 'column',
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton onClick={handleSend}>
+                  <Send />
+                </IconButton>
+              </InputAdornment>
+            ),
+            disableUnderline: true,
           }}
+        />
+        <IconButton
+          onClick={handleSpeakClick}
+          sx={{ height: '3rem', width: '3rem', backgroundColor: '#F1F5F9' }}
         >
-          <img
-            alt={character.displayName}
-            src={
-              character.assets?.avatarImg ||
-              character.assets?.rpmImageUriPortrait
-            }
-          />
-        </Grid>
-      </Grid>
-      <Grid
-        container
-        mt={1}
-        spacing={2}
-        alignItems="center"
-        justifyContent={'flex-start'}
-      >
-        <Grid item>
-          <Button variant="outlined" onClick={onStopChatting}>
-            Back to settings
-          </Button>
-        </Grid>
-      </Grid>
+          {isRecording ? <RecordIcon /> : <Mic />}
+        </IconButton>
+        <IconButton onClick={handleCopyClick}>
+          <CopyAll fontSize="small" />
+        </IconButton>
+      </ActionsStyled>
       <CopyConfirmedDialog
         copyConfirmOpen={copyConfirmOpen}
         copyDestination={copyDestination}
         setCopyConfirmOpen={setCopyConfirmOpen}
       />
-    </>
+    </Box>
   );
 }

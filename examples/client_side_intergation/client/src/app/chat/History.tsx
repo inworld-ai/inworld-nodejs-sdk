@@ -1,30 +1,47 @@
-import { Fade } from '@mui/material';
-import { Box } from '@mui/system';
-import { useEffect, useRef, useState } from 'react';
+import { Box, Fade, Stack, Typography } from '@mui/material';
+import React, { useEffect, useRef, useState } from 'react';
 
+import { getEmoji } from '../helpers/emoji';
 import { dateWithMilliseconds } from '../helpers/transform';
 import {
+  Actor,
   CHAT_HISTORY_TYPE,
+  CHAT_VIEW,
   ChatHistoryItem,
-  HistoryItemText,
+  EmotionsMap,
+  HistoryItemActor,
   HistoryItemTrigger,
 } from '../types';
-import { HistoryStyled } from './Chat.styled';
+import {
+  HistoryActor,
+  HistoryInner,
+  HistoryItemMessageActor,
+  HistoryMessageGroup,
+  HistoryStyled,
+} from './Chat.styled';
 import { Typing } from './Typing';
 
 interface HistoryProps {
+  chatView: CHAT_VIEW;
+  emotions: EmotionsMap;
   history: ChatHistoryItem[];
 }
 
-type CombinedHistoryTextItem = HistoryItemText & { groupedText: string };
-type CombinedHistoryItem = CombinedHistoryTextItem | HistoryItemTrigger;
+type CombinedHistoryItem = {
+  interactionId: string;
+  messages: (HistoryItemActor | HistoryItemTrigger)[];
+  source: Actor;
+  type: CHAT_HISTORY_TYPE;
+};
 
 export const History = (props: HistoryProps) => {
-  const { history } = props;
+  const { chatView, history } = props;
 
   const ref = useRef<HTMLDivElement>(null);
 
-  const [combinedChatHistory, setCombinedChatHistory] = useState<any[]>([]);
+  const [combinedChatHistory, setCombinedChatHistory] = useState<
+    CombinedHistoryItem[]
+  >([]);
   const [isInteractionEnd, setIsInteractionEnd] = useState<boolean>(true);
 
   useEffect(() => {
@@ -38,40 +55,48 @@ export const History = (props: HistoryProps) => {
   }, [history]);
 
   useEffect(() => {
-    let currentRecord: CombinedHistoryTextItem | undefined;
+    let currentRecord: CombinedHistoryItem | undefined;
     const mergedRecords: CombinedHistoryItem[] = [];
     const hasActors = history.find(
-      (record: ChatHistoryItem) => record.type === CHAT_HISTORY_TYPE.TEXT,
+      (record: ChatHistoryItem) => record.type === CHAT_HISTORY_TYPE.ACTOR,
     );
-    const withoutTriggerEvents = history.filter(
-      (record: ChatHistoryItem) =>
-        record.type !== CHAT_HISTORY_TYPE.TRIGGER_EVENT,
+    const withoutTriggerEvents = history.filter((record: ChatHistoryItem) =>
+      [CHAT_HISTORY_TYPE.ACTOR, CHAT_HISTORY_TYPE.INTERACTION_END].includes(
+        record.type,
+      ),
     );
 
     for (let i = 0; i < history.length; i++) {
       let item = history[i];
       switch (item.type) {
-        case CHAT_HISTORY_TYPE.TEXT:
+        case CHAT_HISTORY_TYPE.ACTOR:
           currentRecord = mergedRecords.find(
             (r) =>
-              r.type === CHAT_HISTORY_TYPE.TEXT &&
-              item?.type === CHAT_HISTORY_TYPE.TEXT &&
-              r.source.name === item?.source?.name &&
-              r.interactionId === item.interactionId,
-          ) as CombinedHistoryTextItem;
+              r.interactionId === item.interactionId &&
+              [CHAT_HISTORY_TYPE.ACTOR].includes(r.messages?.[0]?.type) &&
+              r.type === CHAT_HISTORY_TYPE.ACTOR &&
+              r.source.name === item.source.name,
+          ) as CombinedHistoryItem;
 
           if (currentRecord) {
-            currentRecord.groupedText! += `${item.text}`;
+            currentRecord.messages.push(item);
           } else {
             currentRecord = {
-              ...item,
-              groupedText: item.text,
-            };
+              interactionId: item.interactionId,
+              messages: [item],
+              source: item.source,
+              type: CHAT_HISTORY_TYPE.ACTOR,
+            } as CombinedHistoryItem;
             mergedRecords.push(currentRecord);
           }
           break;
         case CHAT_HISTORY_TYPE.TRIGGER_EVENT:
-          mergedRecords.push(item);
+          mergedRecords.push({
+            interactionId: item.interactionId!,
+            messages: [item],
+            source: item.source,
+            type: item.type,
+          });
           break;
       }
     }
@@ -93,50 +118,91 @@ export const History = (props: HistoryProps) => {
     setCombinedChatHistory(mergedRecords);
   }, [history]);
 
+  const getContent = (message: HistoryItemActor | HistoryItemTrigger) => {
+    switch (message.type) {
+      case CHAT_HISTORY_TYPE.ACTOR:
+        return message.text;
+      case CHAT_HISTORY_TYPE.TRIGGER_EVENT:
+        return message.name;
+    }
+  };
+
   return (
-    <HistoryStyled ref={ref}>
-      {combinedChatHistory.map((item, index) => {
-        let text;
-        let author;
-        const title =
-          item?.type === CHAT_HISTORY_TYPE.TEXT ||
-          item.type === CHAT_HISTORY_TYPE.TRIGGER_EVENT
-            ? `${dateWithMilliseconds(item.date)} (${item.interactionId})`
-            : '';
+    <HistoryStyled
+      className={chatView === CHAT_VIEW.AVATAR ? `history--avatar-view` : ''}
+    >
+      <HistoryInner ref={ref}>
+        <Box className="history--avatar-list">
+          {combinedChatHistory.map((item, index) => {
+            let emoji: string | null = null;
+            let messages = item.messages;
+            let actorSource = 'AGENT';
+            let message = item.messages?.[0];
 
-        switch (item.type) {
-          case CHAT_HISTORY_TYPE.TEXT:
-            text = item?.groupedText;
-            author = item?.author;
-            break;
-          default:
-            break;
-        }
+            const title =
+              item.type === CHAT_HISTORY_TYPE.ACTOR ||
+              item.type === CHAT_HISTORY_TYPE.TRIGGER_EVENT
+                ? `${dateWithMilliseconds(message.date)} (${
+                    item.interactionId
+                  })`
+                : '';
 
-        return (
-          <Box
-            title={title}
-            key={index}
-            data-id={item.id}
-            sx={{
-              ...(author && { textAlign: 'left' }),
-            }}
-          >
-            {author ? (
-              <>
-                <strong>{author}</strong>: {text}
-              </>
-            ) : (
-              text
-            )}
-          </Box>
-        );
-      })}
-      <Fade in={!isInteractionEnd} timeout={500}>
-        <Box margin="0 0 5px">
-          <Typing />
+            if (item.type === CHAT_HISTORY_TYPE.ACTOR) {
+              actorSource = item.source.isCharacter ? 'AGENT' : 'PLAYER';
+
+              if (item.source.isCharacter) {
+                const emotion = props.emotions[item.interactionId!];
+                if (emotion?.behavior) {
+                  emoji = getEmoji(emotion.behavior);
+                }
+              }
+            }
+
+            return (
+              <HistoryMessageGroup
+                key={`PortalSimulatorChatHistoryMessageGroup-${index}`}
+                className={`history-message-group history-message-group--${actorSource}`}
+              >
+                <HistoryActor
+                  className="chat__bubble"
+                  title={title}
+                  key={index}
+                  data-id={message.id}
+                >
+                  <Stack
+                    sx={{ maxWidth: ['90%', '85%'] }}
+                    flexDirection={'row'}
+                    alignItems="center"
+                  >
+                    <HistoryItemMessageActor
+                      className="history-actor"
+                      key={`PortalSimulatorChatHistoryActor-${index}`}
+                    >
+                      {emoji && (
+                        <Box className="simulator-message__emoji" fontSize={16}>
+                          {emoji}
+                        </Box>
+                      )}
+                      <Typography>
+                        {messages.map((m) => (
+                          <React.Fragment key={m.id}>
+                            {getContent(m)}{' '}
+                          </React.Fragment>
+                        ))}
+                      </Typography>
+                    </HistoryItemMessageActor>
+                  </Stack>
+                </HistoryActor>
+              </HistoryMessageGroup>
+            );
+          })}
+          <Fade in={!isInteractionEnd} timeout={500}>
+            <Box margin="0 0 20px 20px">
+              <Typing />
+            </Box>
+          </Fade>
         </Box>
-      </Fade>
+      </HistoryInner>
     </HistoryStyled>
   );
 };

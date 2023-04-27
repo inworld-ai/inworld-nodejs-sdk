@@ -19,6 +19,7 @@ import { RawData, WebSocketServer } from 'ws';
 import { Storage } from './storage';
 import {
   AUDIO_SESSION_STATE,
+  CHAT_VIEW,
   Connections,
   EVENT_TYPE,
   SentState,
@@ -54,13 +55,22 @@ webSocket.on('connection', (ws, request) => {
   ws.on('error', console.error);
 
   ws.on('message', async (data: RawData) => {
-    const { player, scene, session: savedSession } = await storage.get(key);
+    const {
+      player,
+      scene,
+      chatView,
+      session: savedSession,
+    } = await storage.get(key);
 
     const message = JSON.parse(data.toString());
 
     if (!connections[key]) {
       const client = new InworldClient()
         .setConfiguration({
+          capabilities: {
+            emotions: true,
+            ...(chatView === CHAT_VIEW.AVATAR && { phonemes: true }),
+          },
           connection: { disconnectTimeout: DISCONNECT_TIMEOUT },
         })
         .setApiKey({
@@ -73,7 +83,7 @@ webSocket.on('connection', (ws, request) => {
             scene: savedSession?.scene,
           }),
           set: (session: Session) =>
-            storage.set(key, { player, scene, session }),
+            storage.set(key, { player, scene, session, chatView }),
         })
         .setOnMessage((packet: InworldPacket) => {
           ws.send(JSON.stringify(packet));
@@ -137,11 +147,12 @@ app.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { player, scene } = req.body;
+    const { player, scene, chatView } = req.body;
 
     await storage.set(req.query.key?.toString()!, {
       player,
       scene,
+      chatView,
     });
 
     const connection = new InworldClient()
