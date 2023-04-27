@@ -54,7 +54,7 @@ export interface SessionTokenProps {
 }
 
 export interface GetterSetter<T> {
-  get: () => Awaitable<T> | Awaitable<undefined>;
+  get: () => Awaitable<T | undefined>;
   set: (entity: T) => Awaitable<any>;
 }
 
