@@ -1,21 +1,30 @@
 import { Box, TextField } from '@mui/material';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useFormContext } from 'react-hook-form';
 
 import { save as saveConfiguration } from '../helpers/configuration';
 import { Configuration } from '../types';
 
+const FIELD_NAME = 'scene.name';
+export const RESOURCE_NAME_PATTERN = RegExp(
+  `^workspaces/([a-z0-9_-]+)/(characters|scenes)/([a-z0-9_-]+)$`,
+);
+
 export const SceneName = () => {
-  const { getValues, register } = useFormContext<Configuration>();
+  const { getValues, formState, register, setValue } =
+    useFormContext<Configuration>();
 
   const onChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      saveConfiguration({
-        ...getValues(),
-        scene: { name: event.target.value },
-      });
+      setValue(FIELD_NAME, event.target.value);
+      saveConfiguration(getValues());
     },
-    [getValues],
+    [getValues, setValue],
+  );
+
+  const errorMessage = useMemo(
+    () => formState.errors?.scene?.name?.message,
+    [formState],
   );
 
   return (
@@ -24,11 +33,18 @@ export const SceneName = () => {
         fullWidth
         id="scene-name"
         size="small"
-        label="Scene Name"
-        placeholder="Enter scene name"
+        label="Scene Resource Name"
+        placeholder="Enter scene resource name"
         InputLabelProps={{ shrink: true }}
-        {...register('scene.name', { required: true })}
-        onChange={onChange}
+        {...{ error: !!errorMessage, helperText: errorMessage }}
+        {...register(FIELD_NAME, {
+          onChange,
+          required: 'This field is required',
+          pattern: {
+            value: RESOURCE_NAME_PATTERN,
+            message: 'Please use resource name',
+          },
+        })}
       />
     </Box>
   );

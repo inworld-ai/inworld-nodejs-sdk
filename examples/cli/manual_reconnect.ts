@@ -15,6 +15,11 @@ const recorder = new Recorder({
 
 const client = new Client({
   config: {
+    capabilities: {
+      audio: true,
+      emotions: true,
+      silence: true,
+    },
     connection: {
       autoReconnect: false,
       disconnectTimeout: DISCONNECT_TIMEOUT,

@@ -1,9 +1,21 @@
+import { AdditionalPhonemeInfo } from '../types';
+
 interface PlayerProps {
   audio: HTMLAudioElement;
 }
 
+interface Audio {
+  chunk: string;
+  additionalPhonemeInfo: AdditionalPhonemeInfo[];
+}
+
+interface QueueItem {
+  audio: Audio;
+  onPlay: (audio: Audio) => void;
+}
+
 export class Player {
-  private audioPacketQueue: string[] = [];
+  private audioPacketQueue: QueueItem[] = [];
   private isPlaying = false;
   private audioElement!: HTMLAudioElement;
 
@@ -23,7 +35,7 @@ export class Player {
     this.audioElement.currentTime = 0;
   }
 
-  addToQueue(packet: string): void {
+  addToQueue(packet: QueueItem): void {
     this.audioPacketQueue.push(packet);
     if (!this.isPlaying) {
       this.playQueue();
@@ -45,7 +57,9 @@ export class Player {
     const currentPacket = this.audioPacketQueue.shift();
 
     this.isPlaying = true;
-    this.audioElement.src = 'data:audio/wav;base64,' + currentPacket;
+    this.audioElement.src =
+      'data:audio/wav;base64,' + currentPacket?.audio?.chunk;
+    currentPacket?.onPlay?.(currentPacket?.audio);
     this.audioElement.play().catch((e) => console.error(e));
   };
 }

@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@inworld/nodejs-sdk": "^1.1.8",
+    "@inworld/nodejs-sdk": "1.3.1",
     "discord.js": "^14.1.2",
     "dotenv": "^16.0.1",
     "redis": "^4.6.4",

@@ -5,9 +5,7 @@ export const listAll = async (connection: InworldConnectionService) => {
 
   if (characters.length) {
     characters.map((c, index) => {
-      console.log(
-        `${index}: ${c.getId()} (${c.getResourceName()}:${c.getDisplayName()})`,
-      );
+      console.log(`${index}: ${c.id} (${c.resourceName}:${c.displayName})`);
     });
     console.log('------------------------------');
   } else {
@@ -16,14 +14,14 @@ export const listAll = async (connection: InworldConnectionService) => {
 };
 
 export const characterInfo = (character: Character) =>
-  `Character: ${character.getId()} (${character.getResourceName()}:${character.getDisplayName()})`;
+  `Character: ${character.id} (${character.resourceName}:${character.displayName})`;
 
 export const changeCharacter = async (
   connection: InworldConnectionService,
   id: string,
 ) => {
   const characters = await connection.getCharacters();
-  const character = characters.find((c) => c.getId() === id);
+  const character = characters.find((c) => c.id === id);
 
   if (character) {
     connection.setCurrentCharacter(character);

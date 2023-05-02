@@ -18,3 +18,8 @@ export type Connections = {
 export type SentState = {
   [key: string]: AUDIO_SESSION_STATE;
 };
+
+export enum CHAT_VIEW {
+  TEXT = 'Text',
+  AVATAR = 'Avatar',
+}

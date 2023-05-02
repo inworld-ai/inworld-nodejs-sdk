@@ -8,10 +8,12 @@ import {
 } from '@mui/material';
 
 import { CharacterName } from './CharacterName';
+import { ChatView } from './ChatView';
 import { PlayerName } from './PlayerName';
 import { SceneName } from './SceneName';
 
 interface ConfigViewProps {
+  canStart: boolean;
   onStart: () => Promise<void>;
   onResetForm: () => void;
 }
@@ -37,6 +39,9 @@ export const ConfigView = (props: ConfigViewProps) => {
               <Grid item xs={12} sm={6}>
                 <PlayerName />
               </Grid>
+              <Grid item xs={12} sm={6}>
+                <ChatView />
+              </Grid>
             </Grid>
           </CardContent>
         </Card>
@@ -49,7 +54,18 @@ export const ConfigView = (props: ConfigViewProps) => {
         justifyContent={'flex-end'}
       >
         <Grid item>
-          <Button variant="contained" onClick={props.onStart}>
+          <Button
+            sx={{ mr: 2 }}
+            variant="contained"
+            onClick={props.onResetForm}
+          >
+            Reset
+          </Button>
+          <Button
+            variant="contained"
+            disabled={!props.canStart}
+            onClick={props.onStart}
+          >
             Start
           </Button>
         </Grid>
