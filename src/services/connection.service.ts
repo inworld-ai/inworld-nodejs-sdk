@@ -13,6 +13,7 @@ import {
   InternalClientConfiguration,
 } from '../common/data_structures';
 import { InworldPacket } from '../entities/inworld_packet.entity';
+import { PreviousDialog } from '../entities/previous_dialog.entity';
 import { Scene } from '../entities/scene.entity';
 import { Session } from '../entities/session.entity';
 import { SessionToken } from '../entities/session_token.entity';
@@ -32,6 +33,7 @@ interface ConnectionProps<InworldPacketT> {
   onMessage?: (message: InworldPacketT) => Awaitable<void>;
   generateSessionToken?: GenerateSessionTokenFn;
   extension?: Extension<InworldPacketT>;
+  previousDialog?: PreviousDialog;
 }
 
 export interface QueueItem {
@@ -318,6 +320,7 @@ export class ConnectionService<
         capabilities: this.connectionProps.config.capabilities,
         sessionToken: this.sessionToken,
         setLoadSceneProps: this.connectionProps.extension?.setLoadSceneProps,
+        previousDialog: this.connectionProps.previousDialog,
       });
 
       scene = Scene.fromProto(proto);

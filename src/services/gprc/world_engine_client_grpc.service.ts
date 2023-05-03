@@ -5,6 +5,7 @@ import {
   CapabilitiesRequest,
   ClientRequest,
   LoadSceneRequest,
+  SessionContinuation,
   UserRequest,
 } from '@proto/world-engine_pb';
 import { promisify } from 'util';
@@ -13,6 +14,7 @@ import { Config } from '../../common/config';
 import { CLIENT_ID } from '../../common/constants';
 import { Awaitable } from '../../common/data_structures';
 import { grpcOptions } from '../../common/helpers';
+import { PreviousDialog } from '../../entities/previous_dialog.entity';
 import { SessionToken } from '../../entities/session_token.entity';
 
 export interface LoadSceneProps {
@@ -22,6 +24,7 @@ export interface LoadSceneProps {
   sessionToken: SessionToken;
   capabilities: CapabilitiesRequest;
   setLoadSceneProps?: (request: LoadSceneRequest) => LoadSceneRequest;
+  previousDialog?: PreviousDialog;
 }
 export interface SessionProps {
   sessionToken: SessionToken;
@@ -46,14 +49,21 @@ export class WorldEngineClientGrpcService {
     const request = new LoadSceneRequest();
     request.setName(name);
     request.setCapabilities(capabilities);
+    request.setClient(
+      new ClientRequest().setId(props.client?.getId() || CLIENT_ID),
+    );
 
     if (user) {
       request.setUser(user);
     }
 
-    request.setClient(
-      new ClientRequest().setId(props.client?.getId() || CLIENT_ID),
-    );
+    if (props.previousDialog) {
+      request.setSessionContinuation(
+        new SessionContinuation().setPreviousDialog(
+          props.previousDialog.toProto(),
+        ),
+      );
+    }
 
     const finalRequest = props.setLoadSceneProps
       ? props.setLoadSceneProps(request)
