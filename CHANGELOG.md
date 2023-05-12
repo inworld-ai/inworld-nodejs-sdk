@@ -1,3 +1,5 @@
+* Replace CancelResponses by Mutation.CancelResponses on the protocol level
+
 ## 2022-04-26 v1.3.1
 * Fix type definition for `onSession` method
 

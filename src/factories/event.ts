@@ -6,6 +6,7 @@ import {
   CustomEvent,
   DataChunk,
   InworldPacket as ProtoPacket,
+  MutationEvent,
   PacketId,
   Routing,
   TextEvent,
@@ -96,7 +97,9 @@ export class EventFactory {
       event.setUtteranceIdList(cancelResponses.utteranceId);
     }
 
-    return this.protoPacket().setCancelresponses(event);
+    return this.protoPacket().setMutation(
+      new MutationEvent().setCancelResponses(event),
+    );
   }
 
   static fromProto(proto: ProtoPacket): InworldPacket {
@@ -183,8 +186,14 @@ export class EventFactory {
       }),
       ...(type === InworldPacketType.CANCEL_RESPONSE && {
         cancelResponses: {
-          interactionId: proto.getCancelresponses().getInteractionId(),
-          utteranceId: proto.getCancelresponses().getUtteranceIdList(),
+          interactionId: proto
+            .getMutation()
+            .getCancelResponses()
+            .getInteractionId(),
+          utteranceId: proto
+            .getMutation()
+            .getCancelResponses()
+            .getUtteranceIdList(),
         },
       }),
     });
@@ -227,7 +236,7 @@ export class EventFactory {
         return InworldPacketType.CONTROL;
       case packet.hasEmotion():
         return InworldPacketType.EMOTION;
-      case packet.hasCancelresponses():
+      case packet.getMutation()?.hasCancelResponses():
         return InworldPacketType.CANCEL_RESPONSE;
       default:
         return InworldPacketType.UNKNOWN;
