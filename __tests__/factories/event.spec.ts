@@ -190,28 +190,28 @@ describe('convert packet to external one', () => {
       .setRouting(rounting)
       .setTimestamp(protoTimestamp())
       .setDataChunk(dataChunk);
-    const result = EventFactory.fromProto(packet);
+    const result = InworldPacket.fromProto(packet);
 
     expect(result).toBeInstanceOf(InworldPacket);
     expect(result.isAudio()).toEqual(true);
   });
 
   test('text', () => {
-    const result = EventFactory.fromProto(factory.text(v4()));
+    const result = InworldPacket.fromProto(factory.text(v4()));
 
     expect(result).toBeInstanceOf(InworldPacket);
     expect(result.isText()).toEqual(true);
   });
 
   test('trigger without parameters', () => {
-    const result = EventFactory.fromProto(factory.trigger(v4()));
+    const result = InworldPacket.fromProto(factory.trigger(v4()));
 
     expect(result).toBeInstanceOf(InworldPacket);
     expect(result.isTrigger()).toEqual(true);
   });
 
   test('trigger with parameters', () => {
-    const result = EventFactory.fromProto(
+    const result = InworldPacket.fromProto(
       factory.trigger(v4(), [{ name: v4(), value: v4() }]),
     );
 
@@ -230,7 +230,7 @@ describe('convert packet to external one', () => {
       .setTimestamp(protoTimestamp())
       .setEmotion(new EmotionEvent());
 
-    const result = EventFactory.fromProto(packet);
+    const result = InworldPacket.fromProto(packet);
 
     expect(result).toBeInstanceOf(InworldPacket);
     expect(result.isEmotion()).toEqual(true);
@@ -248,7 +248,7 @@ describe('convert packet to external one', () => {
       .setRouting(rounting)
       .setTimestamp(protoTimestamp())
       .setDataChunk(dataChunk);
-    const result = EventFactory.fromProto(packet);
+    const result = InworldPacket.fromProto(packet);
 
     expect(result).toBeInstanceOf(InworldPacket);
     expect(result.isSilence()).toEqual(true);
@@ -264,7 +264,7 @@ describe('convert packet to external one', () => {
       .setRouting(rounting)
       .setTimestamp(protoTimestamp());
 
-    const result = EventFactory.fromProto(packet);
+    const result = InworldPacket.fromProto(packet);
 
     expect(result).toBeInstanceOf(InworldPacket);
     expect(result.isEmotion()).toEqual(false);
@@ -286,7 +286,7 @@ describe('convert packet to external one', () => {
         .setRouting(new Routing().setSource(new Actor()).setTarget(new Actor()))
         .setTimestamp(protoTimestamp(today));
 
-      const result = EventFactory.fromProto(packet);
+      const result = InworldPacket.fromProto(packet);
 
       expect(result).toBeInstanceOf(InworldPacket);
       expect(result.isControl()).toEqual(true);
@@ -303,7 +303,7 @@ describe('convert packet to external one', () => {
         .setRouting(new Routing().setSource(new Actor()).setTarget(new Actor()))
         .setTimestamp(protoTimestamp(today));
 
-      const result = EventFactory.fromProto(packet);
+      const result = InworldPacket.fromProto(packet);
 
       expect(result).toBeInstanceOf(InworldPacket);
       expect(result.isControl()).toEqual(true);
