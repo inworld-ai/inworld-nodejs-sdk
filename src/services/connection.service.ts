@@ -1,6 +1,6 @@
 import { ClientDuplexStream, ServiceError } from '@grpc/grpc-js';
 import { InworldPacket as ProtoPacket } from '@proto/packets_pb';
-import { ClientRequest, UserRequest } from '@proto/world-engine_pb';
+import { ClientRequest } from '@proto/world-engine_pb';
 import { clearTimeout } from 'timers';
 
 import {
@@ -11,6 +11,7 @@ import {
   GenerateSessionTokenFn,
   GetterSetter,
   InternalClientConfiguration,
+  User,
 } from '../common/data_structures';
 import { Logger } from '../common/logger';
 import { InworldPacket } from '../entities/inworld_packet.entity';
@@ -23,7 +24,7 @@ import { WorldEngineClientGrpcService } from './gprc/world_engine_client_grpc.se
 interface ConnectionProps<InworldPacketT> {
   apiKey: ApiKey;
   name?: string;
-  user?: UserRequest;
+  user?: User;
   client?: ClientRequest;
   config?: InternalClientConfiguration;
   sessionGetterSetter?: GetterSetter<Session>;
