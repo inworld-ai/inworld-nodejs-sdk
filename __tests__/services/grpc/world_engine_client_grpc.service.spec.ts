@@ -14,7 +14,7 @@ import { v4 } from 'uuid';
 import { Config } from '../../../src/common/config';
 import { CLIENT_ID } from '../../../src/common/constants';
 import { WorldEngineClientGrpcService } from '../../../src/services/gprc/world_engine_client_grpc.service';
-import { createAgent, sessionToken, user } from '../../helpers';
+import { capabilities, createAgent, sessionToken, user } from '../../helpers';
 const SCENE = v4();
 
 const agents = [createAgent(), createAgent()];
@@ -81,7 +81,6 @@ describe('load scene', () => {
       name: SCENE,
       capabilities,
       sessionToken,
-      user,
     });
 
     const loadedAgents = result.getAgentsList();
@@ -118,6 +117,48 @@ describe('load scene', () => {
     });
 
     expect(mockLoadScene.mock.calls[0][0].getClient()).toEqual(sceneClient);
+  });
+
+  test('should use provided provided user name', async () => {
+    const loadScene = jest
+      .spyOn(WorldEngineClient.prototype, 'loadScene')
+      .mockImplementationOnce(mockLoadScene);
+
+    await client.loadScene({
+      name: SCENE,
+      capabilities,
+      sessionToken,
+      user: { fullName: user.fullName },
+    });
+
+    expect(loadScene).toHaveBeenCalledTimes(1);
+    expect(loadScene.mock.calls[0][0].getUser().getName()).toEqual(
+      user.fullName,
+    );
+  });
+
+  test('should use provided provided user profile', async () => {
+    const loadScene = jest
+      .spyOn(WorldEngineClient.prototype, 'loadScene')
+      .mockImplementationOnce(mockLoadScene);
+
+    await client.loadScene({
+      name: SCENE,
+      capabilities,
+      sessionToken,
+      user: { profile: user.profile },
+    });
+
+    const profileFields = loadScene.mock.calls[0][0]
+      .getUserSettings()
+      .getPlayerProfile()
+      .getFieldsList();
+
+    expect(loadScene).toHaveBeenCalledTimes(1);
+    expect(profileFields[0].getFieldId()).toEqual(user.profile.fields[0].id);
+    expect(profileFields[0].getFieldValue()).toEqual(
+      user.profile.fields[0].value,
+    );
   });
 });
 

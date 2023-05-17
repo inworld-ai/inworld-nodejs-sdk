@@ -6,19 +6,20 @@ import {
   ClientRequest,
   LoadSceneRequest,
   UserRequest,
+  UserSettings,
 } from '@proto/world-engine_pb';
 import { promisify } from 'util';
 
 import { Config } from '../../common/config';
 import { CLIENT_ID } from '../../common/constants';
 import { grpcOptions } from '../../common/helpers';
-import { Awaitable } from '../../common/interfaces';
+import { Awaitable, User } from '../../common/interfaces';
 import { SessionToken } from '../../entities/session_token.entity';
 
 export interface LoadSceneProps {
   name: string;
   client?: ClientRequest;
-  user?: UserRequest;
+  user?: User;
   sessionToken: SessionToken;
   capabilities: CapabilitiesRequest;
 }
@@ -46,8 +47,22 @@ export class WorldEngineClientGrpcService {
     request.setName(name);
     request.setCapabilities(capabilities);
 
-    if (user) {
-      request.setUser(user);
+    if (user?.fullName) {
+      request.setUser(new UserRequest().setName(user.fullName));
+    }
+
+    if (user?.profile?.fields?.length) {
+      request.setUserSettings(
+        new UserSettings().setPlayerProfile(
+          new UserSettings.PlayerProfile().setFieldsList(
+            user.profile.fields.map(({ id, value }) =>
+              new UserSettings.PlayerProfile.PlayerField()
+                .setFieldId(id)
+                .setFieldValue(value),
+            ),
+          ),
+        ),
+      );
     }
 
     request.setClient(

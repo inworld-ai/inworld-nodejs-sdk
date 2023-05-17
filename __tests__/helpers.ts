@@ -5,15 +5,11 @@ import {
   PacketId,
   Routing,
 } from '@proto/packets_pb';
-import {
-  CapabilitiesRequest,
-  LoadSceneResponse,
-  UserRequest,
-} from '@proto/world-engine_pb';
+import { CapabilitiesRequest, LoadSceneResponse } from '@proto/world-engine_pb';
 import { v4 } from 'uuid';
 
 import { protoTimestamp } from '../src/common/helpers';
-import { Capabilities } from '../src/common/interfaces';
+import { Capabilities, User } from '../src/common/interfaces';
 import { Character } from '../src/entities/character.entity';
 import { SessionToken } from '../src/entities/session_token.entity';
 
@@ -115,4 +111,7 @@ export const capabilities = new CapabilitiesRequest()
   .setText(true)
   .setTriggers(true);
 
-export const user = new UserRequest().setName('Name');
+export const user: User = {
+  fullName: 'Name',
+  profile: { fields: [{ id: 'field_1', value: 'value_1' }] },
+};

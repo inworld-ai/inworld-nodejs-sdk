@@ -1,3 +1,5 @@
+* Allow to propagate user profile fields
+
 ## 2022-04-26 v1.3.1
 * Fix type definition for `onSession` method
 
