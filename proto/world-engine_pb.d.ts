@@ -10,80 +10,6 @@ import * as google_protobuf_timestamp_pb from "google-protobuf/google/protobuf/t
 import * as packets_pb from "./packets_pb";
 import * as voices_pb from "./voices_pb";
 
-export class InteractionFeedback extends jspb.Message { 
-    getIslike(): boolean;
-    setIslike(value: boolean): InteractionFeedback;
-    clearTypeList(): void;
-    getTypeList(): Array<InteractionDislikeType>;
-    setTypeList(value: Array<InteractionDislikeType>): InteractionFeedback;
-    addType(value: InteractionDislikeType, index?: number): InteractionDislikeType;
-    getComment(): string;
-    setComment(value: string): InteractionFeedback;
-
-    serializeBinary(): Uint8Array;
-    toObject(includeInstance?: boolean): InteractionFeedback.AsObject;
-    static toObject(includeInstance: boolean, msg: InteractionFeedback): InteractionFeedback.AsObject;
-    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-    static serializeBinaryToWriter(message: InteractionFeedback, writer: jspb.BinaryWriter): void;
-    static deserializeBinary(bytes: Uint8Array): InteractionFeedback;
-    static deserializeBinaryFromReader(message: InteractionFeedback, reader: jspb.BinaryReader): InteractionFeedback;
-}
-
-export namespace InteractionFeedback {
-    export type AsObject = {
-        islike: boolean,
-        typeList: Array<InteractionDislikeType>,
-        comment: string,
-    }
-}
-
-export class CreateInteractionFeedbackRequest extends jspb.Message { 
-    getParent(): string;
-    setParent(value: string): CreateInteractionFeedbackRequest;
-
-    hasFeedback(): boolean;
-    clearFeedback(): void;
-    getFeedback(): InteractionFeedback | undefined;
-    setFeedback(value?: InteractionFeedback): CreateInteractionFeedbackRequest;
-
-    serializeBinary(): Uint8Array;
-    toObject(includeInstance?: boolean): CreateInteractionFeedbackRequest.AsObject;
-    static toObject(includeInstance: boolean, msg: CreateInteractionFeedbackRequest): CreateInteractionFeedbackRequest.AsObject;
-    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-    static serializeBinaryToWriter(message: CreateInteractionFeedbackRequest, writer: jspb.BinaryWriter): void;
-    static deserializeBinary(bytes: Uint8Array): CreateInteractionFeedbackRequest;
-    static deserializeBinaryFromReader(message: CreateInteractionFeedbackRequest, reader: jspb.BinaryReader): CreateInteractionFeedbackRequest;
-}
-
-export namespace CreateInteractionFeedbackRequest {
-    export type AsObject = {
-        parent: string,
-        feedback?: InteractionFeedback.AsObject,
-    }
-}
-
-export class PingCharacterRequest extends jspb.Message { 
-    getName(): string;
-    setName(value: string): PingCharacterRequest;
-
-    serializeBinary(): Uint8Array;
-    toObject(includeInstance?: boolean): PingCharacterRequest.AsObject;
-    static toObject(includeInstance: boolean, msg: PingCharacterRequest): PingCharacterRequest.AsObject;
-    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-    static serializeBinaryToWriter(message: PingCharacterRequest, writer: jspb.BinaryWriter): void;
-    static deserializeBinary(bytes: Uint8Array): PingCharacterRequest;
-    static deserializeBinaryFromReader(message: PingCharacterRequest, reader: jspb.BinaryReader): PingCharacterRequest;
-}
-
-export namespace PingCharacterRequest {
-    export type AsObject = {
-        name: string,
-    }
-}
-
 export class CapabilitiesRequest extends jspb.Message { 
     getAudio(): boolean;
     setAudio(value: boolean): CapabilitiesRequest;
@@ -117,6 +43,10 @@ export class CapabilitiesRequest extends jspb.Message {
     setRegenerateResponse(value: boolean): CapabilitiesRequest;
     getLoadSceneInSession(): boolean;
     setLoadSceneInSession(value: boolean): CapabilitiesRequest;
+    getRelations(): boolean;
+    setRelations(value: boolean): CapabilitiesRequest;
+    getDebugInfo(): boolean;
+    setDebugInfo(value: boolean): CapabilitiesRequest;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): CapabilitiesRequest.AsObject;
@@ -146,6 +76,8 @@ export namespace CapabilitiesRequest {
         narratedActions: boolean,
         regenerateResponse: boolean,
         loadSceneInSession: boolean,
+        relations: boolean,
+        debugInfo: boolean,
     }
 }
 
@@ -422,6 +354,11 @@ export class UserSettings extends jspb.Message {
     getViewTranscriptConsent(): boolean;
     setViewTranscriptConsent(value: boolean): UserSettings;
 
+    hasPlayerProfile(): boolean;
+    clearPlayerProfile(): void;
+    getPlayerProfile(): UserSettings.PlayerProfile | undefined;
+    setPlayerProfile(value?: UserSettings.PlayerProfile): UserSettings;
+
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): UserSettings.AsObject;
     static toObject(includeInstance: boolean, msg: UserSettings): UserSettings.AsObject;
@@ -435,7 +372,57 @@ export class UserSettings extends jspb.Message {
 export namespace UserSettings {
     export type AsObject = {
         viewTranscriptConsent: boolean,
+        playerProfile?: UserSettings.PlayerProfile.AsObject,
     }
+
+
+    export class PlayerProfile extends jspb.Message { 
+        clearFieldsList(): void;
+        getFieldsList(): Array<UserSettings.PlayerProfile.PlayerField>;
+        setFieldsList(value: Array<UserSettings.PlayerProfile.PlayerField>): PlayerProfile;
+        addFields(value?: UserSettings.PlayerProfile.PlayerField, index?: number): UserSettings.PlayerProfile.PlayerField;
+
+        serializeBinary(): Uint8Array;
+        toObject(includeInstance?: boolean): PlayerProfile.AsObject;
+        static toObject(includeInstance: boolean, msg: PlayerProfile): PlayerProfile.AsObject;
+        static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+        static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+        static serializeBinaryToWriter(message: PlayerProfile, writer: jspb.BinaryWriter): void;
+        static deserializeBinary(bytes: Uint8Array): PlayerProfile;
+        static deserializeBinaryFromReader(message: PlayerProfile, reader: jspb.BinaryReader): PlayerProfile;
+    }
+
+    export namespace PlayerProfile {
+        export type AsObject = {
+            fieldsList: Array<UserSettings.PlayerProfile.PlayerField.AsObject>,
+        }
+
+
+        export class PlayerField extends jspb.Message { 
+            getFieldId(): string;
+            setFieldId(value: string): PlayerField;
+            getFieldValue(): string;
+            setFieldValue(value: string): PlayerField;
+
+            serializeBinary(): Uint8Array;
+            toObject(includeInstance?: boolean): PlayerField.AsObject;
+            static toObject(includeInstance: boolean, msg: PlayerField): PlayerField.AsObject;
+            static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+            static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+            static serializeBinaryToWriter(message: PlayerField, writer: jspb.BinaryWriter): void;
+            static deserializeBinary(bytes: Uint8Array): PlayerField;
+            static deserializeBinaryFromReader(message: PlayerField, reader: jspb.BinaryReader): PlayerField;
+        }
+
+        export namespace PlayerField {
+            export type AsObject = {
+                fieldId: string,
+                fieldValue: string,
+            }
+        }
+
+    }
+
 }
 
 export class SessionContinuation extends jspb.Message { 
@@ -818,6 +805,10 @@ export class ListBaseVoicesResponce extends jspb.Message {
     getInworldvoicesList(): Array<ListBaseVoicesResponce.BaseVoice>;
     setInworldvoicesList(value: Array<ListBaseVoicesResponce.BaseVoice>): ListBaseVoicesResponce;
     addInworldvoices(value?: ListBaseVoicesResponce.BaseVoice, index?: number): ListBaseVoicesResponce.BaseVoice;
+    clearElevenlabsvoicesList(): void;
+    getElevenlabsvoicesList(): Array<ListBaseVoicesResponce.BaseVoice>;
+    setElevenlabsvoicesList(value: Array<ListBaseVoicesResponce.BaseVoice>): ListBaseVoicesResponce;
+    addElevenlabsvoices(value?: ListBaseVoicesResponce.BaseVoice, index?: number): ListBaseVoicesResponce.BaseVoice;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): ListBaseVoicesResponce.AsObject;
@@ -833,6 +824,7 @@ export namespace ListBaseVoicesResponce {
     export type AsObject = {
         googlevoicesList: Array<ListBaseVoicesResponce.BaseVoice.AsObject>,
         inworldvoicesList: Array<ListBaseVoicesResponce.BaseVoice.AsObject>,
+        elevenlabsvoicesList: Array<ListBaseVoicesResponce.BaseVoice.AsObject>,
     }
 
 
@@ -847,6 +839,15 @@ export namespace ListBaseVoicesResponce {
         setGender(value: voices_pb.Gender): BaseVoice;
         getNaturalsampleratehertz(): number;
         setNaturalsampleratehertz(value: number): BaseVoice;
+        getAge(): voices_pb.Age;
+        setAge(value: voices_pb.Age): BaseVoice;
+
+        hasElevenlabsMetadata(): boolean;
+        clearElevenlabsMetadata(): void;
+        getElevenlabsMetadata(): voices_pb.Voice.ElevenLabsMetadata | undefined;
+        setElevenlabsMetadata(value?: voices_pb.Voice.ElevenLabsMetadata): BaseVoice;
+
+        getTtsMetadataCase(): BaseVoice.TtsMetadataCase;
 
         serializeBinary(): Uint8Array;
         toObject(includeInstance?: boolean): BaseVoice.AsObject;
@@ -864,7 +865,15 @@ export namespace ListBaseVoicesResponce {
             name: string,
             gender: voices_pb.Gender,
             naturalsampleratehertz: number,
+            age: voices_pb.Age,
+            elevenlabsMetadata?: voices_pb.Voice.ElevenLabsMetadata.AsObject,
         }
+
+        export enum TtsMetadataCase {
+            TTS_METADATA_NOT_SET = 0,
+            ELEVENLABS_METADATA = 100,
+        }
+
     }
 
 }
@@ -919,17 +928,6 @@ export namespace GenerateTokenRequest {
     export type AsObject = {
         key: string,
     }
-}
-
-export enum InteractionDislikeType {
-    DISLIKE_TYPE_UNSPECIFIED = 0,
-    DISLIKE_TYPE_IRRELEVANT = 1,
-    DISLIKE_TYPE_UNSAFE = 2,
-    DISLIKE_TYPE_UNTRUE = 3,
-    DISLIKE_TYPE_INCORRECT_USE_KNOWLEDGE = 4,
-    DISLIKE_TYPE_UNEXPECTED_ACTION = 5,
-    DISLIKE_TYPE_UNEXPECTED_GOAL_BEHAVIOR = 6,
-    DISLIKE_TYPE_REPETITION = 7,
 }
 
 export enum VoicePreset {
