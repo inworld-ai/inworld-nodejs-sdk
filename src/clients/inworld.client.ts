@@ -12,35 +12,34 @@ import {
   Capabilities,
   Client,
   ClientConfiguration,
+  Extension,
   GenerateSessionTokenFn,
   GetterSetter,
   InternalClientConfiguration,
   User,
-} from '../common/interfaces';
+} from '../common/data_structures';
 import { InworldPacket } from '../entities/inworld_packet.entity';
 import { Session } from '../entities/session.entity';
 import { ConnectionService } from '../services/connection.service';
 import { InworldConnectionService } from '../services/inworld_connection.service';
 
-export class InworldClient {
+export class InworldClient<
+  InworldPacketT extends InworldPacket = InworldPacket,
+> {
   private apiKey: ApiKey | undefined;
   private user: UserRequest;
   private scene: string = '';
   private client: ClientRequest;
-  private config: InternalClientConfiguration;
+  private config: ClientConfiguration = {};
 
   private generateSessionTokenFn: GenerateSessionTokenFn;
   private sessionGetterSetter: GetterSetter<Session>;
 
   private onDisconnect: (() => void) | undefined;
   private onError: ((err: ServiceError) => void) | undefined;
-  private onMessage: ((message: InworldPacket) => Awaitable<void>) | undefined;
+  private onMessage: ((message: InworldPacketT) => Awaitable<void>) | undefined;
 
-  constructor() {
-    this.config = {
-      capabilities: this.ensureCapabilities(),
-    };
-  }
+  private extension: Extension<InworldPacketT>;
 
   setApiKey(apiKey: ApiKey) {
     this.apiKey = apiKey;
@@ -61,10 +60,7 @@ export class InworldClient {
   }
 
   setConfiguration(config: ClientConfiguration) {
-    this.config = {
-      ...config,
-      capabilities: this.ensureCapabilities(config.capabilities),
-    };
+    this.config = config;
 
     return this;
   }
@@ -87,7 +83,7 @@ export class InworldClient {
     return this;
   }
 
-  setOnMessage(fn: (message: InworldPacket) => Awaitable<void>) {
+  setOnMessage(fn: (message: InworldPacketT) => Awaitable<void>) {
     this.onMessage = fn;
 
     return this;
@@ -113,6 +109,12 @@ export class InworldClient {
     }).generateSessionToken();
   }
 
+  setExtension(extension: Extension<InworldPacketT>) {
+    this.extension = extension;
+
+    return this;
+  }
+
   build() {
     this.validate();
 
@@ -121,26 +123,42 @@ export class InworldClient {
       name: this.scene,
       user: this.user,
       client: this.client,
-      config: this.config,
+      config: this.buildConfiguration(),
       onError: this.onError,
       onMessage: this.onMessage,
       onDisconnect: this.onDisconnect,
       generateSessionToken: this.generateSessionTokenFn,
       sessionGetterSetter: this.sessionGetterSetter,
+      extension: this.extension,
     });
 
-    return new InworldConnectionService(connection);
+    return new InworldConnectionService<InworldPacketT>(connection);
   }
 
-  private ensureCapabilities(capabilities?: Capabilities) {
-    return new CapabilitiesRequest()
-      .setAudio(capabilities?.audio ?? true)
-      .setEmotions(capabilities?.emotions ?? false)
-      .setInterruptions(capabilities?.interruptions ?? false)
-      .setPhonemeInfo(capabilities?.phonemes ?? false)
-      .setSilenceEvents(capabilities?.silence ?? false)
+  private buildConfiguration(): InternalClientConfiguration {
+    const { connection = {}, capabilities = {} } = this.config;
+
+    return {
+      ...connection,
+      capabilities: this.buildCapabilities(capabilities),
+    };
+  }
+
+  private buildCapabilities(capabilities: Capabilities): CapabilitiesRequest {
+    const request = new CapabilitiesRequest()
+      .setAudio(capabilities.audio ?? true)
+      .setEmotions(capabilities.emotions ?? false)
+      .setInterruptions(capabilities.interruptions ?? false)
+      .setPhonemeInfo(capabilities.phonemes ?? false)
+      .setSilenceEvents(capabilities.silence ?? false)
       .setText(true)
       .setTriggers(true);
+
+    if (this.extension?.setCapabilities) {
+      return this.extension.setCapabilities(request);
+    }
+
+    return request;
   }
 
   private validateApiKey() {

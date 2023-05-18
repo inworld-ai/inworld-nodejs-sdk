@@ -14,7 +14,13 @@ import { v4 } from 'uuid';
 import { Config } from '../../../src/common/config';
 import { CLIENT_ID } from '../../../src/common/constants';
 import { WorldEngineClientGrpcService } from '../../../src/services/gprc/world_engine_client_grpc.service';
-import { createAgent, sessionToken, user } from '../../helpers';
+import {
+  createAgent,
+  extension,
+  sessionContinuation,
+  sessionToken,
+  user,
+} from '../../helpers';
 const SCENE = v4();
 
 const agents = [createAgent(), createAgent()];
@@ -118,6 +124,27 @@ describe('load scene', () => {
     });
 
     expect(mockLoadScene.mock.calls[0][0].getClient()).toEqual(sceneClient);
+  });
+
+  test('should use provided additional props', async () => {
+    jest
+      .spyOn(WorldEngineClient.prototype, 'loadScene')
+      .mockImplementationOnce(mockLoadScene);
+
+    const capabilities = new CapabilitiesRequest()
+      .setAnimations(true)
+      .setEmotions(true);
+
+    await client.loadScene({
+      name: SCENE,
+      capabilities,
+      sessionToken,
+      setLoadSceneProps: extension.setLoadSceneProps,
+    });
+
+    expect(mockLoadScene.mock.calls[0][0].getSessionContinuation()).toEqual(
+      sessionContinuation,
+    );
   });
 });
 
