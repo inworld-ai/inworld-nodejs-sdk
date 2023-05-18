@@ -7,10 +7,11 @@ import {
   ApiKey,
   Awaitable,
   ConnectionState,
+  Extension,
   GenerateSessionTokenFn,
   GetterSetter,
   InternalClientConfiguration,
-} from '../common/interfaces';
+} from '../common/data_structures';
 import { InworldPacket } from '../entities/inworld_packet.entity';
 import { Scene } from '../entities/scene.entity';
 import { Session } from '../entities/session.entity';
@@ -19,7 +20,7 @@ import { EventFactory } from '../factories/event';
 import { TokenClientGrpcService } from './gprc/token_client_grpc.service';
 import { WorldEngineClientGrpcService } from './gprc/world_engine_client_grpc.service';
 
-interface ConnectionProps {
+interface ConnectionProps<InworldPacketT> {
   apiKey: ApiKey;
   name?: string;
   user?: UserRequest;
@@ -28,8 +29,9 @@ interface ConnectionProps {
   sessionGetterSetter?: GetterSetter<Session>;
   onDisconnect?: () => void;
   onError?: (err: ServiceError) => void;
-  onMessage?: (message: InworldPacket) => Awaitable<void>;
+  onMessage?: (message: InworldPacketT) => Awaitable<void>;
   generateSessionToken?: GenerateSessionTokenFn;
+  extension?: Extension<InworldPacketT>;
 }
 
 export interface QueueItem {
@@ -37,13 +39,15 @@ export interface QueueItem {
   afterWriting?: (packet: ProtoPacket) => void;
 }
 
-export class ConnectionService {
+export class ConnectionService<
+  InworldPacketT extends InworldPacket = InworldPacket,
+> {
   private state: ConnectionState = ConnectionState.INACTIVE;
 
   private scene: Scene;
   private sessionToken: SessionToken;
   private stream: ClientDuplexStream<ProtoPacket, ProtoPacket>;
-  private connectionProps: ConnectionProps;
+  private connectionProps: ConnectionProps<InworldPacketT>;
 
   private disconnectTimeoutId: NodeJS.Timeout;
 
@@ -59,7 +63,7 @@ export class ConnectionService {
   private onError: (err: ServiceError) => void;
   private onMessage: ((message: ProtoPacket) => Awaitable<void>) | undefined;
 
-  constructor(props: ConnectionProps) {
+  constructor(props: ConnectionProps<InworldPacketT>) {
     this.connectionProps = props;
 
     this.onDisconnect = () => {
@@ -72,7 +76,7 @@ export class ConnectionService {
 
     if (this.connectionProps.onMessage) {
       this.onMessage = async (packet: ProtoPacket) =>
-        this.connectionProps.onMessage(EventFactory.fromProto(packet));
+        this.connectionProps.onMessage(this.convertPacketFromProto(packet));
     }
   }
 
@@ -175,10 +179,10 @@ export class ConnectionService {
     let packet: ProtoPacket;
 
     const resolvePacket = () =>
-      new Promise<InworldPacket>((resolve) => {
+      new Promise<InworldPacketT>((resolve) => {
         const done = (packet: ProtoPacket) => {
           this.scheduleDisconnect();
-          resolve(EventFactory.fromProto(packet));
+          resolve(this.convertPacketFromProto(packet));
         };
 
         if (packet) {
@@ -313,6 +317,7 @@ export class ConnectionService {
         user,
         capabilities: this.connectionProps.config.capabilities,
         sessionToken: this.sessionToken,
+        setLoadSceneProps: this.connectionProps.extension?.setLoadSceneProps,
       });
 
       scene = Scene.fromProto(proto);
@@ -353,5 +358,11 @@ export class ConnectionService {
 
     this.intervals = [];
     this.packetQueue = [];
+  }
+
+  private convertPacketFromProto(packet: ProtoPacket) {
+    return this.connectionProps.extension?.convertPacketFromProto
+      ? this.connectionProps.extension.convertPacketFromProto(packet)
+      : (InworldPacket.fromProto(packet) as InworldPacketT);
   }
 }

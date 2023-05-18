@@ -1,4 +1,6 @@
 * Replace CancelResponses by Mutation.CancelResponses on the protocol level
+* Allow to use extended capabilities and scene props
+* Allow to send and receive custom proto packet
 
 ## 2022-04-26 v1.3.1
 * Fix type definition for `onSession` method

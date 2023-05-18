@@ -1,14 +1,19 @@
-import { DataChunk } from '@proto/packets_pb';
+import { DataChunk, InworldPacket as ProtoPacket } from '@proto/packets_pb';
 
-import { CancelResponsesProps } from '../common/interfaces';
+import { CancelResponsesProps } from '../common/data_structures';
 import { Character } from '../entities/character.entity';
-import { TriggerParameter } from '../entities/inworld_packet.entity';
+import {
+  InworldPacket,
+  TriggerParameter,
+} from '../entities/inworld_packet.entity';
 import { ConnectionService } from './connection.service';
 
-export class InworldConnectionService {
-  private connection: ConnectionService;
+export class InworldConnectionService<
+  InworldPacketT extends InworldPacket = InworldPacket,
+> {
+  private connection: ConnectionService<InworldPacketT>;
 
-  constructor(connection: ConnectionService) {
+  constructor(connection: ConnectionService<InworldPacketT>) {
     this.connection = connection;
   }
 
@@ -74,5 +79,13 @@ export class InworldConnectionService {
     return this.connection.send(() =>
       this.connection.getEventFactory().cancelResponse(cancelResponses),
     );
+  }
+
+  async sendCustomPacket(getPacket: () => ProtoPacket) {
+    return this.connection.send(() => getPacket());
+  }
+
+  baseProtoPacket(props?: { utteranceId?: boolean; interactionId?: boolean }) {
+    return this.connection.getEventFactory().baseProtoPacket(props);
   }
 }

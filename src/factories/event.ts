@@ -1,6 +1,5 @@
 import {
   Actor,
-  AdditionalPhonemeInfo as ProtoAdditionalPhonemeInfo,
   CancelResponsesEvent,
   ControlEvent,
   CustomEvent,
@@ -11,21 +10,12 @@ import {
   Routing,
   TextEvent,
 } from '@proto/packets_pb';
-import { Duration } from 'google-protobuf/google/protobuf/duration_pb';
 import { v4 } from 'uuid';
 
+import { CancelResponsesProps } from '../common/data_structures';
 import { protoTimestamp } from '../common/helpers';
-import { CancelResponsesProps } from '../common/interfaces';
 import { Character } from '../entities/character.entity';
-import { EmotionBehavior } from '../entities/emotion-behavior.entity';
-import { EmotionStrength } from '../entities/emotion-strength.entity';
-import {
-  AdditionalPhonemeInfo,
-  InworlControlType,
-  InworldPacket,
-  InworldPacketType,
-  TriggerParameter,
-} from '../entities/inworld_packet.entity';
+import { TriggerParameter } from '../entities/inworld_packet.entity';
 
 export class EventFactory {
   private character: Character = null;
@@ -41,7 +31,10 @@ export class EventFactory {
   dataChunk(chunk: string, type: DataChunk.DataType): ProtoPacket {
     const event = new DataChunk().setType(type).setChunk(chunk);
 
-    return this.protoPacket().setDataChunk(event);
+    return this.baseProtoPacket({
+      utteranceId: false,
+      interactionId: false,
+    }).setDataChunk(event);
   }
 
   audioSessionStart(): ProtoPacket {
@@ -49,7 +42,10 @@ export class EventFactory {
       ControlEvent.Action.AUDIO_SESSION_START,
     );
 
-    return this.protoPacket().setControl(event);
+    return this.baseProtoPacket({
+      utteranceId: false,
+      interactionId: false,
+    }).setControl(event);
   }
 
   audioSessionEnd(): ProtoPacket {
@@ -57,7 +53,10 @@ export class EventFactory {
       ControlEvent.Action.AUDIO_SESSION_END,
     );
 
-    return this.protoPacket().setControl(event);
+    return this.baseProtoPacket({
+      utteranceId: false,
+      interactionId: false,
+    }).setControl(event);
   }
 
   text(text: string): ProtoPacket {
@@ -65,9 +64,8 @@ export class EventFactory {
       .setText(text)
       .setSourceType(TextEvent.SourceType.TYPED_IN)
       .setFinal(true);
-    const packet = this.packet().setUtteranceId(v4()).setInteractionId(v4());
 
-    return this.protoPacket().setPacketId(packet).setText(event);
+    return this.baseProtoPacket().setText(event);
   }
 
   trigger(name: string, parameters: TriggerParameter[] = []): ProtoPacket {
@@ -81,9 +79,7 @@ export class EventFactory {
       );
     }
 
-    const packet = this.packet().setUtteranceId(v4()).setInteractionId(v4());
-
-    return this.protoPacket().setCustom(event).setPacketId(packet);
+    return this.baseProtoPacket().setCustom(event);
   }
 
   cancelResponse(cancelResponses?: CancelResponsesProps): ProtoPacket {
@@ -97,111 +93,25 @@ export class EventFactory {
       event.setUtteranceIdList(cancelResponses.utteranceId);
     }
 
-    return this.protoPacket().setMutation(
-      new MutationEvent().setCancelResponses(event),
-    );
+    return this.baseProtoPacket({
+      utteranceId: false,
+      interactionId: false,
+    }).setMutation(new MutationEvent().setCancelResponses(event));
   }
 
-  static fromProto(proto: ProtoPacket): InworldPacket {
-    const packetId = proto.getPacketId();
-    const routing = proto.getRouting();
-    const source = routing.getSource();
-    const target = routing.getTarget();
-    const type = this.getType(proto);
+  baseProtoPacket(props?: { utteranceId?: boolean; interactionId?: boolean }) {
+    const packetId = new PacketId().setPacketId(v4());
 
-    const textEvent = proto.getText();
-    const emotionEvent = proto.getEmotion();
-    const additionalPhonemeInfo =
-      proto.getDataChunk()?.getAdditionalPhonemeInfoList() ?? [];
+    if (props?.utteranceId !== false) {
+      packetId.setUtteranceId(v4());
+    }
 
-    return new InworldPacket({
-      type,
-      date: proto.getTimestamp().toDate().toISOString(),
-      packetId: {
-        packetId: packetId.getPacketId(),
-        utteranceId: packetId.getUtteranceId(),
-        interactionId: packetId.getInteractionId(),
-      },
-      routing: {
-        source: {
-          name: source.getName(),
-          isPlayer: source.getType() === Actor.Type.PLAYER,
-          isCharacter: source.getType() === Actor.Type.AGENT,
-        },
-        target: {
-          name: target.getName(),
-          isPlayer: target.getType() === Actor.Type.PLAYER,
-          isCharacter: target.getType() === Actor.Type.AGENT,
-        },
-      },
-      ...(type === InworldPacketType.TRIGGER && {
-        trigger: {
-          name: proto.getCustom().getName(),
-          parameters: proto
-            .getCustom()
-            .getParametersList()
-            .map((p) => ({
-              name: p.getName(),
-              value: p.getValue(),
-            })),
-        },
-      }),
-      ...(type === InworldPacketType.TEXT && {
-        text: {
-          text: textEvent.getText(),
-          final: textEvent.getFinal(),
-        },
-      }),
-      ...(type === InworldPacketType.AUDIO && {
-        audio: {
-          chunk: proto.getDataChunk().getChunk_asB64(),
-          additionalPhonemeInfo: additionalPhonemeInfo.map(
-            (info: ProtoAdditionalPhonemeInfo) =>
-              ({
-                phoneme: info.getPhoneme(),
-                startOffsetS: this.durationToSeconds(info.getStartOffset()),
-              } as AdditionalPhonemeInfo),
-          ),
-        },
-      }),
-      ...(type === InworldPacketType.CONTROL && {
-        control: {
-          type: this.getControlType(proto),
-        },
-      }),
-      ...(type === InworldPacketType.SILENCE && {
-        silence: {
-          durationMs: proto.getDataChunk().getDurationMs(),
-        },
-      }),
-      ...(type === InworldPacketType.EMOTION && {
-        emotions: {
-          behavior: new EmotionBehavior(
-            EmotionBehavior.fromProto(emotionEvent.getBehavior()),
-          ),
-          strength: new EmotionStrength(
-            EmotionStrength.fromProto(emotionEvent.getStrength()),
-          ),
-        },
-      }),
-      ...(type === InworldPacketType.CANCEL_RESPONSE && {
-        cancelResponses: {
-          interactionId: proto
-            .getMutation()
-            .getCancelResponses()
-            .getInteractionId(),
-          utteranceId: proto
-            .getMutation()
-            .getCancelResponses()
-            .getUtteranceIdList(),
-        },
-      }),
-    });
-  }
+    if (props?.interactionId !== false) {
+      packetId.setInteractionId(v4());
+    }
 
-  private protoPacket(): ProtoPacket {
     return new ProtoPacket()
-      .setPacketId(this.packet())
+      .setPacketId(packetId)
       .setRouting(this.routing())
       .setTimestamp(protoTimestamp());
   }
@@ -214,45 +124,5 @@ export class EventFactory {
       .setName(this.character?.id);
 
     return new Routing().setSource(source).setTarget(target);
-  }
-
-  private packet(): PacketId {
-    return new PacketId().setPacketId(v4());
-  }
-
-  private static getType(packet: ProtoPacket) {
-    switch (true) {
-      case packet.hasText():
-        return InworldPacketType.TEXT;
-      case packet.hasDataChunk() &&
-        packet.getDataChunk().getType() === DataChunk.DataType.AUDIO:
-        return InworldPacketType.AUDIO;
-      case packet.hasDataChunk() &&
-        packet.getDataChunk().getType() === DataChunk.DataType.SILENCE:
-        return InworldPacketType.SILENCE;
-      case packet.hasCustom():
-        return InworldPacketType.TRIGGER;
-      case packet.hasControl():
-        return InworldPacketType.CONTROL;
-      case packet.hasEmotion():
-        return InworldPacketType.EMOTION;
-      case packet.getMutation()?.hasCancelResponses():
-        return InworldPacketType.CANCEL_RESPONSE;
-      default:
-        return InworldPacketType.UNKNOWN;
-    }
-  }
-
-  private static getControlType(packet: ProtoPacket) {
-    switch (packet.getControl().getAction()) {
-      case ControlEvent.Action.INTERACTION_END:
-        return InworlControlType.INTERACTION_END;
-      default:
-        return InworlControlType.UNKNOWN;
-    }
-  }
-
-  private static durationToSeconds(duration: Duration) {
-    return duration.getSeconds() + duration.getNanos() / 1000000000;
   }
 }
