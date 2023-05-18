@@ -140,7 +140,7 @@ describe('event types', () => {
   test('should generate cancel response event for all answers', () => {
     const event = factory.cancelResponse();
 
-    expect(event.hasCancelresponses()).toEqual(true);
+    expect(event.getMutation().hasCancelResponses()).toEqual(true);
     expect(event.hasPacketId()).toEqual(true);
     expect(event.hasRouting()).toEqual(true);
     expect(event.getRouting().getTarget().getName()).toEqual(character.id);
@@ -148,12 +148,20 @@ describe('event types', () => {
   });
 
   test('should generate cancel response event for all specific answers', () => {
-    const event = factory.cancelResponse({
+    const props = {
       interactionId: v4(),
       utteranceId: [v4()],
-    });
+    };
+    const event = factory.cancelResponse(props);
+    const mutation = event.getMutation();
 
-    expect(event.hasCancelresponses()).toEqual(true);
+    expect(mutation.hasCancelResponses()).toEqual(true);
+    expect(mutation.getCancelResponses().getInteractionId()).toEqual(
+      props.interactionId,
+    );
+    expect(mutation.getCancelResponses().getUtteranceIdList()).toEqual(
+      props.utteranceId,
+    );
     expect(event.hasPacketId()).toEqual(true);
     expect(event.hasRouting()).toEqual(true);
     expect(event.getRouting().getTarget().getName()).toEqual(character.id);
@@ -164,7 +172,7 @@ describe('event types', () => {
     factory.setCurrentCharacter(null);
     const event = factory.cancelResponse();
 
-    expect(event.hasCancelresponses()).toEqual(true);
+    expect(event.getMutation().hasCancelResponses()).toEqual(true);
     expect(event.hasPacketId()).toEqual(true);
     expect(event.hasRouting()).toEqual(true);
     expect(event.getRouting().getTarget().getName()).toEqual('');

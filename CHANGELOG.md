@@ -1,3 +1,4 @@
+* Replace CancelResponses by Mutation.CancelResponses on the protocol level
 * Allow to use extended capabilities and scene props
 * Allow to send and receive custom proto packet
 

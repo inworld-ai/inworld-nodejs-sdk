@@ -270,8 +270,14 @@ export class InworldPacket {
       }),
       ...(type === InworldPacketType.CANCEL_RESPONSE && {
         cancelResponses: {
-          interactionId: proto.getCancelresponses().getInteractionId(),
-          utteranceId: proto.getCancelresponses().getUtteranceIdList(),
+          interactionId: proto
+            .getMutation()
+            .getCancelResponses()
+            .getInteractionId(),
+          utteranceId: proto
+            .getMutation()
+            .getCancelResponses()
+            .getUtteranceIdList(),
         },
       }),
     });
@@ -293,7 +299,7 @@ export class InworldPacket {
         return InworldPacketType.CONTROL;
       case packet.hasEmotion():
         return InworldPacketType.EMOTION;
-      case packet.hasCancelresponses():
+      case packet.getMutation()?.hasCancelResponses():
         return InworldPacketType.CANCEL_RESPONSE;
       default:
         return InworldPacketType.UNKNOWN;

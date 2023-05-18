@@ -5,6 +5,7 @@ import {
   CustomEvent,
   DataChunk,
   InworldPacket as ProtoPacket,
+  MutationEvent,
   PacketId,
   Routing,
   TextEvent,
@@ -95,7 +96,7 @@ export class EventFactory {
     return this.baseProtoPacket({
       utteranceId: false,
       interactionId: false,
-    }).setCancelresponses(event);
+    }).setMutation(new MutationEvent().setCancelResponses(event));
   }
 
   baseProtoPacket(props?: { utteranceId?: boolean; interactionId?: boolean }) {
