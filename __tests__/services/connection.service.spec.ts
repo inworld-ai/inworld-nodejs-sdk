@@ -10,6 +10,7 @@ import { LoadSceneResponse } from '@proto/world-engine_pb';
 import { v4 } from 'uuid';
 
 import { protoTimestamp } from '../../src/common/helpers';
+import { InworldPacket } from '../../src/entities/inworld_packet.entity';
 import { Scene } from '../../src/entities/scene.entity';
 import { Session } from '../../src/entities/session.entity';
 import { SessionToken } from '../../src/entities/session_token.entity';
@@ -688,7 +689,7 @@ describe('message', () => {
     stream.emit('data', packet);
 
     expect(onMessage).toHaveBeenCalledTimes(1);
-    expect(onMessage).toHaveBeenCalledWith(EventFactory.fromProto(packet));
+    expect(onMessage).toHaveBeenCalledWith(InworldPacket.fromProto(packet));
   });
 });
 
