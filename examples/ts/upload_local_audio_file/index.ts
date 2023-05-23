@@ -28,6 +28,12 @@ const run = async function () {
       console.log('Disconnected');
     })
     .setOnMessage((packet: InworldPacket) => {
+      if (packet.isText() && packet.routing.source.isPlayer) {
+        console.log(
+          `Recognized: ${packet.text.text}${packet.text.final ? '' : '...'}`,
+        );
+      }
+
       if (packet.isText() && packet.routing.source.isCharacter) {
         console.log(`Answer: ${packet.text.text}`);
       }
