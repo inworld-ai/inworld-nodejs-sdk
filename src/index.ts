@@ -23,7 +23,7 @@ import {
   ConnectionConfig,
   SessionTokenProps,
   User,
-} from './common/interfaces';
+} from './common/data_structures';
 import { Character } from './entities/character.entity';
 import {
   EmotionBehavior,

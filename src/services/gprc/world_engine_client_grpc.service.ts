@@ -1,5 +1,5 @@
 import { credentials, Metadata, ServiceError } from '@grpc/grpc-js';
-import { InworldPacket } from '@proto/packets_pb';
+import { InworldPacket as ProtoPacket } from '@proto/packets_pb';
 import { WorldEngineClient } from '@proto/world-engine_grpc_pb';
 import {
   CapabilitiesRequest,
@@ -11,8 +11,8 @@ import { promisify } from 'util';
 
 import { Config } from '../../common/config';
 import { CLIENT_ID } from '../../common/constants';
+import { Awaitable } from '../../common/data_structures';
 import { grpcOptions } from '../../common/helpers';
-import { Awaitable } from '../../common/interfaces';
 import { SessionToken } from '../../entities/session_token.entity';
 
 export interface LoadSceneProps {
@@ -21,12 +21,13 @@ export interface LoadSceneProps {
   user?: UserRequest;
   sessionToken: SessionToken;
   capabilities: CapabilitiesRequest;
+  setLoadSceneProps?: (request: LoadSceneRequest) => LoadSceneRequest;
 }
 export interface SessionProps {
   sessionToken: SessionToken;
   onDisconnect?: () => void;
   onError?: (err: ServiceError) => void;
-  onMessage?: (message: InworldPacket) => Awaitable<void>;
+  onMessage?: (message: ProtoPacket) => Awaitable<void>;
 }
 
 export class WorldEngineClientGrpcService {
@@ -54,8 +55,12 @@ export class WorldEngineClientGrpcService {
       new ClientRequest().setId(props.client?.getId() || CLIENT_ID),
     );
 
+    const finalRequest = props.setLoadSceneProps
+      ? props.setLoadSceneProps(request)
+      : request;
+
     return promisify(this.client.loadScene.bind(this.client))(
-      request,
+      finalRequest,
       this.getMetadata(sessionToken),
     );
   }

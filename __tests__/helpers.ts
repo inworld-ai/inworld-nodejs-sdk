@@ -7,15 +7,20 @@ import {
 } from '@proto/packets_pb';
 import {
   CapabilitiesRequest,
+  LoadSceneRequest,
   LoadSceneResponse,
+  PreviousDialog,
+  SessionContinuation,
   UserRequest,
 } from '@proto/world-engine_pb';
 import { v4 } from 'uuid';
 
+import { Capabilities } from '../src/common/data_structures';
 import { protoTimestamp } from '../src/common/helpers';
-import { Capabilities } from '../src/common/interfaces';
 import { Character } from '../src/entities/character.entity';
+import { InworldPacket } from '../src/entities/inworld_packet.entity';
 import { SessionToken } from '../src/entities/session_token.entity';
+import { ExtendedInworldPacket } from './data_structures';
 
 const today = new Date();
 today.setHours(today.getHours() + 1);
@@ -116,3 +121,54 @@ export const capabilities = new CapabilitiesRequest()
   .setTriggers(true);
 
 export const user = new UserRequest().setName('Name');
+
+export const convertPacketFromProto = (proto: ProtoPacket) => {
+  const packet = InworldPacket.fromProto(proto) as ExtendedInworldPacket;
+
+  if (proto.getMutation()?.hasRegenerateResponse()) {
+    const mutation = {
+      regenerateResponse: {
+        interactionId: proto
+          .getMutation()
+          .getRegenerateResponse()
+          .getInteractionId(),
+      },
+    };
+    packet.mutation = mutation;
+  }
+
+  return packet;
+};
+
+export const extendedCapabilities = new CapabilitiesRequest()
+  .setAudio(true)
+  .setEmotions(true)
+  .setInterruptions(true)
+  .setPhonemeInfo(true)
+  .setSilenceEvents(true)
+  .setText(true)
+  .setTriggers(true)
+  .setRegenerateResponse(true);
+
+const previousDialog = new PreviousDialog().setPhrasesList([
+  new PreviousDialog.Phrase()
+    .setPhrase(v4())
+    .setTalker(PreviousDialog.DialogParticipant.CHARACTER),
+  new PreviousDialog.Phrase()
+    .setPhrase(v4())
+    .setTalker(PreviousDialog.DialogParticipant.PLAYER),
+]);
+
+export const sessionContinuation = new SessionContinuation().setPreviousDialog(
+  previousDialog,
+);
+
+export const extension = {
+  convertPacketFromProto,
+  setCapabilities: () => extendedCapabilities,
+  setLoadSceneProps: (request: LoadSceneRequest) => {
+    request.setSessionContinuation(sessionContinuation);
+
+    return request;
+  },
+};
