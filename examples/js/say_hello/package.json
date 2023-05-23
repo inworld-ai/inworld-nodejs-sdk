@@ -1,0 +1,11 @@
+{
+  "name": "say_hello",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@inworld/nodejs-sdk": "1.3.1",
+    "dotenv": "^16.0.1"
+  }
+}

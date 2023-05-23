@@ -1,0 +1,15 @@
+{
+  "name": "say_hello",
+  "scripts": {
+    "start": "ts-node index.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^18.6.3",
+    "ts-node": "^10.8.2",
+    "typescript": "^4.7.4"
+  },
+  "dependencies": {
+    "@inworld/nodejs-sdk": "1.3.1",
+    "dotenv": "^16.0.1"
+  }
+}
