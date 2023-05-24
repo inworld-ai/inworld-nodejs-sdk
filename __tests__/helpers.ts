@@ -11,11 +11,10 @@ import {
   LoadSceneResponse,
   PreviousDialog,
   SessionContinuation,
-  UserRequest,
 } from '@proto/world-engine_pb';
 import { v4 } from 'uuid';
 
-import { Capabilities } from '../src/common/data_structures';
+import { Capabilities, User } from '../src/common/data_structures';
 import { protoTimestamp } from '../src/common/helpers';
 import { Character } from '../src/entities/character.entity';
 import { InworldPacket } from '../src/entities/inworld_packet.entity';
@@ -120,7 +119,10 @@ export const capabilities = new CapabilitiesRequest()
   .setText(true)
   .setTriggers(true);
 
-export const user = new UserRequest().setName('Name');
+export const user: User = {
+  fullName: 'Name',
+  profile: { fields: [{ id: 'field_1', value: 'value_1' }] },
+};
 
 export const convertPacketFromProto = (proto: ProtoPacket) => {
   const packet = InworldPacket.fromProto(proto) as ExtendedInworldPacket;

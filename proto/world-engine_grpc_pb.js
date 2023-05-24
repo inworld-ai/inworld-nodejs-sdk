@@ -20,17 +20,6 @@ function deserialize_ai_inworld_engine_AccessToken(buffer_arg) {
   return world$engine_pb.AccessToken.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
-function serialize_ai_inworld_engine_CreateInteractionFeedbackRequest(arg) {
-  if (!(arg instanceof world$engine_pb.CreateInteractionFeedbackRequest)) {
-    throw new Error('Expected argument of type ai.inworld.engine.CreateInteractionFeedbackRequest');
-  }
-  return Buffer.from(arg.serializeBinary());
-}
-
-function deserialize_ai_inworld_engine_CreateInteractionFeedbackRequest(buffer_arg) {
-  return world$engine_pb.CreateInteractionFeedbackRequest.deserializeBinary(new Uint8Array(buffer_arg));
-}
-
 function serialize_ai_inworld_engine_CreateWorldRequest(arg) {
   if (!(arg instanceof world$engine_pb.CreateWorldRequest)) {
     throw new Error('Expected argument of type ai.inworld.engine.CreateWorldRequest');
@@ -117,17 +106,6 @@ function serialize_ai_inworld_engine_LogErrorRequest(arg) {
 
 function deserialize_ai_inworld_engine_LogErrorRequest(buffer_arg) {
   return world$engine_pb.LogErrorRequest.deserializeBinary(new Uint8Array(buffer_arg));
-}
-
-function serialize_ai_inworld_engine_PingCharacterRequest(arg) {
-  if (!(arg instanceof world$engine_pb.PingCharacterRequest)) {
-    throw new Error('Expected argument of type ai.inworld.engine.PingCharacterRequest');
-  }
-  return Buffer.from(arg.serializeBinary());
-}
-
-function deserialize_ai_inworld_engine_PingCharacterRequest(buffer_arg) {
-  return world$engine_pb.PingCharacterRequest.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
 function serialize_ai_inworld_engine_VoicePreviewRequest(arg) {
@@ -262,32 +240,6 @@ generateToken: {
     requestDeserialize: deserialize_ai_inworld_engine_GenerateTokenRequest,
     responseSerialize: serialize_ai_inworld_engine_AccessToken,
     responseDeserialize: deserialize_ai_inworld_engine_AccessToken,
-  },
-  // Temporary method
-// Accepts character ID string
-// Requires basic authorization with an active key and secret
-// TODO: Remove when synchronous API is integrated
-pingCharacter: {
-    path: '/ai.inworld.engine.WorldEngine/PingCharacter',
-    requestStream: false,
-    responseStream: false,
-    requestType: world$engine_pb.PingCharacterRequest,
-    responseType: google_protobuf_empty_pb.Empty,
-    requestSerialize: serialize_ai_inworld_engine_PingCharacterRequest,
-    requestDeserialize: deserialize_ai_inworld_engine_PingCharacterRequest,
-    responseSerialize: serialize_google_protobuf_Empty,
-    responseDeserialize: deserialize_google_protobuf_Empty,
-  },
-  createInteractionFeedback: {
-    path: '/ai.inworld.engine.WorldEngine/CreateInteractionFeedback',
-    requestStream: false,
-    responseStream: false,
-    requestType: world$engine_pb.CreateInteractionFeedbackRequest,
-    responseType: google_protobuf_empty_pb.Empty,
-    requestSerialize: serialize_ai_inworld_engine_CreateInteractionFeedbackRequest,
-    requestDeserialize: deserialize_ai_inworld_engine_CreateInteractionFeedbackRequest,
-    responseSerialize: serialize_google_protobuf_Empty,
-    responseDeserialize: deserialize_google_protobuf_Empty,
   },
 };
 

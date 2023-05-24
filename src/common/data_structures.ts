@@ -16,8 +16,18 @@ export interface Capabilities {
   silence?: boolean;
 }
 
+export interface UserProfileField {
+  id: string;
+  value: string;
+}
+
+export interface UserProfile {
+  fields: UserProfileField[];
+}
+
 export interface User {
-  fullName: string;
+  fullName?: string;
+  profile?: UserProfile;
 }
 
 export interface Client {

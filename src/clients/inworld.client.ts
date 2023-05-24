@@ -1,10 +1,6 @@
 import util = require('node:util');
 import { ServiceError } from '@grpc/grpc-js';
-import {
-  CapabilitiesRequest,
-  ClientRequest,
-  UserRequest,
-} from '@proto/world-engine_pb';
+import { CapabilitiesRequest, ClientRequest } from '@proto/world-engine_pb';
 
 import {
   ApiKey,
@@ -27,7 +23,7 @@ export class InworldClient<
   InworldPacketT extends InworldPacket = InworldPacket,
 > {
   private apiKey: ApiKey | undefined;
-  private user: UserRequest;
+  private user: User;
   private scene: string = '';
   private client: ClientRequest;
   private config: ClientConfiguration = {};
@@ -48,7 +44,7 @@ export class InworldClient<
   }
 
   setUser(user: User) {
-    this.user = new UserRequest().setName(user.fullName);
+    this.user = user;
 
     return this;
   }

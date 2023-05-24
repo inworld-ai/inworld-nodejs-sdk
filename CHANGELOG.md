@@ -1,3 +1,5 @@
+* Allow to propagate user profile fields
+
 ## 2023-05-17 v1.4.0
 * Replace CancelResponses by Mutation.CancelResponses on the protocol level
 * Allow to use extended capabilities and scene props

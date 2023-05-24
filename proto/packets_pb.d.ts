@@ -75,6 +75,8 @@ export class PacketId extends jspb.Message {
     setUtteranceId(value: string): PacketId;
     getInteractionId(): string;
     setInteractionId(value: string): PacketId;
+    getCorrelationId(): string;
+    setCorrelationId(value: string): PacketId;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): PacketId.AsObject;
@@ -91,6 +93,7 @@ export namespace PacketId {
         packetId: string,
         utteranceId: string,
         interactionId: string,
+        correlationId: string,
     }
 }
 
@@ -105,8 +108,6 @@ export class InworldPacket extends jspb.Message {
     clearRouting(): void;
     getRouting(): Routing | undefined;
     setRouting(value?: Routing): InworldPacket;
-    getOldPacketId(): string;
-    setOldPacketId(value: string): InworldPacket;
 
     hasPacketId(): boolean;
     clearPacketId(): void;
@@ -127,11 +128,6 @@ export class InworldPacket extends jspb.Message {
     clearAudioChunk(): void;
     getAudioChunk(): AudioChunk | undefined;
     setAudioChunk(value?: AudioChunk): InworldPacket;
-
-    hasGesture(): boolean;
-    clearGesture(): void;
-    getGesture(): GestureEvent | undefined;
-    setGesture(value?: GestureEvent): InworldPacket;
 
     hasCustom(): boolean;
     clearCustom(): void;
@@ -168,6 +164,11 @@ export class InworldPacket extends jspb.Message {
     getLoadSceneOutput(): LoadSceneOutputEvent | undefined;
     setLoadSceneOutput(value?: LoadSceneOutputEvent): InworldPacket;
 
+    hasDebugInfo(): boolean;
+    clearDebugInfo(): void;
+    getDebugInfo(): DebugInfoEvent | undefined;
+    setDebugInfo(value?: DebugInfoEvent): InworldPacket;
+
     getPacketCase(): InworldPacket.PacketCase;
 
     serializeBinary(): Uint8Array;
@@ -184,12 +185,10 @@ export namespace InworldPacket {
     export type AsObject = {
         timestamp?: google_protobuf_timestamp_pb.Timestamp.AsObject,
         routing?: Routing.AsObject,
-        oldPacketId: string,
         packetId?: PacketId.AsObject,
         text?: TextEvent.AsObject,
         control?: ControlEvent.AsObject,
         audioChunk?: AudioChunk.AsObject,
-        gesture?: GestureEvent.AsObject,
         custom?: CustomEvent.AsObject,
         cancelresponses?: CancelResponsesEvent.AsObject,
         emotion?: EmotionEvent.AsObject,
@@ -197,6 +196,7 @@ export namespace InworldPacket {
         action?: ActionEvent.AsObject,
         mutation?: MutationEvent.AsObject,
         loadSceneOutput?: LoadSceneOutputEvent.AsObject,
+        debugInfo?: DebugInfoEvent.AsObject,
     }
 
     export enum PacketCase {
@@ -204,7 +204,6 @@ export namespace InworldPacket {
         TEXT = 2,
         CONTROL = 3,
         AUDIO_CHUNK = 4,
-        GESTURE = 5,
         CUSTOM = 8,
         CANCELRESPONSES = 10,
         EMOTION = 11,
@@ -212,6 +211,7 @@ export namespace InworldPacket {
         ACTION = 13,
         MUTATION = 15,
         LOAD_SCENE_OUTPUT = 16,
+        DEBUG_INFO = 18,
     }
 
 }
@@ -314,41 +314,6 @@ export namespace AudioChunk {
     export type AsObject = {
         chunk: Uint8Array | string,
     }
-}
-
-export class GestureEvent extends jspb.Message { 
-    getType(): GestureEvent.Type;
-    setType(value: GestureEvent.Type): GestureEvent;
-    getPlayback(): Playback;
-    setPlayback(value: Playback): GestureEvent;
-
-    serializeBinary(): Uint8Array;
-    toObject(includeInstance?: boolean): GestureEvent.AsObject;
-    static toObject(includeInstance: boolean, msg: GestureEvent): GestureEvent.AsObject;
-    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-    static serializeBinaryToWriter(message: GestureEvent, writer: jspb.BinaryWriter): void;
-    static deserializeBinary(bytes: Uint8Array): GestureEvent;
-    static deserializeBinaryFromReader(message: GestureEvent, reader: jspb.BinaryReader): GestureEvent;
-}
-
-export namespace GestureEvent {
-    export type AsObject = {
-        type: GestureEvent.Type,
-        playback: Playback,
-    }
-
-    export enum Type {
-    GREETING = 0,
-    FAREWELL = 1,
-    AGREEMENT = 2,
-    DISAGREEMENT = 3,
-    GRATITUDE = 4,
-    CELEBRATION = 5,
-    BOREDOM = 6,
-    UNCERTAINTY = 7,
-    }
-
 }
 
 export class CustomEvent extends jspb.Message { 
@@ -631,6 +596,69 @@ export namespace NarratedAction {
     }
 }
 
+export class RelationInfo extends jspb.Message { 
+
+    hasRelationState(): boolean;
+    clearRelationState(): void;
+    getRelationState(): RelationInfo.RelationAttributes | undefined;
+    setRelationState(value?: RelationInfo.RelationAttributes): RelationInfo;
+
+    hasRelationUpdate(): boolean;
+    clearRelationUpdate(): void;
+    getRelationUpdate(): RelationInfo.RelationAttributes | undefined;
+    setRelationUpdate(value?: RelationInfo.RelationAttributes): RelationInfo;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): RelationInfo.AsObject;
+    static toObject(includeInstance: boolean, msg: RelationInfo): RelationInfo.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: RelationInfo, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): RelationInfo;
+    static deserializeBinaryFromReader(message: RelationInfo, reader: jspb.BinaryReader): RelationInfo;
+}
+
+export namespace RelationInfo {
+    export type AsObject = {
+        relationState?: RelationInfo.RelationAttributes.AsObject,
+        relationUpdate?: RelationInfo.RelationAttributes.AsObject,
+    }
+
+
+    export class RelationAttributes extends jspb.Message { 
+        getTrust(): number;
+        setTrust(value: number): RelationAttributes;
+        getRespect(): number;
+        setRespect(value: number): RelationAttributes;
+        getFamiliar(): number;
+        setFamiliar(value: number): RelationAttributes;
+        getFlirtatious(): number;
+        setFlirtatious(value: number): RelationAttributes;
+        getAttraction(): number;
+        setAttraction(value: number): RelationAttributes;
+
+        serializeBinary(): Uint8Array;
+        toObject(includeInstance?: boolean): RelationAttributes.AsObject;
+        static toObject(includeInstance: boolean, msg: RelationAttributes): RelationAttributes.AsObject;
+        static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+        static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+        static serializeBinaryToWriter(message: RelationAttributes, writer: jspb.BinaryWriter): void;
+        static deserializeBinary(bytes: Uint8Array): RelationAttributes;
+        static deserializeBinaryFromReader(message: RelationAttributes, reader: jspb.BinaryReader): RelationAttributes;
+    }
+
+    export namespace RelationAttributes {
+        export type AsObject = {
+            trust: number,
+            respect: number,
+            familiar: number,
+            flirtatious: number,
+            attraction: number,
+        }
+    }
+
+}
+
 export class MutationEvent extends jspb.Message { 
 
     hasCancelResponses(): boolean;
@@ -817,6 +845,37 @@ export namespace LoadSceneOutputEvent {
             brainName: string,
             givenName: string,
         }
+    }
+
+}
+
+export class DebugInfoEvent extends jspb.Message { 
+
+    hasRelation(): boolean;
+    clearRelation(): void;
+    getRelation(): RelationInfo | undefined;
+    setRelation(value?: RelationInfo): DebugInfoEvent;
+
+    getInfoCase(): DebugInfoEvent.InfoCase;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): DebugInfoEvent.AsObject;
+    static toObject(includeInstance: boolean, msg: DebugInfoEvent): DebugInfoEvent.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: DebugInfoEvent, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): DebugInfoEvent;
+    static deserializeBinaryFromReader(message: DebugInfoEvent, reader: jspb.BinaryReader): DebugInfoEvent;
+}
+
+export namespace DebugInfoEvent {
+    export type AsObject = {
+        relation?: RelationInfo.AsObject,
+    }
+
+    export enum InfoCase {
+        INFO_NOT_SET = 0,
+        RELATION = 1,
     }
 
 }

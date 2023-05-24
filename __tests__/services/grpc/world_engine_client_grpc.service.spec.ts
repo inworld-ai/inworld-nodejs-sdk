@@ -87,7 +87,6 @@ describe('load scene', () => {
       name: SCENE,
       capabilities,
       sessionToken,
-      user,
     });
 
     const loadedAgents = result.getAgentsList();

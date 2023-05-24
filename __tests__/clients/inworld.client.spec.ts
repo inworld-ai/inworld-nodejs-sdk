@@ -29,7 +29,7 @@ describe('should finish with success', () => {
       .setApiKey({ key: KEY, secret: SECRET })
       .setScene(SCENE)
       .setConfiguration({ capabilities: capabilitiesProps })
-      .setUser({ fullName: user.getName() })
+      .setUser({ fullName: user.fullName })
       .setClient({ id: 'test-client' })
       .setOnDisconnect(onDisconnect)
       .setOnMessage(onMessage)
