@@ -8,8 +8,8 @@ import { promisify } from 'util';
 
 import { KeySignature } from '../../auth/key_signature';
 import { Config } from '../../common/config';
+import { ApiKey } from '../../common/data_structures';
 import { grpcOptions } from '../../common/helpers';
-import { ApiKey } from '../../common/interfaces';
 
 export class TokenClientGrpcService {
   private readonly config = Config.getInstance();

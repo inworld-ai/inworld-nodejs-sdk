@@ -2,7 +2,7 @@ import { TokensService } from '@proto/ai/inworld/studio/v1alpha/tokens_grpc_pb';
 import * as crypto from 'crypto';
 import { HmacSHA256 } from 'crypto-js';
 
-import { ApiKey } from '../common/interfaces';
+import { ApiKey } from '../common/data_structures';
 
 export interface KeySignatureProps {
   host: string;

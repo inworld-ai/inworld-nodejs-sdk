@@ -2,7 +2,7 @@ import util = require('node:util');
 
 import { SessionAccessToken } from '@proto/ai/inworld/studio/v1alpha/tokens_pb';
 
-import { SessionTokenProps } from '../common/interfaces';
+import { SessionTokenProps } from '../common/data_structures';
 
 const TIME_DIFF_MS = 50 * 60 * 1000; // 5 minutes
 

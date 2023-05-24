@@ -5,5 +5,8 @@
     "@proto/(.*)": "<rootDir>/proto/$1",
     "@root/(.*)": "<rootDir>/$1"
   },
-  "modulePathIgnorePatterns": ["__tests__/helpers.ts"]
+  "modulePathIgnorePatterns": [
+    "__tests__/data_structures.ts",
+    "__tests__/helpers.ts"
+  ]
 }

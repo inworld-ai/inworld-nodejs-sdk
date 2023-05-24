@@ -1,11 +1,16 @@
-import { DataChunk } from '@proto/packets_pb';
+import {
+  DataChunk,
+  MutationEvent,
+  RegenerateResponse,
+} from '@proto/packets_pb';
 import { v4 } from 'uuid';
 
 import { InworldPacket } from '../../src/entities/inworld_packet.entity';
 import { EventFactory } from '../../src/factories/event';
 import { ConnectionService } from '../../src/services/connection.service';
 import { InworldConnectionService } from '../../src/services/inworld_connection.service';
-import { createCharacter, KEY, SECRET } from '../helpers';
+import { ExtendedInworldPacket } from '../data_structures';
+import { createCharacter, extension, KEY, SECRET } from '../helpers';
 
 const characters = [createCharacter(), createCharacter()];
 const connection = new ConnectionService({
@@ -197,5 +202,29 @@ describe('send', () => {
     expect(service.isActive()).toEqual(true);
     expect(sendCancelResponsesEvent).toHaveBeenCalledTimes(1);
     expect(packet).toBeInstanceOf(InworldPacket);
+  });
+
+  test('should send custom packet', async () => {
+    const connection = new ConnectionService<ExtendedInworldPacket>({
+      apiKey: { key: KEY, secret: SECRET },
+      extension,
+    });
+    const service = new InworldConnectionService<ExtendedInworldPacket>(
+      connection,
+    );
+
+    const interactionId = v4();
+    const customPacket = service.baseProtoPacket();
+    const mutation = new MutationEvent().setRegenerateResponse(
+      new RegenerateResponse().setInteractionId(interactionId),
+    );
+
+    customPacket.setMutation(mutation);
+    customPacket.getPacketId().setInteractionId(interactionId);
+
+    const packet = await service.sendCustomPacket(() => customPacket);
+    expect(open).toHaveBeenCalledTimes(0);
+    expect(service.isActive()).toEqual(true);
+    expect(packet.mutation).toEqual({ regenerateResponse: { interactionId } });
   });
 });
