@@ -12,7 +12,15 @@ const timeout = 200;
 const highWaterMark = 1024 * 5;
 
 const run = async function () {
-  const stream = fs.createReadStream('test.wav', { highWaterMark });
+  let i = 0;
+
+  const audioStream = fs.createReadStream('test.wav', { highWaterMark });
+  const sendChunk = (chunk: string) => {
+    setTimeout(() => {
+      connection.sendAudio(chunk);
+    }, timeout * i);
+    i++;
+  };
 
   const connection = new InworldClient()
     .setApiKey({
@@ -32,6 +40,10 @@ const run = async function () {
         console.log(
           `Recognized: ${packet.text.text}${packet.text.final ? '' : '...'}`,
         );
+
+        if (packet.text.final) {
+          connection.sendAudioSessionEnd();
+        }
       }
 
       if (packet.isText() && packet.routing.source.isCharacter) {
@@ -47,20 +59,14 @@ const run = async function () {
 
   await connection.sendAudioSessionStart();
 
-  let i = 0;
+  audioStream.on('data', sendChunk).on('end', async () => {
+    audioStream.close();
 
-  stream.on('data', async (chunk: string) => {
-    setTimeout(() => {
-      connection.sendAudio(chunk);
-    }, timeout * i);
-    i++;
-  });
+    const silenceStream = fs.createReadStream('silence.wav', {
+      highWaterMark,
+    });
 
-  stream.on('end', async () => {
-    setTimeout(() => {
-      connection.sendAudioSessionEnd();
-    }, timeout * (i - 1));
-    stream.close();
+    silenceStream.on('data', sendChunk).on('end', () => silenceStream.close());
   });
 };
 
