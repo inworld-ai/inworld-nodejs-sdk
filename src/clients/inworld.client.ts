@@ -139,7 +139,7 @@ export class InworldClient<
     const { connection = {}, capabilities = {} } = this.config;
 
     return {
-      ...connection,
+      connection,
       capabilities: this.buildCapabilities(capabilities),
     };
   }

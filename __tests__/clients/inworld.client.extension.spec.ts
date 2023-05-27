@@ -27,7 +27,10 @@ describe('extension', () => {
     expect(ConnectionService).toHaveBeenCalledTimes(1);
     expect(ConnectionService).toHaveBeenCalledWith(
       expect.objectContaining({
-        config: { capabilities: extendedCapabilities },
+        config: {
+          connection: expect.anything(),
+          capabilities: extendedCapabilities,
+        },
       }),
     );
   });
