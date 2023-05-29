@@ -1,5 +1,3 @@
-import util = require('node:util');
-
 import { SessionAccessToken } from '@proto/ai/inworld/studio/v1alpha/tokens_pb';
 
 import { SessionTokenProps } from '../common/data_structures';
@@ -17,22 +15,6 @@ export class SessionToken {
     this.type = props.type;
     this.expirationTime = props.expirationTime;
     this.sessionId = props.sessionId;
-  }
-
-  getToken() {
-    return this.token;
-  }
-
-  getType() {
-    return this.type;
-  }
-
-  getExpirationTime() {
-    return this.expirationTime;
-  }
-
-  getSessionId() {
-    return this.sessionId;
   }
 
   static isExpired(token: SessionToken) {
@@ -74,23 +56,3 @@ export class SessionToken {
     });
   }
 }
-
-SessionToken.prototype.getToken = util.deprecate(
-  SessionToken.prototype.getToken,
-  'getToken() is deprecated. Use `token` property instead.',
-);
-
-SessionToken.prototype.getType = util.deprecate(
-  SessionToken.prototype.getType,
-  'getType() is deprecated. Use `type` property instead.',
-);
-
-SessionToken.prototype.getSessionId = util.deprecate(
-  SessionToken.prototype.getSessionId,
-  'getSessionId() is deprecated. Use `sessionId` property instead.',
-);
-
-SessionToken.prototype.getExpirationTime = util.deprecate(
-  SessionToken.prototype.getExpirationTime,
-  'getExpirationTime() is deprecated. Use `expirationTime` property instead.',
-);

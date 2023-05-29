@@ -28,14 +28,12 @@ test('should be weak', () => {
   const strength = new EmotionStrength(EmotionStrengthCode.WEAK);
 
   expect(strength.code).toEqual(EmotionStrengthCode.WEAK);
-  expect(strength.isWeak()).toEqual(true);
 });
 
 test('should be strong', () => {
   const strength = new EmotionStrength(EmotionStrengthCode.STRONG);
 
   expect(strength.code).toEqual(EmotionStrengthCode.STRONG);
-  expect(strength.isStrong()).toEqual(true);
 });
 
 test('should be normal', () => {
