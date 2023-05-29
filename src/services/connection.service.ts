@@ -17,7 +17,6 @@ import { Scene } from '../entities/scene.entity';
 import { Session } from '../entities/session.entity';
 import { SessionToken } from '../entities/session_token.entity';
 import { EventFactory } from '../factories/event';
-import { TokenClientGrpcService } from './gprc/token_client_grpc.service';
 import { WorldEngineClientGrpcService } from './gprc/world_engine_client_grpc.service';
 
 interface ConnectionProps<InworldPacketT> {
@@ -56,7 +55,6 @@ export class ConnectionService<
   private intervals: NodeJS.Timeout[] = [];
   private packetQueue: QueueItem[] = [];
 
-  private tokenService = new TokenClientGrpcService();
   private engineService = new WorldEngineClientGrpcService();
 
   private onDisconnect: () => void;
@@ -89,8 +87,9 @@ export class ConnectionService<
   }
 
   async generateSessionToken() {
-    const proto = await this.tokenService.generateSessionToken(
+    const proto = await this.engineService.generateSessionToken(
       this.connectionProps.apiKey,
+      this.connectionProps.name,
     );
 
     return SessionToken.fromProto(proto);

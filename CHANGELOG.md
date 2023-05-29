@@ -1,3 +1,6 @@
+* Switch generate token API calls from studio API to world-engine one
+* Add scene name pattern validation
+
 ## 2023-05-17 v1.4.0
 * Replace CancelResponses by Mutation.CancelResponses on the protocol level
 * Allow to use extended capabilities and scene props

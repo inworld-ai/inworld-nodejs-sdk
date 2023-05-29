@@ -2,16 +2,19 @@ import { credentials, Metadata, ServiceError } from '@grpc/grpc-js';
 import { InworldPacket as ProtoPacket } from '@proto/packets_pb';
 import { WorldEngineClient } from '@proto/world-engine_grpc_pb';
 import {
+  AccessToken,
   CapabilitiesRequest,
   ClientRequest,
+  GenerateTokenRequest,
   LoadSceneRequest,
   UserRequest,
 } from '@proto/world-engine_pb';
 import { promisify } from 'util';
 
+import { KeySignature } from '../../auth/key_signature';
 import { Config } from '../../common/config';
-import { CLIENT_ID } from '../../common/constants';
-import { Awaitable } from '../../common/data_structures';
+import { CLIENT_ID, SCENE_PATTERN } from '../../common/constants';
+import { ApiKey, Awaitable } from '../../common/data_structures';
 import { grpcOptions } from '../../common/helpers';
 import { SessionToken } from '../../entities/session_token.entity';
 
@@ -33,12 +36,36 @@ export interface SessionProps {
 export class WorldEngineClientGrpcService {
   private readonly config = Config.getInstance();
   private readonly client = new WorldEngineClient(
-    this.config.getEngineHost(),
-    this.config.getEngineSsl()
+    this.config.getHost(),
+    this.config.getSsl()
       ? credentials.createSsl()
       : credentials.createInsecure(),
     { ...grpcOptions },
   );
+
+  public async generateSessionToken(
+    apiKey: ApiKey,
+    name: string,
+  ): Promise<AccessToken> {
+    const metadata = new Metadata();
+    const request = new GenerateTokenRequest();
+    const resource = `workspaces/${SCENE_PATTERN.exec(name)[1]}`;
+
+    request.setKey(apiKey.key);
+    request.setResourcesList([resource]);
+    metadata.add(
+      'authorization',
+      KeySignature.getAuthorization({
+        apiKey,
+        host: this.config.getHost(),
+      }),
+    );
+
+    return promisify(this.client.generateToken.bind(this.client))(
+      request,
+      metadata,
+    );
+  }
 
   public async loadScene(props: LoadSceneProps) {
     const { name, sessionToken, user, capabilities } = props;
