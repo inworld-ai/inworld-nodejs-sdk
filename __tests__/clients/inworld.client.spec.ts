@@ -53,7 +53,7 @@ describe('should finish with success', () => {
     expect(() => client.build()).not.toThrow();
   });
 
-  test('should now throw error is only emotion capability is set explicitly', async () => {
+  test('should throw error is only emotion capability is set explicitly', async () => {
     const client = new InworldClient()
       .setApiKey({ key: KEY, secret: SECRET })
       .setScene(SCENE)

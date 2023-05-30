@@ -57,6 +57,7 @@ test('should return event factory', () => {
       key: KEY,
       secret: SECRET,
     },
+    onError,
   });
 
   expect(connection.getEventFactory()).toBeInstanceOf(EventFactory);
@@ -68,6 +69,7 @@ test('should generate session token', async () => {
       key: KEY,
       secret: SECRET,
     },
+    onError,
   });
   const generateSessionToken = jest
     .spyOn(connection, 'generateSessionToken')
@@ -210,28 +212,6 @@ describe('open', () => {
     expect(onError).toHaveBeenCalledWith(err);
   });
 
-  test('should catch error on load scene and pass it to console.error', async () => {
-    const connection = new ConnectionService({
-      apiKey: { key: KEY, secret: SECRET },
-      name: SCENE,
-      config: { capabilities },
-      user,
-      onMessage,
-      onDisconnect,
-    });
-
-    const err = new Error();
-    const log = jest.spyOn(console, 'error').mockImplementation(() => {});
-    jest
-      .spyOn(connection, 'generateSessionToken')
-      .mockImplementationOnce(() => Promise.reject(err));
-
-    await connection.open();
-
-    expect(log).toHaveBeenCalledTimes(1);
-    expect(log).toBeCalledWith(err);
-  });
-
   test('should catch error on connection establishing and pass it to handler', async () => {
     jest
       .spyOn(connection, 'generateSessionToken')
@@ -280,6 +260,7 @@ describe('open', () => {
       name: SCENE,
       config: { capabilities },
       user,
+      onError,
       onMessage,
     });
 
@@ -468,6 +449,7 @@ describe('close', () => {
   test('should skip for empty stream', () => {
     const connection = new ConnectionService({
       apiKey: { key: KEY, secret: SECRET },
+      onError,
     });
     const end = jest
       .spyOn(ClientDuplexStreamImpl.prototype, 'end')
@@ -517,6 +499,7 @@ describe('send', () => {
   test('should skip for empty stream', async () => {
     const connection = new ConnectionService({
       apiKey: { key: KEY, secret: SECRET },
+      onError,
     });
     const write = jest
       .spyOn(ClientDuplexStreamImpl.prototype, 'write')

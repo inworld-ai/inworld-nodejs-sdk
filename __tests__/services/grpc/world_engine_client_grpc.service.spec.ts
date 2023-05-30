@@ -63,6 +63,7 @@ describe('load scene', () => {
     const cb = typeof _options === 'function' ? _options : callback;
     cb(null, {
       getAgentsList: () => agents,
+      toObject: () => {},
     } as LoadSceneResponse);
     return {} as SurfaceCall;
   });
