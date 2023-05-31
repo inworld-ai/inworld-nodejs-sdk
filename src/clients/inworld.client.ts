@@ -19,6 +19,10 @@ import {
   User,
 } from '../common/data_structures';
 import { InworldPacket } from '../entities/inworld_packet.entity';
+import {
+  DialogPhrase,
+  PreviousDialog,
+} from '../entities/previous_dialog.entity';
 import { Session } from '../entities/session.entity';
 import { ConnectionService } from '../services/connection.service';
 import { InworldConnectionService } from '../services/inworld_connection.service';
@@ -40,6 +44,7 @@ export class InworldClient<
   private onMessage: ((message: InworldPacketT) => Awaitable<void>) | undefined;
 
   private extension: Extension<InworldPacketT>;
+  private previousDialog: PreviousDialog;
 
   setApiKey(apiKey: ApiKey) {
     this.apiKey = apiKey;
@@ -101,6 +106,14 @@ export class InworldClient<
     return this;
   }
 
+  setPreviousDialog(phrases: DialogPhrase[]) {
+    if (phrases.length) {
+      this.previousDialog = new PreviousDialog(phrases);
+    }
+
+    return this;
+  }
+
   async generateSessionToken() {
     this.validateApiKey();
 
@@ -130,6 +143,7 @@ export class InworldClient<
       generateSessionToken: this.generateSessionTokenFn,
       sessionGetterSetter: this.sessionGetterSetter,
       extension: this.extension,
+      previousDialog: this.previousDialog,
     });
 
     return new InworldConnectionService<InworldPacketT>(connection);

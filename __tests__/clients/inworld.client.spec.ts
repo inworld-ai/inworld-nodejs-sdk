@@ -1,5 +1,8 @@
+import { v4 } from 'uuid';
+
 import { InworldClient } from '../../src/clients/inworld.client';
 import { GetterSetter } from '../../src/common/data_structures';
+import { DialogParticipant } from '../../src/entities/previous_dialog.entity';
 import { Session } from '../../src/entities/session.entity';
 import { TokenClientGrpcService } from '../../src/services/gprc/token_client_grpc.service';
 import {
@@ -35,7 +38,10 @@ describe('should finish with success', () => {
       .setOnMessage(onMessage)
       .setOnError(onError)
       .setGenerateSessionToken(generateSessionTokenFn)
-      .setOnSession(sessionGetterSetter);
+      .setOnSession(sessionGetterSetter)
+      .setPreviousDialog([
+        { talker: DialogParticipant.CHARACTER, phrase: v4() },
+      ]);
   });
 
   test('should generate session token', async () => {
