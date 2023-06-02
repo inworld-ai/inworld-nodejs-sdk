@@ -10,6 +10,7 @@ import { LoadSceneResponse } from '@proto/world-engine_pb';
 import { v4 } from 'uuid';
 
 import { protoTimestamp } from '../../src/common/helpers';
+import { Logger } from '../../src/common/logger';
 import { InworldPacket } from '../../src/entities/inworld_packet.entity';
 import { Scene } from '../../src/entities/scene.entity';
 import { Session } from '../../src/entities/session.entity';
@@ -461,6 +462,7 @@ describe('close', () => {
   });
 
   test('should execute for existing stream', async () => {
+    const loggerDebug = jest.spyOn(Logger.prototype, 'debug');
     const connection = new ConnectionService({
       apiKey: { key: KEY, secret: SECRET },
       name: SCENE,
@@ -488,10 +490,13 @@ describe('close', () => {
     connection.close();
 
     expect(cancel).toHaveBeenCalledTimes(1);
+    expect(loggerDebug).toHaveBeenCalledTimes(1);
   });
 });
 
 describe('send', () => {
+  const loggerDebug = jest.spyOn(Logger.prototype, 'debug');
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -540,6 +545,7 @@ describe('send', () => {
 
     expect(open).toHaveBeenCalledTimes(1);
     expect(write).toHaveBeenCalledTimes(1);
+    expect(loggerDebug).toHaveBeenCalledTimes(1);
   });
 
   test('should throw error in case of connection is inactive on send call', async () => {

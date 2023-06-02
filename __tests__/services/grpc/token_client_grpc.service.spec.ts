@@ -3,6 +3,7 @@ import { SurfaceCall } from '@grpc/grpc-js/build/src/call';
 import { TokensClient } from '@proto/ai/inworld/studio/v1alpha/tokens_grpc_pb';
 
 import { Config } from '../../../src/common/config';
+import { Logger } from '../../../src/common/logger';
 import { TokenClientGrpcService } from '../../../src/services/gprc/token_client_grpc.service';
 import { KEY, SECRET, sessionProto } from '../../helpers';
 
@@ -40,6 +41,7 @@ describe('credentials', () => {
 });
 
 test('should generate token', async () => {
+  const loggerDebug = jest.spyOn(Logger.prototype, 'debug');
   const generateSessionToken = jest
     .spyOn(TokensClient.prototype, 'generateSessionToken')
     .mockImplementationOnce((_request, _metadata, _options, callback) => {
@@ -56,4 +58,5 @@ test('should generate token', async () => {
 
   expect(generateSessionToken).toHaveBeenCalledTimes(1);
   expect(result).toEqual(sessionProto);
+  expect(loggerDebug).toHaveBeenCalledTimes(1);
 });
