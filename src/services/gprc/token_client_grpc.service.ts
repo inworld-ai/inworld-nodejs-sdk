@@ -10,16 +10,23 @@ import { KeySignature } from '../../auth/key_signature';
 import { Config } from '../../common/config';
 import { ApiKey } from '../../common/data_structures';
 import { grpcOptions } from '../../common/helpers';
+import { Logger } from '../../common/logger';
 
 export class TokenClientGrpcService {
   private readonly config = Config.getInstance();
+  private readonly address = this.config.getStudioHost();
+  private readonly ssl = this.config.getStudioSsl();
+  private readonly credentials = this.ssl
+    ? credentials.createSsl()
+    : credentials.createInsecure();
+  private readonly grpcOptions = { ...grpcOptions };
   private readonly client = new TokensClient(
-    this.config.getStudioHost(),
-    this.config.getStudioSsl()
-      ? credentials.createSsl()
-      : credentials.createInsecure(),
-    { ...grpcOptions },
+    this.address,
+    this.credentials,
+    this.grpcOptions,
   );
+
+  private logger = Logger.getInstance();
 
   public async generateSessionToken(
     apiKey: ApiKey,
@@ -36,9 +43,21 @@ export class TokenClientGrpcService {
       }),
     );
 
-    return promisify(this.client.generateSessionToken.bind(this.client))(
-      request,
-      metadata,
-    );
+    const response: SessionAccessToken = await promisify(
+      this.client.generateSessionToken.bind(this.client),
+    )(request, metadata);
+
+    this.logger.debug({
+      action: 'Generate token',
+      data: {
+        address: this.address,
+        ssl: this.ssl,
+        metadata: metadata.toJSON(),
+        request: request.toObject(),
+        response: response.toObject(),
+      },
+    });
+
+    return response;
   }
 }

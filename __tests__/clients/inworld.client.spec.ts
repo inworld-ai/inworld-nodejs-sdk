@@ -1,6 +1,8 @@
 import { InworldClient } from '../../src/clients/inworld.client';
 import { GetterSetter } from '../../src/common/data_structures';
+import { Logger } from '../../src/common/logger';
 import { Session } from '../../src/entities/session.entity';
+import { ConnectionService } from '../../src/services/connection.service';
 import { TokenClientGrpcService } from '../../src/services/gprc/token_client_grpc.service';
 import {
   capabilitiesProps,
@@ -53,7 +55,7 @@ describe('should finish with success', () => {
     expect(() => client.build()).not.toThrow();
   });
 
-  test('should now throw error is only emotion capability is set explicitly', async () => {
+  test('should throw error is only emotion capability is set explicitly', async () => {
     const client = new InworldClient()
       .setApiKey({ key: KEY, secret: SECRET })
       .setScene(SCENE)
@@ -92,5 +94,54 @@ describe('should throw error', () => {
       .setScene('');
 
     await expect(() => client.build()).toThrow('Scene name is required');
+  });
+});
+
+describe('catch error in runtime', () => {
+  const onError = jest.fn();
+  const consoleErr = jest.spyOn(console, 'error').mockImplementation(() => {});
+  const loggerError = jest.spyOn(Logger.prototype, 'error');
+
+  beforeEach(() => {
+    jest.resetModules();
+    jest.clearAllMocks();
+    process.env = {};
+  });
+
+  test('should pass error to console.error', async () => {
+    jest
+      .spyOn(ConnectionService.prototype, 'isActive')
+      .mockImplementationOnce(() => false);
+    const consoleErr = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
+    const loggerError = jest.spyOn(Logger.prototype, 'error');
+    const connection = new InworldClient()
+      .setConfiguration({ connection: { autoReconnect: false } })
+      .setApiKey({ key: KEY, secret: SECRET })
+      .setScene(SCENE)
+      .build();
+    await connection.open();
+
+    expect(loggerError).toHaveBeenCalledTimes(1);
+    expect(consoleErr).toHaveBeenCalledTimes(1);
+  });
+
+  test('should pass error to custom error callback', async () => {
+    jest
+      .spyOn(ConnectionService.prototype, 'isActive')
+      .mockImplementationOnce(() => false);
+
+    const connection = new InworldClient()
+      .setConfiguration({ connection: { autoReconnect: false } })
+      .setApiKey({ key: KEY, secret: SECRET })
+      .setScene(SCENE)
+      .setOnError(onError)
+      .build();
+    await connection.open();
+
+    expect(onError).toHaveBeenCalledTimes(1);
+    expect(loggerError).toHaveBeenCalledTimes(1);
+    expect(consoleErr).toHaveBeenCalledTimes(0);
   });
 });
