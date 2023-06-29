@@ -4,8 +4,8 @@ import { InworldClient } from '../../src/clients/inworld.client';
 import { GetterSetter } from '../../src/common/data_structures';
 import { Logger } from '../../src/common/logger';
 import { Session } from '../../src/entities/session.entity';
-import { WorldEngineClientGrpcService } from '../../src/services/gprc/world_engine_client_grpc.service';
 import { ConnectionService } from '../../src/services/connection.service';
+import { WorldEngineClientGrpcService } from '../../src/services/gprc/world_engine_client_grpc.service';
 import {
   capabilitiesProps,
   KEY,

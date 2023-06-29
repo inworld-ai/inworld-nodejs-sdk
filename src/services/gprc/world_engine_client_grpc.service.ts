@@ -42,9 +42,7 @@ export class WorldEngineClientGrpcService {
   private readonly grpcOptions = { ...grpcOptions };
   private readonly client = new WorldEngineClient(
     this.config.getHost(),
-    this.ssl
-      ? credentials.createSsl()
-      : credentials.createInsecure(),
+    this.ssl ? credentials.createSsl() : credentials.createInsecure(),
     { ...grpcOptions },
   );
 
