@@ -12,6 +12,7 @@ import {
   GetterSetter,
   InternalClientConfiguration,
 } from '../common/data_structures';
+import { Logger } from '../common/logger';
 import { InworldPacket } from '../entities/inworld_packet.entity';
 import { Scene } from '../entities/scene.entity';
 import { Session } from '../entities/session.entity';
@@ -27,7 +28,7 @@ interface ConnectionProps<InworldPacketT> {
   config?: InternalClientConfiguration;
   sessionGetterSetter?: GetterSetter<Session>;
   onDisconnect?: () => void;
-  onError?: (err: ServiceError) => void;
+  onError: (err: ServiceError) => void;
   onMessage?: (message: InworldPacketT) => Awaitable<void>;
   generateSessionToken?: GenerateSessionTokenFn;
   extension?: Extension<InworldPacketT>;
@@ -61,6 +62,8 @@ export class ConnectionService<
   private onError: (err: ServiceError) => void;
   private onMessage: ((message: ProtoPacket) => Awaitable<void>) | undefined;
 
+  private logger = Logger.getInstance();
+
   constructor(props: ConnectionProps<InworldPacketT>) {
     this.connectionProps = props;
 
@@ -68,14 +71,18 @@ export class ConnectionService<
       this.state = ConnectionState.INACTIVE;
       this.connectionProps.onDisconnect?.();
     };
-    this.onError =
-      this.connectionProps.onError ??
-      ((err: ServiceError) => console.error(err));
+    this.onError = this.connectionProps.onError;
 
-    if (this.connectionProps.onMessage) {
-      this.onMessage = async (packet: ProtoPacket) =>
-        this.connectionProps.onMessage(this.convertPacketFromProto(packet));
-    }
+    this.onMessage = async (packet: ProtoPacket) => {
+      this.connectionProps.onMessage?.(this.convertPacketFromProto(packet));
+      this.logger.debug({
+        action: 'Receive packet',
+        data: {
+          packet: packet.toObject(),
+        },
+        sessionId: this.sessionToken?.sessionId,
+      });
+    };
   }
 
   isActive() {
@@ -116,11 +123,16 @@ export class ConnectionService<
   close() {
     this.cancelScheduler();
     this.state = ConnectionState.INACTIVE;
-    if (this.connectionProps.onMessage) {
-      this.stream?.removeListener('data', this.onMessage);
-    }
+    this.stream?.removeListener('data', this.onMessage);
     this.stream?.cancel();
     this.clearQueue();
+
+    if (this.stream) {
+      this.logger.debug({
+        action: 'Close connection',
+        sessionId: this.sessionToken?.sessionId,
+      });
+    }
   }
 
   getEventFactory() {
@@ -222,6 +234,14 @@ export class ConnectionService<
     const packet = getPacket();
 
     this.stream?.write(getPacket());
+
+    this.logger.debug({
+      action: 'Send packet',
+      data: {
+        packet: packet.toObject(),
+      },
+      sessionId: this.sessionToken?.sessionId,
+    });
 
     return packet;
   }

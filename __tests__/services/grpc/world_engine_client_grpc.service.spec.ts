@@ -12,6 +12,7 @@ import {
 
 import { Config } from '../../../src/common/config';
 import { CLIENT_ID } from '../../../src/common/constants';
+import { Logger } from '../../../src/common/logger';
 import { WorldEngineClientGrpcService } from '../../../src/services/gprc/world_engine_client_grpc.service';
 import {
   createAgent,
@@ -85,10 +86,12 @@ describe('generateSessionToken', () => {
 });
 
 describe('load scene', () => {
+  const loggerDebug = jest.spyOn(Logger.prototype, 'debug');
   const mockLoadScene = jest.fn((_request, _metadata, _options, callback) => {
     const cb = typeof _options === 'function' ? _options : callback;
     cb(null, {
       getAgentsList: () => agents,
+      toObject: () => {},
     } as LoadSceneResponse);
     return {} as SurfaceCall;
   });
@@ -129,6 +132,7 @@ describe('load scene', () => {
     expect(callCapabilities.getEmotions()).toEqual(true);
     expect(callCapabilities.getAnimations()).toEqual(true);
     expect(loadScene.mock.calls[0][0].getClient().getId()).toEqual(CLIENT_ID);
+    expect(loggerDebug).toHaveBeenCalledTimes(1);
   });
 
   test('should use provided custom client id', async () => {

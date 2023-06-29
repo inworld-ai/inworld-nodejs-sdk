@@ -7,6 +7,7 @@ import {
   ClientRequest,
   GenerateTokenRequest,
   LoadSceneRequest,
+  LoadSceneResponse,
   UserRequest,
 } from '@proto/world-engine_pb';
 import { promisify } from 'util';
@@ -16,6 +17,7 @@ import { Config } from '../../common/config';
 import { CLIENT_ID, SCENE_PATTERN } from '../../common/constants';
 import { ApiKey, Awaitable } from '../../common/data_structures';
 import { grpcOptions } from '../../common/helpers';
+import { Logger } from '../../common/logger';
 import { SessionToken } from '../../entities/session_token.entity';
 
 export interface LoadSceneProps {
@@ -35,6 +37,12 @@ export interface SessionProps {
 
 export class WorldEngineClientGrpcService {
   private readonly config = Config.getInstance();
+  private readonly address = this.config.getEngineHost();
+  private readonly ssl = this.config.getEngineSsl();
+  private readonly credentials = this.ssl
+    ? credentials.createSsl()
+    : credentials.createInsecure();
+  private readonly grpcOptions = { ...grpcOptions };
   private readonly client = new WorldEngineClient(
     this.config.getHost(),
     this.config.getSsl()
@@ -67,6 +75,8 @@ export class WorldEngineClientGrpcService {
     );
   }
 
+  private logger = Logger.getInstance();
+
   public async loadScene(props: LoadSceneProps) {
     const { name, sessionToken, user, capabilities } = props;
 
@@ -82,20 +92,47 @@ export class WorldEngineClientGrpcService {
       new ClientRequest().setId(props.client?.getId() || CLIENT_ID),
     );
 
+    const metadata = this.getMetadata(sessionToken);
     const finalRequest = props.setLoadSceneProps
       ? props.setLoadSceneProps(request)
       : request;
 
-    return promisify(this.client.loadScene.bind(this.client))(
-      finalRequest,
-      this.getMetadata(sessionToken),
-    );
+    const response: LoadSceneResponse = await promisify(
+      this.client.loadScene.bind(this.client),
+    )(finalRequest, metadata);
+
+    this.logger.debug({
+      action: 'Load scene',
+      data: {
+        address: this.address,
+        ssl: this.ssl,
+        grpcOptions: this.grpcOptions,
+        metadata: metadata.toJSON(),
+        request: request.toObject(),
+        response: response.toObject(),
+      },
+      sessionId: sessionToken.sessionId,
+    });
+
+    return response;
   }
 
   public session(props: SessionProps) {
     const { sessionToken, onDisconnect, onError, onMessage } = props;
 
-    const connection = this.client.session(this.getMetadata(sessionToken));
+    const metadata = this.getMetadata(sessionToken);
+    const connection = this.client.session(metadata);
+
+    this.logger.debug({
+      action: 'Open session',
+      data: {
+        address: this.address,
+        ssl: this.ssl,
+        grpcOptions: this.grpcOptions,
+        metadata: metadata.toJSON(),
+      },
+      sessionId: sessionToken.sessionId,
+    });
 
     if (onMessage) {
       connection.on('data', onMessage);

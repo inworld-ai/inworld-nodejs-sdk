@@ -1,5 +1,8 @@
+## 2023-06-30 v2.0.0
 * Switch generate token API calls from studio API to world-engine one
 * Add scene name pattern validation
+* Fix connection configuration propagation
+* Support debug and error logs
 
 ## 2023-05-17 v1.4.0
 * Replace CancelResponses by Mutation.CancelResponses on the protocol level
