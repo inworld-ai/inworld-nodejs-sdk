@@ -37,8 +37,8 @@ export interface SessionProps {
 
 export class WorldEngineClientGrpcService {
   private readonly config = Config.getInstance();
-  private readonly address = this.config.getEngineHost();
-  private readonly ssl = this.config.getEngineSsl();
+  private readonly address = this.config.getHost();
+  private readonly ssl = this.config.getSsl();
   private readonly credentials = this.ssl
     ? credentials.createSsl()
     : credentials.createInsecure();
