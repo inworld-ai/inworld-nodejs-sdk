@@ -1,9 +1,11 @@
+import { v4 } from 'uuid';
+
 import { InworldClient } from '../../src/clients/inworld.client';
 import { GetterSetter } from '../../src/common/data_structures';
 import { Logger } from '../../src/common/logger';
 import { Session } from '../../src/entities/session.entity';
+import { WorldEngineClientGrpcService } from '../../src/services/gprc/world_engine_client_grpc.service';
 import { ConnectionService } from '../../src/services/connection.service';
-import { TokenClientGrpcService } from '../../src/services/gprc/token_client_grpc.service';
 import {
   capabilitiesProps,
   KEY,
@@ -42,7 +44,7 @@ describe('should finish with success', () => {
 
   test('should generate session token', async () => {
     const generateSessionToken = jest
-      .spyOn(TokenClientGrpcService.prototype, 'generateSessionToken')
+      .spyOn(WorldEngineClientGrpcService.prototype, 'generateSessionToken')
       .mockImplementationOnce(() => Promise.resolve(sessionProto));
 
     const result = await client.generateSessionToken();
@@ -72,28 +74,36 @@ describe('should throw error', () => {
     expect(() => client.build()).toThrow('Api key is required');
   });
 
-  test('on empty key part of API Key', async () => {
+  test('on empty key part of API Key', () => {
     const client = new InworldClient()
       .setApiKey({ key: '', secret: SECRET })
       .setScene(SCENE);
 
-    await expect(() => client.build()).toThrow('Api key is required');
+    expect(() => client.build()).toThrow('Api key is required');
   });
 
-  test('on empty secret part of API Key', async () => {
+  test('on empty secret part of API Key', () => {
     const client = new InworldClient()
       .setApiKey({ key: KEY, secret: '' })
       .setScene(SCENE);
 
-    await expect(() => client.build()).toThrow('Api key is required');
+    expect(() => client.build()).toThrow('Api key is required');
   });
 
-  test('on empty character', async () => {
+  test('on empty scene', () => {
     const client = new InworldClient()
       .setApiKey({ key: KEY, secret: SECRET })
       .setScene('');
 
-    await expect(() => client.build()).toThrow('Scene name is required');
+    expect(() => client.build()).toThrow('Scene name is required');
+  });
+
+  test('on wrong scene format', () => {
+    const client = new InworldClient()
+      .setApiKey({ key: KEY, secret: SECRET })
+      .setScene(v4());
+
+    expect(() => client.build()).toThrow('Scene name has wrong format');
   });
 });
 

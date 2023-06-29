@@ -6,6 +6,7 @@ import {
   UserRequest,
 } from '@proto/world-engine_pb';
 
+import { SCENE_PATTERN } from '../common/constants';
 import {
   ApiKey,
   Awaitable,
@@ -115,10 +116,11 @@ export class InworldClient<
   }
 
   async generateSessionToken() {
-    this.validateApiKey();
+    this.validate();
 
     return new ConnectionService({
       apiKey: this.apiKey,
+      name: this.scene,
       onError: this.onError,
     }).generateSessionToken();
   }
@@ -181,14 +183,22 @@ export class InworldClient<
     }
   }
 
+  private validateScene() {
+    if (!this.scene) {
+      throw Error('Scene name is required');
+    }
+
+    if (!SCENE_PATTERN.test(this.scene)) {
+      throw Error('Scene name has wrong format');
+    }
+  }
+
   private validate() {
     if (!this.generateSessionTokenFn) {
       this.validateApiKey();
     }
 
-    if (!this.scene) {
-      throw Error('Scene name is required');
-    }
+    this.validateScene();
   }
 
   private logError = (err: ServiceError) => {
