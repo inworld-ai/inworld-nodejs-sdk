@@ -15,6 +15,7 @@ import { createCharacter, extension, KEY, SECRET } from '../helpers';
 const characters = [createCharacter(), createCharacter()];
 const connection = new ConnectionService({
   apiKey: { key: KEY, secret: SECRET },
+  onError: jest.fn(),
 });
 const eventFactory = new EventFactory();
 
@@ -208,6 +209,7 @@ describe('send', () => {
     const connection = new ConnectionService<ExtendedInworldPacket>({
       apiKey: { key: KEY, secret: SECRET },
       extension,
+      onError: jest.fn(),
     });
     const service = new InworldConnectionService<ExtendedInworldPacket>(
       connection,
