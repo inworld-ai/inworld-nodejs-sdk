@@ -1,4 +1,4 @@
-## 2023-06-30 v2.0.0
+## 2023-06-30 v1.5.0
 * Switch generate token API calls from studio API to world-engine one
 * Add scene name pattern validation
 * Fix connection configuration propagation
