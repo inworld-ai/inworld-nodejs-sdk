@@ -48,11 +48,11 @@ export class WorldEngineClientGrpcService {
 
   public async generateSessionToken(
     apiKey: ApiKey,
-    name: string,
+    scene: string,
   ): Promise<AccessToken> {
     const metadata = new Metadata();
     const request = new GenerateTokenRequest();
-    const resource = `workspaces/${SCENE_PATTERN.exec(name)[1]}`;
+    const resource = `workspaces/${SCENE_PATTERN.exec(scene)[1]}`;
 
     request.setKey(apiKey.key);
     request.setResourcesList([resource]);

@@ -4,6 +4,7 @@
 * Add recognized text to upload audio file example
 * Added missed empty .env file to examples
 * Fixed update test audio file
+* Changed parameter from `name` to `scene` in `world_engine_client_grpc.service.generateSessionToken`
 * Remove deprecated method support for token, emotions, character and client
 
 
