@@ -1,0 +1,11 @@
+{
+  "name": "upload_local_audio_file",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@inworld/nodejs-sdk": "1.4.0",
+    "dotenv": "^16.0.1"
+  }
+}

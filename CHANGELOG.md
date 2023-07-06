@@ -1,4 +1,13 @@
-## 2023-06-30 v2.0.0
+## 2023-07-06 v1.5.1
+* Added JS examples
+* Added Say hello example
+* Add recognized text to upload audio file example
+* Added missed empty .env file to examples
+* Fixed update test audio file
+* Changed parameter from `name` to `scene` in `world_engine_client_grpc.service.generateSessionToken`
+* Remove deprecated method support for token, emotions, character and client
+
+## 2023-06-30 v1.5.0
 * Switch generate token API calls from studio API to world-engine one
 * Add scene name pattern validation
 * Fix connection configuration propagation
