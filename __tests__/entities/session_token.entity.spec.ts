@@ -1,4 +1,4 @@
-import { SessionAccessToken } from '@proto/ai/inworld/studio/v1alpha/tokens_pb';
+import { AccessToken } from '@proto/world-engine_pb';
 import { v4 } from 'uuid';
 
 import { protoTimestamp } from '../../src/common/helpers';
@@ -64,7 +64,7 @@ test('should convert proto to token', () => {
   const sessionId = v4();
   const expirationTime = new Date();
 
-  const proto = new SessionAccessToken()
+  const proto = new AccessToken()
     .setToken(token)
     .setType(type)
     .setSessionId(sessionId)

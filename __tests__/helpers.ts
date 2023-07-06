@@ -1,4 +1,3 @@
-import { SessionAccessToken } from '@proto/ai/inworld/studio/v1alpha/tokens_pb';
 import {
   Actor,
   InworldPacket as ProtoPacket,
@@ -6,6 +5,7 @@ import {
   Routing,
 } from '@proto/packets_pb';
 import {
+  AccessToken,
   CapabilitiesRequest,
   LoadSceneRequest,
   LoadSceneResponse,
@@ -27,7 +27,7 @@ today.setHours(today.getHours() + 1);
 
 export const KEY = v4();
 export const SECRET = v4();
-export const SCENE = v4();
+export const SCENE = `workspaces/${v4()}/characters/${v4()}`;
 
 export const createCharacter = () =>
   new Character({
@@ -90,7 +90,7 @@ export const generateEmptyPacket = () => {
     .setTimestamp(protoTimestamp());
 };
 
-export const sessionProto = new SessionAccessToken()
+export const sessionProto = new AccessToken()
   .setSessionId(v4())
   .setToken(v4())
   .setType('Bearer')

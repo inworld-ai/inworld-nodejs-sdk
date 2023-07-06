@@ -1,4 +1,4 @@
-import { TokensService } from '@proto/ai/inworld/studio/v1alpha/tokens_grpc_pb';
+import { WorldEngineService } from '@proto/world-engine_grpc_pb';
 import * as crypto from 'crypto';
 import { HmacSHA256 } from 'crypto-js';
 
@@ -12,7 +12,7 @@ export interface KeySignatureProps {
 export class KeySignature {
   static getAuthorization({ host, apiKey }: KeySignatureProps) {
     const { key, secret } = apiKey;
-    const { path } = TokensService.generateSessionToken;
+    const { path } = WorldEngineService.generateToken;
 
     const datetime = this.getDateTime();
     const nonce = crypto.randomBytes(16).toString('hex').slice(1, 12);
