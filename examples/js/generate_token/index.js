@@ -9,10 +9,12 @@ const run = async function () {
 };
 
 const getToken = async function () {
-  const client = new InworldClient().setApiKey({
-    key: process.env.INWORLD_KEY,
-    secret: process.env.INWORLD_SECRET,
-  });
+  const client = new InworldClient()
+    .setApiKey({
+      key: process.env.INWORLD_KEY,
+      secret: process.env.INWORLD_SECRET,
+    })
+    .setScene(process.env.INWORLD_SCENE);
 
   return client.generateSessionToken();
 };
@@ -23,6 +25,10 @@ if (!process.env.INWORLD_KEY) {
 
 if (!process.env.INWORLD_SECRET) {
   throw new Error('INWORLD_SECRET env variable is required');
+}
+
+if (!process.env.INWORLD_SCENE) {
+  throw new Error('INWORLD_SCENE env variable is required');
 }
 
 run();
