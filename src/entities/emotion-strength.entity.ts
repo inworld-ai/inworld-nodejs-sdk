@@ -1,5 +1,3 @@
-import util = require('node:util');
-
 import { EmotionEvent } from '@proto/packets_pb';
 
 export enum EmotionStrengthCode {
@@ -16,14 +14,6 @@ export class EmotionStrength {
     this.code = strength;
   }
 
-  isWeak() {
-    return this.code === EmotionStrengthCode.WEAK;
-  }
-
-  isStrong() {
-    return this.code === EmotionStrengthCode.STRONG;
-  }
-
   static fromProto(code: EmotionEvent.Strength) {
     switch (code) {
       case EmotionEvent.Strength.UNSPECIFIED:
@@ -37,13 +27,3 @@ export class EmotionStrength {
     }
   }
 }
-
-EmotionStrength.prototype.isWeak = util.deprecate(
-  EmotionStrength.prototype.isWeak,
-  'isWeak() is deprecated. Use code property instead.',
-);
-
-EmotionStrength.prototype.isStrong = util.deprecate(
-  EmotionStrength.prototype.isStrong,
-  'isStrong() is deprecated. Use code property instead.',
-);

@@ -1,8 +1,18 @@
+## 2023-07-06 v1.5.1
+* Added JS examples
+* Added Say hello example
+* Add recognized text to upload audio file example
+* Added missed empty .env file to examples
+* Fixed update test audio file
+* Remove deprecated method support for token, emotions, character and client
+
+
 ## 2023-06-30 v1.5.0
 * Switch generate token API calls from studio API to world-engine one
 * Add scene name pattern validation
 * Fix connection configuration propagation
 * Support debug and error logs
+
 
 ## 2023-05-17 v1.4.0
 * Replace CancelResponses by Mutation.CancelResponses on the protocol level

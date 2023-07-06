@@ -19,22 +19,6 @@ export class SessionToken {
     this.sessionId = props.sessionId;
   }
 
-  getToken() {
-    return this.token;
-  }
-
-  getType() {
-    return this.type;
-  }
-
-  getExpirationTime() {
-    return this.expirationTime;
-  }
-
-  getSessionId() {
-    return this.sessionId;
-  }
-
   static isExpired(token: SessionToken) {
     const expirationTime = token.expirationTime;
 
@@ -74,23 +58,3 @@ export class SessionToken {
     });
   }
 }
-
-SessionToken.prototype.getToken = util.deprecate(
-  SessionToken.prototype.getToken,
-  'getToken() is deprecated. Use `token` property instead.',
-);
-
-SessionToken.prototype.getType = util.deprecate(
-  SessionToken.prototype.getType,
-  'getType() is deprecated. Use `type` property instead.',
-);
-
-SessionToken.prototype.getSessionId = util.deprecate(
-  SessionToken.prototype.getSessionId,
-  'getSessionId() is deprecated. Use `sessionId` property instead.',
-);
-
-SessionToken.prototype.getExpirationTime = util.deprecate(
-  SessionToken.prototype.getExpirationTime,
-  'getExpirationTime() is deprecated. Use `expirationTime` property instead.',
-);

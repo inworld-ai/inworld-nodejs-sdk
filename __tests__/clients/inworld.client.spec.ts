@@ -21,7 +21,6 @@ describe('should finish with success', () => {
   const onError = jest.fn();
   const onMessage = jest.fn();
   const onDisconnect = jest.fn();
-  const generateSessionTokenFn = jest.fn();
   const sessionGetterSetter = {
     get: jest.fn(),
     set: jest.fn(),
@@ -38,7 +37,6 @@ describe('should finish with success', () => {
       .setOnDisconnect(onDisconnect)
       .setOnMessage(onMessage)
       .setOnError(onError)
-      .setGenerateSessionToken(generateSessionTokenFn)
       .setOnSession(sessionGetterSetter);
   });
 
