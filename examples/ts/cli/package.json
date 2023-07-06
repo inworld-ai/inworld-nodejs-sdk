@@ -1,0 +1,22 @@
+{
+  "name": "cli_example",
+  "scripts": {
+    "start": "ts-node auto_reconnect.ts",
+    "start:interruptions": "ts-node interruptions.ts",
+    "start:auto-reconnect": "ts-node auto_reconnect.ts",
+    "start:manual-reconnect": "ts-node manual_reconnect.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^18.6.3",
+    "@types/uuid": "^9.0.1",
+    "ts-node": "^10.8.2",
+    "typescript": "^4.7.4"
+  },
+  "dependencies": {
+    "@inworld/nodejs-sdk": "1.4.0",
+    "dotenv": "^16.0.1",
+    "node-record-lpcm16": "^1.0.1",
+    "split": "^1.0.1",
+    "uuid": "^8.3.2"
+  }
+}

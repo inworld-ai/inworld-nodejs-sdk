@@ -5,6 +5,7 @@ import {
   UserRequest,
 } from '@proto/world-engine_pb';
 
+import { SCENE_PATTERN } from '../common/constants';
 import {
   ApiKey,
   Awaitable,
@@ -17,6 +18,7 @@ import {
   InternalClientConfiguration,
   User,
 } from '../common/data_structures';
+import { Logger } from '../common/logger';
 import { InworldPacket } from '../entities/inworld_packet.entity';
 import { Session } from '../entities/session.entity';
 import { ConnectionService } from '../services/connection.service';
@@ -39,6 +41,15 @@ export class InworldClient<
   private onMessage: ((message: InworldPacketT) => Awaitable<void>) | undefined;
 
   private extension: Extension<InworldPacketT>;
+
+  private logger = Logger.getInstance();
+
+  constructor() {
+    this.onError = (err: ServiceError) => {
+      this.logError(err);
+      console.error(err);
+    };
+  }
 
   setApiKey(apiKey: ApiKey) {
     this.apiKey = apiKey;
@@ -77,7 +88,10 @@ export class InworldClient<
   }
 
   setOnError(fn: (err: ServiceError) => void) {
-    this.onError = fn;
+    this.onError = (err: ServiceError) => {
+      this.logError(err);
+      fn(err);
+    };
 
     return this;
   }
@@ -95,10 +109,12 @@ export class InworldClient<
   }
 
   async generateSessionToken() {
-    this.validateApiKey();
+    this.validate();
 
     return new ConnectionService({
       apiKey: this.apiKey,
+      name: this.scene,
+      onError: this.onError,
     }).generateSessionToken();
   }
 
@@ -132,7 +148,7 @@ export class InworldClient<
     const { connection = {}, capabilities = {} } = this.config;
 
     return {
-      ...connection,
+      connection,
       capabilities: this.buildCapabilities(capabilities),
     };
   }
@@ -160,13 +176,25 @@ export class InworldClient<
     }
   }
 
+  private validateScene() {
+    if (!this.scene) {
+      throw Error('Scene name is required');
+    }
+
+    if (!SCENE_PATTERN.test(this.scene)) {
+      throw Error('Scene name has wrong format');
+    }
+  }
+
   private validate() {
     if (!this.generateSessionTokenFn) {
       this.validateApiKey();
     }
 
-    if (!this.scene) {
-      throw Error('Scene name is required');
-    }
+    this.validateScene();
   }
+
+  private logError = (err: ServiceError) => {
+    this.logger.error(err);
+  };
 }

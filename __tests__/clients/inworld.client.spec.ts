@@ -1,7 +1,11 @@
+import { v4 } from 'uuid';
+
 import { InworldClient } from '../../src/clients/inworld.client';
 import { GetterSetter } from '../../src/common/data_structures';
+import { Logger } from '../../src/common/logger';
 import { Session } from '../../src/entities/session.entity';
-import { TokenClientGrpcService } from '../../src/services/gprc/token_client_grpc.service';
+import { ConnectionService } from '../../src/services/connection.service';
+import { WorldEngineClientGrpcService } from '../../src/services/gprc/world_engine_client_grpc.service';
 import {
   capabilitiesProps,
   KEY,
@@ -38,7 +42,7 @@ describe('should finish with success', () => {
 
   test('should generate session token', async () => {
     const generateSessionToken = jest
-      .spyOn(TokenClientGrpcService.prototype, 'generateSessionToken')
+      .spyOn(WorldEngineClientGrpcService.prototype, 'generateSessionToken')
       .mockImplementationOnce(() => Promise.resolve(sessionProto));
 
     const result = await client.generateSessionToken();
@@ -51,7 +55,7 @@ describe('should finish with success', () => {
     expect(() => client.build()).not.toThrow();
   });
 
-  test('should now throw error is only emotion capability is set explicitly', async () => {
+  test('should throw error is only emotion capability is set explicitly', async () => {
     const client = new InworldClient()
       .setApiKey({ key: KEY, secret: SECRET })
       .setScene(SCENE)
@@ -68,27 +72,84 @@ describe('should throw error', () => {
     expect(() => client.build()).toThrow('Api key is required');
   });
 
-  test('on empty key part of API Key', async () => {
+  test('on empty key part of API Key', () => {
     const client = new InworldClient()
       .setApiKey({ key: '', secret: SECRET })
       .setScene(SCENE);
 
-    await expect(() => client.build()).toThrow('Api key is required');
+    expect(() => client.build()).toThrow('Api key is required');
   });
 
-  test('on empty secret part of API Key', async () => {
+  test('on empty secret part of API Key', () => {
     const client = new InworldClient()
       .setApiKey({ key: KEY, secret: '' })
       .setScene(SCENE);
 
-    await expect(() => client.build()).toThrow('Api key is required');
+    expect(() => client.build()).toThrow('Api key is required');
   });
 
-  test('on empty character', async () => {
+  test('on empty scene', () => {
     const client = new InworldClient()
       .setApiKey({ key: KEY, secret: SECRET })
       .setScene('');
 
-    await expect(() => client.build()).toThrow('Scene name is required');
+    expect(() => client.build()).toThrow('Scene name is required');
+  });
+
+  test('on wrong scene format', () => {
+    const client = new InworldClient()
+      .setApiKey({ key: KEY, secret: SECRET })
+      .setScene(v4());
+
+    expect(() => client.build()).toThrow('Scene name has wrong format');
+  });
+});
+
+describe('catch error in runtime', () => {
+  const onError = jest.fn();
+  const consoleErr = jest.spyOn(console, 'error').mockImplementation(() => {});
+  const loggerError = jest.spyOn(Logger.prototype, 'error');
+
+  beforeEach(() => {
+    jest.resetModules();
+    jest.clearAllMocks();
+    process.env = {};
+  });
+
+  test('should pass error to console.error', async () => {
+    jest
+      .spyOn(ConnectionService.prototype, 'isActive')
+      .mockImplementationOnce(() => false);
+    const consoleErr = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
+    const loggerError = jest.spyOn(Logger.prototype, 'error');
+    const connection = new InworldClient()
+      .setConfiguration({ connection: { autoReconnect: false } })
+      .setApiKey({ key: KEY, secret: SECRET })
+      .setScene(SCENE)
+      .build();
+    await connection.open();
+
+    expect(loggerError).toHaveBeenCalledTimes(1);
+    expect(consoleErr).toHaveBeenCalledTimes(1);
+  });
+
+  test('should pass error to custom error callback', async () => {
+    jest
+      .spyOn(ConnectionService.prototype, 'isActive')
+      .mockImplementationOnce(() => false);
+
+    const connection = new InworldClient()
+      .setConfiguration({ connection: { autoReconnect: false } })
+      .setApiKey({ key: KEY, secret: SECRET })
+      .setScene(SCENE)
+      .setOnError(onError)
+      .build();
+    await connection.open();
+
+    expect(onError).toHaveBeenCalledTimes(1);
+    expect(loggerError).toHaveBeenCalledTimes(1);
+    expect(consoleErr).toHaveBeenCalledTimes(0);
   });
 });

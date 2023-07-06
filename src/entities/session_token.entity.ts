@@ -1,4 +1,6 @@
-import { SessionAccessToken } from '@proto/ai/inworld/studio/v1alpha/tokens_pb';
+import util = require('node:util');
+
+import { AccessToken } from '@proto/world-engine_pb';
 
 import { SessionTokenProps } from '../common/data_structures';
 
@@ -47,7 +49,7 @@ export class SessionToken {
     } catch (e) {}
   }
 
-  static fromProto(proto: SessionAccessToken) {
+  static fromProto(proto: AccessToken) {
     return new SessionToken({
       token: proto.getToken(),
       type: proto.getType(),

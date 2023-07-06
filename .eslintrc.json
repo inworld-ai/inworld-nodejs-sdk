@@ -35,7 +35,9 @@
     {
      "files": [
        "examples/**/*.ts",
-       "examples/**/*.tsx"
+       "examples/**/*.tsx",
+       "examples/**/*.js",
+       "examples/**/*.jsx"
       ],
         "rules": {
            "no-console": "off"   

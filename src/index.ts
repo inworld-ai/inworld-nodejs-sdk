@@ -50,8 +50,8 @@ import { SessionToken } from './entities/session_token.entity';
 import { InworldConnectionService } from './services/inworld_connection.service';
 
 const config = Config.getInstance();
-const getStudioHost = () => config.getStudioHost();
-const getEngineHost = () => config.getEngineHost();
+const getHost = () => config.getHost();
+const getSsl = () => config.getSsl();
 
 export {
   Actor,
@@ -66,8 +66,8 @@ export {
   EmotionBehaviorCode,
   EmotionStrength,
   EmotionStrengthCode,
-  getEngineHost,
-  getStudioHost,
+  getHost,
+  getSsl,
   InworlControlType,
   InworldClient,
   InworldConnectionService,

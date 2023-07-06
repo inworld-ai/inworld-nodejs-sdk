@@ -2,6 +2,7 @@ coverage
 build
 node_modules
 .eslintcache
+*.log
 
 # Mac filesystem
 **/.DS_Store

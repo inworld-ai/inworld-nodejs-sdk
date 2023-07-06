@@ -19,8 +19,6 @@ interface IWorldEngineService extends grpc.ServiceDefinition<grpc.UntypedService
     voicePreview: IWorldEngineService_IVoicePreview;
     listBaseVoices: IWorldEngineService_IListBaseVoices;
     generateToken: IWorldEngineService_IGenerateToken;
-    pingCharacter: IWorldEngineService_IPingCharacter;
-    createInteractionFeedback: IWorldEngineService_ICreateInteractionFeedback;
 }
 
 interface IWorldEngineService_ISession extends grpc.MethodDefinition<packets_pb.InworldPacket, packets_pb.InworldPacket> {
@@ -86,24 +84,6 @@ interface IWorldEngineService_IGenerateToken extends grpc.MethodDefinition<world
     responseSerialize: grpc.serialize<world_engine_pb.AccessToken>;
     responseDeserialize: grpc.deserialize<world_engine_pb.AccessToken>;
 }
-interface IWorldEngineService_IPingCharacter extends grpc.MethodDefinition<world_engine_pb.PingCharacterRequest, google_protobuf_empty_pb.Empty> {
-    path: "/ai.inworld.engine.WorldEngine/PingCharacter";
-    requestStream: false;
-    responseStream: false;
-    requestSerialize: grpc.serialize<world_engine_pb.PingCharacterRequest>;
-    requestDeserialize: grpc.deserialize<world_engine_pb.PingCharacterRequest>;
-    responseSerialize: grpc.serialize<google_protobuf_empty_pb.Empty>;
-    responseDeserialize: grpc.deserialize<google_protobuf_empty_pb.Empty>;
-}
-interface IWorldEngineService_ICreateInteractionFeedback extends grpc.MethodDefinition<world_engine_pb.CreateInteractionFeedbackRequest, google_protobuf_empty_pb.Empty> {
-    path: "/ai.inworld.engine.WorldEngine/CreateInteractionFeedback";
-    requestStream: false;
-    responseStream: false;
-    requestSerialize: grpc.serialize<world_engine_pb.CreateInteractionFeedbackRequest>;
-    requestDeserialize: grpc.deserialize<world_engine_pb.CreateInteractionFeedbackRequest>;
-    responseSerialize: grpc.serialize<google_protobuf_empty_pb.Empty>;
-    responseDeserialize: grpc.deserialize<google_protobuf_empty_pb.Empty>;
-}
 
 export const WorldEngineService: IWorldEngineService;
 
@@ -115,8 +95,6 @@ export interface IWorldEngineServer {
     voicePreview: grpc.handleUnaryCall<world_engine_pb.VoicePreviewRequest, world_engine_pb.VoicePreviewResponse>;
     listBaseVoices: grpc.handleUnaryCall<world_engine_pb.ListBaseVoicesRequest, world_engine_pb.ListBaseVoicesResponce>;
     generateToken: grpc.handleUnaryCall<world_engine_pb.GenerateTokenRequest, world_engine_pb.AccessToken>;
-    pingCharacter: grpc.handleUnaryCall<world_engine_pb.PingCharacterRequest, google_protobuf_empty_pb.Empty>;
-    createInteractionFeedback: grpc.handleUnaryCall<world_engine_pb.CreateInteractionFeedbackRequest, google_protobuf_empty_pb.Empty>;
 }
 
 export interface IWorldEngineClient {
@@ -141,12 +119,6 @@ export interface IWorldEngineClient {
     generateToken(request: world_engine_pb.GenerateTokenRequest, callback: (error: grpc.ServiceError | null, response: world_engine_pb.AccessToken) => void): grpc.ClientUnaryCall;
     generateToken(request: world_engine_pb.GenerateTokenRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: world_engine_pb.AccessToken) => void): grpc.ClientUnaryCall;
     generateToken(request: world_engine_pb.GenerateTokenRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: world_engine_pb.AccessToken) => void): grpc.ClientUnaryCall;
-    pingCharacter(request: world_engine_pb.PingCharacterRequest, callback: (error: grpc.ServiceError | null, response: google_protobuf_empty_pb.Empty) => void): grpc.ClientUnaryCall;
-    pingCharacter(request: world_engine_pb.PingCharacterRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: google_protobuf_empty_pb.Empty) => void): grpc.ClientUnaryCall;
-    pingCharacter(request: world_engine_pb.PingCharacterRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: google_protobuf_empty_pb.Empty) => void): grpc.ClientUnaryCall;
-    createInteractionFeedback(request: world_engine_pb.CreateInteractionFeedbackRequest, callback: (error: grpc.ServiceError | null, response: google_protobuf_empty_pb.Empty) => void): grpc.ClientUnaryCall;
-    createInteractionFeedback(request: world_engine_pb.CreateInteractionFeedbackRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: google_protobuf_empty_pb.Empty) => void): grpc.ClientUnaryCall;
-    createInteractionFeedback(request: world_engine_pb.CreateInteractionFeedbackRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: google_protobuf_empty_pb.Empty) => void): grpc.ClientUnaryCall;
 }
 
 export class WorldEngineClient extends grpc.Client implements IWorldEngineClient {
@@ -171,10 +143,4 @@ export class WorldEngineClient extends grpc.Client implements IWorldEngineClient
     public generateToken(request: world_engine_pb.GenerateTokenRequest, callback: (error: grpc.ServiceError | null, response: world_engine_pb.AccessToken) => void): grpc.ClientUnaryCall;
     public generateToken(request: world_engine_pb.GenerateTokenRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: world_engine_pb.AccessToken) => void): grpc.ClientUnaryCall;
     public generateToken(request: world_engine_pb.GenerateTokenRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: world_engine_pb.AccessToken) => void): grpc.ClientUnaryCall;
-    public pingCharacter(request: world_engine_pb.PingCharacterRequest, callback: (error: grpc.ServiceError | null, response: google_protobuf_empty_pb.Empty) => void): grpc.ClientUnaryCall;
-    public pingCharacter(request: world_engine_pb.PingCharacterRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: google_protobuf_empty_pb.Empty) => void): grpc.ClientUnaryCall;
-    public pingCharacter(request: world_engine_pb.PingCharacterRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: google_protobuf_empty_pb.Empty) => void): grpc.ClientUnaryCall;
-    public createInteractionFeedback(request: world_engine_pb.CreateInteractionFeedbackRequest, callback: (error: grpc.ServiceError | null, response: google_protobuf_empty_pb.Empty) => void): grpc.ClientUnaryCall;
-    public createInteractionFeedback(request: world_engine_pb.CreateInteractionFeedbackRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: google_protobuf_empty_pb.Empty) => void): grpc.ClientUnaryCall;
-    public createInteractionFeedback(request: world_engine_pb.CreateInteractionFeedbackRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: google_protobuf_empty_pb.Empty) => void): grpc.ClientUnaryCall;
 }
