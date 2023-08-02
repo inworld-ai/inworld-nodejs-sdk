@@ -109,7 +109,6 @@ describe('load scene', () => {
       .mockImplementationOnce(mockLoadScene);
 
     const capabilities = new CapabilitiesRequest()
-      .setAnimations(true)
       .setEmotions(true);
 
     const result = await client.loadScene({
@@ -130,7 +129,6 @@ describe('load scene', () => {
     expect(callCapabilities.getAudio()).toEqual(false);
     expect(callCapabilities.getText()).toEqual(false);
     expect(callCapabilities.getEmotions()).toEqual(true);
-    expect(callCapabilities.getAnimations()).toEqual(true);
     expect(loadScene.mock.calls[0][0].getClient().getId()).toEqual(CLIENT_ID);
     expect(loggerDebug).toHaveBeenCalledTimes(1);
   });
@@ -142,7 +140,6 @@ describe('load scene', () => {
 
     const sceneClient = new ClientRequest().setId('client-id');
     const capabilities = new CapabilitiesRequest()
-      .setAnimations(true)
       .setEmotions(true);
 
     await client.loadScene({
@@ -162,7 +159,6 @@ describe('load scene', () => {
       .mockImplementationOnce(mockLoadScene);
 
     const capabilities = new CapabilitiesRequest()
-      .setAnimations(true)
       .setEmotions(true);
 
     await client.loadScene({
