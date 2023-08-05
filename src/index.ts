@@ -23,6 +23,8 @@ import {
   ConnectionConfig,
   SessionTokenProps,
   User,
+  UserProfile,
+  UserProfileField,
 } from './common/data_structures';
 import { Character } from './entities/character.entity';
 import {
@@ -84,4 +86,6 @@ export {
   TextEvent,
   TriggerParameter,
   User,
+  UserProfile,
+  UserProfileField,
 };

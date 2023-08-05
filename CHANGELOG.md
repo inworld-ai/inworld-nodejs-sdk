@@ -1,3 +1,7 @@
+## 2023-08-04 v1.6.0
+
+* Allow to propagate user profile fields
+
 ## 2023-07-06 v1.5.1
 * Added JS examples
 * Added Say hello example

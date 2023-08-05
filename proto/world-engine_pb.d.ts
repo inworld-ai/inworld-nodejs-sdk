@@ -23,8 +23,6 @@ export class CapabilitiesRequest extends jspb.Message {
     setTriggers(value: boolean): CapabilitiesRequest;
     getEmotions(): boolean;
     setEmotions(value: boolean): CapabilitiesRequest;
-    getAnimations(): boolean;
-    setAnimations(value: boolean): CapabilitiesRequest;
     getTurnBasedStt(): boolean;
     setTurnBasedStt(value: boolean): CapabilitiesRequest;
     getEmotionStreaming(): boolean;
@@ -47,6 +45,8 @@ export class CapabilitiesRequest extends jspb.Message {
     setRelations(value: boolean): CapabilitiesRequest;
     getDebugInfo(): boolean;
     setDebugInfo(value: boolean): CapabilitiesRequest;
+    getTtsMp3(): boolean;
+    setTtsMp3(value: boolean): CapabilitiesRequest;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): CapabilitiesRequest.AsObject;
@@ -66,7 +66,6 @@ export namespace CapabilitiesRequest {
         interruptions: boolean,
         triggers: boolean,
         emotions: boolean,
-        animations: boolean,
         turnBasedStt: boolean,
         emotionStreaming: boolean,
         silenceEvents: boolean,
@@ -78,6 +77,7 @@ export namespace CapabilitiesRequest {
         loadSceneInSession: boolean,
         relations: boolean,
         debugInfo: boolean,
+        ttsMp3: boolean,
     }
 }
 

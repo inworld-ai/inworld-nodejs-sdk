@@ -1,5 +1,3 @@
-import util = require('node:util');
-
 import { AccessToken } from '@proto/world-engine_pb';
 
 import { SessionTokenProps } from '../common/data_structures';

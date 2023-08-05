@@ -8,6 +8,7 @@ import * as jspb from "google-protobuf";
 import * as google_protobuf_duration_pb from "google-protobuf/google/protobuf/duration_pb";
 import * as google_protobuf_struct_pb from "google-protobuf/google/protobuf/struct_pb";
 import * as google_protobuf_timestamp_pb from "google-protobuf/google/protobuf/timestamp_pb";
+import * as options_pb from "./options_pb";
 
 export class Actor extends jspb.Message { 
     getType(): Actor.Type;
@@ -224,6 +225,11 @@ export class TextEvent extends jspb.Message {
     getFinal(): boolean;
     setFinal(value: boolean): TextEvent;
 
+    hasModelInfo(): boolean;
+    clearModelInfo(): void;
+    getModelInfo(): TextEvent.ModelInfo | undefined;
+    setModelInfo(value?: TextEvent.ModelInfo): TextEvent;
+
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): TextEvent.AsObject;
     static toObject(includeInstance: boolean, msg: TextEvent): TextEvent.AsObject;
@@ -239,7 +245,33 @@ export namespace TextEvent {
         text: string,
         sourceType: TextEvent.SourceType,
         pb_final: boolean,
+        modelInfo?: TextEvent.ModelInfo.AsObject,
     }
+
+
+    export class ModelInfo extends jspb.Message { 
+        getService(): string;
+        setService(value: string): ModelInfo;
+        getModel(): string;
+        setModel(value: string): ModelInfo;
+
+        serializeBinary(): Uint8Array;
+        toObject(includeInstance?: boolean): ModelInfo.AsObject;
+        static toObject(includeInstance: boolean, msg: ModelInfo): ModelInfo.AsObject;
+        static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+        static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+        static serializeBinaryToWriter(message: ModelInfo, writer: jspb.BinaryWriter): void;
+        static deserializeBinary(bytes: Uint8Array): ModelInfo;
+        static deserializeBinaryFromReader(message: ModelInfo, reader: jspb.BinaryReader): ModelInfo;
+    }
+
+    export namespace ModelInfo {
+        export type AsObject = {
+            service: string,
+            model: string,
+        }
+    }
+
 
     export enum SourceType {
     UNKNOWN = 0,
@@ -478,6 +510,8 @@ export class DataChunk extends jspb.Message {
     getAdditionalPhonemeInfoList(): Array<AdditionalPhonemeInfo>;
     setAdditionalPhonemeInfoList(value: Array<AdditionalPhonemeInfo>): DataChunk;
     addAdditionalPhonemeInfo(value?: AdditionalPhonemeInfo, index?: number): AdditionalPhonemeInfo;
+    getAudioformat(): DataChunk.AudioFormat;
+    setAudioformat(value: DataChunk.AudioFormat): DataChunk;
 
     getDataCase(): DataChunk.DataCase;
 
@@ -497,14 +531,21 @@ export namespace DataChunk {
         durationMs: number,
         type: DataChunk.DataType,
         additionalPhonemeInfoList: Array<AdditionalPhonemeInfo.AsObject>,
+        audioformat: DataChunk.AudioFormat,
     }
 
     export enum DataType {
     UNSPECIFIED = 0,
     AUDIO = 1,
-    ANIMATION = 2,
     SILENCE = 3,
     STATE = 4,
+    }
+
+    export enum AudioFormat {
+    UNSPECIFIED_AUDIO_FORMAT = 0,
+    AUDIO_MP3 = 1,
+    AUDIO_PCM_16000 = 2,
+    AUDIO_PCM_22050 = 3,
     }
 
 
@@ -681,6 +722,11 @@ export class MutationEvent extends jspb.Message {
     getLoadScene(): LoadScene | undefined;
     setLoadScene(value?: LoadScene): MutationEvent;
 
+    hasModifyExactResponse(): boolean;
+    clearModifyExactResponse(): void;
+    getModifyExactResponse(): ModifyExactResponse | undefined;
+    setModifyExactResponse(value?: ModifyExactResponse): MutationEvent;
+
     getMutationCase(): MutationEvent.MutationCase;
 
     serializeBinary(): Uint8Array;
@@ -699,6 +745,7 @@ export namespace MutationEvent {
         regenerateResponse?: RegenerateResponse.AsObject,
         applyResponse?: ApplyResponse.AsObject,
         loadScene?: LoadScene.AsObject,
+        modifyExactResponse?: ModifyExactResponse.AsObject,
     }
 
     export enum MutationCase {
@@ -707,6 +754,7 @@ export namespace MutationEvent {
         REGENERATE_RESPONSE = 2,
         APPLY_RESPONSE = 3,
         LOAD_SCENE = 4,
+        MODIFY_EXACT_RESPONSE = 5,
     }
 
 }
@@ -796,6 +844,29 @@ export class LoadScene extends jspb.Message {
 export namespace LoadScene {
     export type AsObject = {
         name: string,
+    }
+}
+
+export class ModifyExactResponse extends jspb.Message { 
+    getInteractionId(): string;
+    setInteractionId(value: string): ModifyExactResponse;
+    getExactText(): string;
+    setExactText(value: string): ModifyExactResponse;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): ModifyExactResponse.AsObject;
+    static toObject(includeInstance: boolean, msg: ModifyExactResponse): ModifyExactResponse.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: ModifyExactResponse, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): ModifyExactResponse;
+    static deserializeBinaryFromReader(message: ModifyExactResponse, reader: jspb.BinaryReader): ModifyExactResponse;
+}
+
+export namespace ModifyExactResponse {
+    export type AsObject = {
+        interactionId: string,
+        exactText: string,
     }
 }
 
