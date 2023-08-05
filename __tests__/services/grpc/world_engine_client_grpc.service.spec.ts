@@ -109,8 +109,7 @@ describe('load scene', () => {
       .spyOn(WorldEngineClient.prototype, 'loadScene')
       .mockImplementationOnce(mockLoadScene);
 
-    const capabilities = new CapabilitiesRequest()
-      .setEmotions(true);
+    const capabilities = new CapabilitiesRequest().setEmotions(true);
 
     const result = await client.loadScene({
       name: SCENE,
@@ -139,8 +138,7 @@ describe('load scene', () => {
       .mockImplementationOnce(mockLoadScene);
 
     const sceneClient = new ClientRequest().setId('client-id');
-    const capabilities = new CapabilitiesRequest()
-      .setEmotions(true);
+    const capabilities = new CapabilitiesRequest().setEmotions(true);
 
     await client.loadScene({
       name: SCENE,
@@ -158,8 +156,7 @@ describe('load scene', () => {
       .spyOn(WorldEngineClient.prototype, 'loadScene')
       .mockImplementationOnce(mockLoadScene);
 
-    const capabilities = new CapabilitiesRequest()
-      .setEmotions(true);
+    const capabilities = new CapabilitiesRequest().setEmotions(true);
 
     await client.loadScene({
       name: SCENE,
