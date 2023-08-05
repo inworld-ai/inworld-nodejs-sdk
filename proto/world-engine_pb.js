@@ -770,7 +770,6 @@ proto.CapabilitiesRequest.toObject = function(includeInstance, msg) {
     interruptions: jspb.Message.getBooleanFieldWithDefault(msg, 4, false),
     triggers: jspb.Message.getBooleanFieldWithDefault(msg, 5, false),
     emotions: jspb.Message.getBooleanFieldWithDefault(msg, 6, false),
-    animations: jspb.Message.getBooleanFieldWithDefault(msg, 7, false),
     turnBasedStt: jspb.Message.getBooleanFieldWithDefault(msg, 8, false),
     emotionStreaming: jspb.Message.getBooleanFieldWithDefault(msg, 9, false),
     silenceEvents: jspb.Message.getBooleanFieldWithDefault(msg, 10, false),
@@ -781,7 +780,8 @@ proto.CapabilitiesRequest.toObject = function(includeInstance, msg) {
     regenerateResponse: jspb.Message.getBooleanFieldWithDefault(msg, 15, false),
     loadSceneInSession: jspb.Message.getBooleanFieldWithDefault(msg, 16, false),
     relations: jspb.Message.getBooleanFieldWithDefault(msg, 17, false),
-    debugInfo: jspb.Message.getBooleanFieldWithDefault(msg, 18, false)
+    debugInfo: jspb.Message.getBooleanFieldWithDefault(msg, 18, false),
+    ttsMp3: jspb.Message.getBooleanFieldWithDefault(msg, 19, false)
   };
 
   if (includeInstance) {
@@ -842,10 +842,6 @@ proto.CapabilitiesRequest.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setEmotions(value);
       break;
-    case 7:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setAnimations(value);
-      break;
     case 8:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setTurnBasedStt(value);
@@ -889,6 +885,10 @@ proto.CapabilitiesRequest.deserializeBinaryFromReader = function(msg, reader) {
     case 18:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setDebugInfo(value);
+      break;
+    case 19:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setTtsMp3(value);
       break;
     default:
       reader.skipField();
@@ -958,13 +958,6 @@ proto.CapabilitiesRequest.serializeBinaryToWriter = function(message, writer) {
   if (f) {
     writer.writeBool(
       6,
-      f
-    );
-  }
-  f = message.getAnimations();
-  if (f) {
-    writer.writeBool(
-      7,
       f
     );
   }
@@ -1042,6 +1035,13 @@ proto.CapabilitiesRequest.serializeBinaryToWriter = function(message, writer) {
   if (f) {
     writer.writeBool(
       18,
+      f
+    );
+  }
+  f = message.getTtsMp3();
+  if (f) {
+    writer.writeBool(
+      19,
       f
     );
   }
@@ -1153,24 +1153,6 @@ proto.CapabilitiesRequest.prototype.getEmotions = function() {
  */
 proto.CapabilitiesRequest.prototype.setEmotions = function(value) {
   return jspb.Message.setProto3BooleanField(this, 6, value);
-};
-
-
-/**
- * optional bool animations = 7;
- * @return {boolean}
- */
-proto.CapabilitiesRequest.prototype.getAnimations = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 7, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.CapabilitiesRequest} returns this
- */
-proto.CapabilitiesRequest.prototype.setAnimations = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 7, value);
 };
 
 
@@ -1369,6 +1351,24 @@ proto.CapabilitiesRequest.prototype.getDebugInfo = function() {
  */
 proto.CapabilitiesRequest.prototype.setDebugInfo = function(value) {
   return jspb.Message.setProto3BooleanField(this, 18, value);
+};
+
+
+/**
+ * optional bool tts_mp3 = 19;
+ * @return {boolean}
+ */
+proto.CapabilitiesRequest.prototype.getTtsMp3 = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 19, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.CapabilitiesRequest} returns this
+ */
+proto.CapabilitiesRequest.prototype.setTtsMp3 = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 19, value);
 };
 
 

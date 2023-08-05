@@ -31,3 +31,10 @@ export namespace ExampleValue {
 }
 
 export const examples: jspb.ExtensionFieldInfo<ExampleValue>;
+
+export const fieldMode: jspb.ExtensionFieldInfo<FieldMode>;
+
+export enum FieldMode {
+    FIELD_MODE_UNSPECIFIED = 0,
+    HIDDEN = 1,
+}
