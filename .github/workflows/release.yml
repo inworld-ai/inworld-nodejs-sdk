@@ -1,14 +1,26 @@
-name: release
+name: Release & Publish to NPM
 
 on:
-  release:
-    types: [published]
+  workflow_dispatch:
+    inputs:
+      increment:
+        type: choice
+        description: Select increment
+        options:
+        - patch
+        - minor
+        - major
 
 jobs:
   release-sdk:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Echo increment
+        run: echo "${{ inputs.increment }}"
+      - name: Set git user
+        run: git config --global user.email "github-service-account@inworld.ai" &&  git config --global user.name "CI-inworld"
+      - name: Checkout source code
+        uses: actions/checkout@v3
       - name: Setup node
         uses: actions/setup-node@v3
         with:
@@ -27,6 +39,10 @@ jobs:
             ${{ runner.os }}-yarn-
       - name: Install dependencies
         run: yarn install --ignore-scripts --frozen-lockfile
+      - name: Bump version
+        run: yarn release:bump ${{ inputs.increment }} --ci
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Publish
         run: yarn release:publish
         env:

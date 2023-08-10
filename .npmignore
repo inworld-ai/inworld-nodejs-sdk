@@ -11,6 +11,7 @@ __tests__
 jest.config.json
 /tsconfig.json
 /tsconfig.paths.json
+/.release-it.json
 build/jest-result.json
 */**/yarn.lock
 */**/package-lock.json
