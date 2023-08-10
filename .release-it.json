@@ -1,0 +1,27 @@
+{
+  "git": {
+    "commitMessage": "chore: Release v${version}",
+    "requireBranch": "main"
+  },
+  "github": {
+    "release": true
+  },
+  "hooks": {
+    "before:init": [
+      "git pull",
+      "yarn install",
+      "yarn build",
+      "yarn lint:check",
+      "yarn prettier:check",
+      "yarn test"
+    ]
+  },
+  "npm": {
+    "publish": false
+  },
+  "plugins": {
+    "@release-it/keep-a-changelog": {
+      "filename": "CHANGELOG.md"
+    }
+  }
+}
