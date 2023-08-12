@@ -16,3 +16,4 @@ build/jest-result.json
 */**/yarn.lock
 */**/package-lock.json
 RELEASEME.md
+*.log
