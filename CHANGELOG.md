@@ -1,3 +1,9 @@
+## [Unreleased]
+
+### Added
+
+- Add debug logs support for world-engine token generation
+
 ## [1.8.0] - 2023-09-20
 
 ### Added

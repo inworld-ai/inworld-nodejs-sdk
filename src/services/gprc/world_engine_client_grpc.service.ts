@@ -55,6 +55,8 @@ export class WorldEngineClientGrpcService<InworldPacketT> {
     { ...grpcOptions },
   );
 
+  private logger = Logger.getInstance();
+
   public async generateSessionToken(
     apiKey: ApiKey,
     scene: string,
@@ -73,13 +75,23 @@ export class WorldEngineClientGrpcService<InworldPacketT> {
       }),
     );
 
-    return promisify(this.client.generateToken.bind(this.client))(
-      request,
-      metadata,
-    );
-  }
+    const response: AccessToken = await promisify(
+      this.client.generateToken.bind(this.client),
+    )(request, metadata);
 
-  private logger = Logger.getInstance();
+    this.logger.debug({
+      action: 'Generate token',
+      data: {
+        address: this.address,
+        ssl: this.ssl,
+        metadata: metadata.toJSON(),
+        request: request.toObject(),
+        response: response.toObject(),
+      },
+    });
+
+    return response;
+  }
 
   public async loadScene(props: LoadSceneProps<InworldPacketT>) {
     const { capabilities, name, sessionContinuation, sessionToken, user } =
