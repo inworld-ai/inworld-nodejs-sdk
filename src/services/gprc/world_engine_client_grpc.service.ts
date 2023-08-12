@@ -47,7 +47,7 @@ export interface SessionProps {
 export class WorldEngineClientGrpcService<InworldPacketT> {
   private readonly config = Config.getInstance();
   private readonly address = this.config.getHost();
-  private readonly ssl = this.config.getSsl();
+  private readonly ssl = this.config.getSSL();
   private readonly grpcOptions = { ...grpcOptions };
   private readonly client = new WorldEngineClient(
     this.config.getHost(),

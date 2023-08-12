@@ -62,7 +62,7 @@ import { InworldConnectionService } from './services/inworld_connection.service'
 
 const config = Config.getInstance();
 const getHost = () => config.getHost();
-const getSsl = () => config.getSsl();
+const getSSL = () => config.getSSL();
 
 export {
   Actor,
@@ -80,7 +80,7 @@ export {
   EmotionStrength,
   EmotionStrengthCode,
   getHost,
-  getSsl,
+  getSSL,
   InworlControlType,
   InworldClient,
   InworldConnectionService,

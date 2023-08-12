@@ -34,8 +34,8 @@ export class StateSerializationClientGrpcService {
   ): Promise<SessionState> {
     const { scene, sessionToken } = props;
 
-    const resource = `workspaces/${SCENE_PATTERN.exec(scene)[1]}`;
-    const name = `workspaces/${resource}/sessions/${sessionToken.sessionId}`;
+    const workspace = SCENE_PATTERN.exec(scene)[1];
+    const name = `workspaces/${workspace}/sessions/${sessionToken.sessionId}`;
     const request = new GetSessionStateRequest().setName(name);
     const metadata = this.getMetadata(sessionToken);
 
@@ -60,7 +60,6 @@ export class StateSerializationClientGrpcService {
   private getMetadata(sessionToken: SessionToken) {
     const metadata = new Metadata();
 
-    metadata.add('session-id', sessionToken.sessionId);
     metadata.add('authorization', `${sessionToken.type} ${sessionToken.token}`);
 
     return metadata;

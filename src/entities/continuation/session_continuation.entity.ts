@@ -6,7 +6,7 @@ export interface SessionContinuationProps {
 }
 
 export class SessionContinuation {
-  readonly previousState: Uint8Array | string;
+  readonly previousState: Uint8Array | string | undefined;
   readonly previousDialog: PreviousDialog | undefined;
 
   constructor(props: SessionContinuationProps) {

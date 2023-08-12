@@ -21,7 +21,7 @@ export class Config {
     return this.ENGINE_HOST;
   }
 
-  public getSsl() {
+  public getSSL() {
     return this.ENGINE_SSL;
   }
 }

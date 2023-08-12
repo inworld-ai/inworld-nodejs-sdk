@@ -45,27 +45,27 @@ describe('credentials', () => {
   });
 
   test('should use insecure credentials', () => {
-    const generateSessionToken = jest
-      .spyOn(Config.prototype, 'getSsl')
+    const getSSL = jest
+      .spyOn(Config.prototype, 'getSSL')
       .mockImplementationOnce(() => false);
 
     new WorldEngineClientGrpcService();
 
     expect(createSsl).toHaveBeenCalledTimes(0);
     expect(createInsecure).toHaveBeenCalledTimes(1);
-    expect(generateSessionToken).toHaveBeenCalledTimes(1);
+    expect(getSSL).toHaveBeenCalledTimes(1);
   });
 
   test('should use secure credentials', () => {
-    const generateSessionToken = jest
-      .spyOn(Config.prototype, 'getSsl')
+    const getSSL = jest
+      .spyOn(Config.prototype, 'getSSL')
       .mockImplementationOnce(() => true);
 
     new WorldEngineClientGrpcService();
 
     expect(createSsl).toHaveBeenCalledTimes(1);
     expect(createInsecure).toHaveBeenCalledTimes(0);
-    expect(generateSessionToken).toHaveBeenCalledTimes(1);
+    expect(getSSL).toHaveBeenCalledTimes(1);
   });
 });
 

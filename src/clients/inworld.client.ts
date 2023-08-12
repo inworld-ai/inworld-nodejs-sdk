@@ -115,16 +115,6 @@ export class InworldClient<
     return this;
   }
 
-  async generateSessionToken() {
-    this.validate();
-
-    return new ConnectionService({
-      apiKey: this.apiKey,
-      name: this.scene,
-      onError: this.onError,
-    }).generateSessionToken();
-  }
-
   setExtension(extension: Extension<InworldPacketT>) {
     this.extension = extension;
 
@@ -135,6 +125,16 @@ export class InworldClient<
     this.sessionContinuation = new SessionContinuation(sessionContinuation);
 
     return this;
+  }
+
+  async generateSessionToken() {
+    this.validate();
+
+    return new ConnectionService({
+      apiKey: this.apiKey,
+      name: this.scene,
+      onError: this.onError,
+    }).generateSessionToken();
   }
 
   build() {
