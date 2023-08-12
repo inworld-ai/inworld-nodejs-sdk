@@ -82,7 +82,7 @@ export class WorldEngineClientGrpcService<InworldPacketT> {
   private logger = Logger.getInstance();
 
   public async loadScene(props: LoadSceneProps<InworldPacketT>) {
-    const { name, sessionToken, user, sessionContinuation, capabilities } =
+    const { capabilities, name, sessionContinuation, sessionToken, user } =
       props;
 
     const request = new LoadSceneRequest();
@@ -107,12 +107,23 @@ export class WorldEngineClientGrpcService<InworldPacketT> {
       );
     }
 
-    if (sessionContinuation?.previousDialog) {
-      request.setSessionContinuation(
-        new SessionContinuationProto().setPreviousDialog(
+    if (
+      sessionContinuation?.previousDialog ||
+      sessionContinuation?.previousState
+    ) {
+      const continuation = new SessionContinuationProto();
+
+      if (sessionContinuation.previousState) {
+        continuation.setPreviousState(sessionContinuation.previousState);
+      }
+
+      if (sessionContinuation.previousDialog) {
+        continuation.setPreviousDialog(
           sessionContinuation.previousDialog.toProto(),
-        ),
-      );
+        );
+      }
+
+      request.setSessionContinuation(continuation);
     }
 
     request.setClient(

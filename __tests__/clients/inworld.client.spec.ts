@@ -43,7 +43,7 @@ describe('should finish with success', () => {
       .setOnSession(sessionGetterSetter)
       .setExtension(extension)
       .setGenerateSessionToken(generateSessionTokenFn)
-      .setSessionContinuation({ previousDialog: phrases });
+      .setSessionContinuation({ previousDialog: phrases, previousState: v4() });
   });
 
   test('should generate session token', async () => {

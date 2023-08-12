@@ -1,7 +1,6 @@
 import { ClientDuplexStream, ServiceError } from '@grpc/grpc-js';
 import { InworldPacket as ProtoPacket } from '@proto/packets_pb';
 import { ClientRequest } from '@proto/world-engine_pb';
-import { clearTimeout } from 'timers';
 
 import {
   ApiKey,

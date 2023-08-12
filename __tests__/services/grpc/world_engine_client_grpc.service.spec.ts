@@ -9,11 +9,13 @@ import {
   ClientRequest,
   LoadSceneResponse,
 } from '@proto/world-engine_pb';
+import { v4 } from 'uuid';
 
 import { Config } from '../../../src/common/config';
 import { CLIENT_ID } from '../../../src/common/constants';
 import { Logger } from '../../../src/common/logger';
 import { PreviousDialog } from '../../../src/entities/continuation/previous_dialog.entity';
+import { SessionContinuation } from '../../../src/entities/continuation/session_continuation.entity';
 import { WorldEngineClientGrpcService } from '../../../src/services/gprc/world_engine_client_grpc.service';
 import { ExtendedInworldPacket } from '../../data_structures';
 import {
@@ -22,6 +24,7 @@ import {
   extendedCapabilities,
   extension,
   KEY,
+  phrases,
   previousDialog,
   SCENE,
   SECRET,
@@ -185,7 +188,7 @@ describe('load scene', () => {
       name: SCENE,
       capabilities,
       sessionToken,
-      sessionContinuation: { previousDialog },
+      sessionContinuation: new SessionContinuation({ previousDialog: phrases }),
       user,
     });
 
@@ -236,6 +239,30 @@ describe('load scene', () => {
     expect(profileFields[0].getFieldValue()).toEqual(
       user.profile.fields[0].value,
     );
+  });
+
+  test('should send previous session state', async () => {
+    jest
+      .spyOn(WorldEngineClient.prototype, 'loadScene')
+      .mockImplementationOnce(mockLoadScene);
+
+    const sessionContinuation = new SessionContinuation({
+      previousState: v4(),
+    });
+
+    await client.loadScene({
+      name: SCENE,
+      capabilities,
+      sessionToken,
+      sessionContinuation,
+      user,
+    });
+
+    const state = mockLoadScene.mock.calls[0][0]
+      .getSessionContinuation()
+      .getPreviousState();
+
+    expect(state).toEqual(sessionContinuation.previousState);
   });
 
   test('should call extention functions', async () => {

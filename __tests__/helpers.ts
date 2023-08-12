@@ -123,7 +123,8 @@ export const capabilities = new CapabilitiesRequest()
   .setPhonemeInfo(true)
   .setSilenceEvents(true)
   .setText(true)
-  .setTriggers(true);
+  .setTriggers(true)
+  .setContinuation(true);
 
 export const user: User = {
   fullName: 'Name',
