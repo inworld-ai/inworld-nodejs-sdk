@@ -13,12 +13,14 @@ import {
 import { Config } from '../../../src/common/config';
 import { CLIENT_ID } from '../../../src/common/constants';
 import { Logger } from '../../../src/common/logger';
+import { PreviousDialog } from '../../../src/entities/continuation/previous_dialog.entity';
 import { WorldEngineClientGrpcService } from '../../../src/services/gprc/world_engine_client_grpc.service';
 import {
   capabilities,
   createAgent,
   extension,
   KEY,
+  previousDialog,
   SCENE,
   SECRET,
   sessionContinuation,
@@ -168,6 +170,28 @@ describe('load scene', () => {
     expect(mockLoadScene.mock.calls[0][0].getSessionContinuation()).toEqual(
       sessionContinuation,
     );
+  });
+
+  test('should send previous dialog', async () => {
+    jest
+      .spyOn(WorldEngineClient.prototype, 'loadScene')
+      .mockImplementationOnce(mockLoadScene);
+
+    const capabilities = new CapabilitiesRequest().setEmotions(true);
+
+    await client.loadScene({
+      name: SCENE,
+      capabilities,
+      sessionToken,
+      sessionContinuation: { previousDialog },
+      user,
+    });
+
+    const sentDialog = mockLoadScene.mock.calls[0][0]
+      .getSessionContinuation()
+      .getPreviousDialog();
+
+    expect(PreviousDialog.fromProto(sentDialog)).toEqual(previousDialog);
   });
 
   test('should use provided provided user name', async () => {

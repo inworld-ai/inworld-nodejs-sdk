@@ -9,6 +9,7 @@ import { WorldEngineClientGrpcService } from '../../src/services/gprc/world_engi
 import {
   capabilitiesProps,
   KEY,
+  phrases,
   SCENE,
   SECRET,
   sessionProto,
@@ -37,7 +38,8 @@ describe('should finish with success', () => {
       .setOnDisconnect(onDisconnect)
       .setOnMessage(onMessage)
       .setOnError(onError)
-      .setOnSession(sessionGetterSetter);
+      .setOnSession(sessionGetterSetter)
+      .setSessionContinuation({ previousDialog: phrases });
   });
 
   test('should generate session token', async () => {

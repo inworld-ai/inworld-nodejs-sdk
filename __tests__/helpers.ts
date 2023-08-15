@@ -9,7 +9,7 @@ import {
   CapabilitiesRequest,
   LoadSceneRequest,
   LoadSceneResponse,
-  PreviousDialog,
+  PreviousDialog as PreviousDialogProto,
   SessionContinuation,
 } from '@proto/world-engine_pb';
 import { v4 } from 'uuid';
@@ -17,6 +17,10 @@ import { v4 } from 'uuid';
 import { Capabilities, User } from '../src/common/data_structures';
 import { protoTimestamp } from '../src/common/helpers';
 import { Character } from '../src/entities/character.entity';
+import {
+  DialogParticipant,
+  PreviousDialog,
+} from '../src/entities/continuation/previous_dialog.entity';
 import { InworldPacket } from '../src/entities/inworld_packet.entity';
 import { SessionToken } from '../src/entities/session_token.entity';
 import { ExtendedInworldPacket } from './data_structures';
@@ -108,10 +112,12 @@ export const capabilitiesProps: Capabilities = {
   interruptions: true,
   phonemes: true,
   silence: true,
+  continuation: true,
 };
 
 export const capabilities = new CapabilitiesRequest()
   .setAudio(true)
+  .setContinuation(true)
   .setEmotions(true)
   .setInterruptions(true)
   .setPhonemeInfo(true)
@@ -152,17 +158,17 @@ export const extendedCapabilities = new CapabilitiesRequest()
   .setTriggers(true)
   .setRegenerateResponse(true);
 
-const previousDialog = new PreviousDialog().setPhrasesList([
-  new PreviousDialog.Phrase()
+const previousDialogProto = new PreviousDialogProto().setPhrasesList([
+  new PreviousDialogProto.Phrase()
     .setPhrase(v4())
-    .setTalker(PreviousDialog.DialogParticipant.CHARACTER),
-  new PreviousDialog.Phrase()
+    .setTalker(PreviousDialogProto.DialogParticipant.CHARACTER),
+  new PreviousDialogProto.Phrase()
     .setPhrase(v4())
-    .setTalker(PreviousDialog.DialogParticipant.PLAYER),
+    .setTalker(PreviousDialogProto.DialogParticipant.PLAYER),
 ]);
 
 export const sessionContinuation = new SessionContinuation().setPreviousDialog(
-  previousDialog,
+  previousDialogProto,
 );
 
 export const extension = {
@@ -174,3 +180,19 @@ export const extension = {
     return request;
   },
 };
+
+export const phrases = [
+  {
+    talker: DialogParticipant.CHARACTER,
+    phrase: v4(),
+  },
+  {
+    talker: DialogParticipant.PLAYER,
+    phrase: v4(),
+  },
+  {
+    talker: DialogParticipant.UNKNOWN,
+    phrase: v4(),
+  },
+];
+export const previousDialog = new PreviousDialog(phrases);

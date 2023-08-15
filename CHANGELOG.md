@@ -1,3 +1,9 @@
+## [Unreleased]
+
+### Added
+
+- Allow to propagate previous dialog to new connection
+
 ## [1.6.0] - 2023-08-04
 
 - Allow to propagate user profile fields

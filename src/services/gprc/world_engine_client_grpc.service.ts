@@ -8,6 +8,7 @@ import {
   GenerateTokenRequest,
   LoadSceneRequest,
   LoadSceneResponse,
+  SessionContinuation as SessionContinuationProto,
   UserRequest,
   UserSettings,
 } from '@proto/world-engine_pb';
@@ -19,6 +20,7 @@ import { CLIENT_ID, SCENE_PATTERN } from '../../common/constants';
 import { ApiKey, Awaitable, User } from '../../common/data_structures';
 import { grpcOptions } from '../../common/helpers';
 import { Logger } from '../../common/logger';
+import { SessionContinuation } from '../../entities/continuation/session_continuation.entity';
 import { SessionToken } from '../../entities/session_token.entity';
 
 export interface LoadSceneProps {
@@ -26,6 +28,7 @@ export interface LoadSceneProps {
   client?: ClientRequest;
   user?: User;
   sessionToken: SessionToken;
+  sessionContinuation?: SessionContinuation;
   capabilities: CapabilitiesRequest;
   setLoadSceneProps?: (request: LoadSceneRequest) => LoadSceneRequest;
 }
@@ -74,7 +77,8 @@ export class WorldEngineClientGrpcService {
   private logger = Logger.getInstance();
 
   public async loadScene(props: LoadSceneProps) {
-    const { name, sessionToken, user, capabilities } = props;
+    const { name, sessionToken, user, sessionContinuation, capabilities } =
+      props;
 
     const request = new LoadSceneRequest();
     request.setName(name);
@@ -94,6 +98,14 @@ export class WorldEngineClientGrpcService {
                 .setFieldValue(value),
             ),
           ),
+        ),
+      );
+    }
+
+    if (sessionContinuation?.previousDialog) {
+      request.setSessionContinuation(
+        new SessionContinuationProto().setPreviousDialog(
+          sessionContinuation.previousDialog.toProto(),
         ),
       );
     }
