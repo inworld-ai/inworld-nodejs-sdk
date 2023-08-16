@@ -11,6 +11,7 @@ import {
   extension,
   KEY,
   phrases,
+  previousState,
   SCENE,
   SECRET,
   sessionProto,
@@ -43,7 +44,7 @@ describe('should finish with success', () => {
       .setOnSession(sessionGetterSetter)
       .setExtension(extension)
       .setGenerateSessionToken(generateSessionTokenFn)
-      .setSessionContinuation({ previousDialog: phrases, previousState: v4() });
+      .setSessionContinuation({ previousDialog: phrases, previousState });
   });
 
   test('should generate session token', async () => {

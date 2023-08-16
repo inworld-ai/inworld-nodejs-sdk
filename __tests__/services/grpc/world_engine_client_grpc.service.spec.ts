@@ -9,7 +9,6 @@ import {
   ClientRequest,
   LoadSceneResponse,
 } from '@proto/world-engine_pb';
-import { v4 } from 'uuid';
 
 import { Config } from '../../../src/common/config';
 import { CLIENT_ID } from '../../../src/common/constants';
@@ -26,6 +25,7 @@ import {
   KEY,
   phrases,
   previousDialog,
+  previousState,
   SCENE,
   SECRET,
   sessionContinuation,
@@ -247,7 +247,7 @@ describe('load scene', () => {
       .mockImplementationOnce(mockLoadScene);
 
     const sessionContinuation = new SessionContinuation({
-      previousState: v4(),
+      previousState,
     });
 
     await client.loadScene({

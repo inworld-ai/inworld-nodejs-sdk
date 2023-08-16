@@ -5,6 +5,7 @@ import {
   PacketId,
   Routing,
 } from '@proto/packets_pb';
+import { SessionState } from '@proto/state_serialization_pb';
 import { WorldEngineClient } from '@proto/world-engine_grpc_pb';
 import { LoadSceneResponse } from '@proto/world-engine_pb';
 import { v4 } from 'uuid';
@@ -17,6 +18,7 @@ import { Session } from '../../src/entities/session.entity';
 import { SessionToken } from '../../src/entities/session_token.entity';
 import { EventFactory } from '../../src/factories/event';
 import { ConnectionService } from '../../src/services/connection.service';
+import { StateSerializationClientGrpcService } from '../../src/services/gprc/state_serialization_grpc.service';
 import { WorldEngineClientGrpcService } from '../../src/services/gprc/world_engine_client_grpc.service';
 import {
   capabilities,
@@ -24,8 +26,10 @@ import {
   createAgent,
   generateEmptyPacket,
   KEY,
+  previousState,
   SCENE,
   SECRET,
+  sessionProto,
   sessionToken,
   setTimeoutMock,
   user,
@@ -75,6 +79,53 @@ test('should generate session token', async () => {
 
   expect(generateSessionToken).toHaveBeenCalledTimes(1);
   expect(result).toEqual(sessionToken);
+});
+
+describe('getSessionState', () => {
+  const connection = new ConnectionService({
+    apiKey: {
+      key: KEY,
+      secret: SECRET,
+    },
+    name: SCENE,
+    onError,
+  });
+
+  test('should get state', async () => {
+    const generateSessionToken = jest
+      .spyOn(WorldEngineClientGrpcService.prototype, 'generateSessionToken')
+      .mockImplementationOnce(() => Promise.resolve(sessionProto));
+    const getSessionState = jest
+      .spyOn(StateSerializationClientGrpcService.prototype, 'getSessionState')
+      .mockImplementationOnce(() =>
+        Promise.resolve(new SessionState().setState(previousState)),
+      );
+
+    const result = await connection.getSessionState();
+
+    expect(generateSessionToken).toHaveBeenCalledTimes(1);
+    expect(getSessionState).toHaveBeenCalledTimes(1);
+    expect(result).toEqual(previousState);
+  });
+
+  test('should catch error and pass it to handler', async () => {
+    const err = new Error();
+    const generateSessionToken = jest
+      .spyOn(WorldEngineClientGrpcService.prototype, 'generateSessionToken')
+      .mockImplementationOnce(() => Promise.resolve(sessionProto));
+    const getSessionState = jest
+      .spyOn(StateSerializationClientGrpcService.prototype, 'getSessionState')
+      .mockImplementationOnce(() => {
+        throw err;
+      });
+
+    await connection.getSessionState();
+
+    expect(generateSessionToken).toHaveBeenCalledTimes(1);
+    expect(getSessionState).toHaveBeenCalledTimes(1);
+    expect(onError).toHaveBeenCalledTimes(1);
+    expect(onError).toHaveBeenCalledWith(err);
+  });
 });
 
 describe('open', () => {

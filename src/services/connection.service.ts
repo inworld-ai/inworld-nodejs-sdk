@@ -19,6 +19,7 @@ import { Scene } from '../entities/scene.entity';
 import { Session } from '../entities/session.entity';
 import { SessionToken } from '../entities/session_token.entity';
 import { EventFactory } from '../factories/event';
+import { StateSerializationClientGrpcService } from './gprc/state_serialization_grpc.service';
 import { WorldEngineClientGrpcService } from './gprc/world_engine_client_grpc.service';
 
 interface ConnectionProps<InworldPacketT> {
@@ -59,6 +60,7 @@ export class ConnectionService<
   private packetQueue: QueueItem[] = [];
 
   private engineService = new WorldEngineClientGrpcService<InworldPacketT>();
+  private stateService = new StateSerializationClientGrpcService();
 
   private onDisconnect: () => Awaitable<void>;
   private onError: (err: ServiceError) => Awaitable<void>;
@@ -102,6 +104,20 @@ export class ConnectionService<
     );
 
     return SessionToken.fromProto(proto);
+  }
+
+  async getSessionState() {
+    try {
+      const token = await this.getOrLoadSessionToken(this.sessionToken);
+      const proto = await this.stateService.getSessionState({
+        sessionToken: token,
+        scene: this.connectionProps.name,
+      });
+
+      return proto.getState_asU8();
+    } catch (err) {
+      this.onError(err);
+    }
   }
 
   async openManually() {

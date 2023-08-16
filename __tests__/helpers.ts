@@ -168,6 +168,8 @@ const previousDialogProto = new PreviousDialogProto().setPhrasesList([
     .setTalker(PreviousDialogProto.DialogParticipant.PLAYER),
 ]);
 
+export const previousState = new Uint8Array(32);
+
 export const sessionContinuation = new SessionContinuation().setPreviousDialog(
   previousDialogProto,
 );
