@@ -39,11 +39,11 @@ import {
 import {
   EmotionBehavior,
   EmotionBehaviorCode,
-} from './entities/emotion-behavior.entity';
+} from './entities/emotion_behavior.entity';
 import {
   EmotionStrength,
   EmotionStrengthCode,
-} from './entities/emotion-strength.entity';
+} from './entities/emotion_strength.entity';
 import {
   Actor,
   AudioEvent,
