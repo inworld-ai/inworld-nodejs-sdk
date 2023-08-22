@@ -1,4 +1,3 @@
-import { Session } from '@inworld/nodejs-sdk';
 import { createClient } from 'redis';
 
 export class Storage {
@@ -17,16 +16,26 @@ export class Storage {
   }
 
   async get(key) {
-    const json = await this.redisClient.get(key);
+    const json = (await this.redisClient.get(key)) || '';
 
-    return Session.deserialize(json);
+    return Storage.deserialize(json);
   }
 
-  set(key, entity) {
-    this.redisClient.set(key, Session.serialize(entity));
+  set(key, phrases) {
+    this.redisClient.set(key, JSON.stringify(phrases));
   }
 
   delete(key) {
     this.redisClient.del(key);
+  }
+
+  static deserialize(json) {
+    let phrases = [];
+
+    try {
+      phrases = JSON.parse(json) || [];
+    } catch (e) {}
+
+    return phrases;
   }
 }

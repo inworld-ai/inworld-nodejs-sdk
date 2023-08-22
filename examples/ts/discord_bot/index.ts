@@ -17,10 +17,11 @@ if (!process.env.DISCORD_BOT_TOKEN) {
 }
 
 import {
+  DialogParticipant,
+  DialogPhrase,
   InworldClient,
   InworldPacket,
   ServiceError,
-  Session,
   status,
 } from '@inworld/nodejs-sdk';
 import {
@@ -33,6 +34,7 @@ import {
 
 import { Storage } from './storage';
 
+const MAX_PHRASES_SIZE = 30;
 const storage = new Storage();
 const discordClient = new Client({
   intents: [
@@ -69,41 +71,68 @@ run();
 const sendMessage = async (message: Message) => {
   const content = message.content.replace(`<@${discordClient.user?.id}>`, '');
 
-  const client = await createInworldClient(message);
+  const client = await createInworldClient(message, content);
 
   client.sendText(content);
 };
 
 const getKey = (message: Message) =>
-  `${message.channel.id}_${message.author.id}`;
+  `${message.channel.id}_${message.author.id}_prev_dialog`;
 
-const createInworldClient = async (message: Message) => {
+const createInworldClient = async (message: Message, text: string) => {
   const key = getKey(message);
+  const savedPhrases: DialogPhrase[] = await storage.get(key);
+  const phrases = getPhrases([
+    ...savedPhrases,
+    {
+      talker: DialogParticipant.PLAYER,
+      phrase: text,
+    },
+  ]);
+
   const client = new InworldClient()
-    .setOnSession({
-      get: () => storage.get(key),
-      set: (session: Session) => storage.set(key, session),
-    })
     .setApiKey({
       key: process.env.INWORLD_KEY!,
       secret: process.env.INWORLD_SECRET!,
     })
-    .setConfiguration({ capabilities: { audio: false } })
+    .setConfiguration({ capabilities: { audio: false, continuation: true } })
     .setScene(process.env.INWORLD_SCENE!)
     .setOnError(handleError(message))
     .setOnMessage((packet: InworldPacket) => {
       if (packet.isInteractionEnd()) {
         client.close();
+        storage.set(key, phrases);
         return;
       }
 
       if (packet.isText() && packet.text.final) {
-        (message.channel as TextChannel).send(packet.text.text);
+        const { text: phrase } = packet.text;
+
+        if (
+          phrases[phrases.length - 1].talker === DialogParticipant.CHARACTER
+        ) {
+          phrases[phrases.length - 1].phrase += phrase;
+        } else {
+          phrases.push({ talker: DialogParticipant.CHARACTER, phrase });
+        }
+
+        (message.channel as TextChannel).send(phrase);
       }
     })
+    .setSessionContinuation({ previousDialog: phrases })
     .build();
 
   return client;
+};
+
+const getPhrases = (phrases: DialogPhrase[]) => {
+  const result = [...phrases];
+
+  if (result.length > MAX_PHRASES_SIZE) {
+    result.splice(0, result.length - MAX_PHRASES_SIZE);
+  }
+
+  return result;
 };
 
 const handleError = (message: Message) => {
