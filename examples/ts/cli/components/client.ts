@@ -10,17 +10,21 @@ import {
 import { ChildProcess, fork } from 'child_process';
 
 import { CLIENT_ACTION, CONVERSATION_ACTION, DISPLAY_WHEN } from './types';
+
+export interface ClientProps {
+  config?: ClientConfiguration;
+  previousState?: string;
+  text?: { displayWhen: DISPLAY_WHEN };
+  onDisconnect: () => void;
+}
 export class Client {
   private client: InworldClient;
   private config: ClientConfiguration | undefined;
   private connection: InworldConnectionService | null = null;
   private conversationProcess: ChildProcess;
+  private interactionIsEnded: boolean = false;
 
-  constructor(props: {
-    config?: ClientConfiguration;
-    text?: { displayWhen: DISPLAY_WHEN };
-    onDisconnect: () => void;
-  }) {
+  constructor(props: ClientProps) {
     this.conversationProcess = fork(`${__dirname}/conversation_process.ts`);
     this.conversationProcess.on('message', this.onConversationProcessMessage);
 
@@ -43,6 +47,12 @@ export class Client {
         props.onDisconnect();
       })
       .setOnMessage(this.onMessage);
+
+    if (props.previousState) {
+      this.client.setSessionContinuation({
+        previousState: props.previousState,
+      });
+    }
 
     if (props.config) {
       this.config = props.config;
@@ -71,7 +81,13 @@ export class Client {
     });
   }
 
+  getInteractionIsEnded() {
+    return this.interactionIsEnded;
+  }
+
   private onMessage = (packet: InworldPacket) => {
+    this.interactionIsEnded = false;
+
     // TEXT
     if (packet.isText()) {
       if (packet.routing.source.isPlayer) {
@@ -121,6 +137,7 @@ export class Client {
 
     // INTERACTION_END
     if (packet.isInteractionEnd()) {
+      this.interactionIsEnded = true;
       this.conversationProcess.send({
         action: CONVERSATION_ACTION.END_INTERACTION,
         packet,

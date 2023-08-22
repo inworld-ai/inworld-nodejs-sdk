@@ -8,6 +8,7 @@ class Client {
   config;
   connection = null;
   conversationProcess;
+  interactionIsEnded = false;
 
   constructor(props) {
     this.conversationProcess = fork(`${__dirname}/conversation_process.js`);
@@ -32,6 +33,12 @@ class Client {
         props.onDisconnect();
       })
       .setOnMessage(this.onMessage);
+
+    if (props.previousState) {
+      this.client.setSessionContinuation({
+        previousState: props.previousState,
+      });
+    }
 
     if (props.config) {
       this.config = props.config;
@@ -60,7 +67,13 @@ class Client {
     });
   }
 
+  getInteractionIsEnded() {
+    return this.interactionIsEnded;
+  }
+
   onMessage = (packet) => {
+    this.interactionIsEnded = false;
+
     // TEXT
     if (packet.isText()) {
       if (packet.routing.source.isPlayer) {
@@ -110,6 +123,7 @@ class Client {
 
     // INTERACTION_END
     if (packet.isInteractionEnd()) {
+      this.interactionIsEnded = true;
       this.conversationProcess.send({
         action: CONVERSATION_ACTION.END_INTERACTION,
         packet,
