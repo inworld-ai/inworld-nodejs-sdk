@@ -28,6 +28,15 @@ import {
 } from './common/data_structures';
 import { Character } from './entities/character.entity';
 import {
+  DialogParticipant,
+  DialogPhrase,
+  PreviousDialog,
+} from './entities/continuation/previous_dialog.entity';
+import {
+  SessionContinuation,
+  SessionContinuationProps,
+} from './entities/continuation/session_continuation.entity';
+import {
   EmotionBehavior,
   EmotionBehaviorCode,
 } from './entities/emotion-behavior.entity';
@@ -64,6 +73,8 @@ export {
   Character,
   ClientConfiguration,
   ConnectionConfig,
+  DialogParticipant,
+  DialogPhrase,
   EmotionBehavior,
   EmotionBehaviorCode,
   EmotionStrength,
@@ -76,10 +87,13 @@ export {
   InworldPacket,
   InworldPacketType,
   PacketId,
+  PreviousDialog,
   Routing,
   Scene,
   ServiceError,
   Session,
+  SessionContinuation,
+  SessionContinuationProps,
   SessionToken,
   SessionTokenProps,
   status,

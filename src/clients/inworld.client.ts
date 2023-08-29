@@ -15,6 +15,10 @@ import {
   User,
 } from '../common/data_structures';
 import { Logger } from '../common/logger';
+import {
+  SessionContinuation,
+  SessionContinuationProps,
+} from '../entities/continuation/session_continuation.entity';
 import { InworldPacket } from '../entities/inworld_packet.entity';
 import { Session } from '../entities/session.entity';
 import { ConnectionService } from '../services/connection.service';
@@ -28,6 +32,7 @@ export class InworldClient<
   private scene: string = '';
   private client: ClientRequest;
   private config: ClientConfiguration = {};
+  private sessionContinuation: SessionContinuation;
 
   private generateSessionTokenFn: GenerateSessionTokenFn;
   private sessionGetterSetter: GetterSetter<Session>;
@@ -120,6 +125,12 @@ export class InworldClient<
     return this;
   }
 
+  setSessionContinuation(sessionContinuation: SessionContinuationProps) {
+    this.sessionContinuation = new SessionContinuation(sessionContinuation);
+
+    return this;
+  }
+
   build() {
     this.validate();
 
@@ -134,6 +145,7 @@ export class InworldClient<
       onDisconnect: this.onDisconnect,
       generateSessionToken: this.generateSessionTokenFn,
       sessionGetterSetter: this.sessionGetterSetter,
+      sessionContinuation: this.sessionContinuation,
       extension: this.extension,
     });
 
@@ -152,6 +164,7 @@ export class InworldClient<
   private buildCapabilities(capabilities: Capabilities): CapabilitiesRequest {
     const request = new CapabilitiesRequest()
       .setAudio(capabilities.audio ?? true)
+      .setContinuation(capabilities.continuation ?? false)
       .setEmotions(capabilities.emotions ?? false)
       .setInterruptions(capabilities.interruptions ?? false)
       .setPhonemeInfo(capabilities.phonemes ?? false)

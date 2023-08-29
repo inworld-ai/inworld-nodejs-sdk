@@ -14,6 +14,7 @@ export interface Capabilities {
   interruptions?: boolean;
   phonemes?: boolean;
   silence?: boolean;
+  continuation?: boolean;
 }
 
 export interface UserProfileField {
