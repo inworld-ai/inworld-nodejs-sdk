@@ -3,6 +3,7 @@
 ### Added
 
 - Allow to propagate previous dialog to new connection
+- Allow manage load scene response and request via extension
 
 ## [1.6.0] - 2023-08-04
 

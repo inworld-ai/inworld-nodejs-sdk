@@ -59,7 +59,7 @@ export class ConnectionService<
   private intervals: NodeJS.Timeout[] = [];
   private packetQueue: QueueItem[] = [];
 
-  private engineService = new WorldEngineClientGrpcService();
+  private engineService = new WorldEngineClientGrpcService<InworldPacketT>();
 
   private onDisconnect: () => void;
   private onError: (err: ServiceError) => void;
@@ -340,7 +340,7 @@ export class ConnectionService<
         user,
         capabilities: this.connectionProps.config.capabilities,
         sessionToken: this.sessionToken,
-        setLoadSceneProps: this.connectionProps.extension?.setLoadSceneProps,
+        extension: this.connectionProps.extension,
       });
 
       scene = Scene.fromProto(proto);

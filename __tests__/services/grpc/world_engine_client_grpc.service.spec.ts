@@ -15,9 +15,11 @@ import { CLIENT_ID } from '../../../src/common/constants';
 import { Logger } from '../../../src/common/logger';
 import { PreviousDialog } from '../../../src/entities/continuation/previous_dialog.entity';
 import { WorldEngineClientGrpcService } from '../../../src/services/gprc/world_engine_client_grpc.service';
+import { ExtendedInworldPacket } from '../../data_structures';
 import {
   capabilities,
   createAgent,
+  extendedCapabilities,
   extension,
   KEY,
   previousDialog,
@@ -99,7 +101,7 @@ describe('load scene', () => {
     return {} as SurfaceCall;
   });
 
-  let client: WorldEngineClientGrpcService;
+  let client: WorldEngineClientGrpcService<ExtendedInworldPacket>;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -164,7 +166,7 @@ describe('load scene', () => {
       name: SCENE,
       capabilities,
       sessionToken,
-      setLoadSceneProps: extension.setLoadSceneProps,
+      extension,
     });
 
     expect(mockLoadScene.mock.calls[0][0].getSessionContinuation()).toEqual(
@@ -235,10 +237,30 @@ describe('load scene', () => {
       user.profile.fields[0].value,
     );
   });
+
+  test('should call extention functions', async () => {
+    const loadScene = jest
+      .spyOn(WorldEngineClient.prototype, 'loadScene')
+      .mockImplementationOnce(mockLoadScene);
+
+    await client.loadScene({
+      name: SCENE,
+      capabilities,
+      sessionToken,
+      extension,
+    });
+
+    expect(loadScene).toHaveBeenCalledTimes(1);
+    expect(loadScene.mock.calls[0][0].getCapabilities()).toEqual(
+      extendedCapabilities,
+    );
+    expect(extension.beforeLoadScene).toHaveBeenCalledTimes(1);
+    expect(extension.afterLoadScene).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe('session', () => {
-  let client: WorldEngineClientGrpcService;
+  let client: WorldEngineClientGrpcService<ExtendedInworldPacket>;
 
   beforeEach(() => {
     jest.clearAllMocks();
