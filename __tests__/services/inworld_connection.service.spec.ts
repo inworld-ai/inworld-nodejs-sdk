@@ -194,6 +194,30 @@ describe('send', () => {
     expect(packet.isControl()).toEqual(true);
   });
 
+  test('should send tts playback mute', async () => {
+    const mutePlayback = jest.spyOn(eventFactory, 'mutePlayback');
+
+    const packet = await service.sendTTSPlaybackMute(true);
+
+    expect(open).toHaveBeenCalledTimes(0);
+    expect(service.isActive()).toEqual(true);
+    expect(mutePlayback).toHaveBeenCalledTimes(1);
+    expect(packet).toBeInstanceOf(InworldPacket);
+    expect(packet?.isTTSPlaybackMute()).toEqual(true);
+  });
+
+  test('should send tts playback unmute', async () => {
+    const mutePlayback = jest.spyOn(eventFactory, 'mutePlayback');
+
+    const packet = await service.sendTTSPlaybackMute(false);
+
+    expect(open).toHaveBeenCalledTimes(0);
+    expect(service.isActive()).toEqual(true);
+    expect(mutePlayback).toHaveBeenCalledTimes(1);
+    expect(packet).toBeInstanceOf(InworldPacket);
+    expect(packet?.isTTSPlaybackUnmute()).toEqual(true);
+  });
+
   test('should send cancel responses', async () => {
     const sendCancelResponsesEvent = jest.spyOn(eventFactory, 'cancelResponse');
 

@@ -24,6 +24,8 @@ export enum InworldPacketType {
 export enum InworlControlType {
   UNKNOWN = 'UNKNOWN',
   INTERACTION_END = 'INTERACTION_END',
+  TTS_PLAYBACK_MUTE = 'TTS_PLAYBACK_MUTE',
+  TTS_PLAYBACK_UNMUTE = 'TTS_PLAYBACK_UNMUTE',
 }
 
 export interface InworldPacketProps {
@@ -178,6 +180,20 @@ export class InworldPacket {
     );
   }
 
+  isTTSPlaybackMute() {
+    return (
+      this.isControl() &&
+      this.control.type === InworlControlType.TTS_PLAYBACK_MUTE
+    );
+  }
+
+  isTTSPlaybackUnmute() {
+    return (
+      this.isControl() &&
+      this.control.type === InworlControlType.TTS_PLAYBACK_UNMUTE
+    );
+  }
+
   isSilence() {
     return this.type === InworldPacketType.SILENCE;
   }
@@ -310,6 +326,10 @@ export class InworldPacket {
     switch (packet.getControl().getAction()) {
       case ProtoControlEvent.Action.INTERACTION_END:
         return InworlControlType.INTERACTION_END;
+      case ProtoControlEvent.Action.TTS_PLAYBACK_MUTE:
+        return InworlControlType.TTS_PLAYBACK_MUTE;
+      case ProtoControlEvent.Action.TTS_PLAYBACK_UNMUTE:
+        return InworlControlType.TTS_PLAYBACK_UNMUTE;
       default:
         return InworlControlType.UNKNOWN;
     }

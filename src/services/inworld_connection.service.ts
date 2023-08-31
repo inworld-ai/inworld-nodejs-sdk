@@ -81,6 +81,12 @@ export class InworldConnectionService<
     );
   }
 
+  async sendTTSPlaybackMute(isMuted: boolean) {
+    return this.connection.send(() =>
+      this.connection.getEventFactory().mutePlayback(isMuted),
+    );
+  }
+
   async sendCustomPacket(getPacket: () => ProtoPacket) {
     return this.connection.send(() => getPacket());
   }
