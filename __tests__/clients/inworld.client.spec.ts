@@ -8,6 +8,7 @@ import { ConnectionService } from '../../src/services/connection.service';
 import { WorldEngineClientGrpcService } from '../../src/services/gprc/world_engine_client_grpc.service';
 import {
   capabilitiesProps,
+  extension,
   KEY,
   phrases,
   SCENE,
@@ -39,6 +40,7 @@ describe('should finish with success', () => {
       .setOnMessage(onMessage)
       .setOnError(onError)
       .setOnSession(sessionGetterSetter)
+      .setExtension(extension)
       .setSessionContinuation({ previousDialog: phrases });
   });
 

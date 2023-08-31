@@ -14,7 +14,7 @@ import {
 } from '@proto/world-engine_pb';
 import { v4 } from 'uuid';
 
-import { Capabilities, User } from '../src/common/data_structures';
+import { Capabilities, Extension, User } from '../src/common/data_structures';
 import { protoTimestamp } from '../src/common/helpers';
 import { Character } from '../src/entities/character.entity';
 import {
@@ -171,14 +171,16 @@ export const sessionContinuation = new SessionContinuation().setPreviousDialog(
   previousDialogProto,
 );
 
-export const extension = {
+export const extension: Extension<ExtendedInworldPacket> = {
   convertPacketFromProto,
-  setCapabilities: () => extendedCapabilities,
-  setLoadSceneProps: (request: LoadSceneRequest) => {
-    request.setSessionContinuation(sessionContinuation);
+  afterLoadScene: jest.fn(),
+  beforeLoadScene: jest.fn((req: LoadSceneRequest) => {
+    req
+      .setCapabilities(extendedCapabilities)
+      .setSessionContinuation(sessionContinuation);
 
-    return request;
-  },
+    return req;
+  }),
 };
 
 export const phrases = [

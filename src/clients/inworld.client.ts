@@ -172,10 +172,6 @@ export class InworldClient<
       .setText(true)
       .setTriggers(true);
 
-    if (this.extension?.setCapabilities) {
-      return this.extension.setCapabilities(request);
-    }
-
     return request;
   }
 

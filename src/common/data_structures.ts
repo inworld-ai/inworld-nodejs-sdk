@@ -1,5 +1,9 @@
 import { InworldPacket as ProtoPacket } from '@proto/packets_pb';
-import { CapabilitiesRequest, LoadSceneRequest } from '@proto/world-engine_pb';
+import {
+  CapabilitiesRequest,
+  LoadSceneRequest,
+  LoadSceneResponse,
+} from '@proto/world-engine_pb';
 
 import { SessionToken } from '../entities/session_token.entity';
 
@@ -79,7 +83,7 @@ export enum ConnectionState {
 }
 
 export interface Extension<InworldPacketT> {
-  setCapabilities?: (request: CapabilitiesRequest) => CapabilitiesRequest;
-  setLoadSceneProps?: (request: LoadSceneRequest) => LoadSceneRequest;
   convertPacketFromProto?: (proto: ProtoPacket) => InworldPacketT;
+  beforeLoadScene?: (request: LoadSceneRequest) => LoadSceneRequest;
+  afterLoadScene?: (res: LoadSceneResponse) => void;
 }
