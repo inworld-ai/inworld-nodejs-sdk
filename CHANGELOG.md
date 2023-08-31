@@ -4,6 +4,7 @@
 
 - Allow to propagate previous dialog to new connection
 - Allow manage load scene response and request via extension
+- Allow to send TTS playback mute/unmute
 
 ## [1.6.0] - 2023-08-04
 
