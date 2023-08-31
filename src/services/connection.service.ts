@@ -14,6 +14,7 @@ import {
   User,
 } from '../common/data_structures';
 import { Logger } from '../common/logger';
+import { SessionContinuation } from '../entities/continuation/session_continuation.entity';
 import { InworldPacket } from '../entities/inworld_packet.entity';
 import { Scene } from '../entities/scene.entity';
 import { Session } from '../entities/session.entity';
@@ -28,6 +29,7 @@ interface ConnectionProps<InworldPacketT> {
   client?: ClientRequest;
   config?: InternalClientConfiguration;
   sessionGetterSetter?: GetterSetter<Session>;
+  sessionContinuation?: SessionContinuation;
   onDisconnect?: () => void;
   onError: (err: ServiceError) => void;
   onMessage?: (message: InworldPacketT) => Awaitable<void>;
@@ -57,7 +59,7 @@ export class ConnectionService<
   private intervals: NodeJS.Timeout[] = [];
   private packetQueue: QueueItem[] = [];
 
-  private engineService = new WorldEngineClientGrpcService();
+  private engineService = new WorldEngineClientGrpcService<InworldPacketT>();
 
   private onDisconnect: () => void;
   private onError: (err: ServiceError) => void;
@@ -329,15 +331,16 @@ export class ConnectionService<
 
     // Load scene
     if (!scene) {
-      const { client, name, user } = this.connectionProps;
+      const { client, name, sessionContinuation, user } = this.connectionProps;
 
       const proto = await this.engineService.loadScene({
         client,
         name,
+        sessionContinuation,
         user,
         capabilities: this.connectionProps.config.capabilities,
         sessionToken: this.sessionToken,
-        setLoadSceneProps: this.connectionProps.extension?.setLoadSceneProps,
+        extension: this.connectionProps.extension,
       });
 
       scene = Scene.fromProto(proto);

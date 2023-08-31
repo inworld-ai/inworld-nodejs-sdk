@@ -59,6 +59,19 @@ export class EventFactory {
     }).setControl(event);
   }
 
+  mutePlayback(isMuted: boolean): ProtoPacket {
+    const event = new ControlEvent().setAction(
+      isMuted
+        ? ControlEvent.Action.TTS_PLAYBACK_MUTE
+        : ControlEvent.Action.TTS_PLAYBACK_UNMUTE,
+    );
+
+    return this.baseProtoPacket({
+      utteranceId: false,
+      interactionId: false,
+    }).setControl(event);
+  }
+
   text(text: string): ProtoPacket {
     const event = new TextEvent()
       .setText(text)

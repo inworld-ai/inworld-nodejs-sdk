@@ -8,7 +8,9 @@ import { ConnectionService } from '../../src/services/connection.service';
 import { WorldEngineClientGrpcService } from '../../src/services/gprc/world_engine_client_grpc.service';
 import {
   capabilitiesProps,
+  extension,
   KEY,
+  phrases,
   SCENE,
   SECRET,
   sessionProto,
@@ -37,7 +39,9 @@ describe('should finish with success', () => {
       .setOnDisconnect(onDisconnect)
       .setOnMessage(onMessage)
       .setOnError(onError)
-      .setOnSession(sessionGetterSetter);
+      .setOnSession(sessionGetterSetter)
+      .setExtension(extension)
+      .setSessionContinuation({ previousDialog: phrases });
   });
 
   test('should generate session token', async () => {

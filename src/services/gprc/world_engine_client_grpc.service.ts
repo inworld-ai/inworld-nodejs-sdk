@@ -8,6 +8,7 @@ import {
   GenerateTokenRequest,
   LoadSceneRequest,
   LoadSceneResponse,
+  SessionContinuation as SessionContinuationProto,
   UserRequest,
   UserSettings,
 } from '@proto/world-engine_pb';
@@ -16,18 +17,25 @@ import { promisify } from 'util';
 import { KeySignature } from '../../auth/key_signature';
 import { Config } from '../../common/config';
 import { CLIENT_ID, SCENE_PATTERN } from '../../common/constants';
-import { ApiKey, Awaitable, User } from '../../common/data_structures';
+import {
+  ApiKey,
+  Awaitable,
+  Extension,
+  User,
+} from '../../common/data_structures';
 import { grpcOptions } from '../../common/helpers';
 import { Logger } from '../../common/logger';
+import { SessionContinuation } from '../../entities/continuation/session_continuation.entity';
 import { SessionToken } from '../../entities/session_token.entity';
 
-export interface LoadSceneProps {
+export interface LoadSceneProps<InworldPacketT> {
   name: string;
   client?: ClientRequest;
   user?: User;
   sessionToken: SessionToken;
+  sessionContinuation?: SessionContinuation;
   capabilities: CapabilitiesRequest;
-  setLoadSceneProps?: (request: LoadSceneRequest) => LoadSceneRequest;
+  extension?: Extension<InworldPacketT>;
 }
 export interface SessionProps {
   sessionToken: SessionToken;
@@ -36,7 +44,7 @@ export interface SessionProps {
   onMessage?: (message: ProtoPacket) => Awaitable<void>;
 }
 
-export class WorldEngineClientGrpcService {
+export class WorldEngineClientGrpcService<InworldPacketT> {
   private readonly config = Config.getInstance();
   private readonly address = this.config.getHost();
   private readonly ssl = this.config.getSsl();
@@ -73,8 +81,9 @@ export class WorldEngineClientGrpcService {
 
   private logger = Logger.getInstance();
 
-  public async loadScene(props: LoadSceneProps) {
-    const { name, sessionToken, user, capabilities } = props;
+  public async loadScene(props: LoadSceneProps<InworldPacketT>) {
+    const { name, sessionToken, user, sessionContinuation, capabilities } =
+      props;
 
     const request = new LoadSceneRequest();
     request.setName(name);
@@ -98,14 +107,20 @@ export class WorldEngineClientGrpcService {
       );
     }
 
+    if (sessionContinuation?.previousDialog) {
+      request.setSessionContinuation(
+        new SessionContinuationProto().setPreviousDialog(
+          sessionContinuation.previousDialog.toProto(),
+        ),
+      );
+    }
+
     request.setClient(
       new ClientRequest().setId(props.client?.getId() || CLIENT_ID),
     );
 
     const metadata = this.getMetadata(sessionToken);
-    const finalRequest = props.setLoadSceneProps
-      ? props.setLoadSceneProps(request)
-      : request;
+    const finalRequest = props.extension?.beforeLoadScene?.(request) || request;
 
     const response: LoadSceneResponse = await promisify(
       this.client.loadScene.bind(this.client),
@@ -123,6 +138,8 @@ export class WorldEngineClientGrpcService {
       },
       sessionId: sessionToken.sessionId,
     });
+
+    props.extension?.afterLoadScene?.(response);
 
     return response;
   }

@@ -81,6 +81,32 @@ describe('event types', () => {
     expect(event.hasTimestamp()).toEqual(true);
   });
 
+  test('should generate mute', () => {
+    const event = factory.mutePlayback(true);
+
+    expect(event.hasControl()).toEqual(true);
+    expect(event.getControl().getAction()).toEqual(
+      ControlEvent.Action.TTS_PLAYBACK_MUTE,
+    );
+    expect(event.hasPacketId()).toEqual(true);
+    expect(event.hasRouting()).toEqual(true);
+    expect(event.getRouting().getTarget().getName()).toEqual(character.id);
+    expect(event.hasTimestamp()).toEqual(true);
+  });
+
+  test('should generate unmute', () => {
+    const event = factory.mutePlayback(false);
+
+    expect(event.hasControl()).toEqual(true);
+    expect(event.getControl().getAction()).toEqual(
+      ControlEvent.Action.TTS_PLAYBACK_UNMUTE,
+    );
+    expect(event.hasPacketId()).toEqual(true);
+    expect(event.hasRouting()).toEqual(true);
+    expect(event.getRouting().getTarget().getName()).toEqual(character.id);
+    expect(event.hasTimestamp()).toEqual(true);
+  });
+
   test('should generate text event', () => {
     const text = v4();
     const event = factory.text(text);
