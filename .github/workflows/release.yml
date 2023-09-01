@@ -44,8 +44,17 @@ jobs:
         run: yarn install --ignore-scripts --frozen-lockfile
       - name: Bump version
         run: yarn release:bump ${{ inputs.increment }} --ci
+      - name: Extract release notes
+        id: extract-release-notes
+        uses: ffurrer2/extract-release-notes@v1
+      - name: Extract version
+        run: |
+          echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+        id: extract-version
+      - name: Create release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release create --notes '${{ steps.extract-release-notes.outputs.release_notes }}' --title 'Release ${{ steps.extract-version.outputs.version }}' ${{ steps.extract-version.outputs.version }}
       - name: Publish
         run: yarn release:publish
         env:

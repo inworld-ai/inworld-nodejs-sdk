@@ -1,10 +1,8 @@
 {
   "git": {
     "commitMessage": "chore: Release v${version}",
-    "requireBranch": "main"
-  },
-  "github": {
-    "release": true
+    "requireBranch": "main",
+    "tag": false
   },
   "hooks": {
     "before:init": [
