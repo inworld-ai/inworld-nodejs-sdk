@@ -5,7 +5,7 @@ import { SessionState } from '@proto/state_serialization_pb';
 import { v4 } from 'uuid';
 
 import { Config } from '../../../src/common/config';
-import { StateSerializationClientGrpcService } from '../../../src/services/gprc/state_serialization_grpc.service';
+import { StateSerializationClientGrpcService } from '../../../src/services/gprc/state_serialization_client_grpc.service';
 import { SCENE, sessionToken } from '../../helpers';
 
 describe('credentials', () => {

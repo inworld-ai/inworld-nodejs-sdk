@@ -18,7 +18,7 @@ import { Session } from '../../src/entities/session.entity';
 import { SessionToken } from '../../src/entities/session_token.entity';
 import { EventFactory } from '../../src/factories/event';
 import { ConnectionService } from '../../src/services/connection.service';
-import { StateSerializationClientGrpcService } from '../../src/services/gprc/state_serialization_grpc.service';
+import { StateSerializationClientGrpcService } from '../../src/services/gprc/state_serialization_client_grpc.service';
 import { WorldEngineClientGrpcService } from '../../src/services/gprc/world_engine_client_grpc.service';
 import {
   capabilities,

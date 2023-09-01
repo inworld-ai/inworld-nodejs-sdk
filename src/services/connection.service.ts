@@ -19,7 +19,7 @@ import { Scene } from '../entities/scene.entity';
 import { Session } from '../entities/session.entity';
 import { SessionToken } from '../entities/session_token.entity';
 import { EventFactory } from '../factories/event';
-import { StateSerializationClientGrpcService } from './gprc/state_serialization_grpc.service';
+import { StateSerializationClientGrpcService } from './gprc/state_serialization_client_grpc.service';
 import { WorldEngineClientGrpcService } from './gprc/world_engine_client_grpc.service';
 
 interface ConnectionProps<InworldPacketT> {
