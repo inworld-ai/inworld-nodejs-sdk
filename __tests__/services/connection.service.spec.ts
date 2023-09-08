@@ -682,7 +682,7 @@ describe('message', () => {
   });
 });
 
-describe('getCharactersList', () => {
+describe('character list', () => {
   let connection: ConnectionService;
 
   beforeEach(() => {
@@ -726,5 +726,50 @@ describe('getCharactersList', () => {
     expect(loadScene).toHaveBeenCalledTimes(1);
     expect(setCurrentCharacter).toHaveBeenCalledTimes(1);
     expect(getCurrentCharacter).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('character', () => {
+  let connection: ConnectionService;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+
+    connection = new ConnectionService({
+      apiKey: { key: KEY, secret: SECRET },
+      name: SCENE,
+      config: { capabilities },
+      user,
+      onError,
+      onMessage,
+      onDisconnect,
+    });
+  });
+
+  test('should return current character', async () => {
+    const getCharactersList = jest
+      .spyOn(connection, 'getCharactersList')
+      .mockImplementationOnce(jest.fn());
+
+    const getCurrentCharacter = jest
+      .spyOn(EventFactory.prototype, 'getCurrentCharacter')
+      .mockImplementationOnce(() => characters[0]);
+
+    const result = await connection.getCurrentCharacter();
+
+    expect(result).toEqual(characters[0]);
+    expect(getCharactersList).toHaveBeenCalledTimes(1);
+    expect(getCurrentCharacter).toHaveBeenCalledTimes(1);
+  });
+
+  test('should set current character', async () => {
+    const setCurrentCharacter = jest.spyOn(
+      EventFactory.prototype,
+      'setCurrentCharacter',
+    );
+    connection.setCurrentCharacter(characters[0]);
+
+    expect(setCurrentCharacter).toHaveBeenCalledTimes(1);
+    expect(setCurrentCharacter).toHaveBeenCalledWith(characters[0]);
   });
 });
