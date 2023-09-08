@@ -14,6 +14,7 @@ import {
   User,
 } from '../common/data_structures';
 import { Logger } from '../common/logger';
+import { Character } from '../entities/character.entity';
 import { SessionContinuation } from '../entities/continuation/session_continuation.entity';
 import { InworldPacket } from '../entities/inworld_packet.entity';
 import { Scene } from '../entities/scene.entity';
@@ -150,6 +151,16 @@ export class ConnectionService<
     return this.scene.characters;
   }
 
+  async getCurrentCharacter() {
+    await this.getCharactersList();
+
+    return this.getEventFactory().getCurrentCharacter();
+  }
+
+  async setCurrentCharacter(character: Character) {
+    return this.getEventFactory().setCurrentCharacter(character);
+  }
+
   async open() {
     try {
       await this.loadScene();
@@ -187,6 +198,39 @@ export class ConnectionService<
     } catch (err) {
       this.onError(err);
     }
+  }
+
+  async ensureSessionToken(props?: {
+    beforeLoading: () => void;
+    sessionToken?: SessionToken;
+  }) {
+    let sessionToken = props?.sessionToken ?? this.sessionToken;
+
+    if (!sessionToken || SessionToken.isExpired(sessionToken)) {
+      const { sessionId } = sessionToken || {};
+
+      // Generate new session token is it's empty or expired
+      if (!sessionToken || SessionToken.isExpired(sessionToken)) {
+        props?.beforeLoading?.();
+
+        const generateSessionToken =
+          this.connectionProps.generateSessionToken ??
+          this.generateSessionToken.bind(this);
+        sessionToken = await generateSessionToken();
+
+        // Reuse session id to keep context of previous conversation
+        if (sessionId) {
+          sessionToken = new SessionToken({
+            ...sessionToken,
+            sessionId,
+          });
+        }
+      }
+    }
+
+    this.sessionToken = sessionToken;
+
+    return this.sessionToken;
   }
 
   private async write(getPacket: () => ProtoPacket) {
@@ -253,7 +297,6 @@ export class ConnectionService<
     if (this.state === ConnectionState.LOADING) return;
 
     let session: Session;
-    let changed = false;
 
     // Try to get session from provided storage
     if (this.connectionProps.sessionGetterSetter) {
@@ -261,12 +304,14 @@ export class ConnectionService<
     }
 
     try {
-      const sessionToken = await this.getOrLoadSessionToken(
-        session?.sessionToken,
-      );
-      changed = sessionToken !== this.sessionToken || changed;
-
-      this.sessionToken = sessionToken;
+      const previousSessionToken = this.sessionToken;
+      await this.ensureSessionToken({
+        sessionToken: session?.sessionToken,
+        beforeLoading: () => {
+          this.state = ConnectionState.LOADING;
+        },
+      });
+      let changed = previousSessionToken !== this.sessionToken;
 
       if (!this.scene) {
         const scene = await this.getOrLoadScene(session?.scene);
@@ -278,7 +323,7 @@ export class ConnectionService<
           !this.getEventFactory().getCurrentCharacter() &&
           this.scene.characters.length
         ) {
-          this.getEventFactory().setCurrentCharacter(this.scene.characters[0]);
+          this.setCurrentCharacter(this.scene.characters[0]);
         }
       }
 
@@ -298,32 +343,6 @@ export class ConnectionService<
     } catch (err) {
       this.onError(err);
     }
-  }
-
-  private async getOrLoadSessionToken(savedSessionToken?: SessionToken) {
-    let sessionToken = savedSessionToken ?? this.sessionToken;
-
-    const { sessionId } = sessionToken || {};
-
-    // Generate new session token is it's empty or expired
-    if (!sessionToken || SessionToken.isExpired(sessionToken)) {
-      this.state = ConnectionState.LOADING;
-
-      const generateSessionToken =
-        this.connectionProps.generateSessionToken ??
-        this.generateSessionToken.bind(this);
-      sessionToken = await generateSessionToken();
-
-      // Reuse session id to keep context of previous conversation
-      if (sessionId) {
-        sessionToken = new SessionToken({
-          ...sessionToken,
-          sessionId,
-        });
-      }
-    }
-
-    return sessionToken;
   }
 
   private async getOrLoadScene(savedScene?: Scene) {

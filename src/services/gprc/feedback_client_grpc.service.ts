@@ -58,6 +58,8 @@ export class FeedbackClientGrpcService {
         response: response.toObject(),
       },
     });
+
+    return response;
   }
 
   private getMetadata(sessionToken: SessionToken) {
