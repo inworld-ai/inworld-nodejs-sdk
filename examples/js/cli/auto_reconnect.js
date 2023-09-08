@@ -1,5 +1,7 @@
 require('dotenv').config();
 
+const { DislikeType } = require('@inworld/nodejs-sdk');
+
 const { Client } = require('./components/client');
 const { Recorder } = require('./components/recorder');
 const { changeCharacter, characterInfo, listAll } = require('./helpers');
@@ -39,6 +41,11 @@ const run = async function () {
     |- /info - shows current character.
     |- /list-all - shows available characters (created within the scene).
     |- /character %character-id% - id of the target character (Get full list using /list-all command).
+    |- /like %interaction-id% - send feedback for the interaction.
+    |- /dislike %interaction-id% %type% - send feedback for the interaction.
+        Type can be one of the following: ${Object.keys(DislikeType).join(
+          ', ',
+        )}.
     |- c - cancel current response.
     |- <any other text> - sends text event to server.
   `);
@@ -69,6 +76,30 @@ const run = async function () {
 
       case '/character':
         changeCharacter(connection, args[0]);
+        break;
+
+      case '/like':
+      case '/dislike':
+        console.log('Sending. Wait...');
+
+        let feedback;
+
+        if (command === '/like') {
+          feedback = connection.feedback.like({ interactionId: args[0] });
+        } else {
+          feedback = connection.feedback.dislike({
+            comment: 'Test example',
+            interactionId: args[0],
+            types: [DislikeType[args[1]]],
+          });
+        }
+
+        await feedback
+          .then(() => console.log('Feedback sent successfully'))
+          .catch((err) =>
+            console.log('Feedback was not sent successfully: ', err.message),
+          );
+
         break;
 
       case 'c':
