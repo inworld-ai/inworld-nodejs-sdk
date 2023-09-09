@@ -1,3 +1,9 @@
+## [Unreleased]
+
+### Added
+
+- Add opportunity to generate session token outside of SDK
+
 ## [1.7.0] - 2023-09-01
 
 ### Added

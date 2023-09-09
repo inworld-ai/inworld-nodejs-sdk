@@ -23,6 +23,7 @@ describe('should finish with success', () => {
   const onError = jest.fn();
   const onMessage = jest.fn();
   const onDisconnect = jest.fn();
+  const generateSessionTokenFn = jest.fn();
   const sessionGetterSetter = {
     get: jest.fn(),
     set: jest.fn(),
@@ -41,6 +42,7 @@ describe('should finish with success', () => {
       .setOnError(onError)
       .setOnSession(sessionGetterSetter)
       .setExtension(extension)
+      .setGenerateSessionToken(generateSessionTokenFn)
       .setSessionContinuation({ previousDialog: phrases });
   });
 
