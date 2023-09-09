@@ -45,11 +45,15 @@ describe('event types', () => {
   test('should generate audio event', () => {
     const chunk = v4();
     const event = factory.dataChunk(chunk, DataChunk.DataType.AUDIO);
+    const packetId = event.getPacketId();
 
     expect(event.hasDataChunk()).toEqual(true);
     expect(event.getDataChunk().getChunk()).toEqual(chunk);
     expect(event.getDataChunk().getType()).toEqual(DataChunk.DataType.AUDIO);
-    expect(event.hasPacketId()).toEqual(true);
+    expect(packetId.getPacketId()).toBeDefined();
+    expect(packetId.getInteractionId()).toBeFalsy();
+    expect(packetId.getUtteranceId()).toBeFalsy();
+    expect(packetId.getCorrelationId()).toBeFalsy();
     expect(event.hasRouting()).toEqual(true);
     expect(event.getRouting().getTarget().getName()).toEqual(character.id);
     expect(event.hasTimestamp()).toEqual(true);
@@ -57,12 +61,16 @@ describe('event types', () => {
 
   test('should generate audio session start', () => {
     const event = factory.audioSessionStart();
+    const packetId = event.getPacketId();
 
     expect(event.hasControl()).toEqual(true);
     expect(event.getControl().getAction()).toEqual(
       ControlEvent.Action.AUDIO_SESSION_START,
     );
-    expect(event.hasPacketId()).toEqual(true);
+    expect(packetId.getPacketId()).toBeDefined();
+    expect(packetId.getInteractionId()).toBeFalsy();
+    expect(packetId.getUtteranceId()).toBeFalsy();
+    expect(packetId.getCorrelationId()).toBeFalsy();
     expect(event.hasRouting()).toEqual(true);
     expect(event.getRouting().getTarget().getName()).toEqual(character.id);
     expect(event.hasTimestamp()).toEqual(true);
@@ -70,12 +78,16 @@ describe('event types', () => {
 
   test('should generate audio session end', () => {
     const event = factory.audioSessionEnd();
+    const packetId = event.getPacketId();
 
     expect(event.hasControl()).toEqual(true);
     expect(event.getControl().getAction()).toEqual(
       ControlEvent.Action.AUDIO_SESSION_END,
     );
-    expect(event.hasPacketId()).toEqual(true);
+    expect(packetId.getPacketId()).toBeDefined();
+    expect(packetId.getInteractionId()).toBeFalsy();
+    expect(packetId.getUtteranceId()).toBeFalsy();
+    expect(packetId.getCorrelationId()).toBeFalsy();
     expect(event.hasRouting()).toEqual(true);
     expect(event.getRouting().getTarget().getName()).toEqual(character.id);
     expect(event.hasTimestamp()).toEqual(true);
@@ -83,12 +95,16 @@ describe('event types', () => {
 
   test('should generate mute', () => {
     const event = factory.mutePlayback(true);
+    const packetId = event.getPacketId();
 
     expect(event.hasControl()).toEqual(true);
     expect(event.getControl().getAction()).toEqual(
       ControlEvent.Action.TTS_PLAYBACK_MUTE,
     );
-    expect(event.hasPacketId()).toEqual(true);
+    expect(packetId.getPacketId()).toBeDefined();
+    expect(packetId.getInteractionId()).toBeFalsy();
+    expect(packetId.getUtteranceId()).toBeFalsy();
+    expect(packetId.getCorrelationId()).toBeFalsy();
     expect(event.hasRouting()).toEqual(true);
     expect(event.getRouting().getTarget().getName()).toEqual(character.id);
     expect(event.hasTimestamp()).toEqual(true);
@@ -96,12 +112,16 @@ describe('event types', () => {
 
   test('should generate unmute', () => {
     const event = factory.mutePlayback(false);
+    const packetId = event.getPacketId();
 
     expect(event.hasControl()).toEqual(true);
     expect(event.getControl().getAction()).toEqual(
       ControlEvent.Action.TTS_PLAYBACK_UNMUTE,
     );
-    expect(event.hasPacketId()).toEqual(true);
+    expect(packetId.getPacketId()).toBeDefined();
+    expect(packetId.getInteractionId()).toBeFalsy();
+    expect(packetId.getUtteranceId()).toBeFalsy();
+    expect(packetId.getCorrelationId()).toBeFalsy();
     expect(event.hasRouting()).toEqual(true);
     expect(event.getRouting().getTarget().getName()).toEqual(character.id);
     expect(event.hasTimestamp()).toEqual(true);
@@ -110,10 +130,14 @@ describe('event types', () => {
   test('should generate text event', () => {
     const text = v4();
     const event = factory.text(text);
+    const packetId = event.getPacketId();
 
     expect(event.hasText()).toEqual(true);
     expect(event.getText().getText()).toEqual(text);
-    expect(event.hasPacketId()).toEqual(true);
+    expect(packetId.getPacketId()).toBeDefined();
+    expect(packetId.getInteractionId()).toBeDefined();
+    expect(packetId.getUtteranceId()).toBeDefined();
+    expect(packetId.getCorrelationId()).toBeDefined();
     expect(event.hasRouting()).toEqual(true);
     expect(event.getRouting().getTarget().getName()).toEqual(character.id);
     expect(event.hasTimestamp()).toEqual(true);
@@ -122,11 +146,15 @@ describe('event types', () => {
   test('should generate trigger event without parameters', () => {
     const name = v4();
     const event = factory.trigger(name);
+    const packetId = event.getPacketId();
 
     expect(event.hasCustom()).toEqual(true);
     expect(event.getCustom().getName()).toEqual(name);
     expect(event.getCustom().getParametersList()).toEqual([]);
-    expect(event.hasPacketId()).toEqual(true);
+    expect(packetId.getPacketId()).toBeDefined();
+    expect(packetId.getInteractionId()).toBeDefined();
+    expect(packetId.getUtteranceId()).toBeDefined();
+    expect(packetId.getCorrelationId()).toBeDefined();
     expect(event.hasRouting()).toEqual(true);
     expect(event.getRouting().getTarget().getName()).toEqual(character.id);
     expect(event.hasTimestamp()).toEqual(true);
@@ -136,6 +164,7 @@ describe('event types', () => {
     const name = v4();
     const parameters = [{ name: v4(), value: v4() }];
     const event = factory.trigger(name, parameters);
+    const packetId = event.getPacketId();
 
     expect(event.hasCustom()).toEqual(true);
     expect(event.getCustom().getName()).toEqual(name);
@@ -145,19 +174,10 @@ describe('event types', () => {
     expect(event.getCustom().getParametersList()[0].getValue()).toEqual(
       parameters[0].value,
     );
-    expect(event.hasPacketId()).toEqual(true);
-    expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTarget().getName()).toEqual(character.id);
-    expect(event.hasTimestamp()).toEqual(true);
-  });
-
-  test('should generate trigger event', () => {
-    const name = v4();
-    const event = factory.trigger(name);
-
-    expect(event.hasCustom()).toEqual(true);
-    expect(event.getCustom().getName()).toEqual(name);
-    expect(event.hasPacketId()).toEqual(true);
+    expect(packetId.getPacketId()).toBeDefined();
+    expect(packetId.getInteractionId()).toBeDefined();
+    expect(packetId.getUtteranceId()).toBeDefined();
+    expect(packetId.getCorrelationId()).toBeDefined();
     expect(event.hasRouting()).toEqual(true);
     expect(event.getRouting().getTarget().getName()).toEqual(character.id);
     expect(event.hasTimestamp()).toEqual(true);
@@ -165,9 +185,13 @@ describe('event types', () => {
 
   test('should generate cancel response event for all answers', () => {
     const event = factory.cancelResponse();
+    const packetId = event.getPacketId();
 
     expect(event.getMutation().hasCancelResponses()).toEqual(true);
-    expect(event.hasPacketId()).toEqual(true);
+    expect(packetId.getPacketId()).toBeDefined();
+    expect(packetId.getInteractionId()).toBeDefined();
+    expect(packetId.getUtteranceId()).toBeDefined();
+    expect(packetId.getCorrelationId()).toBeDefined();
     expect(event.hasRouting()).toEqual(true);
     expect(event.getRouting().getTarget().getName()).toEqual(character.id);
     expect(event.hasTimestamp()).toEqual(true);
@@ -180,6 +204,7 @@ describe('event types', () => {
     };
     const event = factory.cancelResponse(props);
     const mutation = event.getMutation();
+    const packetId = event.getPacketId();
 
     expect(mutation.hasCancelResponses()).toEqual(true);
     expect(mutation.getCancelResponses().getInteractionId()).toEqual(
@@ -188,7 +213,10 @@ describe('event types', () => {
     expect(mutation.getCancelResponses().getUtteranceIdList()).toEqual(
       props.utteranceId,
     );
-    expect(event.hasPacketId()).toEqual(true);
+    expect(packetId.getPacketId()).toBeDefined();
+    expect(packetId.getInteractionId()).toBeDefined();
+    expect(packetId.getUtteranceId()).toBeDefined();
+    expect(packetId.getCorrelationId()).toBeDefined();
     expect(event.hasRouting()).toEqual(true);
     expect(event.getRouting().getTarget().getName()).toEqual(character.id);
     expect(event.hasTimestamp()).toEqual(true);
@@ -197,9 +225,13 @@ describe('event types', () => {
   test('should not use character id if character is not set', () => {
     factory.setCurrentCharacter(null);
     const event = factory.cancelResponse();
+    const packetId = event.getPacketId();
 
     expect(event.getMutation().hasCancelResponses()).toEqual(true);
-    expect(event.hasPacketId()).toEqual(true);
+    expect(packetId.getPacketId()).toBeDefined();
+    expect(packetId.getInteractionId()).toBeDefined();
+    expect(packetId.getUtteranceId()).toBeDefined();
+    expect(packetId.getCorrelationId()).toBeDefined();
     expect(event.hasRouting()).toEqual(true);
     expect(event.getRouting().getTarget().getName()).toEqual('');
     expect(event.hasTimestamp()).toEqual(true);

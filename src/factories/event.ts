@@ -78,7 +78,7 @@ export class EventFactory {
       .setSourceType(TextEvent.SourceType.TYPED_IN)
       .setFinal(true);
 
-    return this.baseProtoPacket().setText(event);
+    return this.baseProtoPacket({ correlationId: true }).setText(event);
   }
 
   trigger(name: string, parameters: TriggerParameter[] = []): ProtoPacket {
@@ -92,7 +92,7 @@ export class EventFactory {
       );
     }
 
-    return this.baseProtoPacket().setCustom(event);
+    return this.baseProtoPacket({ correlationId: true }).setCustom(event);
   }
 
   cancelResponse(cancelResponses?: CancelResponsesProps): ProtoPacket {
@@ -109,10 +109,15 @@ export class EventFactory {
     return this.baseProtoPacket({
       utteranceId: false,
       interactionId: false,
+      correlationId: true,
     }).setMutation(new MutationEvent().setCancelResponses(event));
   }
 
-  baseProtoPacket(props?: { utteranceId?: boolean; interactionId?: boolean }) {
+  baseProtoPacket(props?: {
+    utteranceId?: boolean;
+    interactionId?: boolean;
+    correlationId?: boolean;
+  }) {
     const packetId = new PacketId().setPacketId(v4());
 
     if (props?.utteranceId !== false) {
@@ -121,6 +126,10 @@ export class EventFactory {
 
     if (props?.interactionId !== false) {
       packetId.setInteractionId(v4());
+    }
+
+    if (props?.correlationId) {
+      packetId.setCorrelationId(v4());
     }
 
     return new ProtoPacket()
