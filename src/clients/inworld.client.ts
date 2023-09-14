@@ -103,6 +103,12 @@ export class InworldClient<
     return this;
   }
 
+  setGenerateSessionToken(generateSessionToken: GenerateSessionTokenFn) {
+    this.generateSessionTokenFn = generateSessionToken;
+
+    return this;
+  }
+
   setOnSession(props: GetterSetter<Session>) {
     this.sessionGetterSetter = props;
 
