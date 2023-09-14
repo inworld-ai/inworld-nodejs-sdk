@@ -236,7 +236,7 @@ export class ConnectionService<
   private writeToStream(getPacket: () => ProtoPacket) {
     const packet = getPacket();
 
-    this.stream?.write(getPacket());
+    this.stream?.write(packet);
 
     this.logger.debug({
       action: 'Send packet',
