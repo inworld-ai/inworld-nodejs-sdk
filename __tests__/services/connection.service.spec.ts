@@ -82,13 +82,19 @@ test('should generate session token', async () => {
 });
 
 describe('getSessionState', () => {
-  const connection = new ConnectionService({
-    apiKey: {
-      key: KEY,
-      secret: SECRET,
-    },
-    name: SCENE,
-    onError,
+  let connection: ConnectionService;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+
+    connection = new ConnectionService({
+      apiKey: {
+        key: KEY,
+        secret: SECRET,
+      },
+      name: SCENE,
+      onError,
+    });
   });
 
   test('should get state', async () => {
