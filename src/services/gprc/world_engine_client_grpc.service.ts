@@ -39,8 +39,8 @@ export interface LoadSceneProps<InworldPacketT> {
 }
 export interface SessionProps {
   sessionToken: SessionToken;
-  onDisconnect?: () => void;
-  onError?: (err: ServiceError) => void;
+  onDisconnect?: () => Awaitable<void>;
+  onError?: (err: ServiceError) => Awaitable<void>;
   onMessage?: (message: ProtoPacket) => Awaitable<void>;
 }
 

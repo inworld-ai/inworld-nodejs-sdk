@@ -30,8 +30,8 @@ interface ConnectionProps<InworldPacketT> {
   config?: InternalClientConfiguration;
   sessionGetterSetter?: GetterSetter<Session>;
   sessionContinuation?: SessionContinuation;
-  onDisconnect?: () => void;
-  onError: (err: ServiceError) => void;
+  onDisconnect?: () => Awaitable<void>;
+  onError: (err: ServiceError) => Awaitable<void>;
   onMessage?: (message: InworldPacketT) => Awaitable<void>;
   generateSessionToken?: GenerateSessionTokenFn;
   extension?: Extension<InworldPacketT>;
@@ -61,8 +61,8 @@ export class ConnectionService<
 
   private engineService = new WorldEngineClientGrpcService<InworldPacketT>();
 
-  private onDisconnect: () => void;
-  private onError: (err: ServiceError) => void;
+  private onDisconnect: () => Awaitable<void>;
+  private onError: (err: ServiceError) => Awaitable<void>;
   private onMessage: ((message: ProtoPacket) => Awaitable<void>) | undefined;
 
   private logger = Logger.getInstance();
@@ -70,9 +70,9 @@ export class ConnectionService<
   constructor(props: ConnectionProps<InworldPacketT>) {
     this.connectionProps = props;
 
-    this.onDisconnect = () => {
+    this.onDisconnect = async () => {
       this.state = ConnectionState.INACTIVE;
-      this.connectionProps.onDisconnect?.();
+      await this.connectionProps.onDisconnect?.();
     };
     this.onError = this.connectionProps.onError;
 
