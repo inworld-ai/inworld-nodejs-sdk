@@ -37,9 +37,9 @@ interface ConnectionProps<InworldPacketT> {
   extension?: Extension<InworldPacketT>;
 }
 
-export interface QueueItem {
+interface QueueItem {
   getPacket: () => ProtoPacket;
-  afterWriting?: (packet: ProtoPacket) => void;
+  afterWriting: (packet: ProtoPacket) => void;
 }
 
 export class ConnectionService<
@@ -236,7 +236,7 @@ export class ConnectionService<
   private writeToStream(getPacket: () => ProtoPacket) {
     const packet = getPacket();
 
-    this.stream?.write(getPacket());
+    this.stream?.write(packet);
 
     this.logger.debug({
       action: 'Send packet',
@@ -368,7 +368,7 @@ export class ConnectionService<
   private releaseQueue() {
     this.packetQueue.forEach((item: QueueItem) => {
       const protoPacket = this.writeToStream(item.getPacket);
-      item.afterWriting?.(protoPacket);
+      item.afterWriting(protoPacket);
     });
 
     this.packetQueue = [];
