@@ -198,3 +198,11 @@ export const phrases = [
   },
 ];
 export const previousDialog = new PreviousDialog(phrases);
+
+export const setTimeoutMock = (callback: any) => {
+  if (typeof callback === 'function') {
+    callback();
+  }
+
+  return { hasRef: () => false } as NodeJS.Timeout;
+};

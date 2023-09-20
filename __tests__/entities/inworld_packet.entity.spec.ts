@@ -15,6 +15,10 @@ const packetId: PacketId = {
   interactionId: v4(),
   utteranceId: v4(),
 };
+const packetIdWithCorrelation = {
+  ...packetId,
+  correlationId: v4(),
+};
 const routing: Routing = {
   source: {
     name: v4(),
@@ -57,7 +61,7 @@ test('should get text packet fields', () => {
 
   const packet = new InworldPacket({
     text,
-    packetId,
+    packetId: packetIdWithCorrelation,
     routing,
     date,
     type: InworldPacketType.TEXT,
@@ -67,12 +71,12 @@ test('should get text packet fields', () => {
   expect(packet.text).toEqual(text);
   expect(packet.routing).toEqual(routing);
   expect(packet.date).toEqual(date);
-  expect(packet.packetId).toEqual(packetId);
+  expect(packet.packetId).toEqual(packetIdWithCorrelation);
 });
 
 test('should get trigger packet fields', () => {
   const packet = new InworldPacket({
-    packetId,
+    packetId: packetIdWithCorrelation,
     routing,
     date,
     type: InworldPacketType.TRIGGER,
@@ -81,7 +85,7 @@ test('should get trigger packet fields', () => {
   expect(packet.isTrigger()).toEqual(true);
   expect(packet.routing).toEqual(routing);
   expect(packet.date).toEqual(date);
-  expect(packet.packetId).toEqual(packetId);
+  expect(packet.packetId).toEqual(packetIdWithCorrelation);
 });
 
 test('should get emotion packet fields', () => {
