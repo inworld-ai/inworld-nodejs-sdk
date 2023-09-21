@@ -1,9 +1,6 @@
 import { credentials, Metadata } from '@grpc/grpc-js';
 import { StateSerializationClient } from '@proto/state_serialization_grpc_pb';
-import {
-  GetSessionStateRequest,
-  SessionState,
-} from '@proto/state_serialization_pb';
+import { GetSessionStateRequest } from '@proto/state_serialization_pb';
 import { promisify } from 'util';
 
 import { Config } from '../../common/config';
@@ -15,6 +12,11 @@ import { SessionToken } from '../../entities/session_token.entity';
 export interface getSessionStateProps {
   sessionToken: SessionToken;
   scene: string;
+}
+
+export interface SessionState {
+  state: string;
+  creationTime: string;
 }
 
 export class StateSerializationClientGrpcService {
@@ -39,7 +41,7 @@ export class StateSerializationClientGrpcService {
     const request = new GetSessionStateRequest().setName(name);
     const metadata = this.getMetadata(sessionToken);
 
-    const response: SessionState = await promisify(
+    const response = await promisify(
       this.client.getSessionState.bind(this.client),
     )(request, metadata);
 
@@ -54,7 +56,10 @@ export class StateSerializationClientGrpcService {
       },
     });
 
-    return response;
+    return {
+      state: response.getState_asB64(),
+      creationTime: response.getCreationTime().toDate().toISOString(),
+    } as SessionState;
   }
 
   private getMetadata(sessionToken: SessionToken) {

@@ -5,7 +5,6 @@ import {
   PacketId,
   Routing,
 } from '@proto/packets_pb';
-import { SessionState } from '@proto/state_serialization_pb';
 import { WorldEngineClient } from '@proto/world-engine_grpc_pb';
 import { LoadSceneResponse } from '@proto/world-engine_pb';
 import { v4 } from 'uuid';
@@ -98,20 +97,22 @@ describe('getSessionState', () => {
   });
 
   test('should get state', async () => {
+    const sessionState = {
+      state: previousState,
+      creationTime: protoTimestamp().toDate().toISOString(),
+    };
     const generateSessionToken = jest
       .spyOn(WorldEngineClientGrpcService.prototype, 'generateSessionToken')
       .mockImplementationOnce(() => Promise.resolve(sessionProto));
     const getSessionState = jest
       .spyOn(StateSerializationClientGrpcService.prototype, 'getSessionState')
-      .mockImplementationOnce(() =>
-        Promise.resolve(new SessionState().setState(previousState)),
-      );
+      .mockImplementationOnce(() => Promise.resolve(sessionState));
 
     const result = await connection.getSessionState();
 
     expect(generateSessionToken).toHaveBeenCalledTimes(1);
     expect(getSessionState).toHaveBeenCalledTimes(1);
-    expect(result).toEqual(previousState);
+    expect(result).toEqual(sessionState);
   });
 
   test('should catch error and pass it to handler', async () => {

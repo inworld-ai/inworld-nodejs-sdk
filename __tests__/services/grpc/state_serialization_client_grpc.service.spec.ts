@@ -5,6 +5,7 @@ import { SessionState } from '@proto/state_serialization_pb';
 import { v4 } from 'uuid';
 
 import { Config } from '../../../src/common/config';
+import { protoTimestamp } from '../../../src/common/helpers';
 import { StateSerializationClientGrpcService } from '../../../src/services/gprc/state_serialization_client_grpc.service';
 import { SCENE, sessionToken } from '../../helpers';
 
@@ -43,12 +44,14 @@ describe('credentials', () => {
 
 describe('getSessionState', () => {
   test('should return session state', async () => {
-    const state = new SessionState().setState(v4());
+    const sessionState = new SessionState()
+      .setState(v4())
+      .setCreationTime(protoTimestamp());
     const generateSessionToken = jest
       .spyOn(StateSerializationClient.prototype, 'getSessionState')
       .mockImplementationOnce((_request, _metadata, _options, callback) => {
         const cb = typeof _options === 'function' ? _options : callback;
-        cb(null, state);
+        cb(null, sessionState);
         return {} as SurfaceCall;
       });
 
@@ -59,6 +62,9 @@ describe('getSessionState', () => {
     });
 
     expect(generateSessionToken).toHaveBeenCalledTimes(1);
-    expect(result).toEqual(state);
+    expect(result.state).toEqual(sessionState.getState_asB64());
+    expect(result.creationTime).toEqual(
+      sessionState.getCreationTime().toDate().toISOString(),
+    );
   });
 });

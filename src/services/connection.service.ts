@@ -109,12 +109,10 @@ export class ConnectionService<
   async getSessionState() {
     try {
       const token = await this.ensureSessionToken();
-      const proto = await this.stateService.getSessionState({
+      return this.stateService.getSessionState({
         sessionToken: token,
         scene: this.connectionProps.name,
       });
-
-      return proto.getState_asU8();
     } catch (err) {
       this.onError(err);
     }
