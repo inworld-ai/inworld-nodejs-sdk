@@ -4,7 +4,7 @@ on:
   pull_request:
 
 jobs:
-  build-sdk:
+  build-pr:
     runs-on: ubuntu-latest
     concurrency:
       group: build-a-${{ github.ref }}
@@ -12,24 +12,7 @@ jobs:
     steps:
       - name: Checkout source code
         uses: actions/checkout@v3
-      - name: Setup node
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16.x'
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "dir=$(yarn cache dir)" >> "$GITHUB_OUTPUT"
-      - name: Use yarn cache directory
-        uses: actions/cache@v3
-        id: yarn-cache
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - name: Install dependencies
-        run: yarn install --ignore-scripts --frozen-lockfile
-      - name: Build SDK
-        run: yarn build
+      - name: Run build
+        uses: ./.github/actions/build_package
       - name: Run tests
         run: yarn test
