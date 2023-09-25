@@ -46,7 +46,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   release-notification:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, kubernetes, nodocker]
     needs: [github-release, npm-release]
     # always runs even if previous tasks are not successful
     if: always()
