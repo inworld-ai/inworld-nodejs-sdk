@@ -27,6 +27,7 @@ import {
   SCENE,
   SECRET,
   sessionToken,
+  setTimeoutMock,
   user,
 } from '../helpers';
 
@@ -44,12 +45,6 @@ const DISCONNECT_TIMEOUT = 100;
 
 beforeEach(() => {
   jest.clearAllMocks();
-  jest.useFakeTimers();
-});
-
-afterEach(() => {
-  jest.runOnlyPendingTimers();
-  jest.useRealTimers();
 });
 
 test('should return event factory', () => {
@@ -355,7 +350,9 @@ describe('open', () => {
       .spyOn(WorldEngineClientGrpcService.prototype, 'loadScene')
       .mockImplementationOnce(() => Promise.resolve(scene));
 
-    const setTimeout = jest.spyOn(global, 'setTimeout');
+    const setTimeout = jest
+      .spyOn(global, 'setTimeout')
+      .mockImplementationOnce(setTimeoutMock);
 
     await connection.open();
 
@@ -364,9 +361,6 @@ describe('open', () => {
       expect.any(Function),
       DISCONNECT_TIMEOUT,
     );
-
-    // Fast-forward until all timers have been executed
-    jest.advanceTimersByTime(DISCONNECT_TIMEOUT);
 
     expect(close).toHaveBeenCalledTimes(1);
   });
@@ -587,7 +581,9 @@ describe('send', () => {
 
     jest.spyOn(connection, 'isActive').mockImplementation(() => true);
 
-    const setTimeout = jest.spyOn(global, 'setTimeout');
+    const setTimeout = jest
+      .spyOn(global, 'setTimeout')
+      .mockImplementationOnce(setTimeoutMock);
 
     await connection.send(generateEmptyPacket);
 
@@ -596,9 +592,6 @@ describe('send', () => {
       expect.any(Function),
       DISCONNECT_TIMEOUT,
     );
-
-    // Fast-forward until all timers have been executed
-    jest.advanceTimersByTime(DISCONNECT_TIMEOUT);
 
     expect(close).toHaveBeenCalledTimes(1);
   });
@@ -628,12 +621,20 @@ describe('send', () => {
       .spyOn(WorldEngineClient.prototype, 'session')
       .mockImplementation(() => stream);
 
-    connection.send(generateEmptyPacket);
-    connection.send(generateEmptyPacket);
+    const protoPackets: ProtoPacket[] = [];
+    const send = () => {
+      const proto = generateEmptyPacket();
+      protoPackets.push(proto);
+      return proto;
+    };
 
-    setTimeout(async () => {
-      expect(loadScene).toHaveBeenCalledTimes(1);
-    }, 100);
+    await Promise.all([connection.send(send), connection.send(send)]).then(
+      (values) => {
+        expect(loadScene).toHaveBeenCalledTimes(1);
+        expect(values[0]).toEqual(InworldPacket.fromProto(protoPackets[0]));
+        expect(values[1]).toEqual(InworldPacket.fromProto(protoPackets[1]));
+      },
+    );
   });
 });
 

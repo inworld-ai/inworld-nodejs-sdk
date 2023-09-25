@@ -1,3 +1,15 @@
+## [1.8.0] - 2023-09-20
+
+### Added
+
+- Add opportunity to generate session token outside of SDK
+- Add `correlationId` to text, custom and cancel response packets
+- Allow to use async `onDisconnect` and `onError`
+
+### Fixed
+
+- Generate proto packet just once to dispatching it to the bidirectional stream
+
 ## [1.7.0] - 2023-09-01
 
 ### Added

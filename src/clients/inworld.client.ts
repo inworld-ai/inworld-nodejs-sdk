@@ -37,8 +37,8 @@ export class InworldClient<
   private generateSessionTokenFn: GenerateSessionTokenFn;
   private sessionGetterSetter: GetterSetter<Session>;
 
-  private onDisconnect: (() => void) | undefined;
-  private onError: ((err: ServiceError) => void) | undefined;
+  private onDisconnect: (() => Awaitable<void>) | undefined;
+  private onError: ((err: ServiceError) => Awaitable<void>) | undefined;
   private onMessage: ((message: InworldPacketT) => Awaitable<void>) | undefined;
 
   private extension: Extension<InworldPacketT>;
@@ -82,16 +82,16 @@ export class InworldClient<
     return this;
   }
 
-  setOnDisconnect(fn: () => void) {
+  setOnDisconnect(fn: () => Awaitable<void>) {
     this.onDisconnect = fn;
 
     return this;
   }
 
-  setOnError(fn: (err: ServiceError) => void) {
-    this.onError = (err: ServiceError) => {
+  setOnError(fn: (err: ServiceError) => Awaitable<void>) {
+    this.onError = async (err: ServiceError) => {
       this.logError(err);
-      fn(err);
+      await fn(err);
     };
 
     return this;
@@ -99,6 +99,12 @@ export class InworldClient<
 
   setOnMessage(fn: (message: InworldPacketT) => Awaitable<void>) {
     this.onMessage = fn;
+
+    return this;
+  }
+
+  setGenerateSessionToken(generateSessionToken: GenerateSessionTokenFn) {
+    this.generateSessionTokenFn = generateSessionToken;
 
     return this;
   }
