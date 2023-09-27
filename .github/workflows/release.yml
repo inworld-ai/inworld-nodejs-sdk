@@ -42,10 +42,9 @@ jobs:
           ref: main
       - name: Run build
         uses: ./.github/actions/build_package
+      - run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
       - name: Publish to npm
         run: yarn release:publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   release-notification:
     runs-on: [self-hosted, kubernetes, nodocker]
@@ -75,4 +74,4 @@ jobs:
           SLACK_COLOR: ${{ contains(needs.*.result, 'failure') && 'danger' || 'good' }}
           SLACK_TITLE: Release ${{ contains(needs.*.result, 'failure') && 'failure' || steps.extract-version.outputs.version }}
           SLACK_MESSAGE: ${{ contains(needs.*.result, 'failure') && ':x:' || steps.extract-release-notes.outputs.release_notes }}
-          SLACK_FOOTER: '-Web SDK-'
+          SLACK_FOOTER: '-Node.js SDK-'
