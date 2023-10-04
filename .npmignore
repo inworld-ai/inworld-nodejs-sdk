@@ -15,6 +15,7 @@ jest.config.json
 build/jest-result.json
 */**/yarn.lock
 */**/package-lock.json
+TESTME.md
 RELEASEME.md
 EXTENSIONS.md
 *.log
