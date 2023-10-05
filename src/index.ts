@@ -39,11 +39,11 @@ import {
 import {
   EmotionBehavior,
   EmotionBehaviorCode,
-} from './entities/emotion-behavior.entity';
+} from './entities/emotion_behavior.entity';
 import {
   EmotionStrength,
   EmotionStrengthCode,
-} from './entities/emotion-strength.entity';
+} from './entities/emotion_strength.entity';
 import {
   Actor,
   AudioEvent,
@@ -62,7 +62,7 @@ import { InworldConnectionService } from './services/inworld_connection.service'
 
 const config = Config.getInstance();
 const getHost = () => config.getHost();
-const getSsl = () => config.getSsl();
+const getSSL = () => config.getSSL();
 
 export {
   Actor,
@@ -80,7 +80,7 @@ export {
   EmotionStrength,
   EmotionStrengthCode,
   getHost,
-  getSsl,
+  getSSL,
   InworlControlType,
   InworldClient,
   InworldConnectionService,

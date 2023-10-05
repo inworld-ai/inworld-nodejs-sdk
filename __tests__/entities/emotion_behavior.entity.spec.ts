@@ -3,7 +3,7 @@ import { EmotionEvent } from '@proto/packets_pb';
 import {
   EmotionBehavior,
   EmotionBehaviorCode,
-} from '../../src/entities/emotion-behavior.entity';
+} from '../../src/entities/emotion_behavior.entity';
 
 const mappingTestTable = [
   {

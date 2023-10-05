@@ -1,3 +1,11 @@
+## [Unreleased]
+
+### Added
+
+- Allow to get the conversation state
+- Allow to propagate previous conversation state to new connection
+- Debug logs support for world-engine token generation
+
 ## [1.8.0] - 2023-09-20
 
 ### Added

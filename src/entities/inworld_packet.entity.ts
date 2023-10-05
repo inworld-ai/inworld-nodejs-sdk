@@ -7,8 +7,8 @@ import {
 } from '@proto/packets_pb';
 import { Duration } from 'google-protobuf/google/protobuf/duration_pb';
 
-import { EmotionBehavior } from './emotion-behavior.entity';
-import { EmotionStrength } from './emotion-strength.entity';
+import { EmotionBehavior } from './emotion_behavior.entity';
+import { EmotionStrength } from './emotion_strength.entity';
 
 export enum InworldPacketType {
   UNKNOWN = 'UNKNOWN',

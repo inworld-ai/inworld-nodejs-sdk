@@ -47,13 +47,15 @@ export interface SessionProps {
 export class WorldEngineClientGrpcService<InworldPacketT> {
   private readonly config = Config.getInstance();
   private readonly address = this.config.getHost();
-  private readonly ssl = this.config.getSsl();
+  private readonly ssl = this.config.getSSL();
   private readonly grpcOptions = { ...grpcOptions };
   private readonly client = new WorldEngineClient(
     this.config.getHost(),
     this.ssl ? credentials.createSsl() : credentials.createInsecure(),
     { ...grpcOptions },
   );
+
+  private logger = Logger.getInstance();
 
   public async generateSessionToken(
     apiKey: ApiKey,
@@ -73,16 +75,26 @@ export class WorldEngineClientGrpcService<InworldPacketT> {
       }),
     );
 
-    return promisify(this.client.generateToken.bind(this.client))(
-      request,
-      metadata,
-    );
+    const response: AccessToken = await promisify(
+      this.client.generateToken.bind(this.client),
+    )(request, metadata);
+
+    this.logger.debug({
+      action: 'Generate token',
+      data: {
+        address: this.address,
+        ssl: this.ssl,
+        metadata: metadata.toJSON(),
+        request: request.toObject(),
+        response: response.toObject(),
+      },
+    });
+
+    return response;
   }
 
-  private logger = Logger.getInstance();
-
   public async loadScene(props: LoadSceneProps<InworldPacketT>) {
-    const { name, sessionToken, user, sessionContinuation, capabilities } =
+    const { capabilities, name, sessionContinuation, sessionToken, user } =
       props;
 
     const request = new LoadSceneRequest();
@@ -107,12 +119,23 @@ export class WorldEngineClientGrpcService<InworldPacketT> {
       );
     }
 
-    if (sessionContinuation?.previousDialog) {
-      request.setSessionContinuation(
-        new SessionContinuationProto().setPreviousDialog(
+    if (
+      sessionContinuation?.previousDialog ||
+      sessionContinuation?.previousState
+    ) {
+      const continuation = new SessionContinuationProto();
+
+      if (sessionContinuation.previousState) {
+        continuation.setPreviousState(sessionContinuation.previousState);
+      }
+
+      if (sessionContinuation.previousDialog) {
+        continuation.setPreviousDialog(
           sessionContinuation.previousDialog.toProto(),
-        ),
-      );
+        );
+      }
+
+      request.setSessionContinuation(continuation);
     }
 
     request.setClient(
