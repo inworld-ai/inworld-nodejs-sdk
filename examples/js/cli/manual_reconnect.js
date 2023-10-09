@@ -13,7 +13,7 @@ const recorder = new Recorder({
   onError: console.error,
 });
 
-const client = new Client({
+const props = {
   config: {
     capabilities: {
       audio: true,
@@ -33,14 +33,34 @@ const client = new Client({
     }
     recorder.pause();
   },
-});
-const connection = client.getConnection();
+};
+const build = (props) => {
+  const client = new Client(props);
+  const connection = client.getConnection();
+
+  return { client, connection };
+};
+
+const open = async () => {
+  await connection.open();
+
+  console.log(
+    `Connection is open and will be closed in ${
+      DISCONNECT_TIMEOUT / 1000
+    } seconds`,
+  );
+};
+
+let sessionState;
+let { client, connection } = build(props);
 
 const run = async function () {
   console.info('Starting Client with manual reconnect.');
   console.info(`Console commands:
     |- /open - open connection.
     |- /close - close connection.
+    |- /save-session-state - save session state in app memory.
+    |- /restore-session-state - restore session state from app memory.
     |- /start - starts audio capturing.
     |- /end - ends audio capturing.
     |- /trigger - send trigger.
@@ -102,17 +122,43 @@ const run = async function () {
 
       case '/open':
         console.log('Opening. Wait...');
-        await connection.open();
-
-        console.log(
-          `Connection is open and will be closed in ${
-            DISCONNECT_TIMEOUT / 1000
-          } seconds`,
-        );
+        await open();
         break;
 
       case '/close':
         connection.close();
+        break;
+
+      case '/save-session-state':
+        if (!connection.isActive() || !client.getInteractionIsEnded()) {
+          console.log('Open connection first and send at least one packet');
+        } else {
+          console.log('Saving. Wait...');
+          sessionState = (await connection.getSessionState()).state;
+          console.log(
+            sessionState
+              ? 'Session state is saved.'
+              : 'Session state is not saved',
+          );
+        }
+        break;
+
+      case '/restore-session-state':
+        if (connection.isActive()) {
+          console.log('Close connection first');
+        } else {
+          if (sessionState) {
+            console.log('Restoring. Wait...');
+            ({ client, connection } = build({
+              ...props,
+              previousState: sessionState,
+            }));
+            await open();
+            console.log('Session state is restored.');
+          } else {
+            console.log('Nothing to restore...');
+          }
+        }
         break;
 
       default:
