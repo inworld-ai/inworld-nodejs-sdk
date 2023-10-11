@@ -170,14 +170,12 @@ export class InworldClient<
   private buildCapabilities(capabilities: Capabilities): CapabilitiesRequest {
     const request = new CapabilitiesRequest()
       .setAudio(capabilities.audio ?? true)
-      .setContinuation(capabilities.continuation ?? false)
       .setEmotions(capabilities.emotions ?? false)
       .setInterruptions(capabilities.interruptions ?? false)
       .setPhonemeInfo(capabilities.phonemes ?? false)
       .setSilenceEvents(capabilities.silence ?? false)
       .setText(true)
-      .setTriggers(true)
-      .setContinuation(capabilities.continuation ?? false);
+      .setTriggers(true);
 
     return request;
   }

@@ -112,7 +112,6 @@ export const capabilitiesProps: Capabilities = {
   interruptions: true,
   phonemes: true,
   silence: true,
-  continuation: true,
 };
 
 export const capabilities = new CapabilitiesRequest()
