@@ -138,6 +138,14 @@ export class Client {
       });
     }
 
+    // NARRATED_ACTION
+    if (packet.isNarratedAction()) {
+      this.conversationProcess.send({
+        action: CONVERSATION_ACTION.NARRATED_ACTION,
+        packet,
+      });
+    }
+
     // INTERACTION_END
     if (packet.isInteractionEnd()) {
       this.interactionIsEnded = true;

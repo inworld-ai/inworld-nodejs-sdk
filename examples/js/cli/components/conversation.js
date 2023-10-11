@@ -25,13 +25,19 @@ class Conversation {
     this.player.addToQueue({
       packet,
       onAfterPlaying: (packet) => {
-        this.markAsApplied(packet, (packet) => !!packet.audio);
+        this.markAsApplied(
+          ({ audio, packetId }) =>
+            !!audio && packetId.utteranceId === packet.packetId.utteranceId,
+        );
 
         if (this.order === DISPLAY_WHEN.AFTER_AUDIO_PLAYING) {
-          const found = this.markAsApplied(packet, (packet) => !!packet.text);
+          const found = this.markAsApplied(
+            ({ text, packetId }) =>
+              !!text && packetId.utteranceId === packet.packetId.utteranceId,
+          );
 
           if (found) {
-            this.renderTextPacket(found.packet);
+            this.renderPacket(found.packet);
           }
         }
 
@@ -44,14 +50,27 @@ class Conversation {
           this.endInteraction(interactionEnd.packet);
         }
       },
-      ...(this.order === DISPLAY_WHEN.BEFORE_AUDIO_PLAYING && {
-        onBeforePlaying: (packet) => {
-          const found = this.markAsApplied(packet, (packet) => !!packet.text);
-          if (found) {
-            this.renderTextPacket(found.packet);
+      onBeforePlaying: (packet) => {
+        if (this.order === DISPLAY_WHEN.BEFORE_AUDIO_PLAYING) {
+          const text = this.markAsApplied(
+            ({ text, packetId }) =>
+              !!text && packetId.utteranceId === packet.packetId.utteranceId,
+          );
+          if (text) {
+            this.renderPacket(text.packet);
           }
-        },
-      }),
+        }
+
+        const action = this.markAsApplied(
+          ({ narratedAction, packetId }) =>
+            !!narratedAction &&
+            packetId.interactionId === packet.packetId.interactionId,
+        );
+
+        if (action) {
+          this.renderPacket(action.packet);
+        }
+      },
     });
   }
 
@@ -95,7 +114,30 @@ class Conversation {
       );
 
       if (audioIsApplied) {
-        this.renderTextPacket(packet);
+        this.renderPacket(packet);
+      } else {
+        this.queue.push({ packet, isApplied: false });
+      }
+    }
+  }
+
+  displayAction(packet) {
+    if (packet.narratedAction?.text) {
+      if (this.cancelResponses[packet.packetId.interactionId]) {
+        return;
+      }
+
+      const { interactionId } = packet.packetId;
+
+      const audioIsApplied = this.queue.find(
+        (item) =>
+          !!item.packet.audio &&
+          item.isApplied &&
+          item.packet.packetId.interactionId === interactionId,
+      );
+
+      if (audioIsApplied) {
+        this.renderPacket(packet);
       } else {
         this.queue.push({ packet, isApplied: false });
       }
@@ -153,11 +195,9 @@ class Conversation {
     }
   }
 
-  markAsApplied = (packet, compare) => {
+  markAsApplied = (compare) => {
     const found = this.queue.find(
-      (item) =>
-        compare(item.packet) &&
-        item.packet.packetId.utteranceId === packet.packetId.utteranceId,
+      (item) => !item.isApplied && compare(item.packet),
     );
 
     if (found) {
@@ -167,15 +207,23 @@ class Conversation {
     return found;
   };
 
-  renderTextPacket(packet) {
+  renderPacket(packet) {
     const i = packet.packetId.interactionId;
     const u = packet.packetId.utteranceId;
 
-    console.log(
-      `${this.renderEventRouting(packet)} (i=${i}, u=${u}): ${
-        packet.text.text
-      }`,
-    );
+    if (packet.text?.text) {
+      console.log(
+        `${this.renderEventRouting(packet)} (i=${i}, u=${u}): ${
+          packet.text.text
+        }`,
+      );
+    } else if (packet.narratedAction?.text) {
+      console.log(
+        `${this.renderEventRouting(packet)} (i=${i}, u=${u}): *${
+          packet.narratedAction.text
+        }*`,
+      );
+    }
   }
 
   renderEventRouting = (packet) => {
