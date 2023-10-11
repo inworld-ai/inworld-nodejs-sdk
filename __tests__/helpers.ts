@@ -110,6 +110,7 @@ export const capabilitiesProps: Capabilities = {
   emotions: true,
   audio: true,
   interruptions: true,
+  narratedActions: true,
   phonemes: true,
   silence: true,
 };

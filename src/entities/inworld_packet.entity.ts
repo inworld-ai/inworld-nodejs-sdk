@@ -19,6 +19,7 @@ export enum InworldPacketType {
   CONTROL = 'CONTROL',
   SILENCE = 'SILENCE',
   CANCEL_RESPONSE = 'CANCEL_RESPONSE',
+  NARRATED_ACTION = 'NARRATED_ACTION',
 }
 
 export enum InworlControlType {
@@ -38,6 +39,7 @@ export interface InworldPacketProps {
   packetId: PacketId;
   routing: Routing;
   text?: TextEvent;
+  narratedAction?: NarratedAction;
   date: string;
   type: InworldPacketType;
 }
@@ -103,6 +105,10 @@ export interface ControlEvent {
   type: InworlControlType;
 }
 
+export interface NarratedAction {
+  text: string;
+}
+
 export class InworldPacket {
   private type: InworldPacketType = InworldPacketType.UNKNOWN;
 
@@ -117,6 +123,7 @@ export class InworldPacket {
   readonly trigger: TriggerEvent;
   readonly emotions: EmotionEvent;
   readonly silence: SilenceEvent;
+  readonly narratedAction: NarratedAction;
   readonly cancelResponses: CancelResponsesEvent;
 
   constructor(props: InworldPacketProps) {
@@ -151,6 +158,10 @@ export class InworldPacket {
 
     if (this.isCancelResponse()) {
       this.cancelResponses = props.cancelResponses;
+    }
+
+    if (this.isNarratedAction()) {
+      this.narratedAction = props.narratedAction;
     }
   }
 
@@ -201,6 +212,10 @@ export class InworldPacket {
 
   isCancelResponse() {
     return this.type === InworldPacketType.CANCEL_RESPONSE;
+  }
+
+  isNarratedAction() {
+    return this.type === InworldPacketType.NARRATED_ACTION;
   }
 
   static fromProto(proto: ProtoPacket): InworldPacket {
@@ -298,6 +313,11 @@ export class InworldPacket {
             .getUtteranceIdList(),
         },
       }),
+      ...(type === InworldPacketType.NARRATED_ACTION && {
+        narratedAction: {
+          text: proto.getAction().getNarratedAction().getContent(),
+        },
+      }),
     });
   }
 
@@ -319,6 +339,8 @@ export class InworldPacket {
         return InworldPacketType.EMOTION;
       case packet.getMutation()?.hasCancelResponses():
         return InworldPacketType.CANCEL_RESPONSE;
+      case packet.getAction()?.hasNarratedAction():
+        return InworldPacketType.NARRATED_ACTION;
       default:
         return InworldPacketType.UNKNOWN;
     }

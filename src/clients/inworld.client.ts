@@ -172,6 +172,7 @@ export class InworldClient<
       .setAudio(capabilities.audio ?? true)
       .setEmotions(capabilities.emotions ?? false)
       .setInterruptions(capabilities.interruptions ?? false)
+      .setNarratedActions(capabilities.narratedActions ?? false)
       .setPhonemeInfo(capabilities.phonemes ?? false)
       .setSilenceEvents(capabilities.silence ?? false)
       .setText(true)
