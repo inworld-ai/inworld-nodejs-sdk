@@ -8,6 +8,7 @@ import {
   status,
 } from '@inworld/nodejs-sdk';
 import { ChildProcess, fork } from 'child_process';
+import * as kill from 'tree-kill';
 
 import { CLIENT_ACTION, CONVERSATION_ACTION, DISPLAY_WHEN } from './types';
 
@@ -61,7 +62,9 @@ export class Client {
   }
 
   closeConnection() {
-    this.conversationProcess?.kill();
+    if (this.conversationProcess?.pid) {
+      kill(this.conversationProcess.pid);
+    }
   }
 
   getConnection() {

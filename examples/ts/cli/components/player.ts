@@ -1,6 +1,7 @@
 import { InworldPacket } from '@inworld/nodejs-sdk';
 import { ChildProcess, exec } from 'child_process';
 import * as fs from 'fs';
+import * as kill from 'tree-kill';
 import { promisify } from 'util';
 import { v4 } from 'uuid';
 
@@ -32,7 +33,10 @@ export class Player {
   }
 
   stop() {
-    this.child?.kill();
+    if (this.child?.pid) {
+      kill(this.child.pid);
+    }
+
     this.isPlaying = false;
     this.queue = [];
 
