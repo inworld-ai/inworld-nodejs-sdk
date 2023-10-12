@@ -1,3 +1,9 @@
+## [Unreleased]
+
+### Added
+
+- Narrated actions support
+
 ## [1.9.0] - 2023-10-05
 
 ### Added
