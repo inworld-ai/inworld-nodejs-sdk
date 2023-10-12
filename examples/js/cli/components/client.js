@@ -1,5 +1,6 @@
 const { InworldClient, status } = require('@inworld/nodejs-sdk');
 const { fork } = require('child_process');
+const kill = require('tree-kill');
 
 const { CLIENT_ACTION, CONVERSATION_ACTION } = require('./types.js');
 
@@ -47,7 +48,9 @@ class Client {
   }
 
   closeConnection() {
-    this.conversationProcess?.kill();
+    if (this.conversationProcess?.pid) {
+      kill(this.conversationProcess.pid);
+    }
   }
 
   getConnection() {
