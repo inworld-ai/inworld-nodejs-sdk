@@ -31,8 +31,8 @@ const props: ClientProps = {
       console.log(
         'Please execute /start again if you would like to continue audio capturing.',
       );
+      recorder.pause();
     }
-    recorder.pause();
   },
 };
 
@@ -79,7 +79,9 @@ const run = async function () {
     switch (command) {
       case '/start':
         if (connection.isActive()) {
+          console.log('Starting. Wait...');
           await connection.sendAudioSessionStart();
+          console.log('Ready to listening...');
           recorder.capture();
         } else {
           console.log('Open connection first');
