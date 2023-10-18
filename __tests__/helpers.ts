@@ -110,9 +110,9 @@ export const capabilitiesProps: Capabilities = {
   emotions: true,
   audio: true,
   interruptions: true,
+  narratedActions: true,
   phonemes: true,
   silence: true,
-  continuation: true,
 };
 
 export const capabilities = new CapabilitiesRequest()
@@ -123,7 +123,8 @@ export const capabilities = new CapabilitiesRequest()
   .setPhonemeInfo(true)
   .setSilenceEvents(true)
   .setText(true)
-  .setTriggers(true);
+  .setTriggers(true)
+  .setContinuation(true);
 
 export const user: User = {
   fullName: 'Name',
@@ -166,6 +167,8 @@ const previousDialogProto = new PreviousDialogProto().setPhrasesList([
     .setPhrase(v4())
     .setTalker(PreviousDialogProto.DialogParticipant.PLAYER),
 ]);
+
+export const previousState = v4();
 
 export const sessionContinuation = new SessionContinuation().setPreviousDialog(
   previousDialogProto,

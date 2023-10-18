@@ -1,3 +1,17 @@
+## [1.10.0] - 2023-10-18
+
+### Added
+
+- Narrated actions support
+
+## [1.9.0] - 2023-10-05
+
+### Added
+
+- Allow to get the conversation state
+- Allow to propagate previous conversation state to new connection
+- Debug logs support for world-engine token generation
+
 ## [1.8.0] - 2023-09-20
 
 ### Added

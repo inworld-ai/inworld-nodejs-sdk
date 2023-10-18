@@ -18,6 +18,9 @@ process.on(
       case CONVERSATION_ACTION.DISPLAY_TEXT:
         conversation.displayText(packet);
         break;
+      case CONVERSATION_ACTION.NARRATED_ACTION:
+        conversation.displayAction(packet);
+        break;
       case CONVERSATION_ACTION.END_INTERACTION:
         conversation.endInteraction(packet);
         break;

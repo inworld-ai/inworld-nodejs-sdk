@@ -1,7 +1,6 @@
 import { ClientDuplexStream, ServiceError } from '@grpc/grpc-js';
 import { InworldPacket as ProtoPacket } from '@proto/packets_pb';
 import { ClientRequest } from '@proto/world-engine_pb';
-import { clearTimeout } from 'timers';
 
 import {
   ApiKey,
@@ -20,6 +19,7 @@ import { Scene } from '../entities/scene.entity';
 import { Session } from '../entities/session.entity';
 import { SessionToken } from '../entities/session_token.entity';
 import { EventFactory } from '../factories/event';
+import { StateSerializationClientGrpcService } from './gprc/state_serialization_client_grpc.service';
 import { WorldEngineClientGrpcService } from './gprc/world_engine_client_grpc.service';
 
 interface ConnectionProps<InworldPacketT> {
@@ -60,6 +60,7 @@ export class ConnectionService<
   private packetQueue: QueueItem[] = [];
 
   private engineService = new WorldEngineClientGrpcService<InworldPacketT>();
+  private stateService = new StateSerializationClientGrpcService();
 
   private onDisconnect: () => Awaitable<void>;
   private onError: (err: ServiceError) => Awaitable<void>;
@@ -103,6 +104,18 @@ export class ConnectionService<
     );
 
     return SessionToken.fromProto(proto);
+  }
+
+  async getSessionState() {
+    try {
+      const token = await this.ensureSessionToken();
+      return this.stateService.getSessionState({
+        sessionToken: token,
+        scene: this.connectionProps.name,
+      });
+    } catch (err) {
+      this.onError(err);
+    }
   }
 
   async openManually() {
@@ -253,7 +266,6 @@ export class ConnectionService<
     if (this.state === ConnectionState.LOADING) return;
 
     let session: Session;
-    let changed = false;
 
     // Try to get session from provided storage
     if (this.connectionProps.sessionGetterSetter) {
@@ -261,12 +273,14 @@ export class ConnectionService<
     }
 
     try {
-      const sessionToken = await this.getOrLoadSessionToken(
-        session?.sessionToken,
-      );
-      changed = sessionToken !== this.sessionToken || changed;
-
-      this.sessionToken = sessionToken;
+      const previousSessionToken = this.sessionToken;
+      await this.ensureSessionToken({
+        sessionToken: session?.sessionToken,
+        beforeLoading: () => {
+          this.state = ConnectionState.LOADING;
+        },
+      });
+      let changed = previousSessionToken !== this.sessionToken;
 
       if (!this.scene) {
         const scene = await this.getOrLoadScene(session?.scene);
@@ -300,30 +314,37 @@ export class ConnectionService<
     }
   }
 
-  private async getOrLoadSessionToken(savedSessionToken?: SessionToken) {
-    let sessionToken = savedSessionToken ?? this.sessionToken;
+  async ensureSessionToken(props?: {
+    beforeLoading: () => void;
+    sessionToken?: SessionToken;
+  }) {
+    let sessionToken = props?.sessionToken ?? this.sessionToken;
 
-    const { sessionId } = sessionToken || {};
-
-    // Generate new session token is it's empty or expired
     if (!sessionToken || SessionToken.isExpired(sessionToken)) {
-      this.state = ConnectionState.LOADING;
+      const { sessionId } = sessionToken || {};
 
-      const generateSessionToken =
-        this.connectionProps.generateSessionToken ??
-        this.generateSessionToken.bind(this);
-      sessionToken = await generateSessionToken();
+      // Generate new session token is it's empty or expired
+      if (!sessionToken || SessionToken.isExpired(sessionToken)) {
+        props?.beforeLoading?.();
 
-      // Reuse session id to keep context of previous conversation
-      if (sessionId) {
-        sessionToken = new SessionToken({
-          ...sessionToken,
-          sessionId,
-        });
+        const generateSessionToken =
+          this.connectionProps.generateSessionToken ??
+          this.generateSessionToken.bind(this);
+        sessionToken = await generateSessionToken();
+
+        // Reuse session id to keep context of previous conversation
+        if (sessionId) {
+          sessionToken = new SessionToken({
+            ...sessionToken,
+            sessionId,
+          });
+        }
       }
     }
 
-    return sessionToken;
+    this.sessionToken = sessionToken;
+
+    return this.sessionToken;
   }
 
   private async getOrLoadScene(savedScene?: Scene) {

@@ -16,6 +16,7 @@ const client = new Client({
     capabilities: {
       audio: true,
       emotions: true,
+      narratedActions: true,
       silence: true,
     },
   },

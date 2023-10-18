@@ -16,9 +16,9 @@ export interface Capabilities {
   audio?: boolean;
   emotions?: boolean;
   interruptions?: boolean;
+  narratedActions?: boolean;
   phonemes?: boolean;
   silence?: boolean;
-  continuation?: boolean;
 }
 
 export interface UserProfileField {

@@ -11,6 +11,7 @@ import {
 import { Duration } from 'google-protobuf/google/protobuf/duration_pb';
 import { v4 } from 'uuid';
 
+import { ActionEvent, NarratedAction } from '../../proto/packets_pb';
 import { protoTimestamp } from '../../src/common/helpers';
 import { InworldPacket } from '../../src/entities/inworld_packet.entity';
 import { EventFactory } from '../../src/factories/event';
@@ -318,6 +319,24 @@ describe('convert packet to external one', () => {
 
     expect(result).toBeInstanceOf(InworldPacket);
     expect(result.isSilence()).toEqual(true);
+  });
+
+  test('narrated action', () => {
+    const rounting = new Routing()
+      .setSource(new Actor())
+      .setTarget(new Actor());
+    const action = new ActionEvent().setNarratedAction(
+      new NarratedAction().setContent(v4()),
+    );
+    const packet = new ProtoPacket()
+      .setPacketId(new PacketId().setPacketId(v4()))
+      .setRouting(rounting)
+      .setTimestamp(protoTimestamp())
+      .setAction(action);
+    const result = InworldPacket.fromProto(packet);
+
+    expect(result).toBeInstanceOf(InworldPacket);
+    expect(result.isNarratedAction()).toEqual(true);
   });
 
   test('unknown', () => {

@@ -116,6 +116,23 @@ test('should get silence packet fields', () => {
   expect(packet.packetId).toEqual(packetId);
 });
 
+test('should get narracted action packet fields', () => {
+  const text = v4();
+  const packet = new InworldPacket({
+    packetId,
+    routing,
+    date,
+    type: InworldPacketType.NARRATED_ACTION,
+    narratedAction: { text },
+  });
+
+  expect(packet.isNarratedAction()).toEqual(true);
+  expect(packet.routing).toEqual(routing);
+  expect(packet.date).toEqual(date);
+  expect(packet.packetId).toEqual(packetId);
+  expect(packet.narratedAction.text).toEqual(text);
+});
+
 describe('control', () => {
   test('should get interaction end packet fields', () => {
     const packet = new InworldPacket({

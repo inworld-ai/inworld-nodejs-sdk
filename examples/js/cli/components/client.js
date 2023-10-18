@@ -1,5 +1,6 @@
 const { InworldClient, status } = require('@inworld/nodejs-sdk');
 const { fork } = require('child_process');
+const kill = require('tree-kill');
 
 const { CLIENT_ACTION, CONVERSATION_ACTION } = require('./types.js');
 
@@ -8,6 +9,7 @@ class Client {
   config;
   connection = null;
   conversationProcess;
+  interactionIsEnded = false;
 
   constructor(props) {
     this.conversationProcess = fork(`${__dirname}/conversation_process.js`);
@@ -33,6 +35,12 @@ class Client {
       })
       .setOnMessage(this.onMessage);
 
+    if (props.previousState) {
+      this.client.setSessionContinuation({
+        previousState: props.previousState,
+      });
+    }
+
     if (props.config) {
       this.config = props.config;
       this.client.setConfiguration(this.config);
@@ -40,7 +48,9 @@ class Client {
   }
 
   closeConnection() {
-    this.conversationProcess?.kill();
+    if (this.conversationProcess?.pid) {
+      kill(this.conversationProcess.pid);
+    }
   }
 
   getConnection() {
@@ -60,7 +70,13 @@ class Client {
     });
   }
 
+  getInteractionIsEnded() {
+    return this.interactionIsEnded;
+  }
+
   onMessage = (packet) => {
+    this.interactionIsEnded = false;
+
     // TEXT
     if (packet.isText()) {
       if (packet.routing.source.isPlayer) {
@@ -108,8 +124,17 @@ class Client {
       });
     }
 
+    // NARRATED_ACTION
+    if (packet.isNarratedAction()) {
+      this.conversationProcess.send({
+        action: CONVERSATION_ACTION.NARRATED_ACTION,
+        packet,
+      });
+    }
+
     // INTERACTION_END
     if (packet.isInteractionEnd()) {
+      this.interactionIsEnded = true;
       this.conversationProcess.send({
         action: CONVERSATION_ACTION.END_INTERACTION,
         packet,

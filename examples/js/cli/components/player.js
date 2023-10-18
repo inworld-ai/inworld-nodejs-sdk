@@ -1,4 +1,5 @@
 const fs = require('fs');
+const kill = require('tree-kill');
 
 const { exec } = require('child_process');
 const { promisify } = require('util');
@@ -21,7 +22,10 @@ class Player {
   }
 
   stop() {
-    this.child?.kill();
+    if (this.child?.pid) {
+      kill(this.child.pid);
+    }
+
     this.isPlaying = false;
     this.queue = [];
 

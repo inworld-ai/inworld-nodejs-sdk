@@ -115,16 +115,6 @@ export class InworldClient<
     return this;
   }
 
-  async generateSessionToken() {
-    this.validate();
-
-    return new ConnectionService({
-      apiKey: this.apiKey,
-      name: this.scene,
-      onError: this.onError,
-    }).generateSessionToken();
-  }
-
   setExtension(extension: Extension<InworldPacketT>) {
     this.extension = extension;
 
@@ -135,6 +125,16 @@ export class InworldClient<
     this.sessionContinuation = new SessionContinuation(sessionContinuation);
 
     return this;
+  }
+
+  async generateSessionToken() {
+    this.validate();
+
+    return new ConnectionService({
+      apiKey: this.apiKey,
+      name: this.scene,
+      onError: this.onError,
+    }).generateSessionToken();
   }
 
   build() {
@@ -170,9 +170,9 @@ export class InworldClient<
   private buildCapabilities(capabilities: Capabilities): CapabilitiesRequest {
     const request = new CapabilitiesRequest()
       .setAudio(capabilities.audio ?? true)
-      .setContinuation(capabilities.continuation ?? false)
       .setEmotions(capabilities.emotions ?? false)
       .setInterruptions(capabilities.interruptions ?? false)
+      .setNarratedActions(capabilities.narratedActions ?? false)
       .setPhonemeInfo(capabilities.phonemes ?? false)
       .setSilenceEvents(capabilities.silence ?? false)
       .setText(true)

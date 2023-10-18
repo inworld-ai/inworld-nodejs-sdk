@@ -11,7 +11,7 @@ test('should use process.env variables', () => {
   const config = Config.getInstance();
 
   expect(config.getHost()).toEqual(process.env.NODE_SDK_INWORLD_ENGINE_HOST);
-  expect(config.getSsl()).toEqual(false);
+  expect(config.getSSL()).toEqual(false);
 });
 
 test('should use default values', () => {
@@ -19,5 +19,5 @@ test('should use default values', () => {
   const config = Config.getInstance();
 
   expect(config.getHost()).toEqual('api-engine.inworld.ai:443');
-  expect(config.getSsl()).toEqual(true);
+  expect(config.getSSL()).toEqual(true);
 });

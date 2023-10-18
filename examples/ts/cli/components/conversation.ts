@@ -34,16 +34,19 @@ export class Conversation {
     this.player.addToQueue({
       packet,
       onAfterPlaying: (packet: InworldPacket) => {
-        this.markAsApplied(packet, (packet: InworldPacket) => !!packet.audio);
+        this.markAsApplied(
+          ({ audio, packetId }: InworldPacket) =>
+            !!audio && packetId.utteranceId === packet.packetId.utteranceId,
+        );
 
         if (this.order === DISPLAY_WHEN.AFTER_AUDIO_PLAYING) {
           const found = this.markAsApplied(
-            packet,
-            (packet: InworldPacket) => !!packet.text,
+            ({ text, packetId }: InworldPacket) =>
+              !!text && packetId.utteranceId === packet.packetId.utteranceId,
           );
 
           if (found) {
-            this.renderTextPacket(found.packet);
+            this.renderPacket(found.packet);
           }
         }
 
@@ -56,17 +59,27 @@ export class Conversation {
           this.endInteraction(interactionEnd.packet);
         }
       },
-      ...(this.order === DISPLAY_WHEN.BEFORE_AUDIO_PLAYING && {
-        onBeforePlaying: (packet: InworldPacket) => {
-          const found = this.markAsApplied(
-            packet,
-            (packet: InworldPacket) => !!packet.text,
+      onBeforePlaying: (packet: InworldPacket) => {
+        if (this.order === DISPLAY_WHEN.BEFORE_AUDIO_PLAYING) {
+          const text = this.markAsApplied(
+            ({ text, packetId }: InworldPacket) =>
+              !!text && packetId.utteranceId === packet.packetId.utteranceId,
           );
-          if (found) {
-            this.renderTextPacket(found.packet);
+          if (text) {
+            this.renderPacket(text.packet);
           }
-        },
-      }),
+        }
+
+        const action = this.markAsApplied(
+          ({ narratedAction, packetId }: InworldPacket) =>
+            !!narratedAction &&
+            packetId.interactionId === packet.packetId.interactionId,
+        );
+
+        if (action) {
+          this.renderPacket(action.packet);
+        }
+      },
     });
   }
 
@@ -111,7 +124,30 @@ export class Conversation {
       );
 
       if (audioIsApplied) {
-        this.renderTextPacket(packet);
+        this.renderPacket(packet);
+      } else {
+        this.queue.push({ packet, isApplied: false });
+      }
+    }
+  }
+
+  displayAction(packet: InworldPacket) {
+    if (packet.narratedAction?.text) {
+      if (this.cancelResponses[packet.packetId.interactionId]) {
+        return;
+      }
+
+      const { interactionId } = packet.packetId;
+
+      const audioIsApplied = this.queue.find(
+        (item: ConversationQueueItem) =>
+          !!item.packet.audio &&
+          item.isApplied &&
+          item.packet.packetId.interactionId === interactionId,
+      );
+
+      if (audioIsApplied) {
+        this.renderPacket(packet);
       } else {
         this.queue.push({ packet, isApplied: false });
       }
@@ -172,14 +208,9 @@ export class Conversation {
     }
   }
 
-  private markAsApplied = (
-    packet: InworldPacket,
-    compare: (item: InworldPacket) => Boolean,
-  ) => {
+  private markAsApplied = (compare: (item: InworldPacket) => Boolean) => {
     const found = this.queue.find(
-      (item: ConversationQueueItem) =>
-        compare(item.packet) &&
-        item.packet.packetId.utteranceId === packet.packetId.utteranceId,
+      (item: ConversationQueueItem) => !item.isApplied && compare(item.packet),
     );
 
     if (found) {
@@ -189,15 +220,23 @@ export class Conversation {
     return found;
   };
 
-  private renderTextPacket(packet: InworldPacket) {
+  private renderPacket(packet: InworldPacket) {
     const i = packet.packetId.interactionId;
     const u = packet.packetId.utteranceId;
 
-    console.log(
-      `${this.renderEventRouting(packet)} (i=${i}, u=${u}): ${
-        packet.text.text
-      }`,
-    );
+    if (packet.text?.text) {
+      console.log(
+        `${this.renderEventRouting(packet)} (i=${i}, u=${u}): ${
+          packet.text.text
+        }`,
+      );
+    } else if (packet.narratedAction?.text) {
+      console.log(
+        `${this.renderEventRouting(packet)} (i=${i}, u=${u}): *${
+          packet.narratedAction.text
+        }*`,
+      );
+    }
   }
 
   private renderEventRouting = (packet: InworldPacket) => {
