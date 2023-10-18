@@ -1,21 +1,54 @@
 {
   "name": "discord_bot",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "",
-  "main": "index.ts",
+  "author": "",
+  "private": true,
+  "license": "UNLICENSED",
   "scripts": {
-    "start": "ts-node index.ts"
+    "build": "nest build",
+    "start": "nest start",
+    "start:dev": "nest start --watch",
+    "start:debug": "nest start --debug --watch",
+    "start:prod": "node build/main"
   },
   "dependencies": {
-    "@inworld/nodejs-sdk": "1.4.0",
-    "discord.js": "^14.1.2",
-    "dotenv": "^16.0.1",
-    "redis": "^4.6.4",
-    "uuid": "^9.0.0"
+    "@discord-nestjs/core": "^5.3.11",
+    "@inworld/nodejs-sdk": "^1.6.0",
+    "@nestjs/common": "^10.2.5",
+    "@nestjs/config": "^3.1.1",
+    "@nestjs/core": "^10.2.5",
+    "@nestjs/platform-express": "^10.2.5",
+    "@ntegral/nestjs-sentry": "^4.0.0",
+    "@sentry/node": "^7.69.0",
+    "@willsoto/nestjs-prometheus": "^5.5.0",
+    "discord.js": "^14.13.0",
+    "joi": "^17.10.2",
+    "nest-winston": "^1.9.4",
+    "prom-client": "^14.2.0",
+    "reflect-metadata": "^0.1.13",
+    "rimraf": "^5.0.1",
+    "rxjs": "^7.8.1",
+    "uuid": "^9.0.1",
+    "winston": "^3.10.0"
   },
   "devDependencies": {
-    "@types/uuid": "^9.0.1",
+    "@nestjs/cli": "^10.1.17",
+    "@nestjs/schematics": "^10.0.2",
+    "@types/express": "^4.17.17",
+    "@types/node": "^16.0.0",
+    "@types/uuid": "^9.0.4",
+    "@typescript-eslint/eslint-plugin": "^6.7.0",
+    "@typescript-eslint/parser": "^6.7.0",
+    "eslint": "^8.49.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "eslint-plugin-simple-import-sort": "^10.0.0",
+    "prettier": "^3.0.3",
+    "source-map-support": "^0.5.21",
+    "ts-loader": "^9.4.4",
     "ts-node": "^10.9.1",
-    "typescript": "^4.7.4"
+    "tsconfig-paths": "4.2.0",
+    "typescript": "~5.2.2"
   }
 }
