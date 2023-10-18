@@ -18,6 +18,7 @@ const props = {
     capabilities: {
       audio: true,
       emotions: true,
+      narratedActions: true,
       silence: true,
     },
     connection: {
