@@ -49,9 +49,13 @@ export class ChannelGuard implements CanActivate {
     }
 
     // General channel
+    const channel = message.channel.isThread()
+      ? message.channel.parent
+      : message.channel.id;
+
     if (
       this.channelsWhitelistEnabled &&
-      !this.channelsWhitelist?.includes(message.channel.id)
+      !this.channelsWhitelist?.includes(channel.id)
     ) {
       return false;
     }
