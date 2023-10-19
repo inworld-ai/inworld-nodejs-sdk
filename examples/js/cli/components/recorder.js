@@ -2,14 +2,12 @@ const recorder = require('node-record-lpcm16');
 
 class Recorder {
   conversationStarted = false;
-  recording = recorder.record({
+  options = {
     recordProgram: 'sox',
     sampleRateHertz: 16000,
     silence: '5.0',
     threshold: 0,
-  });
-  onData;
-  onError;
+  };
 
   constructor(props) {
     this.onData = props.onData;
@@ -17,11 +15,10 @@ class Recorder {
   }
 
   capture = () => {
-    if (this.conversationStarted) {
-      if (this.recording.isPaused()) {
-        this.recording.resume();
-      }
+    if (this.isActive()) {
+      this.stop();
     } else {
+      this.recording = recorder.record(this.options);
       this.recording
         .stream()
         .on('data', async (data) => {
@@ -33,17 +30,20 @@ class Recorder {
   };
 
   pause = () => {
-    if (!this.recording.isPaused()) {
-      this.recording.pause();
-    }
+    // `node-record-lpcm16` doesn't support pause/resume for Windows
+    this.stop();
   };
 
   stop = () => {
-    this.recording.stop();
+    if (this.isActive()) {
+      this.recording.stream().removeAllListeners();
+      this.recording.stop();
+      this.conversationStarted = false;
+    }
   };
 
   isActive() {
-    return this.conversationStarted && !this.recording.isPaused();
+    return this.conversationStarted;
   }
 }
 
