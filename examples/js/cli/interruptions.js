@@ -22,8 +22,8 @@ const client = new Client({
       console.log(
         'Please execute /start again if you would like to continue audio capturing.',
       );
+      recorder.pause();
     }
-    recorder.pause();
   },
 });
 const connection = client.getConnection();
