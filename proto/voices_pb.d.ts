@@ -5,6 +5,7 @@
 /* eslint-disable */
 
 import * as jspb from "google-protobuf";
+import * as language_codes_pb from "./language_codes_pb";
 
 export class Voice extends jspb.Message { 
     getBasename(): string;
@@ -24,6 +25,10 @@ export class Voice extends jspb.Message {
     clearPhonemesOverridesMap(): void;
     getAge(): Age;
     setAge(value: Age): Voice;
+    getLanguageCode(): string;
+    setLanguageCode(value: string): Voice;
+    getLanguage(): language_codes_pb.LanguageCode;
+    setLanguage(value: language_codes_pb.LanguageCode): Voice;
 
     hasElevenlabsMetadata(): boolean;
     clearElevenlabsMetadata(): void;
@@ -53,6 +58,8 @@ export namespace Voice {
 
         phonemesOverridesMap: Array<[string, string]>,
         age: Age,
+        languageCode: string,
+        language: language_codes_pb.LanguageCode,
         elevenlabsMetadata?: Voice.ElevenLabsMetadata.AsObject,
     }
 
@@ -103,4 +110,5 @@ export enum TTSType {
     TTS_TYPE_STANDARD = 0,
     TTS_TYPE_ADVANCED = 1,
     TTS_TYPE_ELEVEN_LABS = 2,
+    TTS_TYPE_ADVANCED_V2 = 3,
 }

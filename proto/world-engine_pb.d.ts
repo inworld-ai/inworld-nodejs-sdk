@@ -9,6 +9,8 @@ import * as google_protobuf_empty_pb from "google-protobuf/google/protobuf/empty
 import * as google_protobuf_timestamp_pb from "google-protobuf/google/protobuf/timestamp_pb";
 import * as packets_pb from "./packets_pb";
 import * as voices_pb from "./voices_pb";
+import * as base_voice_pb from "./base_voice_pb";
+import * as language_codes_pb from "./language_codes_pb";
 
 export class CapabilitiesRequest extends jspb.Message { 
     getAudio(): boolean;
@@ -109,6 +111,8 @@ export class ClientRequest extends jspb.Message {
     setId(value: string): ClientRequest;
     getVersion(): string;
     setVersion(value: string): ClientRequest;
+    getDescription(): string;
+    setDescription(value: string): ClientRequest;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): ClientRequest.AsObject;
@@ -124,151 +128,8 @@ export namespace ClientRequest {
     export type AsObject = {
         id: string,
         version: string,
+        description: string,
     }
-}
-
-export class CreateWorldRequest extends jspb.Message { 
-    getProtoWorldName(): string;
-    setProtoWorldName(value: string): CreateWorldRequest;
-    clearCreateAgentRequestsList(): void;
-    getCreateAgentRequestsList(): Array<CreateWorldRequest.CreateAgentRequest>;
-    setCreateAgentRequestsList(value: Array<CreateWorldRequest.CreateAgentRequest>): CreateWorldRequest;
-    addCreateAgentRequests(value?: CreateWorldRequest.CreateAgentRequest, index?: number): CreateWorldRequest.CreateAgentRequest;
-
-    hasCapabilities(): boolean;
-    clearCapabilities(): void;
-    getCapabilities(): CapabilitiesRequest | undefined;
-    setCapabilities(value?: CapabilitiesRequest): CreateWorldRequest;
-
-    hasUser(): boolean;
-    clearUser(): void;
-    getUser(): UserRequest | undefined;
-    setUser(value?: UserRequest): CreateWorldRequest;
-
-    hasClient(): boolean;
-    clearClient(): void;
-    getClient(): CreateWorldRequest.ClientRequest | undefined;
-    setClient(value?: CreateWorldRequest.ClientRequest): CreateWorldRequest;
-
-    serializeBinary(): Uint8Array;
-    toObject(includeInstance?: boolean): CreateWorldRequest.AsObject;
-    static toObject(includeInstance: boolean, msg: CreateWorldRequest): CreateWorldRequest.AsObject;
-    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-    static serializeBinaryToWriter(message: CreateWorldRequest, writer: jspb.BinaryWriter): void;
-    static deserializeBinary(bytes: Uint8Array): CreateWorldRequest;
-    static deserializeBinaryFromReader(message: CreateWorldRequest, reader: jspb.BinaryReader): CreateWorldRequest;
-}
-
-export namespace CreateWorldRequest {
-    export type AsObject = {
-        protoWorldName: string,
-        createAgentRequestsList: Array<CreateWorldRequest.CreateAgentRequest.AsObject>,
-        capabilities?: CapabilitiesRequest.AsObject,
-        user?: UserRequest.AsObject,
-        client?: CreateWorldRequest.ClientRequest.AsObject,
-    }
-
-
-    export class CreateAgentRequest extends jspb.Message { 
-        getBrainName(): string;
-        setBrainName(value: string): CreateAgentRequest;
-        getLanguageCode(): string;
-        setLanguageCode(value: string): CreateAgentRequest;
-        getVoicePreset(): VoicePreset;
-        setVoicePreset(value: VoicePreset): CreateAgentRequest;
-
-        serializeBinary(): Uint8Array;
-        toObject(includeInstance?: boolean): CreateAgentRequest.AsObject;
-        static toObject(includeInstance: boolean, msg: CreateAgentRequest): CreateAgentRequest.AsObject;
-        static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-        static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-        static serializeBinaryToWriter(message: CreateAgentRequest, writer: jspb.BinaryWriter): void;
-        static deserializeBinary(bytes: Uint8Array): CreateAgentRequest;
-        static deserializeBinaryFromReader(message: CreateAgentRequest, reader: jspb.BinaryReader): CreateAgentRequest;
-    }
-
-    export namespace CreateAgentRequest {
-        export type AsObject = {
-            brainName: string,
-            languageCode: string,
-            voicePreset: VoicePreset,
-        }
-    }
-
-    export class ClientRequest extends jspb.Message { 
-        getId(): string;
-        setId(value: string): ClientRequest;
-        getVersion(): string;
-        setVersion(value: string): ClientRequest;
-
-        serializeBinary(): Uint8Array;
-        toObject(includeInstance?: boolean): ClientRequest.AsObject;
-        static toObject(includeInstance: boolean, msg: ClientRequest): ClientRequest.AsObject;
-        static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-        static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-        static serializeBinaryToWriter(message: ClientRequest, writer: jspb.BinaryWriter): void;
-        static deserializeBinary(bytes: Uint8Array): ClientRequest;
-        static deserializeBinaryFromReader(message: ClientRequest, reader: jspb.BinaryReader): ClientRequest;
-    }
-
-    export namespace ClientRequest {
-        export type AsObject = {
-            id: string,
-            version: string,
-        }
-    }
-
-}
-
-export class CreateWorldResponse extends jspb.Message { 
-    clearAgentsList(): void;
-    getAgentsList(): Array<CreateWorldResponse.Agent>;
-    setAgentsList(value: Array<CreateWorldResponse.Agent>): CreateWorldResponse;
-    addAgents(value?: CreateWorldResponse.Agent, index?: number): CreateWorldResponse.Agent;
-    getKey(): string;
-    setKey(value: string): CreateWorldResponse;
-
-    serializeBinary(): Uint8Array;
-    toObject(includeInstance?: boolean): CreateWorldResponse.AsObject;
-    static toObject(includeInstance: boolean, msg: CreateWorldResponse): CreateWorldResponse.AsObject;
-    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-    static serializeBinaryToWriter(message: CreateWorldResponse, writer: jspb.BinaryWriter): void;
-    static deserializeBinary(bytes: Uint8Array): CreateWorldResponse;
-    static deserializeBinaryFromReader(message: CreateWorldResponse, reader: jspb.BinaryReader): CreateWorldResponse;
-}
-
-export namespace CreateWorldResponse {
-    export type AsObject = {
-        agentsList: Array<CreateWorldResponse.Agent.AsObject>,
-        key: string,
-    }
-
-
-    export class Agent extends jspb.Message { 
-        getAgentId(): string;
-        setAgentId(value: string): Agent;
-        getBrainName(): string;
-        setBrainName(value: string): Agent;
-
-        serializeBinary(): Uint8Array;
-        toObject(includeInstance?: boolean): Agent.AsObject;
-        static toObject(includeInstance: boolean, msg: Agent): Agent.AsObject;
-        static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-        static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-        static serializeBinaryToWriter(message: Agent, writer: jspb.BinaryWriter): void;
-        static deserializeBinary(bytes: Uint8Array): Agent;
-        static deserializeBinaryFromReader(message: Agent, reader: jspb.BinaryReader): Agent;
-    }
-
-    export namespace Agent {
-        export type AsObject = {
-            agentId: string,
-            brainName: string,
-        }
-    }
-
 }
 
 export class LoadSceneRequest extends jspb.Message { 
@@ -577,6 +438,8 @@ export namespace PreviousState {
         getRelationsToActorsList(): Array<ActorRelations>;
         setRelationsToActorsList(value: Array<ActorRelations>): StateHolder;
         addRelationsToActors(value?: ActorRelations, index?: number): ActorRelations;
+        getStateFormat(): PreviousState.StateHolder.StateFormat;
+        setStateFormat(value: PreviousState.StateHolder.StateFormat): StateHolder;
 
         serializeBinary(): Uint8Array;
         toObject(includeInstance?: boolean): StateHolder.AsObject;
@@ -595,7 +458,15 @@ export namespace PreviousState {
             previousDialog?: PreviousDialog.AsObject,
             packetsList: Array<packets_pb.InworldPacket.AsObject>,
             relationsToActorsList: Array<ActorRelations.AsObject>,
+            stateFormat: PreviousState.StateHolder.StateFormat,
         }
+
+        export enum StateFormat {
+    STATE_FORMAT_UNKNOWN = 0,
+    STATE_FORMAT_SESSION_BRAIN_STATE = 1,
+    STATE_FORMAT_EXTERNAL_BRAIN_STATE = 2,
+        }
+
     }
 
 }
@@ -783,6 +654,8 @@ export class ListBaseVoicesRequest extends jspb.Message {
     getTtsTypesList(): Array<voices_pb.TTSType>;
     setTtsTypesList(value: Array<voices_pb.TTSType>): ListBaseVoicesRequest;
     addTtsTypes(value: voices_pb.TTSType, index?: number): voices_pb.TTSType;
+    getLanguage(): language_codes_pb.LanguageCode;
+    setLanguage(value: language_codes_pb.LanguageCode): ListBaseVoicesRequest;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): ListBaseVoicesRequest.AsObject;
@@ -798,22 +671,27 @@ export namespace ListBaseVoicesRequest {
     export type AsObject = {
         languageCode: string,
         ttsTypesList: Array<voices_pb.TTSType>,
+        language: language_codes_pb.LanguageCode,
     }
 }
 
 export class ListBaseVoicesResponce extends jspb.Message { 
-    clearGooglevoicesList(): void;
-    getGooglevoicesList(): Array<ListBaseVoicesResponce.BaseVoice>;
-    setGooglevoicesList(value: Array<ListBaseVoicesResponce.BaseVoice>): ListBaseVoicesResponce;
-    addGooglevoices(value?: ListBaseVoicesResponce.BaseVoice, index?: number): ListBaseVoicesResponce.BaseVoice;
-    clearInworldvoicesList(): void;
-    getInworldvoicesList(): Array<ListBaseVoicesResponce.BaseVoice>;
-    setInworldvoicesList(value: Array<ListBaseVoicesResponce.BaseVoice>): ListBaseVoicesResponce;
-    addInworldvoices(value?: ListBaseVoicesResponce.BaseVoice, index?: number): ListBaseVoicesResponce.BaseVoice;
-    clearElevenlabsvoicesList(): void;
-    getElevenlabsvoicesList(): Array<ListBaseVoicesResponce.BaseVoice>;
-    setElevenlabsvoicesList(value: Array<ListBaseVoicesResponce.BaseVoice>): ListBaseVoicesResponce;
-    addElevenlabsvoices(value?: ListBaseVoicesResponce.BaseVoice, index?: number): ListBaseVoicesResponce.BaseVoice;
+    clearGoogleVoicesList(): void;
+    getGoogleVoicesList(): Array<base_voice_pb.BaseVoice>;
+    setGoogleVoicesList(value: Array<base_voice_pb.BaseVoice>): ListBaseVoicesResponce;
+    addGoogleVoices(value?: base_voice_pb.BaseVoice, index?: number): base_voice_pb.BaseVoice;
+    clearInworldVoicesList(): void;
+    getInworldVoicesList(): Array<base_voice_pb.BaseVoice>;
+    setInworldVoicesList(value: Array<base_voice_pb.BaseVoice>): ListBaseVoicesResponce;
+    addInworldVoices(value?: base_voice_pb.BaseVoice, index?: number): base_voice_pb.BaseVoice;
+    clearElevenLabsVoicesList(): void;
+    getElevenLabsVoicesList(): Array<base_voice_pb.BaseVoice>;
+    setElevenLabsVoicesList(value: Array<base_voice_pb.BaseVoice>): ListBaseVoicesResponce;
+    addElevenLabsVoices(value?: base_voice_pb.BaseVoice, index?: number): base_voice_pb.BaseVoice;
+    clearInworldV2VoicesList(): void;
+    getInworldV2VoicesList(): Array<base_voice_pb.BaseVoice>;
+    setInworldV2VoicesList(value: Array<base_voice_pb.BaseVoice>): ListBaseVoicesResponce;
+    addInworldV2Voices(value?: base_voice_pb.BaseVoice, index?: number): base_voice_pb.BaseVoice;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): ListBaseVoicesResponce.AsObject;
@@ -827,60 +705,11 @@ export class ListBaseVoicesResponce extends jspb.Message {
 
 export namespace ListBaseVoicesResponce {
     export type AsObject = {
-        googlevoicesList: Array<ListBaseVoicesResponce.BaseVoice.AsObject>,
-        inworldvoicesList: Array<ListBaseVoicesResponce.BaseVoice.AsObject>,
-        elevenlabsvoicesList: Array<ListBaseVoicesResponce.BaseVoice.AsObject>,
+        googleVoicesList: Array<base_voice_pb.BaseVoice.AsObject>,
+        inworldVoicesList: Array<base_voice_pb.BaseVoice.AsObject>,
+        elevenLabsVoicesList: Array<base_voice_pb.BaseVoice.AsObject>,
+        inworldV2VoicesList: Array<base_voice_pb.BaseVoice.AsObject>,
     }
-
-
-    export class BaseVoice extends jspb.Message { 
-        clearLanguageCodesList(): void;
-        getLanguageCodesList(): Array<string>;
-        setLanguageCodesList(value: Array<string>): BaseVoice;
-        addLanguageCodes(value: string, index?: number): string;
-        getName(): string;
-        setName(value: string): BaseVoice;
-        getGender(): voices_pb.Gender;
-        setGender(value: voices_pb.Gender): BaseVoice;
-        getNaturalsampleratehertz(): number;
-        setNaturalsampleratehertz(value: number): BaseVoice;
-        getAge(): voices_pb.Age;
-        setAge(value: voices_pb.Age): BaseVoice;
-
-        hasElevenlabsMetadata(): boolean;
-        clearElevenlabsMetadata(): void;
-        getElevenlabsMetadata(): voices_pb.Voice.ElevenLabsMetadata | undefined;
-        setElevenlabsMetadata(value?: voices_pb.Voice.ElevenLabsMetadata): BaseVoice;
-
-        getTtsMetadataCase(): BaseVoice.TtsMetadataCase;
-
-        serializeBinary(): Uint8Array;
-        toObject(includeInstance?: boolean): BaseVoice.AsObject;
-        static toObject(includeInstance: boolean, msg: BaseVoice): BaseVoice.AsObject;
-        static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-        static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-        static serializeBinaryToWriter(message: BaseVoice, writer: jspb.BinaryWriter): void;
-        static deserializeBinary(bytes: Uint8Array): BaseVoice;
-        static deserializeBinaryFromReader(message: BaseVoice, reader: jspb.BinaryReader): BaseVoice;
-    }
-
-    export namespace BaseVoice {
-        export type AsObject = {
-            languageCodesList: Array<string>,
-            name: string,
-            gender: voices_pb.Gender,
-            naturalsampleratehertz: number,
-            age: voices_pb.Age,
-            elevenlabsMetadata?: voices_pb.Voice.ElevenLabsMetadata.AsObject,
-        }
-
-        export enum TtsMetadataCase {
-            TTS_METADATA_NOT_SET = 0,
-            ELEVENLABS_METADATA = 100,
-        }
-
-    }
-
 }
 
 export class AccessToken extends jspb.Message { 
