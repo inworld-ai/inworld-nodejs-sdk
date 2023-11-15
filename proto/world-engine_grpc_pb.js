@@ -8,6 +8,8 @@ var google_protobuf_empty_pb = require('google-protobuf/google/protobuf/empty_pb
 var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/timestamp_pb.js');
 var packets_pb = require('./packets_pb.js');
 var voices_pb = require('./voices_pb.js');
+var base_voice_pb = require('./base_voice_pb.js');
+var language_codes_pb = require('./language_codes_pb.js');
 
 function serialize_ai_inworld_engine_AccessToken(arg) {
   if (!(arg instanceof world$engine_pb.AccessToken)) {
@@ -18,28 +20,6 @@ function serialize_ai_inworld_engine_AccessToken(arg) {
 
 function deserialize_ai_inworld_engine_AccessToken(buffer_arg) {
   return world$engine_pb.AccessToken.deserializeBinary(new Uint8Array(buffer_arg));
-}
-
-function serialize_ai_inworld_engine_CreateWorldRequest(arg) {
-  if (!(arg instanceof world$engine_pb.CreateWorldRequest)) {
-    throw new Error('Expected argument of type ai.inworld.engine.CreateWorldRequest');
-  }
-  return Buffer.from(arg.serializeBinary());
-}
-
-function deserialize_ai_inworld_engine_CreateWorldRequest(buffer_arg) {
-  return world$engine_pb.CreateWorldRequest.deserializeBinary(new Uint8Array(buffer_arg));
-}
-
-function serialize_ai_inworld_engine_CreateWorldResponse(arg) {
-  if (!(arg instanceof world$engine_pb.CreateWorldResponse)) {
-    throw new Error('Expected argument of type ai.inworld.engine.CreateWorldResponse');
-  }
-  return Buffer.from(arg.serializeBinary());
-}
-
-function deserialize_ai_inworld_engine_CreateWorldResponse(buffer_arg) {
-  return world$engine_pb.CreateWorldResponse.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
 function serialize_ai_inworld_engine_GenerateTokenRequest(arg) {
@@ -157,6 +137,7 @@ function deserialize_google_protobuf_Empty(buffer_arg) {
 // of the inworld.ai.
 var WorldEngineService = exports.WorldEngineService = {
   // Bidirectional events based Session.
+// Requires LoadScene RPC to be called before.
 session: {
     path: '/ai.inworld.engine.WorldEngine/Session',
     requestStream: true,
@@ -168,17 +149,22 @@ session: {
     responseSerialize: serialize_ai_inworld_packets_InworldPacket,
     responseDeserialize: deserialize_ai_inworld_packets_InworldPacket,
   },
-  // RPC to create world for the interaction session.
-createWorld: {
-    path: '/ai.inworld.engine.WorldEngine/CreateWorld',
-    requestStream: false,
-    responseStream: false,
-    requestType: world$engine_pb.CreateWorldRequest,
-    responseType: world$engine_pb.CreateWorldResponse,
-    requestSerialize: serialize_ai_inworld_engine_CreateWorldRequest,
-    requestDeserialize: deserialize_ai_inworld_engine_CreateWorldRequest,
-    responseSerialize: serialize_ai_inworld_engine_CreateWorldResponse,
-    responseDeserialize: deserialize_ai_inworld_engine_CreateWorldResponse,
+  // Bidirectional events based Session.
+// Allows to open session with one rpc call.
+// All necessary configuration should be passed before data packets.
+// Configuration provided by SessionControlEvent and MutationEvent.
+// The Client capabilities, user settings, client settings and scene are required to start session.
+// Packets processed in the order of input.
+openSession: {
+    path: '/ai.inworld.engine.WorldEngine/OpenSession',
+    requestStream: true,
+    responseStream: true,
+    requestType: packets_pb.InworldPacket,
+    responseType: packets_pb.InworldPacket,
+    requestSerialize: serialize_ai_inworld_packets_InworldPacket,
+    requestDeserialize: deserialize_ai_inworld_packets_InworldPacket,
+    responseSerialize: serialize_ai_inworld_packets_InworldPacket,
+    responseDeserialize: deserialize_ai_inworld_packets_InworldPacket,
   },
   // RPC to load world for the interaction session.
 loadScene: {

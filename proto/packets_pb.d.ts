@@ -9,6 +9,8 @@ import * as google_protobuf_duration_pb from "google-protobuf/google/protobuf/du
 import * as google_protobuf_struct_pb from "google-protobuf/google/protobuf/struct_pb";
 import * as google_protobuf_timestamp_pb from "google-protobuf/google/protobuf/timestamp_pb";
 import * as options_pb from "./options_pb";
+import * as configuration_pb from "./configuration_pb";
+import * as language_codes_pb from "./language_codes_pb";
 
 export class Actor extends jspb.Message { 
     getType(): Actor.Type;
@@ -36,6 +38,7 @@ export namespace Actor {
     UNKNOWN = 0,
     PLAYER = 1,
     AGENT = 2,
+    WORLD = 3,
     }
 
 }
@@ -170,6 +173,16 @@ export class InworldPacket extends jspb.Message {
     getDebugInfo(): DebugInfoEvent | undefined;
     setDebugInfo(value?: DebugInfoEvent): InworldPacket;
 
+    hasSessionControl(): boolean;
+    clearSessionControl(): void;
+    getSessionControl(): SessionControlEvent | undefined;
+    setSessionControl(value?: SessionControlEvent): InworldPacket;
+
+    hasSessionControlResponse(): boolean;
+    clearSessionControlResponse(): void;
+    getSessionControlResponse(): SessionControlResponseEvent | undefined;
+    setSessionControlResponse(value?: SessionControlResponseEvent): InworldPacket;
+
     getPacketCase(): InworldPacket.PacketCase;
 
     serializeBinary(): Uint8Array;
@@ -198,6 +211,8 @@ export namespace InworldPacket {
         mutation?: MutationEvent.AsObject,
         loadSceneOutput?: LoadSceneOutputEvent.AsObject,
         debugInfo?: DebugInfoEvent.AsObject,
+        sessionControl?: SessionControlEvent.AsObject,
+        sessionControlResponse?: SessionControlResponseEvent.AsObject,
     }
 
     export enum PacketCase {
@@ -213,6 +228,8 @@ export namespace InworldPacket {
         MUTATION = 15,
         LOAD_SCENE_OUTPUT = 16,
         DEBUG_INFO = 18,
+        SESSION_CONTROL = 19,
+        SESSION_CONTROL_RESPONSE = 20,
     }
 
 }
@@ -727,6 +744,11 @@ export class MutationEvent extends jspb.Message {
     getModifyExactResponse(): ModifyExactResponse | undefined;
     setModifyExactResponse(value?: ModifyExactResponse): MutationEvent;
 
+    hasLoadCharacters(): boolean;
+    clearLoadCharacters(): void;
+    getLoadCharacters(): LoadCharacters | undefined;
+    setLoadCharacters(value?: LoadCharacters): MutationEvent;
+
     getMutationCase(): MutationEvent.MutationCase;
 
     serializeBinary(): Uint8Array;
@@ -746,6 +768,7 @@ export namespace MutationEvent {
         applyResponse?: ApplyResponse.AsObject,
         loadScene?: LoadScene.AsObject,
         modifyExactResponse?: ModifyExactResponse.AsObject,
+        loadCharacters?: LoadCharacters.AsObject,
     }
 
     export enum MutationCase {
@@ -755,6 +778,45 @@ export namespace MutationEvent {
         APPLY_RESPONSE = 3,
         LOAD_SCENE = 4,
         MODIFY_EXACT_RESPONSE = 5,
+        LOAD_CHARACTERS = 6,
+    }
+
+}
+
+export class SessionControlResponseEvent extends jspb.Message { 
+
+    hasLoadedScene(): boolean;
+    clearLoadedScene(): void;
+    getLoadedScene(): LoadedScene | undefined;
+    setLoadedScene(value?: LoadedScene): SessionControlResponseEvent;
+
+    hasLoadedCharacters(): boolean;
+    clearLoadedCharacters(): void;
+    getLoadedCharacters(): LoadedCharacters | undefined;
+    setLoadedCharacters(value?: LoadedCharacters): SessionControlResponseEvent;
+
+    getResponseCase(): SessionControlResponseEvent.ResponseCase;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): SessionControlResponseEvent.AsObject;
+    static toObject(includeInstance: boolean, msg: SessionControlResponseEvent): SessionControlResponseEvent.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: SessionControlResponseEvent, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): SessionControlResponseEvent;
+    static deserializeBinaryFromReader(message: SessionControlResponseEvent, reader: jspb.BinaryReader): SessionControlResponseEvent;
+}
+
+export namespace SessionControlResponseEvent {
+    export type AsObject = {
+        loadedScene?: LoadedScene.AsObject,
+        loadedCharacters?: LoadedCharacters.AsObject,
+    }
+
+    export enum ResponseCase {
+        RESPONSE_NOT_SET = 0,
+        LOADED_SCENE = 1,
+        LOADED_CHARACTERS = 2,
     }
 
 }
@@ -847,6 +909,119 @@ export namespace LoadScene {
     }
 }
 
+export class LoadedScene extends jspb.Message { 
+    clearAgentsList(): void;
+    getAgentsList(): Array<Agent>;
+    setAgentsList(value: Array<Agent>): LoadedScene;
+    addAgents(value?: Agent, index?: number): Agent;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): LoadedScene.AsObject;
+    static toObject(includeInstance: boolean, msg: LoadedScene): LoadedScene.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: LoadedScene, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): LoadedScene;
+    static deserializeBinaryFromReader(message: LoadedScene, reader: jspb.BinaryReader): LoadedScene;
+}
+
+export namespace LoadedScene {
+    export type AsObject = {
+        agentsList: Array<Agent.AsObject>,
+    }
+}
+
+export class LoadCharacters extends jspb.Message { 
+    clearNameList(): void;
+    getNameList(): Array<LoadCharacters.CharacterName>;
+    setNameList(value: Array<LoadCharacters.CharacterName>): LoadCharacters;
+    addName(value?: LoadCharacters.CharacterName, index?: number): LoadCharacters.CharacterName;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): LoadCharacters.AsObject;
+    static toObject(includeInstance: boolean, msg: LoadCharacters): LoadCharacters.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: LoadCharacters, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): LoadCharacters;
+    static deserializeBinaryFromReader(message: LoadCharacters, reader: jspb.BinaryReader): LoadCharacters;
+}
+
+export namespace LoadCharacters {
+    export type AsObject = {
+        nameList: Array<LoadCharacters.CharacterName.AsObject>,
+    }
+
+
+    export class CharacterName extends jspb.Message { 
+        getName(): string;
+        setName(value: string): CharacterName;
+        getLanguageCode(): language_codes_pb.LanguageCode;
+        setLanguageCode(value: language_codes_pb.LanguageCode): CharacterName;
+
+        serializeBinary(): Uint8Array;
+        toObject(includeInstance?: boolean): CharacterName.AsObject;
+        static toObject(includeInstance: boolean, msg: CharacterName): CharacterName.AsObject;
+        static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+        static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+        static serializeBinaryToWriter(message: CharacterName, writer: jspb.BinaryWriter): void;
+        static deserializeBinary(bytes: Uint8Array): CharacterName;
+        static deserializeBinaryFromReader(message: CharacterName, reader: jspb.BinaryReader): CharacterName;
+    }
+
+    export namespace CharacterName {
+        export type AsObject = {
+            name: string,
+            languageCode: language_codes_pb.LanguageCode,
+        }
+    }
+
+}
+
+export class LoadedCharacters extends jspb.Message { 
+    clearAgentsList(): void;
+    getAgentsList(): Array<Agent>;
+    setAgentsList(value: Array<Agent>): LoadedCharacters;
+    addAgents(value?: Agent, index?: number): Agent;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): LoadedCharacters.AsObject;
+    static toObject(includeInstance: boolean, msg: LoadedCharacters): LoadedCharacters.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: LoadedCharacters, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): LoadedCharacters;
+    static deserializeBinaryFromReader(message: LoadedCharacters, reader: jspb.BinaryReader): LoadedCharacters;
+}
+
+export namespace LoadedCharacters {
+    export type AsObject = {
+        agentsList: Array<Agent.AsObject>,
+    }
+}
+
+export class UnloadCharacters extends jspb.Message { 
+    clearAgentsList(): void;
+    getAgentsList(): Array<Agent>;
+    setAgentsList(value: Array<Agent>): UnloadCharacters;
+    addAgents(value?: Agent, index?: number): Agent;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): UnloadCharacters.AsObject;
+    static toObject(includeInstance: boolean, msg: UnloadCharacters): UnloadCharacters.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: UnloadCharacters, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): UnloadCharacters;
+    static deserializeBinaryFromReader(message: UnloadCharacters, reader: jspb.BinaryReader): UnloadCharacters;
+}
+
+export namespace UnloadCharacters {
+    export type AsObject = {
+        agentsList: Array<Agent.AsObject>,
+    }
+}
+
 export class ModifyExactResponse extends jspb.Message { 
     getInteractionId(): string;
     setInteractionId(value: string): ModifyExactResponse;
@@ -920,6 +1095,32 @@ export namespace LoadSceneOutputEvent {
 
 }
 
+export class Agent extends jspb.Message { 
+    getAgentId(): string;
+    setAgentId(value: string): Agent;
+    getBrainName(): string;
+    setBrainName(value: string): Agent;
+    getGivenName(): string;
+    setGivenName(value: string): Agent;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): Agent.AsObject;
+    static toObject(includeInstance: boolean, msg: Agent): Agent.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: Agent, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): Agent;
+    static deserializeBinaryFromReader(message: Agent, reader: jspb.BinaryReader): Agent;
+}
+
+export namespace Agent {
+    export type AsObject = {
+        agentId: string,
+        brainName: string,
+        givenName: string,
+    }
+}
+
 export class DebugInfoEvent extends jspb.Message { 
 
     hasRelation(): boolean;
@@ -947,6 +1148,237 @@ export namespace DebugInfoEvent {
     export enum InfoCase {
         INFO_NOT_SET = 0,
         RELATION = 1,
+    }
+
+}
+
+export class SessionControlEvent extends jspb.Message { 
+
+    hasSessionConfiguration(): boolean;
+    clearSessionConfiguration(): void;
+    getSessionConfiguration(): configuration_pb.SessionConfiguration | undefined;
+    setSessionConfiguration(value?: configuration_pb.SessionConfiguration): SessionControlEvent;
+
+    hasUserConfiguration(): boolean;
+    clearUserConfiguration(): void;
+    getUserConfiguration(): configuration_pb.UserConfiguration | undefined;
+    setUserConfiguration(value?: configuration_pb.UserConfiguration): SessionControlEvent;
+
+    hasClientConfiguration(): boolean;
+    clearClientConfiguration(): void;
+    getClientConfiguration(): configuration_pb.ClientConfiguration | undefined;
+    setClientConfiguration(value?: configuration_pb.ClientConfiguration): SessionControlEvent;
+
+    hasCapabilitiesConfiguration(): boolean;
+    clearCapabilitiesConfiguration(): void;
+    getCapabilitiesConfiguration(): configuration_pb.CapabilitiesConfiguration | undefined;
+    setCapabilitiesConfiguration(value?: configuration_pb.CapabilitiesConfiguration): SessionControlEvent;
+
+    hasContinuation(): boolean;
+    clearContinuation(): void;
+    getContinuation(): Continuation | undefined;
+    setContinuation(value?: Continuation): SessionControlEvent;
+
+    getSessionControlCase(): SessionControlEvent.SessionControlCase;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): SessionControlEvent.AsObject;
+    static toObject(includeInstance: boolean, msg: SessionControlEvent): SessionControlEvent.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: SessionControlEvent, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): SessionControlEvent;
+    static deserializeBinaryFromReader(message: SessionControlEvent, reader: jspb.BinaryReader): SessionControlEvent;
+}
+
+export namespace SessionControlEvent {
+    export type AsObject = {
+        sessionConfiguration?: configuration_pb.SessionConfiguration.AsObject,
+        userConfiguration?: configuration_pb.UserConfiguration.AsObject,
+        clientConfiguration?: configuration_pb.ClientConfiguration.AsObject,
+        capabilitiesConfiguration?: configuration_pb.CapabilitiesConfiguration.AsObject,
+        continuation?: Continuation.AsObject,
+    }
+
+    export enum SessionControlCase {
+        SESSION_CONTROL_NOT_SET = 0,
+        SESSION_CONFIGURATION = 1,
+        USER_CONFIGURATION = 2,
+        CLIENT_CONFIGURATION = 3,
+        CAPABILITIES_CONFIGURATION = 4,
+        CONTINUATION = 5,
+    }
+
+}
+
+export class Continuation extends jspb.Message { 
+
+    hasContinuationInfo(): boolean;
+    clearContinuationInfo(): void;
+    getContinuationInfo(): Continuation.ContinuationInfo | undefined;
+    setContinuationInfo(value?: Continuation.ContinuationInfo): Continuation;
+    getContinuationType(): Continuation.ContinuationType;
+    setContinuationType(value: Continuation.ContinuationType): Continuation;
+
+    hasDialogHistory(): boolean;
+    clearDialogHistory(): void;
+    getDialogHistory(): DialogHistory | undefined;
+    setDialogHistory(value?: DialogHistory): Continuation;
+    getExternallySavedState(): Uint8Array | string;
+    getExternallySavedState_asU8(): Uint8Array;
+    getExternallySavedState_asB64(): string;
+    setExternallySavedState(value: Uint8Array | string): Continuation;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): Continuation.AsObject;
+    static toObject(includeInstance: boolean, msg: Continuation): Continuation.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: Continuation, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): Continuation;
+    static deserializeBinaryFromReader(message: Continuation, reader: jspb.BinaryReader): Continuation;
+}
+
+export namespace Continuation {
+    export type AsObject = {
+        continuationInfo?: Continuation.ContinuationInfo.AsObject,
+        continuationType: Continuation.ContinuationType,
+        dialogHistory?: DialogHistory.AsObject,
+        externallySavedState: Uint8Array | string,
+    }
+
+
+    export class ContinuationInfo extends jspb.Message { 
+
+        hasPassedTime(): boolean;
+        clearPassedTime(): void;
+        getPassedTime(): google_protobuf_timestamp_pb.Timestamp | undefined;
+        setPassedTime(value?: google_protobuf_timestamp_pb.Timestamp): ContinuationInfo;
+
+        serializeBinary(): Uint8Array;
+        toObject(includeInstance?: boolean): ContinuationInfo.AsObject;
+        static toObject(includeInstance: boolean, msg: ContinuationInfo): ContinuationInfo.AsObject;
+        static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+        static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+        static serializeBinaryToWriter(message: ContinuationInfo, writer: jspb.BinaryWriter): void;
+        static deserializeBinary(bytes: Uint8Array): ContinuationInfo;
+        static deserializeBinaryFromReader(message: ContinuationInfo, reader: jspb.BinaryReader): ContinuationInfo;
+    }
+
+    export namespace ContinuationInfo {
+        export type AsObject = {
+            passedTime?: google_protobuf_timestamp_pb.Timestamp.AsObject,
+        }
+    }
+
+
+    export enum ContinuationType {
+    CONTINUATION_TYPE_UNKNOWN = 0,
+    CONTINUATION_TYPE_EXTERNALLY_SAVED_STATE = 1,
+    CONTINUATION_TYPE_DIALOG_HISTORY = 2,
+    }
+
+}
+
+export class DialogHistory extends jspb.Message { 
+    clearHistoryList(): void;
+    getHistoryList(): Array<DialogHistory.HistoryItem>;
+    setHistoryList(value: Array<DialogHistory.HistoryItem>): DialogHistory;
+    addHistory(value?: DialogHistory.HistoryItem, index?: number): DialogHistory.HistoryItem;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): DialogHistory.AsObject;
+    static toObject(includeInstance: boolean, msg: DialogHistory): DialogHistory.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: DialogHistory, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): DialogHistory;
+    static deserializeBinaryFromReader(message: DialogHistory, reader: jspb.BinaryReader): DialogHistory;
+}
+
+export namespace DialogHistory {
+    export type AsObject = {
+        historyList: Array<DialogHistory.HistoryItem.AsObject>,
+    }
+
+
+    export class HistoryItem extends jspb.Message { 
+
+        hasActor(): boolean;
+        clearActor(): void;
+        getActor(): Actor | undefined;
+        setActor(value?: Actor): HistoryItem;
+        getText(): string;
+        setText(value: string): HistoryItem;
+
+        serializeBinary(): Uint8Array;
+        toObject(includeInstance?: boolean): HistoryItem.AsObject;
+        static toObject(includeInstance: boolean, msg: HistoryItem): HistoryItem.AsObject;
+        static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+        static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+        static serializeBinaryToWriter(message: HistoryItem, writer: jspb.BinaryWriter): void;
+        static deserializeBinary(bytes: Uint8Array): HistoryItem;
+        static deserializeBinaryFromReader(message: HistoryItem, reader: jspb.BinaryReader): HistoryItem;
+    }
+
+    export namespace HistoryItem {
+        export type AsObject = {
+            actor?: Actor.AsObject,
+            text: string,
+        }
+    }
+
+}
+
+export class Relations extends jspb.Message { 
+
+    hasActor(): boolean;
+    clearActor(): void;
+    getActor(): Actor | undefined;
+    setActor(value?: Actor): Relations;
+    clearRelationsList(): void;
+    getRelationsList(): Array<Relations.Relation>;
+    setRelationsList(value: Array<Relations.Relation>): Relations;
+    addRelations(value?: Relations.Relation, index?: number): Relations.Relation;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): Relations.AsObject;
+    static toObject(includeInstance: boolean, msg: Relations): Relations.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: Relations, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): Relations;
+    static deserializeBinaryFromReader(message: Relations, reader: jspb.BinaryReader): Relations;
+}
+
+export namespace Relations {
+    export type AsObject = {
+        actor?: Actor.AsObject,
+        relationsList: Array<Relations.Relation.AsObject>,
+    }
+
+
+    export class Relation extends jspb.Message { 
+        getType(): string;
+        setType(value: string): Relation;
+        getLabel(): string;
+        setLabel(value: string): Relation;
+
+        serializeBinary(): Uint8Array;
+        toObject(includeInstance?: boolean): Relation.AsObject;
+        static toObject(includeInstance: boolean, msg: Relation): Relation.AsObject;
+        static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+        static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+        static serializeBinaryToWriter(message: Relation, writer: jspb.BinaryWriter): void;
+        static deserializeBinary(bytes: Uint8Array): Relation;
+        static deserializeBinaryFromReader(message: Relation, reader: jspb.BinaryReader): Relation;
+    }
+
+    export namespace Relation {
+        export type AsObject = {
+            type: string,
+            label: string,
+        }
     }
 
 }

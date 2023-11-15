@@ -10,10 +10,12 @@ import * as google_protobuf_empty_pb from "google-protobuf/google/protobuf/empty
 import * as google_protobuf_timestamp_pb from "google-protobuf/google/protobuf/timestamp_pb";
 import * as packets_pb from "./packets_pb";
 import * as voices_pb from "./voices_pb";
+import * as base_voice_pb from "./base_voice_pb";
+import * as language_codes_pb from "./language_codes_pb";
 
 interface IWorldEngineService extends grpc.ServiceDefinition<grpc.UntypedServiceImplementation> {
     session: IWorldEngineService_ISession;
-    createWorld: IWorldEngineService_ICreateWorld;
+    openSession: IWorldEngineService_IOpenSession;
     loadScene: IWorldEngineService_ILoadScene;
     logError: IWorldEngineService_ILogError;
     voicePreview: IWorldEngineService_IVoicePreview;
@@ -30,14 +32,14 @@ interface IWorldEngineService_ISession extends grpc.MethodDefinition<packets_pb.
     responseSerialize: grpc.serialize<packets_pb.InworldPacket>;
     responseDeserialize: grpc.deserialize<packets_pb.InworldPacket>;
 }
-interface IWorldEngineService_ICreateWorld extends grpc.MethodDefinition<world_engine_pb.CreateWorldRequest, world_engine_pb.CreateWorldResponse> {
-    path: "/ai.inworld.engine.WorldEngine/CreateWorld";
-    requestStream: false;
-    responseStream: false;
-    requestSerialize: grpc.serialize<world_engine_pb.CreateWorldRequest>;
-    requestDeserialize: grpc.deserialize<world_engine_pb.CreateWorldRequest>;
-    responseSerialize: grpc.serialize<world_engine_pb.CreateWorldResponse>;
-    responseDeserialize: grpc.deserialize<world_engine_pb.CreateWorldResponse>;
+interface IWorldEngineService_IOpenSession extends grpc.MethodDefinition<packets_pb.InworldPacket, packets_pb.InworldPacket> {
+    path: "/ai.inworld.engine.WorldEngine/OpenSession";
+    requestStream: true;
+    responseStream: true;
+    requestSerialize: grpc.serialize<packets_pb.InworldPacket>;
+    requestDeserialize: grpc.deserialize<packets_pb.InworldPacket>;
+    responseSerialize: grpc.serialize<packets_pb.InworldPacket>;
+    responseDeserialize: grpc.deserialize<packets_pb.InworldPacket>;
 }
 interface IWorldEngineService_ILoadScene extends grpc.MethodDefinition<world_engine_pb.LoadSceneRequest, world_engine_pb.LoadSceneResponse> {
     path: "/ai.inworld.engine.WorldEngine/LoadScene";
@@ -89,7 +91,7 @@ export const WorldEngineService: IWorldEngineService;
 
 export interface IWorldEngineServer {
     session: grpc.handleBidiStreamingCall<packets_pb.InworldPacket, packets_pb.InworldPacket>;
-    createWorld: grpc.handleUnaryCall<world_engine_pb.CreateWorldRequest, world_engine_pb.CreateWorldResponse>;
+    openSession: grpc.handleBidiStreamingCall<packets_pb.InworldPacket, packets_pb.InworldPacket>;
     loadScene: grpc.handleUnaryCall<world_engine_pb.LoadSceneRequest, world_engine_pb.LoadSceneResponse>;
     logError: grpc.handleUnaryCall<world_engine_pb.LogErrorRequest, google_protobuf_empty_pb.Empty>;
     voicePreview: grpc.handleUnaryCall<world_engine_pb.VoicePreviewRequest, world_engine_pb.VoicePreviewResponse>;
@@ -101,9 +103,9 @@ export interface IWorldEngineClient {
     session(): grpc.ClientDuplexStream<packets_pb.InworldPacket, packets_pb.InworldPacket>;
     session(options: Partial<grpc.CallOptions>): grpc.ClientDuplexStream<packets_pb.InworldPacket, packets_pb.InworldPacket>;
     session(metadata: grpc.Metadata, options?: Partial<grpc.CallOptions>): grpc.ClientDuplexStream<packets_pb.InworldPacket, packets_pb.InworldPacket>;
-    createWorld(request: world_engine_pb.CreateWorldRequest, callback: (error: grpc.ServiceError | null, response: world_engine_pb.CreateWorldResponse) => void): grpc.ClientUnaryCall;
-    createWorld(request: world_engine_pb.CreateWorldRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: world_engine_pb.CreateWorldResponse) => void): grpc.ClientUnaryCall;
-    createWorld(request: world_engine_pb.CreateWorldRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: world_engine_pb.CreateWorldResponse) => void): grpc.ClientUnaryCall;
+    openSession(): grpc.ClientDuplexStream<packets_pb.InworldPacket, packets_pb.InworldPacket>;
+    openSession(options: Partial<grpc.CallOptions>): grpc.ClientDuplexStream<packets_pb.InworldPacket, packets_pb.InworldPacket>;
+    openSession(metadata: grpc.Metadata, options?: Partial<grpc.CallOptions>): grpc.ClientDuplexStream<packets_pb.InworldPacket, packets_pb.InworldPacket>;
     loadScene(request: world_engine_pb.LoadSceneRequest, callback: (error: grpc.ServiceError | null, response: world_engine_pb.LoadSceneResponse) => void): grpc.ClientUnaryCall;
     loadScene(request: world_engine_pb.LoadSceneRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: world_engine_pb.LoadSceneResponse) => void): grpc.ClientUnaryCall;
     loadScene(request: world_engine_pb.LoadSceneRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: world_engine_pb.LoadSceneResponse) => void): grpc.ClientUnaryCall;
@@ -125,9 +127,8 @@ export class WorldEngineClient extends grpc.Client implements IWorldEngineClient
     constructor(address: string, credentials: grpc.ChannelCredentials, options?: object);
     public session(options?: Partial<grpc.CallOptions>): grpc.ClientDuplexStream<packets_pb.InworldPacket, packets_pb.InworldPacket>;
     public session(metadata?: grpc.Metadata, options?: Partial<grpc.CallOptions>): grpc.ClientDuplexStream<packets_pb.InworldPacket, packets_pb.InworldPacket>;
-    public createWorld(request: world_engine_pb.CreateWorldRequest, callback: (error: grpc.ServiceError | null, response: world_engine_pb.CreateWorldResponse) => void): grpc.ClientUnaryCall;
-    public createWorld(request: world_engine_pb.CreateWorldRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: world_engine_pb.CreateWorldResponse) => void): grpc.ClientUnaryCall;
-    public createWorld(request: world_engine_pb.CreateWorldRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: world_engine_pb.CreateWorldResponse) => void): grpc.ClientUnaryCall;
+    public openSession(options?: Partial<grpc.CallOptions>): grpc.ClientDuplexStream<packets_pb.InworldPacket, packets_pb.InworldPacket>;
+    public openSession(metadata?: grpc.Metadata, options?: Partial<grpc.CallOptions>): grpc.ClientDuplexStream<packets_pb.InworldPacket, packets_pb.InworldPacket>;
     public loadScene(request: world_engine_pb.LoadSceneRequest, callback: (error: grpc.ServiceError | null, response: world_engine_pb.LoadSceneResponse) => void): grpc.ClientUnaryCall;
     public loadScene(request: world_engine_pb.LoadSceneRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: world_engine_pb.LoadSceneResponse) => void): grpc.ClientUnaryCall;
     public loadScene(request: world_engine_pb.LoadSceneRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: world_engine_pb.LoadSceneResponse) => void): grpc.ClientUnaryCall;

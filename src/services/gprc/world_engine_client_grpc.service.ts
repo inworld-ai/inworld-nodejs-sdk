@@ -13,6 +13,7 @@ import {
   UserSettings,
 } from '@proto/world-engine_pb';
 import { promisify } from 'util';
+import os = require('os');
 
 import { KeySignature } from '../../auth/key_signature';
 import { Config } from '../../common/config';
@@ -27,6 +28,8 @@ import { grpcOptions } from '../../common/helpers';
 import { Logger } from '../../common/logger';
 import { SessionContinuation } from '../../entities/continuation/session_continuation.entity';
 import { SessionToken } from '../../entities/session_token.entity';
+
+const { version } = require('@root/package.json');
 
 export interface LoadSceneProps<InworldPacketT> {
   name: string;
@@ -97,26 +100,14 @@ export class WorldEngineClientGrpcService<InworldPacketT> {
     const { capabilities, name, sessionContinuation, sessionToken, user } =
       props;
 
-    const request = new LoadSceneRequest();
-    request.setName(name);
-    request.setCapabilities(capabilities);
+    const request = new LoadSceneRequest()
+      .setName(name)
+      .setCapabilities(capabilities)
+      .setClient(this.getClient(props))
+      .setUserSettings(this.getUserSettings(props));
 
     if (user?.fullName) {
       request.setUser(new UserRequest().setName(user.fullName));
-    }
-
-    if (user?.profile?.fields?.length) {
-      request.setUserSettings(
-        new UserSettings().setPlayerProfile(
-          new UserSettings.PlayerProfile().setFieldsList(
-            user.profile.fields.map(({ id, value }) =>
-              new UserSettings.PlayerProfile.PlayerField()
-                .setFieldId(id)
-                .setFieldValue(value),
-            ),
-          ),
-        ),
-      );
     }
 
     if (
@@ -137,10 +128,6 @@ export class WorldEngineClientGrpcService<InworldPacketT> {
 
       request.setSessionContinuation(continuation);
     }
-
-    request.setClient(
-      new ClientRequest().setId(props.client?.getId() || CLIENT_ID),
-    );
 
     const metadata = this.getMetadata(sessionToken);
     const finalRequest = props.extension?.beforeLoadScene?.(request) || request;
@@ -209,5 +196,37 @@ export class WorldEngineClientGrpcService<InworldPacketT> {
     metadata.add('authorization', `${sessionToken.type} ${sessionToken.token}`);
 
     return metadata;
+  }
+
+  private getClient(props: LoadSceneProps<InworldPacketT>) {
+    const containerInfo = `${os.type()} ${os.release()} (Node.js ${
+      process.version
+    })`;
+    const description = [CLIENT_ID, version, containerInfo];
+
+    if (props.client?.getId()) {
+      description.push(props.client.getId());
+    }
+
+    return new ClientRequest()
+      .setId(CLIENT_ID)
+      .setVersion(version)
+      .setDescription(description.join('; '));
+  }
+
+  private getUserSettings(props: LoadSceneProps<InworldPacketT>) {
+    const { user } = props;
+
+    if (user?.profile?.fields?.length) {
+      return new UserSettings().setPlayerProfile(
+        new UserSettings.PlayerProfile().setFieldsList(
+          user.profile.fields.map(({ id, value }) =>
+            new UserSettings.PlayerProfile.PlayerField()
+              .setFieldId(id)
+              .setFieldValue(value),
+          ),
+        ),
+      );
+    }
   }
 }

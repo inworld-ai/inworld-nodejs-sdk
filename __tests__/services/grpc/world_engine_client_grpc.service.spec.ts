@@ -9,6 +9,7 @@ import {
   ClientRequest,
   LoadSceneResponse,
 } from '@proto/world-engine_pb';
+import os = require('os');
 
 import { Config } from '../../../src/common/config';
 import { CLIENT_ID } from '../../../src/common/constants';
@@ -33,6 +34,8 @@ import {
   sessionToken,
   user,
 } from '../../helpers';
+
+const { version } = require('@root/package.json');
 
 const agents = [createAgent(), createAgent()];
 
@@ -140,9 +143,14 @@ describe('load scene', () => {
   });
 
   test('should use provided custom client id', async () => {
+    const osType = 'Darwin';
+    const osRelease = '23.1.0';
     jest
       .spyOn(WorldEngineClient.prototype, 'loadScene')
       .mockImplementationOnce(mockLoadScene);
+
+    jest.spyOn(os, 'type').mockImplementationOnce(() => osType);
+    jest.spyOn(os, 'release').mockImplementationOnce(() => osRelease);
 
     const sceneClient = new ClientRequest().setId('client-id');
     const capabilities = new CapabilitiesRequest().setEmotions(true);
@@ -155,7 +163,45 @@ describe('load scene', () => {
       user,
     });
 
-    expect(mockLoadScene.mock.calls[0][0].getClient()).toEqual(sceneClient);
+    const actualClient = mockLoadScene.mock.calls[0][0].getClient();
+
+    expect(actualClient.getId()).toEqual(CLIENT_ID);
+    expect(actualClient.getVersion()).toEqual(version);
+    expect(actualClient.getDescription()).toEqual(
+      `${CLIENT_ID}; ${version}; ${osType} ${osRelease} (Node.js ${
+        process.version
+      }); ${sceneClient.getId()}`,
+    );
+  });
+
+  test("should not send client id if it's not provided", async () => {
+    const osType = 'Darwin';
+    const osRelease = '23.1.0';
+    jest
+      .spyOn(WorldEngineClient.prototype, 'loadScene')
+      .mockImplementationOnce(mockLoadScene);
+
+    jest.spyOn(os, 'type').mockImplementationOnce(() => osType);
+    jest.spyOn(os, 'release').mockImplementationOnce(() => osRelease);
+
+    const sceneClient = new ClientRequest();
+    const capabilities = new CapabilitiesRequest().setEmotions(true);
+
+    await client.loadScene({
+      name: SCENE,
+      client: sceneClient,
+      capabilities,
+      sessionToken,
+      user,
+    });
+
+    const actualClient = mockLoadScene.mock.calls[0][0].getClient();
+
+    expect(actualClient.getId()).toEqual(CLIENT_ID);
+    expect(actualClient.getVersion()).toEqual(version);
+    expect(actualClient.getDescription()).toEqual(
+      `${CLIENT_ID}; ${version}; ${osType} ${osRelease} (Node.js ${process.version})`,
+    );
   });
 
   test('should use provided additional props', async () => {

@@ -15,6 +15,8 @@ var jspb = require('google-protobuf');
 var goog = jspb;
 var global = Function('return this')();
 
+var language_codes_pb = require('./language_codes_pb.js');
+goog.object.extend(proto, language_codes_pb);
 goog.exportSymbol('proto.ai.inworld.voices.Age', null, global);
 goog.exportSymbol('proto.ai.inworld.voices.Gender', null, global);
 goog.exportSymbol('proto.ai.inworld.voices.TTSType', null, global);
@@ -128,6 +130,8 @@ proto.ai.inworld.voices.Voice.toObject = function(includeInstance, msg) {
     roboticVoiceFilterLevel: jspb.Message.getFloatingPointFieldWithDefault(msg, 6, 0.0),
     phonemesOverridesMap: (f = msg.getPhonemesOverridesMap()) ? f.toObject(includeInstance, undefined) : [],
     age: jspb.Message.getFieldWithDefault(msg, 8, 0),
+    languageCode: jspb.Message.getFieldWithDefault(msg, 9, ""),
+    language: jspb.Message.getFieldWithDefault(msg, 10, 0),
     elevenlabsMetadata: (f = msg.getElevenlabsMetadata()) && proto.ai.inworld.voices.Voice.ElevenLabsMetadata.toObject(includeInstance, f)
   };
 
@@ -198,6 +202,14 @@ proto.ai.inworld.voices.Voice.deserializeBinaryFromReader = function(msg, reader
     case 8:
       var value = /** @type {!proto.ai.inworld.voices.Age} */ (reader.readEnum());
       msg.setAge(value);
+      break;
+    case 9:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setLanguageCode(value);
+      break;
+    case 10:
+      var value = /** @type {!proto.ai.inworld.language_codes.LanguageCode} */ (reader.readEnum());
+      msg.setLanguage(value);
       break;
     case 100:
       var value = new proto.ai.inworld.voices.Voice.ElevenLabsMetadata;
@@ -283,6 +295,20 @@ proto.ai.inworld.voices.Voice.serializeBinaryToWriter = function(message, writer
   if (f !== 0.0) {
     writer.writeEnum(
       8,
+      f
+    );
+  }
+  f = message.getLanguageCode();
+  if (f.length > 0) {
+    writer.writeString(
+      9,
+      f
+    );
+  }
+  f = message.getLanguage();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      10,
       f
     );
   }
@@ -576,6 +602,42 @@ proto.ai.inworld.voices.Voice.prototype.setAge = function(value) {
 
 
 /**
+ * optional string language_code = 9;
+ * @return {string}
+ */
+proto.ai.inworld.voices.Voice.prototype.getLanguageCode = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 9, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.ai.inworld.voices.Voice} returns this
+ */
+proto.ai.inworld.voices.Voice.prototype.setLanguageCode = function(value) {
+  return jspb.Message.setProto3StringField(this, 9, value);
+};
+
+
+/**
+ * optional ai.inworld.language_codes.LanguageCode language = 10;
+ * @return {!proto.ai.inworld.language_codes.LanguageCode}
+ */
+proto.ai.inworld.voices.Voice.prototype.getLanguage = function() {
+  return /** @type {!proto.ai.inworld.language_codes.LanguageCode} */ (jspb.Message.getFieldWithDefault(this, 10, 0));
+};
+
+
+/**
+ * @param {!proto.ai.inworld.language_codes.LanguageCode} value
+ * @return {!proto.ai.inworld.voices.Voice} returns this
+ */
+proto.ai.inworld.voices.Voice.prototype.setLanguage = function(value) {
+  return jspb.Message.setProto3EnumField(this, 10, value);
+};
+
+
+/**
  * optional ElevenLabsMetadata elevenlabs_metadata = 100;
  * @return {?proto.ai.inworld.voices.Voice.ElevenLabsMetadata}
  */
@@ -638,7 +700,8 @@ proto.ai.inworld.voices.Age = {
 proto.ai.inworld.voices.TTSType = {
   TTS_TYPE_STANDARD: 0,
   TTS_TYPE_ADVANCED: 1,
-  TTS_TYPE_ELEVEN_LABS: 2
+  TTS_TYPE_ELEVEN_LABS: 2,
+  TTS_TYPE_ADVANCED_V2: 3
 };
 
 goog.object.extend(exports, proto.ai.inworld.voices);
