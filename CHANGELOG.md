@@ -1,3 +1,9 @@
+## [Unreleased]
+
+### Added
+
+- Improve client request format
+
 ## [1.10.0] - 2023-10-18
 
 ### Added
