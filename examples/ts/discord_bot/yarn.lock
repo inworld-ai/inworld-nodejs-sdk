@@ -291,13 +291,13 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-1.2.1.tgz#b520529ec21d8e5945a1851dfd1c32e94e39ff45"
   integrity sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==
 
-"@inworld/nodejs-sdk@^1.6.0":
-  version "1.10.0"
-  resolved "https://registry.yarnpkg.com/@inworld/nodejs-sdk/-/nodejs-sdk-1.10.0.tgz#844c9714b0f24a07a7bbe2647770be1321ece600"
-  integrity sha512-CsyQtURySrrcIAOpX9uaeoDCDjT7TvnCMoyJmOpFTtUzAnlc5M7SwcXmBsqS4e7HFQIiqmEY0dAUAQRLU7XMKw==
+"@inworld/nodejs-sdk@1.10.1":
+  version "1.10.1"
+  resolved "https://registry.yarnpkg.com/@inworld/nodejs-sdk/-/nodejs-sdk-1.10.1.tgz#fc8ea1f7b4a2bc4d14a805ed2545dec0156ca145"
+  integrity sha512-Zd+TYWpqkJ0ZO89Elhc4A+S6uDUA1lnn9iWLPYhue4xLLD4qWrGbJ8xg+WQlsWTVMXflbT4Ni7vLeCCofkqfVQ==
   dependencies:
     "@grpc/grpc-js" "^1.6.7"
-    crypto-js "^4.1.1"
+    crypto-js "^4.2.0"
     google-protobuf "^3.20.1"
     module-alias "^2.2.2"
     uuid "^9.0.0"
@@ -1601,7 +1601,7 @@ cross-spawn@^7.0.0, cross-spawn@^7.0.2, cross-spawn@^7.0.3:
     shebang-command "^2.0.0"
     which "^2.0.1"
 
-crypto-js@^4.1.1:
+crypto-js@^4.2.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/crypto-js/-/crypto-js-4.2.0.tgz#4d931639ecdfd12ff80e8186dba6af2c2e856631"
   integrity sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==
