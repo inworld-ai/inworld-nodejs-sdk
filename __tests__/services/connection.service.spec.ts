@@ -1,12 +1,12 @@
 import { ClientDuplexStreamImpl } from '@grpc/grpc-js/build/src/call';
+import { WorldEngineClient } from '@proto/ai/inworld/engine/world-engine_grpc_pb';
+import { LoadSceneResponse } from '@proto/ai/inworld/engine/world-engine_pb';
 import {
   Actor,
   InworldPacket as ProtoPacket,
   PacketId,
   Routing,
-} from '@proto/packets_pb';
-import { WorldEngineClient } from '@proto/world-engine_grpc_pb';
-import { LoadSceneResponse } from '@proto/world-engine_pb';
+} from '@proto/ai/inworld/packets/packets_pb';
 import { v4 } from 'uuid';
 
 import { protoTimestamp } from '../../src/common/helpers';

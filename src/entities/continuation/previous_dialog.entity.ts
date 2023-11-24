@@ -1,4 +1,4 @@
-import { PreviousDialog as ProtoDialog } from '@proto/world-engine_pb';
+import { PreviousDialog as ProtoDialog } from '@proto/ai/inworld/engine/world-engine_pb';
 
 export enum DialogParticipant {
   UNKNOWN = 'UNKNOWN',

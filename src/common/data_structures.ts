@@ -1,9 +1,9 @@
-import { InworldPacket as ProtoPacket } from '@proto/packets_pb';
 import {
   CapabilitiesRequest,
   LoadSceneRequest,
   LoadSceneResponse,
-} from '@proto/world-engine_pb';
+} from '@proto/ai/inworld/engine/world-engine_pb';
+import { InworldPacket as ProtoPacket } from '@proto/ai/inworld/packets/packets_pb';
 
 import { SessionToken } from '../entities/session_token.entity';
 

@@ -3,12 +3,12 @@ import {
   ClientDuplexStreamImpl,
   SurfaceCall,
 } from '@grpc/grpc-js/build/src/call';
-import { WorldEngineClient } from '@proto/world-engine_grpc_pb';
+import { WorldEngineClient } from '@proto/ai/inworld/engine/world-engine_grpc_pb';
 import {
   CapabilitiesRequest,
   ClientRequest,
   LoadSceneResponse,
-} from '@proto/world-engine_pb';
+} from '@proto/ai/inworld/engine/world-engine_pb';
 import os = require('os');
 
 import { Config } from '../../../src/common/config';

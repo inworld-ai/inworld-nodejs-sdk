@@ -1,5 +1,5 @@
 // package: ai.inworld.engine
-// file: world-engine.proto
+// file: ai/inworld/engine/world-engine.proto
 
 /* tslint:disable */
 /* eslint-disable */
@@ -7,10 +7,10 @@
 import * as jspb from "google-protobuf";
 import * as google_protobuf_empty_pb from "google-protobuf/google/protobuf/empty_pb";
 import * as google_protobuf_timestamp_pb from "google-protobuf/google/protobuf/timestamp_pb";
-import * as packets_pb from "./packets_pb";
-import * as voices_pb from "./voices_pb";
-import * as base_voice_pb from "./base_voice_pb";
-import * as language_codes_pb from "./language_codes_pb";
+import * as ai_inworld_packets_packets_pb from "../../../ai/inworld/packets/packets_pb";
+import * as ai_inworld_voices_voices_pb from "../../../ai/inworld/voices/voices_pb";
+import * as ai_inworld_voices_base_voice_pb from "../../../ai/inworld/voices/base_voice_pb";
+import * as ai_inworld_language_codes_language_codes_pb from "../../../ai/inworld/language_codes/language_codes_pb";
 
 export class CapabilitiesRequest extends jspb.Message { 
     getAudio(): boolean;
@@ -431,9 +431,9 @@ export namespace PreviousState {
         getPreviousDialog(): PreviousDialog | undefined;
         setPreviousDialog(value?: PreviousDialog): StateHolder;
         clearPacketsList(): void;
-        getPacketsList(): Array<packets_pb.InworldPacket>;
-        setPacketsList(value: Array<packets_pb.InworldPacket>): StateHolder;
-        addPackets(value?: packets_pb.InworldPacket, index?: number): packets_pb.InworldPacket;
+        getPacketsList(): Array<ai_inworld_packets_packets_pb.InworldPacket>;
+        setPacketsList(value: Array<ai_inworld_packets_packets_pb.InworldPacket>): StateHolder;
+        addPackets(value?: ai_inworld_packets_packets_pb.InworldPacket, index?: number): ai_inworld_packets_packets_pb.InworldPacket;
         clearRelationsToActorsList(): void;
         getRelationsToActorsList(): Array<ActorRelations>;
         setRelationsToActorsList(value: Array<ActorRelations>): StateHolder;
@@ -456,7 +456,7 @@ export namespace PreviousState {
             brainName: string,
             state: Uint8Array | string,
             previousDialog?: PreviousDialog.AsObject,
-            packetsList: Array<packets_pb.InworldPacket.AsObject>,
+            packetsList: Array<ai_inworld_packets_packets_pb.InworldPacket.AsObject>,
             relationsToActorsList: Array<ActorRelations.AsObject>,
             stateFormat: PreviousState.StateHolder.StateFormat,
         }
@@ -599,13 +599,13 @@ export class VoicePreviewRequest extends jspb.Message {
 
     hasEmotions(): boolean;
     clearEmotions(): void;
-    getEmotions(): packets_pb.EmotionEvent | undefined;
-    setEmotions(value?: packets_pb.EmotionEvent): VoicePreviewRequest;
+    getEmotions(): ai_inworld_packets_packets_pb.EmotionEvent | undefined;
+    setEmotions(value?: ai_inworld_packets_packets_pb.EmotionEvent): VoicePreviewRequest;
 
     hasVoice(): boolean;
     clearVoice(): void;
-    getVoice(): voices_pb.Voice | undefined;
-    setVoice(value?: voices_pb.Voice): VoicePreviewRequest;
+    getVoice(): ai_inworld_voices_voices_pb.Voice | undefined;
+    setVoice(value?: ai_inworld_voices_voices_pb.Voice): VoicePreviewRequest;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): VoicePreviewRequest.AsObject;
@@ -620,8 +620,8 @@ export class VoicePreviewRequest extends jspb.Message {
 export namespace VoicePreviewRequest {
     export type AsObject = {
         text: string,
-        emotions?: packets_pb.EmotionEvent.AsObject,
-        voice?: voices_pb.Voice.AsObject,
+        emotions?: ai_inworld_packets_packets_pb.EmotionEvent.AsObject,
+        voice?: ai_inworld_voices_voices_pb.Voice.AsObject,
     }
 }
 
@@ -651,11 +651,11 @@ export class ListBaseVoicesRequest extends jspb.Message {
     getLanguageCode(): string;
     setLanguageCode(value: string): ListBaseVoicesRequest;
     clearTtsTypesList(): void;
-    getTtsTypesList(): Array<voices_pb.TTSType>;
-    setTtsTypesList(value: Array<voices_pb.TTSType>): ListBaseVoicesRequest;
-    addTtsTypes(value: voices_pb.TTSType, index?: number): voices_pb.TTSType;
-    getLanguage(): language_codes_pb.LanguageCode;
-    setLanguage(value: language_codes_pb.LanguageCode): ListBaseVoicesRequest;
+    getTtsTypesList(): Array<ai_inworld_voices_voices_pb.TTSType>;
+    setTtsTypesList(value: Array<ai_inworld_voices_voices_pb.TTSType>): ListBaseVoicesRequest;
+    addTtsTypes(value: ai_inworld_voices_voices_pb.TTSType, index?: number): ai_inworld_voices_voices_pb.TTSType;
+    getLanguage(): ai_inworld_language_codes_language_codes_pb.LanguageCode;
+    setLanguage(value: ai_inworld_language_codes_language_codes_pb.LanguageCode): ListBaseVoicesRequest;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): ListBaseVoicesRequest.AsObject;
@@ -670,28 +670,28 @@ export class ListBaseVoicesRequest extends jspb.Message {
 export namespace ListBaseVoicesRequest {
     export type AsObject = {
         languageCode: string,
-        ttsTypesList: Array<voices_pb.TTSType>,
-        language: language_codes_pb.LanguageCode,
+        ttsTypesList: Array<ai_inworld_voices_voices_pb.TTSType>,
+        language: ai_inworld_language_codes_language_codes_pb.LanguageCode,
     }
 }
 
 export class ListBaseVoicesResponce extends jspb.Message { 
     clearGoogleVoicesList(): void;
-    getGoogleVoicesList(): Array<base_voice_pb.BaseVoice>;
-    setGoogleVoicesList(value: Array<base_voice_pb.BaseVoice>): ListBaseVoicesResponce;
-    addGoogleVoices(value?: base_voice_pb.BaseVoice, index?: number): base_voice_pb.BaseVoice;
+    getGoogleVoicesList(): Array<ai_inworld_voices_base_voice_pb.BaseVoice>;
+    setGoogleVoicesList(value: Array<ai_inworld_voices_base_voice_pb.BaseVoice>): ListBaseVoicesResponce;
+    addGoogleVoices(value?: ai_inworld_voices_base_voice_pb.BaseVoice, index?: number): ai_inworld_voices_base_voice_pb.BaseVoice;
     clearInworldVoicesList(): void;
-    getInworldVoicesList(): Array<base_voice_pb.BaseVoice>;
-    setInworldVoicesList(value: Array<base_voice_pb.BaseVoice>): ListBaseVoicesResponce;
-    addInworldVoices(value?: base_voice_pb.BaseVoice, index?: number): base_voice_pb.BaseVoice;
+    getInworldVoicesList(): Array<ai_inworld_voices_base_voice_pb.BaseVoice>;
+    setInworldVoicesList(value: Array<ai_inworld_voices_base_voice_pb.BaseVoice>): ListBaseVoicesResponce;
+    addInworldVoices(value?: ai_inworld_voices_base_voice_pb.BaseVoice, index?: number): ai_inworld_voices_base_voice_pb.BaseVoice;
     clearElevenLabsVoicesList(): void;
-    getElevenLabsVoicesList(): Array<base_voice_pb.BaseVoice>;
-    setElevenLabsVoicesList(value: Array<base_voice_pb.BaseVoice>): ListBaseVoicesResponce;
-    addElevenLabsVoices(value?: base_voice_pb.BaseVoice, index?: number): base_voice_pb.BaseVoice;
+    getElevenLabsVoicesList(): Array<ai_inworld_voices_base_voice_pb.BaseVoice>;
+    setElevenLabsVoicesList(value: Array<ai_inworld_voices_base_voice_pb.BaseVoice>): ListBaseVoicesResponce;
+    addElevenLabsVoices(value?: ai_inworld_voices_base_voice_pb.BaseVoice, index?: number): ai_inworld_voices_base_voice_pb.BaseVoice;
     clearInworldV2VoicesList(): void;
-    getInworldV2VoicesList(): Array<base_voice_pb.BaseVoice>;
-    setInworldV2VoicesList(value: Array<base_voice_pb.BaseVoice>): ListBaseVoicesResponce;
-    addInworldV2Voices(value?: base_voice_pb.BaseVoice, index?: number): base_voice_pb.BaseVoice;
+    getInworldV2VoicesList(): Array<ai_inworld_voices_base_voice_pb.BaseVoice>;
+    setInworldV2VoicesList(value: Array<ai_inworld_voices_base_voice_pb.BaseVoice>): ListBaseVoicesResponce;
+    addInworldV2Voices(value?: ai_inworld_voices_base_voice_pb.BaseVoice, index?: number): ai_inworld_voices_base_voice_pb.BaseVoice;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): ListBaseVoicesResponce.AsObject;
@@ -705,10 +705,10 @@ export class ListBaseVoicesResponce extends jspb.Message {
 
 export namespace ListBaseVoicesResponce {
     export type AsObject = {
-        googleVoicesList: Array<base_voice_pb.BaseVoice.AsObject>,
-        inworldVoicesList: Array<base_voice_pb.BaseVoice.AsObject>,
-        elevenLabsVoicesList: Array<base_voice_pb.BaseVoice.AsObject>,
-        inworldV2VoicesList: Array<base_voice_pb.BaseVoice.AsObject>,
+        googleVoicesList: Array<ai_inworld_voices_base_voice_pb.BaseVoice.AsObject>,
+        inworldVoicesList: Array<ai_inworld_voices_base_voice_pb.BaseVoice.AsObject>,
+        elevenLabsVoicesList: Array<ai_inworld_voices_base_voice_pb.BaseVoice.AsObject>,
+        inworldV2VoicesList: Array<ai_inworld_voices_base_voice_pb.BaseVoice.AsObject>,
     }
 }
 

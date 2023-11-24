@@ -1,4 +1,4 @@
-// source: world-engine.proto
+// source: ai/inworld/engine/world-engine.proto
 /**
  * @fileoverview
  * @enhanceable
@@ -15,20 +15,20 @@ var jspb = require('google-protobuf');
 var goog = jspb;
 var global = Function('return this')();
 
-;
+
 
 var google_protobuf_empty_pb = require('google-protobuf/google/protobuf/empty_pb.js');
 goog.object.extend(proto, google_protobuf_empty_pb);
 var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/timestamp_pb.js');
 goog.object.extend(proto, google_protobuf_timestamp_pb);
-var packets_pb = require('./packets_pb.js');
-goog.object.extend(proto, packets_pb);
-var voices_pb = require('./voices_pb.js');
-goog.object.extend(proto, voices_pb);
-var base_voice_pb = require('./base_voice_pb.js');
-goog.object.extend(proto, base_voice_pb);
-var language_codes_pb = require('./language_codes_pb.js');
-goog.object.extend(proto, language_codes_pb);
+var ai_inworld_packets_packets_pb = require('../../../ai/inworld/packets/packets_pb.js');
+goog.object.extend(proto, ai_inworld_packets_packets_pb);
+var ai_inworld_voices_voices_pb = require('../../../ai/inworld/voices/voices_pb.js');
+goog.object.extend(proto, ai_inworld_voices_voices_pb);
+var ai_inworld_voices_base_voice_pb = require('../../../ai/inworld/voices/base_voice_pb.js');
+goog.object.extend(proto, ai_inworld_voices_base_voice_pb);
+var ai_inworld_language_codes_language_codes_pb = require('../../../ai/inworld/language_codes/language_codes_pb.js');
+goog.object.extend(proto, ai_inworld_language_codes_language_codes_pb);
 goog.exportSymbol('proto.AccessToken', null, global);
 goog.exportSymbol('proto.ActorRelations', null, global);
 goog.exportSymbol('proto.ActorRelations.Relation', null, global);
@@ -3571,7 +3571,7 @@ proto.PreviousState.StateHolder.toObject = function(includeInstance, msg) {
     state: msg.getState_asB64(),
     previousDialog: (f = msg.getPreviousDialog()) && proto.PreviousDialog.toObject(includeInstance, f),
     packetsList: jspb.Message.toObjectList(msg.getPacketsList(),
-    packets_pb.InworldPacket.toObject, includeInstance),
+    ai_inworld_packets_packets_pb.InworldPacket.toObject, includeInstance),
     relationsToActorsList: jspb.Message.toObjectList(msg.getRelationsToActorsList(),
     proto.ActorRelations.toObject, includeInstance),
     stateFormat: jspb.Message.getFieldWithDefault(msg, 6, 0)
@@ -3625,8 +3625,8 @@ proto.PreviousState.StateHolder.deserializeBinaryFromReader = function(msg, read
       msg.setPreviousDialog(value);
       break;
     case 4:
-      var value = new packets_pb.InworldPacket;
-      reader.readMessage(value,packets_pb.InworldPacket.deserializeBinaryFromReader);
+      var value = new ai_inworld_packets_packets_pb.InworldPacket;
+      reader.readMessage(value,ai_inworld_packets_packets_pb.InworldPacket.deserializeBinaryFromReader);
       msg.addPackets(value);
       break;
     case 5:
@@ -3694,7 +3694,7 @@ proto.PreviousState.StateHolder.serializeBinaryToWriter = function(message, writ
     writer.writeRepeatedMessage(
       4,
       f,
-      packets_pb.InworldPacket.serializeBinaryToWriter
+      ai_inworld_packets_packets_pb.InworldPacket.serializeBinaryToWriter
     );
   }
   f = message.getRelationsToActorsList();
@@ -3827,7 +3827,7 @@ proto.PreviousState.StateHolder.prototype.hasPreviousDialog = function() {
  */
 proto.PreviousState.StateHolder.prototype.getPacketsList = function() {
   return /** @type{!Array<!proto.InworldPacket>} */ (
-    jspb.Message.getRepeatedWrapperField(this, packets_pb.InworldPacket, 4));
+    jspb.Message.getRepeatedWrapperField(this, ai_inworld_packets_packets_pb.InworldPacket, 4));
 };
 
 
@@ -4878,8 +4878,8 @@ proto.VoicePreviewRequest.prototype.toObject = function(opt_includeInstance) {
 proto.VoicePreviewRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
     text: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    emotions: (f = msg.getEmotions()) && packets_pb.EmotionEvent.toObject(includeInstance, f),
-    voice: (f = msg.getVoice()) && voices_pb.Voice.toObject(includeInstance, f)
+    emotions: (f = msg.getEmotions()) && ai_inworld_packets_packets_pb.EmotionEvent.toObject(includeInstance, f),
+    voice: (f = msg.getVoice()) && ai_inworld_voices_voices_pb.Voice.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -4921,13 +4921,13 @@ proto.VoicePreviewRequest.deserializeBinaryFromReader = function(msg, reader) {
       msg.setText(value);
       break;
     case 2:
-      var value = new packets_pb.EmotionEvent;
-      reader.readMessage(value,packets_pb.EmotionEvent.deserializeBinaryFromReader);
+      var value = new ai_inworld_packets_packets_pb.EmotionEvent;
+      reader.readMessage(value,ai_inworld_packets_packets_pb.EmotionEvent.deserializeBinaryFromReader);
       msg.setEmotions(value);
       break;
     case 3:
-      var value = new voices_pb.Voice;
-      reader.readMessage(value,voices_pb.Voice.deserializeBinaryFromReader);
+      var value = new ai_inworld_voices_voices_pb.Voice;
+      reader.readMessage(value,ai_inworld_voices_voices_pb.Voice.deserializeBinaryFromReader);
       msg.setVoice(value);
       break;
     default:
@@ -4971,7 +4971,7 @@ proto.VoicePreviewRequest.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       2,
       f,
-      packets_pb.EmotionEvent.serializeBinaryToWriter
+      ai_inworld_packets_packets_pb.EmotionEvent.serializeBinaryToWriter
     );
   }
   f = message.getVoice();
@@ -4979,7 +4979,7 @@ proto.VoicePreviewRequest.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       3,
       f,
-      voices_pb.Voice.serializeBinaryToWriter
+      ai_inworld_voices_voices_pb.Voice.serializeBinaryToWriter
     );
   }
 };
@@ -5009,7 +5009,7 @@ proto.VoicePreviewRequest.prototype.setText = function(value) {
  */
 proto.VoicePreviewRequest.prototype.getEmotions = function() {
   return /** @type{?proto.EmotionEvent} */ (
-    jspb.Message.getWrapperField(this, packets_pb.EmotionEvent, 2));
+    jspb.Message.getWrapperField(this, ai_inworld_packets_packets_pb.EmotionEvent, 2));
 };
 
 
@@ -5046,7 +5046,7 @@ proto.VoicePreviewRequest.prototype.hasEmotions = function() {
  */
 proto.VoicePreviewRequest.prototype.getVoice = function() {
   return /** @type{?proto.ai.inworld.voices.Voice} */ (
-    jspb.Message.getWrapperField(this, voices_pb.Voice, 3));
+    jspb.Message.getWrapperField(this, ai_inworld_voices_voices_pb.Voice, 3));
 };
 
 
@@ -5489,13 +5489,13 @@ proto.ListBaseVoicesResponce.prototype.toObject = function(opt_includeInstance) 
 proto.ListBaseVoicesResponce.toObject = function(includeInstance, msg) {
   var f, obj = {
     googleVoicesList: jspb.Message.toObjectList(msg.getGoogleVoicesList(),
-    base_voice_pb.BaseVoice.toObject, includeInstance),
+    ai_inworld_voices_base_voice_pb.BaseVoice.toObject, includeInstance),
     inworldVoicesList: jspb.Message.toObjectList(msg.getInworldVoicesList(),
-    base_voice_pb.BaseVoice.toObject, includeInstance),
+    ai_inworld_voices_base_voice_pb.BaseVoice.toObject, includeInstance),
     elevenLabsVoicesList: jspb.Message.toObjectList(msg.getElevenLabsVoicesList(),
-    base_voice_pb.BaseVoice.toObject, includeInstance),
+    ai_inworld_voices_base_voice_pb.BaseVoice.toObject, includeInstance),
     inworldV2VoicesList: jspb.Message.toObjectList(msg.getInworldV2VoicesList(),
-    base_voice_pb.BaseVoice.toObject, includeInstance)
+    ai_inworld_voices_base_voice_pb.BaseVoice.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -5533,23 +5533,23 @@ proto.ListBaseVoicesResponce.deserializeBinaryFromReader = function(msg, reader)
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = new base_voice_pb.BaseVoice;
-      reader.readMessage(value,base_voice_pb.BaseVoice.deserializeBinaryFromReader);
+      var value = new ai_inworld_voices_base_voice_pb.BaseVoice;
+      reader.readMessage(value,ai_inworld_voices_base_voice_pb.BaseVoice.deserializeBinaryFromReader);
       msg.addGoogleVoices(value);
       break;
     case 2:
-      var value = new base_voice_pb.BaseVoice;
-      reader.readMessage(value,base_voice_pb.BaseVoice.deserializeBinaryFromReader);
+      var value = new ai_inworld_voices_base_voice_pb.BaseVoice;
+      reader.readMessage(value,ai_inworld_voices_base_voice_pb.BaseVoice.deserializeBinaryFromReader);
       msg.addInworldVoices(value);
       break;
     case 3:
-      var value = new base_voice_pb.BaseVoice;
-      reader.readMessage(value,base_voice_pb.BaseVoice.deserializeBinaryFromReader);
+      var value = new ai_inworld_voices_base_voice_pb.BaseVoice;
+      reader.readMessage(value,ai_inworld_voices_base_voice_pb.BaseVoice.deserializeBinaryFromReader);
       msg.addElevenLabsVoices(value);
       break;
     case 4:
-      var value = new base_voice_pb.BaseVoice;
-      reader.readMessage(value,base_voice_pb.BaseVoice.deserializeBinaryFromReader);
+      var value = new ai_inworld_voices_base_voice_pb.BaseVoice;
+      reader.readMessage(value,ai_inworld_voices_base_voice_pb.BaseVoice.deserializeBinaryFromReader);
       msg.addInworldV2Voices(value);
       break;
     default:
@@ -5586,7 +5586,7 @@ proto.ListBaseVoicesResponce.serializeBinaryToWriter = function(message, writer)
     writer.writeRepeatedMessage(
       1,
       f,
-      base_voice_pb.BaseVoice.serializeBinaryToWriter
+      ai_inworld_voices_base_voice_pb.BaseVoice.serializeBinaryToWriter
     );
   }
   f = message.getInworldVoicesList();
@@ -5594,7 +5594,7 @@ proto.ListBaseVoicesResponce.serializeBinaryToWriter = function(message, writer)
     writer.writeRepeatedMessage(
       2,
       f,
-      base_voice_pb.BaseVoice.serializeBinaryToWriter
+      ai_inworld_voices_base_voice_pb.BaseVoice.serializeBinaryToWriter
     );
   }
   f = message.getElevenLabsVoicesList();
@@ -5602,7 +5602,7 @@ proto.ListBaseVoicesResponce.serializeBinaryToWriter = function(message, writer)
     writer.writeRepeatedMessage(
       3,
       f,
-      base_voice_pb.BaseVoice.serializeBinaryToWriter
+      ai_inworld_voices_base_voice_pb.BaseVoice.serializeBinaryToWriter
     );
   }
   f = message.getInworldV2VoicesList();
@@ -5610,7 +5610,7 @@ proto.ListBaseVoicesResponce.serializeBinaryToWriter = function(message, writer)
     writer.writeRepeatedMessage(
       4,
       f,
-      base_voice_pb.BaseVoice.serializeBinaryToWriter
+      ai_inworld_voices_base_voice_pb.BaseVoice.serializeBinaryToWriter
     );
   }
 };
@@ -5622,7 +5622,7 @@ proto.ListBaseVoicesResponce.serializeBinaryToWriter = function(message, writer)
  */
 proto.ListBaseVoicesResponce.prototype.getGoogleVoicesList = function() {
   return /** @type{!Array<!proto.ai.inworld.voices.BaseVoice>} */ (
-    jspb.Message.getRepeatedWrapperField(this, base_voice_pb.BaseVoice, 1));
+    jspb.Message.getRepeatedWrapperField(this, ai_inworld_voices_base_voice_pb.BaseVoice, 1));
 };
 
 
@@ -5660,7 +5660,7 @@ proto.ListBaseVoicesResponce.prototype.clearGoogleVoicesList = function() {
  */
 proto.ListBaseVoicesResponce.prototype.getInworldVoicesList = function() {
   return /** @type{!Array<!proto.ai.inworld.voices.BaseVoice>} */ (
-    jspb.Message.getRepeatedWrapperField(this, base_voice_pb.BaseVoice, 2));
+    jspb.Message.getRepeatedWrapperField(this, ai_inworld_voices_base_voice_pb.BaseVoice, 2));
 };
 
 
@@ -5698,7 +5698,7 @@ proto.ListBaseVoicesResponce.prototype.clearInworldVoicesList = function() {
  */
 proto.ListBaseVoicesResponce.prototype.getElevenLabsVoicesList = function() {
   return /** @type{!Array<!proto.ai.inworld.voices.BaseVoice>} */ (
-    jspb.Message.getRepeatedWrapperField(this, base_voice_pb.BaseVoice, 3));
+    jspb.Message.getRepeatedWrapperField(this, ai_inworld_voices_base_voice_pb.BaseVoice, 3));
 };
 
 
@@ -5736,7 +5736,7 @@ proto.ListBaseVoicesResponce.prototype.clearElevenLabsVoicesList = function() {
  */
 proto.ListBaseVoicesResponce.prototype.getInworldV2VoicesList = function() {
   return /** @type{!Array<!proto.ai.inworld.voices.BaseVoice>} */ (
-    jspb.Message.getRepeatedWrapperField(this, base_voice_pb.BaseVoice, 4));
+    jspb.Message.getRepeatedWrapperField(this, ai_inworld_voices_base_voice_pb.BaseVoice, 4));
 };
 
 

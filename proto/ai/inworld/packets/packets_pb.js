@@ -1,4 +1,4 @@
-// source: packets.proto
+// source: ai/inworld/packets/packets.proto
 /**
  * @fileoverview
  * @enhanceable
@@ -21,12 +21,12 @@ var google_protobuf_struct_pb = require('google-protobuf/google/protobuf/struct_
 goog.object.extend(proto, google_protobuf_struct_pb);
 var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/timestamp_pb.js');
 goog.object.extend(proto, google_protobuf_timestamp_pb);
-var options_pb = require('./options_pb.js');
-goog.object.extend(proto, options_pb);
-var configuration_pb = require('./configuration_pb.js');
-goog.object.extend(proto, configuration_pb);
-var language_codes_pb = require('./language_codes_pb.js');
-goog.object.extend(proto, language_codes_pb);
+var ai_inworld_options_options_pb = require('../../../ai/inworld/options/options_pb.js');
+goog.object.extend(proto, ai_inworld_options_options_pb);
+var ai_inworld_engine_configuration_configuration_pb = require('../../../ai/inworld/engine/configuration/configuration_pb.js');
+goog.object.extend(proto, ai_inworld_engine_configuration_configuration_pb);
+var ai_inworld_language_codes_language_codes_pb = require('../../../ai/inworld/language_codes/language_codes_pb.js');
+goog.object.extend(proto, ai_inworld_language_codes_language_codes_pb);
 goog.exportSymbol('proto.ActionEvent', null, global);
 goog.exportSymbol('proto.ActionEvent.ActionCase', null, global);
 goog.exportSymbol('proto.Actor', null, global);
@@ -8517,10 +8517,10 @@ proto.SessionControlEvent.prototype.toObject = function(opt_includeInstance) {
  */
 proto.SessionControlEvent.toObject = function(includeInstance, msg) {
   var f, obj = {
-    sessionConfiguration: (f = msg.getSessionConfiguration()) && configuration_pb.SessionConfiguration.toObject(includeInstance, f),
-    userConfiguration: (f = msg.getUserConfiguration()) && configuration_pb.UserConfiguration.toObject(includeInstance, f),
-    clientConfiguration: (f = msg.getClientConfiguration()) && configuration_pb.ClientConfiguration.toObject(includeInstance, f),
-    capabilitiesConfiguration: (f = msg.getCapabilitiesConfiguration()) && configuration_pb.CapabilitiesConfiguration.toObject(includeInstance, f),
+    sessionConfiguration: (f = msg.getSessionConfiguration()) && ai_inworld_engine_configuration_configuration_pb.SessionConfiguration.toObject(includeInstance, f),
+    userConfiguration: (f = msg.getUserConfiguration()) && ai_inworld_engine_configuration_configuration_pb.UserConfiguration.toObject(includeInstance, f),
+    clientConfiguration: (f = msg.getClientConfiguration()) && ai_inworld_engine_configuration_configuration_pb.ClientConfiguration.toObject(includeInstance, f),
+    capabilitiesConfiguration: (f = msg.getCapabilitiesConfiguration()) && ai_inworld_engine_configuration_configuration_pb.CapabilitiesConfiguration.toObject(includeInstance, f),
     continuation: (f = msg.getContinuation()) && proto.Continuation.toObject(includeInstance, f)
   };
 
@@ -8559,23 +8559,23 @@ proto.SessionControlEvent.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = new configuration_pb.SessionConfiguration;
-      reader.readMessage(value,configuration_pb.SessionConfiguration.deserializeBinaryFromReader);
+      var value = new ai_inworld_engine_configuration_configuration_pb.SessionConfiguration;
+      reader.readMessage(value,ai_inworld_engine_configuration_configuration_pb.SessionConfiguration.deserializeBinaryFromReader);
       msg.setSessionConfiguration(value);
       break;
     case 2:
-      var value = new configuration_pb.UserConfiguration;
-      reader.readMessage(value,configuration_pb.UserConfiguration.deserializeBinaryFromReader);
+      var value = new ai_inworld_engine_configuration_configuration_pb.UserConfiguration;
+      reader.readMessage(value,ai_inworld_engine_configuration_configuration_pb.UserConfiguration.deserializeBinaryFromReader);
       msg.setUserConfiguration(value);
       break;
     case 3:
-      var value = new configuration_pb.ClientConfiguration;
-      reader.readMessage(value,configuration_pb.ClientConfiguration.deserializeBinaryFromReader);
+      var value = new ai_inworld_engine_configuration_configuration_pb.ClientConfiguration;
+      reader.readMessage(value,ai_inworld_engine_configuration_configuration_pb.ClientConfiguration.deserializeBinaryFromReader);
       msg.setClientConfiguration(value);
       break;
     case 4:
-      var value = new configuration_pb.CapabilitiesConfiguration;
-      reader.readMessage(value,configuration_pb.CapabilitiesConfiguration.deserializeBinaryFromReader);
+      var value = new ai_inworld_engine_configuration_configuration_pb.CapabilitiesConfiguration;
+      reader.readMessage(value,ai_inworld_engine_configuration_configuration_pb.CapabilitiesConfiguration.deserializeBinaryFromReader);
       msg.setCapabilitiesConfiguration(value);
       break;
     case 5:
@@ -8617,7 +8617,7 @@ proto.SessionControlEvent.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       1,
       f,
-      configuration_pb.SessionConfiguration.serializeBinaryToWriter
+      ai_inworld_engine_configuration_configuration_pb.SessionConfiguration.serializeBinaryToWriter
     );
   }
   f = message.getUserConfiguration();
@@ -8625,7 +8625,7 @@ proto.SessionControlEvent.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       2,
       f,
-      configuration_pb.UserConfiguration.serializeBinaryToWriter
+      ai_inworld_engine_configuration_configuration_pb.UserConfiguration.serializeBinaryToWriter
     );
   }
   f = message.getClientConfiguration();
@@ -8633,7 +8633,7 @@ proto.SessionControlEvent.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       3,
       f,
-      configuration_pb.ClientConfiguration.serializeBinaryToWriter
+      ai_inworld_engine_configuration_configuration_pb.ClientConfiguration.serializeBinaryToWriter
     );
   }
   f = message.getCapabilitiesConfiguration();
@@ -8641,7 +8641,7 @@ proto.SessionControlEvent.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       4,
       f,
-      configuration_pb.CapabilitiesConfiguration.serializeBinaryToWriter
+      ai_inworld_engine_configuration_configuration_pb.CapabilitiesConfiguration.serializeBinaryToWriter
     );
   }
   f = message.getContinuation();
@@ -8661,7 +8661,7 @@ proto.SessionControlEvent.serializeBinaryToWriter = function(message, writer) {
  */
 proto.SessionControlEvent.prototype.getSessionConfiguration = function() {
   return /** @type{?proto.configuration.SessionConfiguration} */ (
-    jspb.Message.getWrapperField(this, configuration_pb.SessionConfiguration, 1));
+    jspb.Message.getWrapperField(this, ai_inworld_engine_configuration_configuration_pb.SessionConfiguration, 1));
 };
 
 
@@ -8698,7 +8698,7 @@ proto.SessionControlEvent.prototype.hasSessionConfiguration = function() {
  */
 proto.SessionControlEvent.prototype.getUserConfiguration = function() {
   return /** @type{?proto.configuration.UserConfiguration} */ (
-    jspb.Message.getWrapperField(this, configuration_pb.UserConfiguration, 2));
+    jspb.Message.getWrapperField(this, ai_inworld_engine_configuration_configuration_pb.UserConfiguration, 2));
 };
 
 
@@ -8735,7 +8735,7 @@ proto.SessionControlEvent.prototype.hasUserConfiguration = function() {
  */
 proto.SessionControlEvent.prototype.getClientConfiguration = function() {
   return /** @type{?proto.configuration.ClientConfiguration} */ (
-    jspb.Message.getWrapperField(this, configuration_pb.ClientConfiguration, 3));
+    jspb.Message.getWrapperField(this, ai_inworld_engine_configuration_configuration_pb.ClientConfiguration, 3));
 };
 
 
@@ -8772,7 +8772,7 @@ proto.SessionControlEvent.prototype.hasClientConfiguration = function() {
  */
 proto.SessionControlEvent.prototype.getCapabilitiesConfiguration = function() {
   return /** @type{?proto.configuration.CapabilitiesConfiguration} */ (
-    jspb.Message.getWrapperField(this, configuration_pb.CapabilitiesConfiguration, 4));
+    jspb.Message.getWrapperField(this, ai_inworld_engine_configuration_configuration_pb.CapabilitiesConfiguration, 4));
 };
 
 

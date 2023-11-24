@@ -1,4 +1,7 @@
-import { DataChunk, InworldPacket as ProtoPacket } from '@proto/packets_pb';
+import {
+  DataChunk,
+  InworldPacket as ProtoPacket,
+} from '@proto/ai/inworld/packets/packets_pb';
 
 import { CancelResponsesProps } from '../common/data_structures';
 import { Character } from '../entities/character.entity';

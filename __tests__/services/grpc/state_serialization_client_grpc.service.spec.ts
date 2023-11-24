@@ -1,7 +1,7 @@
 import { credentials } from '@grpc/grpc-js';
 import { SurfaceCall } from '@grpc/grpc-js/build/src/call';
-import { StateSerializationClient } from '@proto/state_serialization_grpc_pb';
-import { SessionState } from '@proto/state_serialization_pb';
+import { StateSerializationClient } from '@proto/ai/inworld/engine/v1/state_serialization_grpc_pb';
+import { SessionState } from '@proto/ai/inworld/engine/v1/state_serialization_pb';
 import { v4 } from 'uuid';
 
 import { Config } from '../../../src/common/config';

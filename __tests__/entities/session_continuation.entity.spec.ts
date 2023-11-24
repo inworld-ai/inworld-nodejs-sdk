@@ -1,4 +1,4 @@
-import { SessionContinuation as SessionContinuationProto } from '@proto/world-engine_pb';
+import { SessionContinuation as SessionContinuationProto } from '@proto/ai/inworld/engine/world-engine_pb';
 
 import { PreviousDialog } from '../../src/entities/continuation/previous_dialog.entity';
 import { SessionContinuation } from '../../src/entities/continuation/session_continuation.entity';

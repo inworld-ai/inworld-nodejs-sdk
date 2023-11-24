@@ -5,7 +5,7 @@
 /* eslint-disable */
 
 import * as grpc from "@grpc/grpc-js";
-import * as ai_inworld_engine_v1_feedback_pb from "./feedback_pb";
+import * as ai_inworld_engine_v1_feedback_pb from "../../../../ai/inworld/engine/v1/feedback_pb";
 
 
 

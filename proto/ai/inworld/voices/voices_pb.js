@@ -1,4 +1,4 @@
-// source: voices.proto
+// source: ai/inworld/voices/voices.proto
 /**
  * @fileoverview
  * @enhanceable
@@ -15,8 +15,8 @@ var jspb = require('google-protobuf');
 var goog = jspb;
 var global = Function('return this')();
 
-var language_codes_pb = require('./language_codes_pb.js');
-goog.object.extend(proto, language_codes_pb);
+var ai_inworld_language_codes_language_codes_pb = require('../../../ai/inworld/language_codes/language_codes_pb.js');
+goog.object.extend(proto, ai_inworld_language_codes_language_codes_pb);
 goog.exportSymbol('proto.ai.inworld.voices.Age', null, global);
 goog.exportSymbol('proto.ai.inworld.voices.Gender', null, global);
 goog.exportSymbol('proto.ai.inworld.voices.TTSType', null, global);

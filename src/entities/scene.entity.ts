@@ -1,4 +1,4 @@
-import { LoadSceneResponse } from '@proto/world-engine_pb';
+import { LoadSceneResponse } from '@proto/ai/inworld/engine/world-engine_pb';
 
 import { Character } from './character.entity';
 

@@ -2,7 +2,7 @@
 
 'use strict';
 var grpc = require('@grpc/grpc-js');
-var ai_inworld_engine_v1_state_serialization_pb = require('./state_serialization_pb.js');
+var ai_inworld_engine_v1_state_serialization_pb = require('../../../../ai/inworld/engine/v1/state_serialization_pb.js');
 
 
 

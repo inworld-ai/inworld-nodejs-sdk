@@ -1,4 +1,4 @@
-// source: base_voice.proto
+// source: ai/inworld/voices/base_voice.proto
 /**
  * @fileoverview
  * @enhanceable
@@ -15,10 +15,10 @@ var jspb = require('google-protobuf');
 var goog = jspb;
 var global = Function('return this')();
 
-var language_codes_pb = require('./language_codes_pb.js');
-goog.object.extend(proto, language_codes_pb);
-var voices_pb = require('./voices_pb.js');
-goog.object.extend(proto, voices_pb);
+var ai_inworld_language_codes_language_codes_pb = require('../../../ai/inworld/language_codes/language_codes_pb.js');
+goog.object.extend(proto, ai_inworld_language_codes_language_codes_pb);
+var ai_inworld_voices_voices_pb = require('../../../ai/inworld/voices/voices_pb.js');
+goog.object.extend(proto, ai_inworld_voices_voices_pb);
 goog.exportSymbol('proto.ai.inworld.voices.BaseVoice', null, global);
 goog.exportSymbol('proto.ai.inworld.voices.BaseVoice.TtsMetadataCase', null, global);
 /**
@@ -112,7 +112,7 @@ proto.ai.inworld.voices.BaseVoice.toObject = function(includeInstance, msg) {
     naturalSampleRateHertz: jspb.Message.getFieldWithDefault(msg, 4, 0),
     age: jspb.Message.getFieldWithDefault(msg, 5, 0),
     languagesList: (f = jspb.Message.getRepeatedField(msg, 6)) == null ? undefined : f,
-    elevenlabsMetadata: (f = msg.getElevenlabsMetadata()) && voices_pb.Voice.ElevenLabsMetadata.toObject(includeInstance, f)
+    elevenlabsMetadata: (f = msg.getElevenlabsMetadata()) && ai_inworld_voices_voices_pb.Voice.ElevenLabsMetadata.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -176,8 +176,8 @@ proto.ai.inworld.voices.BaseVoice.deserializeBinaryFromReader = function(msg, re
       }
       break;
     case 100:
-      var value = new voices_pb.Voice.ElevenLabsMetadata;
-      reader.readMessage(value,voices_pb.Voice.ElevenLabsMetadata.deserializeBinaryFromReader);
+      var value = new ai_inworld_voices_voices_pb.Voice.ElevenLabsMetadata;
+      reader.readMessage(value,ai_inworld_voices_voices_pb.Voice.ElevenLabsMetadata.deserializeBinaryFromReader);
       msg.setElevenlabsMetadata(value);
       break;
     default:
@@ -256,7 +256,7 @@ proto.ai.inworld.voices.BaseVoice.serializeBinaryToWriter = function(message, wr
     writer.writeMessage(
       100,
       f,
-      voices_pb.Voice.ElevenLabsMetadata.serializeBinaryToWriter
+      ai_inworld_voices_voices_pb.Voice.ElevenLabsMetadata.serializeBinaryToWriter
     );
   }
 };
@@ -414,7 +414,7 @@ proto.ai.inworld.voices.BaseVoice.prototype.clearLanguagesList = function() {
  */
 proto.ai.inworld.voices.BaseVoice.prototype.getElevenlabsMetadata = function() {
   return /** @type{?proto.ai.inworld.voices.Voice.ElevenLabsMetadata} */ (
-    jspb.Message.getWrapperField(this, voices_pb.Voice.ElevenLabsMetadata, 100));
+    jspb.Message.getWrapperField(this, ai_inworld_voices_voices_pb.Voice.ElevenLabsMetadata, 100));
 };
 
 

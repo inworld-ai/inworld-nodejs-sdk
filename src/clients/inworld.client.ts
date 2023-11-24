@@ -1,5 +1,8 @@
 import { ServiceError } from '@grpc/grpc-js';
-import { CapabilitiesRequest, ClientRequest } from '@proto/world-engine_pb';
+import {
+  CapabilitiesRequest,
+  ClientRequest,
+} from '@proto/ai/inworld/engine/world-engine_pb';
 
 import { SCENE_PATTERN } from '../common/constants';
 import {

@@ -1,12 +1,12 @@
 // package: ai.inworld.voices
-// file: base_voice.proto
+// file: ai/inworld/voices/base_voice.proto
 
 /* tslint:disable */
 /* eslint-disable */
 
 import * as jspb from "google-protobuf";
-import * as language_codes_pb from "./language_codes_pb";
-import * as voices_pb from "./voices_pb";
+import * as ai_inworld_language_codes_language_codes_pb from "../../../ai/inworld/language_codes/language_codes_pb";
+import * as ai_inworld_voices_voices_pb from "../../../ai/inworld/voices/voices_pb";
 
 export class BaseVoice extends jspb.Message { 
     clearLanguageCodesList(): void;
@@ -15,21 +15,21 @@ export class BaseVoice extends jspb.Message {
     addLanguageCodes(value: string, index?: number): string;
     getName(): string;
     setName(value: string): BaseVoice;
-    getGender(): voices_pb.Gender;
-    setGender(value: voices_pb.Gender): BaseVoice;
+    getGender(): ai_inworld_voices_voices_pb.Gender;
+    setGender(value: ai_inworld_voices_voices_pb.Gender): BaseVoice;
     getNaturalSampleRateHertz(): number;
     setNaturalSampleRateHertz(value: number): BaseVoice;
-    getAge(): voices_pb.Age;
-    setAge(value: voices_pb.Age): BaseVoice;
+    getAge(): ai_inworld_voices_voices_pb.Age;
+    setAge(value: ai_inworld_voices_voices_pb.Age): BaseVoice;
     clearLanguagesList(): void;
-    getLanguagesList(): Array<language_codes_pb.LanguageCode>;
-    setLanguagesList(value: Array<language_codes_pb.LanguageCode>): BaseVoice;
-    addLanguages(value: language_codes_pb.LanguageCode, index?: number): language_codes_pb.LanguageCode;
+    getLanguagesList(): Array<ai_inworld_language_codes_language_codes_pb.LanguageCode>;
+    setLanguagesList(value: Array<ai_inworld_language_codes_language_codes_pb.LanguageCode>): BaseVoice;
+    addLanguages(value: ai_inworld_language_codes_language_codes_pb.LanguageCode, index?: number): ai_inworld_language_codes_language_codes_pb.LanguageCode;
 
     hasElevenlabsMetadata(): boolean;
     clearElevenlabsMetadata(): void;
-    getElevenlabsMetadata(): voices_pb.Voice.ElevenLabsMetadata | undefined;
-    setElevenlabsMetadata(value?: voices_pb.Voice.ElevenLabsMetadata): BaseVoice;
+    getElevenlabsMetadata(): ai_inworld_voices_voices_pb.Voice.ElevenLabsMetadata | undefined;
+    setElevenlabsMetadata(value?: ai_inworld_voices_voices_pb.Voice.ElevenLabsMetadata): BaseVoice;
 
     getTtsMetadataCase(): BaseVoice.TtsMetadataCase;
 
@@ -47,11 +47,11 @@ export namespace BaseVoice {
     export type AsObject = {
         languageCodesList: Array<string>,
         name: string,
-        gender: voices_pb.Gender,
+        gender: ai_inworld_voices_voices_pb.Gender,
         naturalSampleRateHertz: number,
-        age: voices_pb.Age,
-        languagesList: Array<language_codes_pb.LanguageCode>,
-        elevenlabsMetadata?: voices_pb.Voice.ElevenLabsMetadata.AsObject,
+        age: ai_inworld_voices_voices_pb.Age,
+        languagesList: Array<ai_inworld_language_codes_language_codes_pb.LanguageCode>,
+        elevenlabsMetadata?: ai_inworld_voices_voices_pb.Voice.ElevenLabsMetadata.AsObject,
     }
 
     export enum TtsMetadataCase {

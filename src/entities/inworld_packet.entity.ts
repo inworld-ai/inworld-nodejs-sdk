@@ -4,7 +4,7 @@ import {
   ControlEvent as ProtoControlEvent,
   DataChunk,
   InworldPacket as ProtoPacket,
-} from '@proto/packets_pb';
+} from '@proto/ai/inworld/packets/packets_pb';
 import { Duration } from 'google-protobuf/google/protobuf/duration_pb';
 
 import { EmotionBehavior } from './emotion_behavior.entity';

@@ -1,17 +1,17 @@
 import {
-  Actor,
-  InworldPacket as ProtoPacket,
-  PacketId,
-  Routing,
-} from '@proto/packets_pb';
-import {
   AccessToken,
   CapabilitiesRequest,
   LoadSceneRequest,
   LoadSceneResponse,
   PreviousDialog as PreviousDialogProto,
   SessionContinuation,
-} from '@proto/world-engine_pb';
+} from '@proto/ai/inworld/engine/world-engine_pb';
+import {
+  Actor,
+  InworldPacket as ProtoPacket,
+  PacketId,
+  Routing,
+} from '@proto/ai/inworld/packets/packets_pb';
 import { v4 } from 'uuid';
 
 import { Capabilities, Extension, User } from '../src/common/data_structures';
