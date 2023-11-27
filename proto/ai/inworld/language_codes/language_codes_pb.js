@@ -1,4 +1,4 @@
-// source: language_codes.proto
+// source: ai/inworld/language_codes/language_codes.proto
 /**
  * @fileoverview
  * @enhanceable

@@ -9,7 +9,7 @@ import {
   PacketId,
   Routing,
   TextEvent,
-} from '@proto/packets_pb';
+} from '@proto/ai/inworld/packets/packets_pb';
 import { v4 } from 'uuid';
 
 import { CancelResponsesProps } from '../common/data_structures';

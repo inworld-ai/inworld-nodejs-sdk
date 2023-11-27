@@ -1,4 +1,4 @@
-import { AccessToken } from '@proto/world-engine_pb';
+import { AccessToken } from '@proto/ai/inworld/engine/world-engine_pb';
 
 import { SessionTokenProps } from '../common/data_structures';
 

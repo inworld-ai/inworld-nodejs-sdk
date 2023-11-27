@@ -1,4 +1,4 @@
-import { AccessToken } from '@proto/world-engine_pb';
+import { AccessToken } from '@proto/ai/inworld/engine/world-engine_pb';
 import { v4 } from 'uuid';
 
 import { protoTimestamp } from '../../src/common/helpers';

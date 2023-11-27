@@ -1,4 +1,4 @@
-// source: options.proto
+// source: ai/inworld/options/options.proto
 /**
  * @fileoverview
  * @enhanceable

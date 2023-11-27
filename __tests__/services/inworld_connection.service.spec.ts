@@ -2,7 +2,7 @@ import {
   DataChunk,
   MutationEvent,
   RegenerateResponse,
-} from '@proto/packets_pb';
+} from '@proto/ai/inworld/packets/packets_pb';
 import { v4 } from 'uuid';
 
 import { InworldPacket } from '../../src/entities/inworld_packet.entity';

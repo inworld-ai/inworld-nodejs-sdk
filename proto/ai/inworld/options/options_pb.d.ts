@@ -1,5 +1,5 @@
 // package: ai.inworld.options
-// file: options.proto
+// file: ai/inworld/options/options.proto
 
 /* tslint:disable */
 /* eslint-disable */

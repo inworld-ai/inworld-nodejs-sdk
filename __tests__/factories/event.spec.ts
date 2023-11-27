@@ -1,17 +1,18 @@
 import {
+  ActionEvent,
   Actor,
   AdditionalPhonemeInfo,
   ControlEvent,
   DataChunk,
   EmotionEvent,
   InworldPacket as ProtoPacket,
+  NarratedAction,
   PacketId,
   Routing,
-} from '@proto/packets_pb';
+} from '@proto/ai/inworld/packets/packets_pb';
 import { Duration } from 'google-protobuf/google/protobuf/duration_pb';
 import { v4 } from 'uuid';
 
-import { ActionEvent, NarratedAction } from '../../proto/packets_pb';
 import { protoTimestamp } from '../../src/common/helpers';
 import { InworldPacket } from '../../src/entities/inworld_packet.entity';
 import { EventFactory } from '../../src/factories/event';

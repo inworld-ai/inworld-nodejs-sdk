@@ -1,5 +1,5 @@
 // package: ai.inworld.packets
-// file: packets.proto
+// file: ai/inworld/packets/packets.proto
 
 /* tslint:disable */
 /* eslint-disable */
@@ -8,9 +8,9 @@ import * as jspb from "google-protobuf";
 import * as google_protobuf_duration_pb from "google-protobuf/google/protobuf/duration_pb";
 import * as google_protobuf_struct_pb from "google-protobuf/google/protobuf/struct_pb";
 import * as google_protobuf_timestamp_pb from "google-protobuf/google/protobuf/timestamp_pb";
-import * as options_pb from "./options_pb";
-import * as configuration_pb from "./configuration_pb";
-import * as language_codes_pb from "./language_codes_pb";
+import * as ai_inworld_options_options_pb from "../../../ai/inworld/options/options_pb";
+import * as ai_inworld_engine_configuration_configuration_pb from "../../../ai/inworld/engine/configuration/configuration_pb";
+import * as ai_inworld_language_codes_language_codes_pb from "../../../ai/inworld/language_codes/language_codes_pb";
 
 export class Actor extends jspb.Message { 
     getType(): Actor.Type;
@@ -956,8 +956,8 @@ export namespace LoadCharacters {
     export class CharacterName extends jspb.Message { 
         getName(): string;
         setName(value: string): CharacterName;
-        getLanguageCode(): language_codes_pb.LanguageCode;
-        setLanguageCode(value: language_codes_pb.LanguageCode): CharacterName;
+        getLanguageCode(): ai_inworld_language_codes_language_codes_pb.LanguageCode;
+        setLanguageCode(value: ai_inworld_language_codes_language_codes_pb.LanguageCode): CharacterName;
 
         serializeBinary(): Uint8Array;
         toObject(includeInstance?: boolean): CharacterName.AsObject;
@@ -972,7 +972,7 @@ export namespace LoadCharacters {
     export namespace CharacterName {
         export type AsObject = {
             name: string,
-            languageCode: language_codes_pb.LanguageCode,
+            languageCode: ai_inworld_language_codes_language_codes_pb.LanguageCode,
         }
     }
 
@@ -1156,23 +1156,23 @@ export class SessionControlEvent extends jspb.Message {
 
     hasSessionConfiguration(): boolean;
     clearSessionConfiguration(): void;
-    getSessionConfiguration(): configuration_pb.SessionConfiguration | undefined;
-    setSessionConfiguration(value?: configuration_pb.SessionConfiguration): SessionControlEvent;
+    getSessionConfiguration(): ai_inworld_engine_configuration_configuration_pb.SessionConfiguration | undefined;
+    setSessionConfiguration(value?: ai_inworld_engine_configuration_configuration_pb.SessionConfiguration): SessionControlEvent;
 
     hasUserConfiguration(): boolean;
     clearUserConfiguration(): void;
-    getUserConfiguration(): configuration_pb.UserConfiguration | undefined;
-    setUserConfiguration(value?: configuration_pb.UserConfiguration): SessionControlEvent;
+    getUserConfiguration(): ai_inworld_engine_configuration_configuration_pb.UserConfiguration | undefined;
+    setUserConfiguration(value?: ai_inworld_engine_configuration_configuration_pb.UserConfiguration): SessionControlEvent;
 
     hasClientConfiguration(): boolean;
     clearClientConfiguration(): void;
-    getClientConfiguration(): configuration_pb.ClientConfiguration | undefined;
-    setClientConfiguration(value?: configuration_pb.ClientConfiguration): SessionControlEvent;
+    getClientConfiguration(): ai_inworld_engine_configuration_configuration_pb.ClientConfiguration | undefined;
+    setClientConfiguration(value?: ai_inworld_engine_configuration_configuration_pb.ClientConfiguration): SessionControlEvent;
 
     hasCapabilitiesConfiguration(): boolean;
     clearCapabilitiesConfiguration(): void;
-    getCapabilitiesConfiguration(): configuration_pb.CapabilitiesConfiguration | undefined;
-    setCapabilitiesConfiguration(value?: configuration_pb.CapabilitiesConfiguration): SessionControlEvent;
+    getCapabilitiesConfiguration(): ai_inworld_engine_configuration_configuration_pb.CapabilitiesConfiguration | undefined;
+    setCapabilitiesConfiguration(value?: ai_inworld_engine_configuration_configuration_pb.CapabilitiesConfiguration): SessionControlEvent;
 
     hasContinuation(): boolean;
     clearContinuation(): void;
@@ -1193,10 +1193,10 @@ export class SessionControlEvent extends jspb.Message {
 
 export namespace SessionControlEvent {
     export type AsObject = {
-        sessionConfiguration?: configuration_pb.SessionConfiguration.AsObject,
-        userConfiguration?: configuration_pb.UserConfiguration.AsObject,
-        clientConfiguration?: configuration_pb.ClientConfiguration.AsObject,
-        capabilitiesConfiguration?: configuration_pb.CapabilitiesConfiguration.AsObject,
+        sessionConfiguration?: ai_inworld_engine_configuration_configuration_pb.SessionConfiguration.AsObject,
+        userConfiguration?: ai_inworld_engine_configuration_configuration_pb.UserConfiguration.AsObject,
+        clientConfiguration?: ai_inworld_engine_configuration_configuration_pb.ClientConfiguration.AsObject,
+        capabilitiesConfiguration?: ai_inworld_engine_configuration_configuration_pb.CapabilitiesConfiguration.AsObject,
         continuation?: Continuation.AsObject,
     }
 

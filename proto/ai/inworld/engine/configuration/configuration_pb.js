@@ -1,4 +1,4 @@
-// source: configuration.proto
+// source: ai/inworld/engine/configuration/configuration.proto
 /**
  * @fileoverview
  * @enhanceable
@@ -1623,7 +1623,6 @@ proto.configuration.SessionConfiguration.prototype.toObject = function(opt_inclu
  */
 proto.configuration.SessionConfiguration.toObject = function(includeInstance, msg) {
   var f, obj = {
-    sessionId: jspb.Message.getFieldWithDefault(msg, 1, ""),
     gameSessionId: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
@@ -1661,10 +1660,6 @@ proto.configuration.SessionConfiguration.deserializeBinaryFromReader = function(
     }
     var field = reader.getFieldNumber();
     switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setSessionId(value);
-      break;
     case 2:
       var value = /** @type {string} */ (reader.readString());
       msg.setGameSessionId(value);
@@ -1698,13 +1693,6 @@ proto.configuration.SessionConfiguration.prototype.serializeBinary = function() 
  */
 proto.configuration.SessionConfiguration.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getSessionId();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
-  }
   f = message.getGameSessionId();
   if (f.length > 0) {
     writer.writeString(
@@ -1712,24 +1700,6 @@ proto.configuration.SessionConfiguration.serializeBinaryToWriter = function(mess
       f
     );
   }
-};
-
-
-/**
- * optional string session_id = 1;
- * @return {string}
- */
-proto.configuration.SessionConfiguration.prototype.getSessionId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.configuration.SessionConfiguration} returns this
- */
-proto.configuration.SessionConfiguration.prototype.setSessionId = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 

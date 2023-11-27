@@ -1,6 +1,5 @@
 import { credentials, Metadata, ServiceError } from '@grpc/grpc-js';
-import { InworldPacket as ProtoPacket } from '@proto/packets_pb';
-import { WorldEngineClient } from '@proto/world-engine_grpc_pb';
+import { WorldEngineClient } from '@proto/ai/inworld/engine/world-engine_grpc_pb';
 import {
   AccessToken,
   CapabilitiesRequest,
@@ -11,7 +10,8 @@ import {
   SessionContinuation as SessionContinuationProto,
   UserRequest,
   UserSettings,
-} from '@proto/world-engine_pb';
+} from '@proto/ai/inworld/engine/world-engine_pb';
+import { InworldPacket as ProtoPacket } from '@proto/ai/inworld/packets/packets_pb';
 import { promisify } from 'util';
 import os = require('os');
 

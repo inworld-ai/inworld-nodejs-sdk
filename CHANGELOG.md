@@ -1,3 +1,10 @@
+## [Unreleased]
+
+### Added
+
+- Update proto files to new structure
+
+
 ## [1.10.1] - 2023-11-20
 
 ### Added

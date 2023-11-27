@@ -1,5 +1,5 @@
 // package: ai.inworld.language_codes
-// file: language_codes.proto
+// file: ai/inworld/language_codes/language_codes.proto
 
 /* tslint:disable */
 /* eslint-disable */

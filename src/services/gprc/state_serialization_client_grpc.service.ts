@@ -1,6 +1,6 @@
 import { credentials, Metadata } from '@grpc/grpc-js';
-import { StateSerializationClient } from '@proto/state_serialization_grpc_pb';
-import { GetSessionStateRequest } from '@proto/state_serialization_pb';
+import { StateSerializationClient } from '@proto/ai/inworld/engine/v1/state_serialization_grpc_pb';
+import { GetSessionStateRequest } from '@proto/ai/inworld/engine/v1/state_serialization_pb';
 import { promisify } from 'util';
 
 import { Config } from '../../common/config';

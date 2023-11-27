@@ -1,6 +1,6 @@
+import { LoadSceneResponse } from '@proto/ai/inworld/engine/world-engine_pb';
 import { v4 } from 'uuid';
 
-import { LoadSceneResponse } from '../../proto/world-engine_pb';
 import { Character } from '../../src/entities/character.entity';
 import { Scene } from '../../src/entities/scene.entity';
 import { createAgent, createCharacter } from '../helpers';

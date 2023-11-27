@@ -2,7 +2,7 @@
 
 'use strict';
 var grpc = require('@grpc/grpc-js');
-var ai_inworld_engine_v1_feedback_pb = require('./feedback_pb.js');
+var ai_inworld_engine_v1_feedback_pb = require('../../../../ai/inworld/engine/v1/feedback_pb.js');
 
 
 

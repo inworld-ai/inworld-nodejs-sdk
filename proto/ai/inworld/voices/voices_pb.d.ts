@@ -1,11 +1,11 @@
 // package: ai.inworld.voices
-// file: voices.proto
+// file: ai/inworld/voices/voices.proto
 
 /* tslint:disable */
 /* eslint-disable */
 
 import * as jspb from "google-protobuf";
-import * as language_codes_pb from "./language_codes_pb";
+import * as ai_inworld_language_codes_language_codes_pb from "../../../ai/inworld/language_codes/language_codes_pb";
 
 export class Voice extends jspb.Message { 
     getBasename(): string;
@@ -27,8 +27,8 @@ export class Voice extends jspb.Message {
     setAge(value: Age): Voice;
     getLanguageCode(): string;
     setLanguageCode(value: string): Voice;
-    getLanguage(): language_codes_pb.LanguageCode;
-    setLanguage(value: language_codes_pb.LanguageCode): Voice;
+    getLanguage(): ai_inworld_language_codes_language_codes_pb.LanguageCode;
+    setLanguage(value: ai_inworld_language_codes_language_codes_pb.LanguageCode): Voice;
 
     hasElevenlabsMetadata(): boolean;
     clearElevenlabsMetadata(): void;
@@ -59,7 +59,7 @@ export namespace Voice {
         phonemesOverridesMap: Array<[string, string]>,
         age: Age,
         languageCode: string,
-        language: language_codes_pb.LanguageCode,
+        language: ai_inworld_language_codes_language_codes_pb.LanguageCode,
         elevenlabsMetadata?: Voice.ElevenLabsMetadata.AsObject,
     }
 

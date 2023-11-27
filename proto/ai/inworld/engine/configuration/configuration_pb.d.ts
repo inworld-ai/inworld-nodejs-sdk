@@ -1,5 +1,5 @@
 // package: ai.inworld.engine.configuration
-// file: configuration.proto
+// file: ai/inworld/engine/configuration/configuration.proto
 
 /* tslint:disable */
 /* eslint-disable */
@@ -198,8 +198,6 @@ export namespace ClientConfiguration {
 }
 
 export class SessionConfiguration extends jspb.Message { 
-    getSessionId(): string;
-    setSessionId(value: string): SessionConfiguration;
     getGameSessionId(): string;
     setGameSessionId(value: string): SessionConfiguration;
 
@@ -215,7 +213,6 @@ export class SessionConfiguration extends jspb.Message {
 
 export namespace SessionConfiguration {
     export type AsObject = {
-        sessionId: string,
         gameSessionId: string,
     }
 }

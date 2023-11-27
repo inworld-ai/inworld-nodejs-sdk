@@ -1,4 +1,4 @@
-import { WorldEngineService } from '@proto/world-engine_grpc_pb';
+import { WorldEngineService } from '@proto/ai/inworld/engine/world-engine_grpc_pb';
 import * as crypto from 'crypto';
 import { HmacSHA256 } from 'crypto-js';
 
