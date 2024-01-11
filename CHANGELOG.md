@@ -1,3 +1,9 @@
+## [Unreleased]
+
+### Changed
+
+- Update license information
+
 ## [1.10.2] - 2023-11-27
 
 ### Added
