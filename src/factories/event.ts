@@ -1,4 +1,5 @@
 import {
+  ActionEvent,
   Actor,
   CancelResponsesEvent,
   ControlEvent,
@@ -6,6 +7,7 @@ import {
   DataChunk,
   InworldPacket as ProtoPacket,
   MutationEvent,
+  NarratedAction,
   PacketId,
   Routing,
   TextEvent,
@@ -111,6 +113,14 @@ export class EventFactory {
       interactionId: false,
       correlationId: true,
     }).setMutation(new MutationEvent().setCancelResponses(event));
+  }
+
+  narratedAction(content: string): ProtoPacket {
+    const event = new ActionEvent().setNarratedAction(
+      new NarratedAction().setContent(content),
+    );
+
+    return this.baseProtoPacket({ correlationId: true }).setAction(event);
   }
 
   baseProtoPacket(props?: {

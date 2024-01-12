@@ -3446,7 +3446,8 @@ proto.PreviousState.prototype.toObject = function(opt_includeInstance) {
 proto.PreviousState.toObject = function(includeInstance, msg) {
   var f, obj = {
     stateHoldersList: jspb.Message.toObjectList(msg.getStateHoldersList(),
-    proto.PreviousState.StateHolder.toObject, includeInstance)
+    proto.PreviousState.StateHolder.toObject, includeInstance),
+    gameSessionId: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -3488,6 +3489,10 @@ proto.PreviousState.deserializeBinaryFromReader = function(msg, reader) {
       reader.readMessage(value,proto.PreviousState.StateHolder.deserializeBinaryFromReader);
       msg.addStateHolders(value);
       break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setGameSessionId(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -3523,6 +3528,13 @@ proto.PreviousState.serializeBinaryToWriter = function(message, writer) {
       1,
       f,
       proto.PreviousState.StateHolder.serializeBinaryToWriter
+    );
+  }
+  f = message.getGameSessionId();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
     );
   }
 };
@@ -3950,6 +3962,24 @@ proto.PreviousState.prototype.addStateHolders = function(opt_value, opt_index) {
  */
 proto.PreviousState.prototype.clearStateHoldersList = function() {
   return this.setStateHoldersList([]);
+};
+
+
+/**
+ * optional string game_session_id = 2;
+ * @return {string}
+ */
+proto.PreviousState.prototype.getGameSessionId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.PreviousState} returns this
+ */
+proto.PreviousState.prototype.setGameSessionId = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 

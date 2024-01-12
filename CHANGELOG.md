@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+### Added
+
+- Outgoing narrated actions support
+
 ### Changed
 
 - Update license information

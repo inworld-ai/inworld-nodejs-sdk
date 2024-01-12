@@ -240,6 +240,22 @@ describe('send', () => {
     expect(packet).toBeInstanceOf(InworldPacket);
   });
 
+  test('should send narrated action', async () => {
+    const sendNarratedAction = jest.spyOn(eventFactory, 'narratedAction');
+
+    const text = v4();
+
+    const packet = await service.sendNarratedAction(text);
+
+    expect(open).toHaveBeenCalledTimes(0);
+    expect(service.isActive()).toEqual(true);
+    expect(sendNarratedAction).toHaveBeenCalledTimes(1);
+    expect(sendNarratedAction).toHaveBeenCalledWith(text);
+    expect(packet).toBeInstanceOf(InworldPacket);
+    expect(packet?.narratedAction.text).toEqual(text);
+    expect(packet?.isNarratedAction()).toEqual(true);
+  });
+
   test('should send custom packet', async () => {
     const connection = new ConnectionService<ExtendedInworldPacket>({
       apiKey: { key: KEY, secret: SECRET },
