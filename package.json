@@ -1,6 +1,6 @@
 {
   "name": "@inworld/nodejs-sdk",
-  "version": "1.10.2",
+  "version": "1.10.3",
   "license": "SEE LICENSE IN LICENSE.md",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",
