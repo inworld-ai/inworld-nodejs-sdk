@@ -21,7 +21,7 @@ runs:
           ${{ runner.os }}-yarn-
     - name: Install dependencies
       shell: bash
-      run: yarn install --ignore-scripts --frozen-lockfile
+      run: yarn install --ignore-scripts
     - name: Build
       shell: bash
       run: yarn build

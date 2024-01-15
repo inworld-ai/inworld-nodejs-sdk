@@ -16,3 +16,8 @@ jobs:
         uses: ./.github/actions/build_package
       - name: Run tests
         run: yarn test
+      - name: Ensure working directory is clean
+        uses: CatChen/check-git-status-action@v1
+        with:
+          fail-if-not-clean: true
+          request-changes-if-not-clean: false
