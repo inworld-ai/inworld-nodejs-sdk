@@ -56,9 +56,8 @@ export class InworldService {
   private async createConnection(id: string, message: Message) {
     const { discriminator, displayName } = message.author;
 
-    const previousDialog = await this.discordService.extractPreviousDialog(
-      message,
-    );
+    const previousDialog =
+      await this.discordService.extractPreviousDialog(message);
     const threadName = `${displayName} ${discriminator} ${this.discordService
       .extractText(message)
       .substring(0, 20)}`;

@@ -1,3 +1,9 @@
+## [Unreleased]
+
+### Changed
+
+- Change internal way to open session
+
 ## [1.11.0] - 2024-01-20
 
 ### Added

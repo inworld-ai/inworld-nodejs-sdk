@@ -1,14 +1,16 @@
 import {
+  ClientDuplexStream,
+  ClientDuplexStreamImpl,
+} from '@grpc/grpc-js/build/src/call';
+import {
   AccessToken,
   CapabilitiesRequest,
-  LoadSceneRequest,
   LoadSceneResponse,
-  PreviousDialog as PreviousDialogProto,
-  SessionContinuation,
 } from '@proto/ai/inworld/engine/world-engine_pb';
 import {
   Actor,
   InworldPacket as ProtoPacket,
+  LoadSceneOutputEvent,
   PacketId,
   Routing,
 } from '@proto/ai/inworld/packets/packets_pb';
@@ -67,17 +69,7 @@ export const convertAgentsToCharacters = (
     (agent: LoadSceneResponse.Agent) =>
       new Character({
         id: agent.getAgentId(),
-        assets: {
-          avatarImg: agent.getCharacterAssets()?.getAvatarImg(),
-          avatarImgOriginal: agent.getCharacterAssets()?.getAvatarImgOriginal(),
-          rpmModelUri: agent.getCharacterAssets()?.getRpmModelUri(),
-          rpmImageUriPortrait: agent
-            .getCharacterAssets()
-            ?.getRpmImageUriPortrait(),
-          rpmImageUriPosture: agent
-            .getCharacterAssets()
-            ?.getRpmImageUriPosture(),
-        },
+        assets: {},
         resourceName: agent.getBrainName(),
         displayName: agent.getGivenName(),
       }),
@@ -85,7 +77,9 @@ export const convertAgentsToCharacters = (
 };
 
 export const generateEmptyPacket = () => {
-  const rounting = new Routing().setSource(new Actor()).setTarget(new Actor());
+  const rounting = new Routing()
+    .setSource(new Actor())
+    .setTargetsList([new Actor()]);
 
   return new ProtoPacket()
     .setPacketId(new PacketId().setPacketId(v4()))
@@ -159,30 +153,21 @@ export const extendedCapabilities = new CapabilitiesRequest()
   .setTriggers(true)
   .setRegenerateResponse(true);
 
-const previousDialogProto = new PreviousDialogProto().setPhrasesList([
-  new PreviousDialogProto.Phrase()
-    .setPhrase(v4())
-    .setTalker(PreviousDialogProto.DialogParticipant.CHARACTER),
-  new PreviousDialogProto.Phrase()
-    .setPhrase(v4())
-    .setTalker(PreviousDialogProto.DialogParticipant.PLAYER),
-]);
-
 export const previousState = v4();
-
-export const sessionContinuation = new SessionContinuation().setPreviousDialog(
-  previousDialogProto,
-);
 
 export const extension: Extension<ExtendedInworldPacket> = {
   convertPacketFromProto,
   afterLoadScene: jest.fn(),
-  beforeLoadScene: jest.fn((req: LoadSceneRequest) => {
-    req
-      .setCapabilities(extendedCapabilities)
-      .setSessionContinuation(sessionContinuation);
+  beforeLoadScene: jest.fn((packets: ProtoPacket[]) => {
+    return packets.map((packet: ProtoPacket) => {
+      if (packet.getSessionControl()?.hasCapabilitiesConfiguration()) {
+        packet
+          .getSessionControl()
+          .setCapabilitiesConfiguration(extendedCapabilities);
+      }
 
-    return req;
+      return packet;
+    });
   }),
 };
 
@@ -209,3 +194,18 @@ export const setTimeoutMock = (callback: any) => {
 
   return { hasRef: () => false } as NodeJS.Timeout;
 };
+
+export const agents = [createAgent(), createAgent()];
+export const characters = convertAgentsToCharacters(agents);
+export const getStream = () => new ClientDuplexStreamImpl(jest.fn(), jest.fn());
+export const loadSceneOutputEvent = new LoadSceneOutputEvent().setAgentsList(
+  agents,
+);
+export const emitLoadSceneOutputEvent =
+  (stream: ClientDuplexStream<ProtoPacket, ProtoPacket>) => (resolve: any) => {
+    stream.emit(
+      'data',
+      generateEmptyPacket().setLoadSceneOutput(loadSceneOutputEvent),
+    );
+    resolve(true);
+  };

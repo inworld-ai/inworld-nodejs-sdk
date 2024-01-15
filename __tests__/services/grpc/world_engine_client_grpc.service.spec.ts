@@ -1,4 +1,4 @@
-import { credentials } from '@grpc/grpc-js';
+import { credentials, ServiceError } from '@grpc/grpc-js';
 import {
   ClientDuplexStreamImpl,
   SurfaceCall,
@@ -7,8 +7,11 @@ import { WorldEngineClient } from '@proto/ai/inworld/engine/world-engine_grpc_pb
 import {
   CapabilitiesRequest,
   ClientRequest,
-  LoadSceneResponse,
 } from '@proto/ai/inworld/engine/world-engine_pb';
+import {
+  Continuation,
+  InworldPacket as ProtoPacket,
+} from '@proto/ai/inworld/packets/packets_pb';
 import os = require('os');
 
 import { Config } from '../../../src/common/config';
@@ -20,24 +23,25 @@ import { WorldEngineClientGrpcService } from '../../../src/services/gprc/world_e
 import { ExtendedInworldPacket } from '../../data_structures';
 import {
   capabilities,
-  createAgent,
+  characters,
+  emitLoadSceneOutputEvent,
   extendedCapabilities,
   extension,
+  generateEmptyPacket,
+  getStream,
   KEY,
+  loadSceneOutputEvent,
   phrases,
   previousDialog,
   previousState,
   SCENE,
   SECRET,
-  sessionContinuation,
   sessionProto,
   sessionToken,
   user,
 } from '../../helpers';
 
 const { version } = require('@root/package.json');
-
-const agents = [createAgent(), createAgent()];
 
 describe('credentials', () => {
   const createSsl = jest.spyOn(credentials, 'createSsl');
@@ -98,14 +102,6 @@ describe('generateSessionToken', () => {
 
 describe('load scene', () => {
   const loggerDebug = jest.spyOn(Logger.prototype, 'debug');
-  const mockLoadScene = jest.fn((_request, _metadata, _options, callback) => {
-    const cb = typeof _options === 'function' ? _options : callback;
-    cb(null, {
-      getAgentsList: () => agents,
-      toObject: () => {},
-    } as LoadSceneResponse);
-    return {} as SurfaceCall;
-  });
 
   let client: WorldEngineClientGrpcService<ExtendedInworldPacket>;
 
@@ -115,55 +111,70 @@ describe('load scene', () => {
   });
 
   test('should use provided capabilities', async () => {
-    const loadScene = jest
-      .spyOn(WorldEngineClient.prototype, 'loadScene')
-      .mockImplementationOnce(mockLoadScene);
+    const stream = getStream();
+    const openSession = jest
+      .spyOn(WorldEngineClient.prototype, 'openSession')
+      .mockImplementation(() => stream);
+    const write = jest.spyOn(ClientDuplexStreamImpl.prototype, 'write');
 
     const capabilities = new CapabilitiesRequest().setEmotions(true);
+    const result = await Promise.all([
+      client.openSession({
+        name: SCENE,
+        capabilities,
+        sessionToken,
+      }),
+      new Promise(emitLoadSceneOutputEvent(stream)),
+    ]);
 
-    const result = await client.loadScene({
-      name: SCENE,
-      capabilities,
-      sessionToken,
-    });
-
-    const loadedAgents = result.getAgentsList();
-    const callCapabilities = loadScene.mock.calls[0][0].getCapabilities();
-
-    expect(loadScene).toHaveBeenCalledTimes(1);
-    expect(loadedAgents).toEqual(agents);
-    expect(loadedAgents.length).toEqual(agents.length);
-    expect(loadedAgents[0].getAgentId()).toEqual(agents[0].getAgentId());
-    expect(loadedAgents[1].getAgentId()).toEqual(agents[1].getAgentId());
-    expect(callCapabilities.getAudio()).toEqual(false);
-    expect(callCapabilities.getText()).toEqual(false);
-    expect(callCapabilities.getEmotions()).toEqual(true);
-    expect(loadScene.mock.calls[0][0].getClient().getId()).toEqual(CLIENT_ID);
+    expect(openSession).toHaveBeenCalledTimes(1);
+    expect(result[0][0]).toEqual(stream);
+    expect(result[0][1].characters).toEqual(characters);
+    expect(write).toHaveBeenCalledTimes(5);
+    expect(
+      write.mock.calls[0][0].getSessionControl().getCapabilitiesConfiguration(),
+    ).toEqual(capabilities);
+    expect(
+      write.mock.calls[1][0]
+        .getSessionControl()
+        .getSessionConfiguration()
+        .getGameSessionId(),
+    ).toEqual(sessionToken.sessionId);
+    expect(
+      write.mock.calls[2][0]
+        .getSessionControl()
+        .getClientConfiguration()
+        .getId(),
+    ).toEqual(CLIENT_ID);
     expect(loggerDebug).toHaveBeenCalledTimes(1);
   });
 
   test('should use provided custom client id', async () => {
+    const stream = getStream();
     const osType = 'Darwin';
     const osRelease = '23.1.0';
     jest
-      .spyOn(WorldEngineClient.prototype, 'loadScene')
-      .mockImplementationOnce(mockLoadScene);
-
+      .spyOn(WorldEngineClient.prototype, 'openSession')
+      .mockImplementation(() => stream);
+    const write = jest.spyOn(ClientDuplexStreamImpl.prototype, 'write');
     jest.spyOn(os, 'type').mockImplementationOnce(() => osType);
     jest.spyOn(os, 'release').mockImplementationOnce(() => osRelease);
 
     const sceneClient = new ClientRequest().setId('client-id');
     const capabilities = new CapabilitiesRequest().setEmotions(true);
+    await Promise.all([
+      client.openSession({
+        name: SCENE,
+        client: sceneClient,
+        capabilities,
+        sessionToken,
+      }),
+      new Promise(emitLoadSceneOutputEvent(stream)),
+    ]);
 
-    await client.loadScene({
-      name: SCENE,
-      client: sceneClient,
-      capabilities,
-      sessionToken,
-      user,
-    });
-
-    const actualClient = mockLoadScene.mock.calls[0][0].getClient();
+    const actualClient = write.mock.calls[2][0]
+      .getSessionControl()
+      .getClientConfiguration();
 
     expect(actualClient.getId()).toEqual(CLIENT_ID);
     expect(actualClient.getVersion()).toEqual(version);
@@ -175,27 +186,32 @@ describe('load scene', () => {
   });
 
   test("should not send client id if it's not provided", async () => {
+    const stream = getStream();
     const osType = 'Darwin';
     const osRelease = '23.1.0';
     jest
-      .spyOn(WorldEngineClient.prototype, 'loadScene')
-      .mockImplementationOnce(mockLoadScene);
-
+      .spyOn(WorldEngineClient.prototype, 'openSession')
+      .mockImplementation(() => stream);
+    const write = jest.spyOn(ClientDuplexStreamImpl.prototype, 'write');
     jest.spyOn(os, 'type').mockImplementationOnce(() => osType);
     jest.spyOn(os, 'release').mockImplementationOnce(() => osRelease);
 
     const sceneClient = new ClientRequest();
     const capabilities = new CapabilitiesRequest().setEmotions(true);
 
-    await client.loadScene({
-      name: SCENE,
-      client: sceneClient,
-      capabilities,
-      sessionToken,
-      user,
-    });
+    await Promise.all([
+      client.openSession({
+        name: SCENE,
+        client: sceneClient,
+        capabilities,
+        sessionToken,
+      }),
+      new Promise(emitLoadSceneOutputEvent(stream)),
+    ]);
 
-    const actualClient = mockLoadScene.mock.calls[0][0].getClient();
+    const actualClient = write.mock.calls[2][0]
+      .getSessionControl()
+      .getClientConfiguration();
 
     expect(actualClient.getId()).toEqual(CLIENT_ID);
     expect(actualClient.getVersion()).toEqual(version);
@@ -204,131 +220,244 @@ describe('load scene', () => {
     );
   });
 
-  test('should use provided additional props', async () => {
-    jest
-      .spyOn(WorldEngineClient.prototype, 'loadScene')
-      .mockImplementationOnce(mockLoadScene);
-
-    const capabilities = new CapabilitiesRequest().setEmotions(true);
-
-    await client.loadScene({
-      name: SCENE,
-      capabilities,
-      sessionToken,
-      extension,
-    });
-
-    expect(mockLoadScene.mock.calls[0][0].getSessionContinuation()).toEqual(
-      sessionContinuation,
-    );
-  });
-
   test('should send previous dialog', async () => {
+    const stream = getStream();
     jest
-      .spyOn(WorldEngineClient.prototype, 'loadScene')
-      .mockImplementationOnce(mockLoadScene);
+      .spyOn(WorldEngineClient.prototype, 'openSession')
+      .mockImplementation(() => stream);
+    const write = jest.spyOn(ClientDuplexStreamImpl.prototype, 'write');
 
     const capabilities = new CapabilitiesRequest().setEmotions(true);
 
-    await client.loadScene({
-      name: SCENE,
-      capabilities,
-      sessionToken,
-      sessionContinuation: new SessionContinuation({ previousDialog: phrases }),
-      user,
-    });
+    await Promise.all([
+      client.openSession({
+        name: SCENE,
+        capabilities,
+        sessionToken,
+        sessionContinuation: new SessionContinuation({
+          previousDialog: phrases,
+        }),
+        user,
+      }),
+      new Promise(emitLoadSceneOutputEvent(stream)),
+    ]);
 
-    const sentDialog = mockLoadScene.mock.calls[0][0]
-      .getSessionContinuation()
-      .getPreviousDialog();
-
-    expect(PreviousDialog.fromProto(sentDialog)).toEqual(previousDialog);
+    const continuation = write.mock.calls[4][0]
+      .getSessionControl()
+      .getContinuation();
+    expect(write).toHaveBeenCalledTimes(6);
+    expect(continuation.getContinuationType()).toEqual(
+      Continuation.ContinuationType.CONTINUATION_TYPE_DIALOG_HISTORY,
+    );
+    expect(PreviousDialog.fromProto(continuation.getDialogHistory())).toEqual(
+      previousDialog,
+    );
   });
 
   test('should use provided provided user name', async () => {
-    const loadScene = jest
-      .spyOn(WorldEngineClient.prototype, 'loadScene')
-      .mockImplementationOnce(mockLoadScene);
+    const stream = getStream();
+    jest
+      .spyOn(WorldEngineClient.prototype, 'openSession')
+      .mockImplementation(() => stream);
+    const write = jest.spyOn(ClientDuplexStreamImpl.prototype, 'write');
 
-    await client.loadScene({
-      name: SCENE,
-      capabilities,
-      sessionToken,
-      user: { fullName: user.fullName },
-    });
+    await Promise.all([
+      client.openSession({
+        name: SCENE,
+        capabilities,
+        sessionToken,
+        user: { fullName: user.fullName },
+      }),
+      new Promise(emitLoadSceneOutputEvent(stream)),
+    ]);
 
-    expect(loadScene).toHaveBeenCalledTimes(1);
-    expect(loadScene.mock.calls[0][0].getUser().getName()).toEqual(
-      user.fullName,
-    );
+    expect(
+      write.mock.calls[3][0]
+        .getSessionControl()
+        .getUserConfiguration()
+        .getName(),
+    ).toEqual(user.fullName);
   });
 
   test('should use provided provided user profile', async () => {
-    const loadScene = jest
-      .spyOn(WorldEngineClient.prototype, 'loadScene')
-      .mockImplementationOnce(mockLoadScene);
+    const stream = getStream();
+    jest
+      .spyOn(WorldEngineClient.prototype, 'openSession')
+      .mockImplementation(() => stream);
+    const write = jest.spyOn(ClientDuplexStreamImpl.prototype, 'write');
 
-    await client.loadScene({
-      name: SCENE,
-      capabilities,
-      sessionToken,
-      user: { profile: user.profile },
-    });
+    await Promise.all([
+      client.openSession({
+        name: SCENE,
+        capabilities,
+        sessionToken,
+        user: { profile: user.profile },
+      }),
+      new Promise(emitLoadSceneOutputEvent(stream)),
+    ]);
 
-    const profileFields = loadScene.mock.calls[0][0]
+    const profileFields = write.mock.calls[3][0]
+      .getSessionControl()
+      .getUserConfiguration()
       .getUserSettings()
       .getPlayerProfile()
       .getFieldsList();
 
-    expect(loadScene).toHaveBeenCalledTimes(1);
-    expect(profileFields[0].getFieldId()).toEqual(user.profile.fields[0].id);
+    expect(profileFields[0].getFieldId()).toEqual(user.profile?.fields[0].id);
     expect(profileFields[0].getFieldValue()).toEqual(
-      user.profile.fields[0].value,
+      user.profile?.fields[0].value,
     );
   });
 
   test('should send previous session state', async () => {
+    const stream = getStream();
     jest
-      .spyOn(WorldEngineClient.prototype, 'loadScene')
-      .mockImplementationOnce(mockLoadScene);
-
+      .spyOn(WorldEngineClient.prototype, 'openSession')
+      .mockImplementation(() => stream);
+    const write = jest.spyOn(ClientDuplexStreamImpl.prototype, 'write');
     const sessionContinuation = new SessionContinuation({
       previousState,
     });
 
-    await client.loadScene({
-      name: SCENE,
-      capabilities,
-      sessionToken,
-      sessionContinuation,
-      user,
-    });
+    await Promise.all([
+      client.openSession({
+        name: SCENE,
+        capabilities,
+        sessionToken,
+        sessionContinuation,
+        user,
+      }),
+      new Promise(emitLoadSceneOutputEvent(stream)),
+    ]);
 
-    const state = mockLoadScene.mock.calls[0][0]
-      .getSessionContinuation()
-      .getPreviousState();
+    const state = write.mock.calls[4][0]
+      .getSessionControl()
+      .getContinuation()
+      .getExternallySavedState();
 
     expect(state).toEqual(sessionContinuation.previousState);
   });
 
   test('should call extention functions', async () => {
-    const loadScene = jest
-      .spyOn(WorldEngineClient.prototype, 'loadScene')
-      .mockImplementationOnce(mockLoadScene);
+    const stream = getStream();
+    const openSession = jest
+      .spyOn(WorldEngineClient.prototype, 'openSession')
+      .mockImplementation(() => stream);
+    const write = jest.spyOn(ClientDuplexStreamImpl.prototype, 'write');
 
-    await client.loadScene({
-      name: SCENE,
-      capabilities,
-      sessionToken,
-      extension,
-    });
+    await Promise.all([
+      client.openSession({
+        name: SCENE,
+        capabilities,
+        sessionToken,
+        extension,
+      }),
+      new Promise(emitLoadSceneOutputEvent(stream)),
+    ]);
 
-    expect(loadScene).toHaveBeenCalledTimes(1);
-    expect(loadScene.mock.calls[0][0].getCapabilities()).toEqual(
-      extendedCapabilities,
-    );
+    expect(openSession).toHaveBeenCalledTimes(1);
+    expect(write).toHaveBeenCalledTimes(5);
+    expect(
+      write.mock.calls[0][0].getSessionControl().getCapabilitiesConfiguration(),
+    ).toEqual(extendedCapabilities);
     expect(extension.beforeLoadScene).toHaveBeenCalledTimes(1);
     expect(extension.afterLoadScene).toHaveBeenCalledTimes(1);
+  });
+
+  test('should throw error on unexpected event during scene loading', async () => {
+    const stream = getStream();
+    const openSession = jest
+      .spyOn(WorldEngineClient.prototype, 'openSession')
+      .mockImplementation(() => stream);
+    let errorReceived: ServiceError;
+
+    const capabilities = new CapabilitiesRequest().setEmotions(true);
+
+    try {
+      await Promise.all([
+        client.openSession({
+          name: SCENE,
+          capabilities,
+          sessionToken,
+        }),
+        new Promise((resolve: any) => {
+          stream.emit('data', new ProtoPacket());
+          resolve(true);
+        }),
+      ]);
+    } catch (err) {
+      errorReceived = err;
+    }
+    expect(openSession).toHaveBeenCalledTimes(1);
+    expect(errorReceived!).toEqual(
+      new Error('Unexpected packet received during scene loading'),
+    );
+  });
+
+  test('should propagate error on second load scene event', async () => {
+    const stream = getStream();
+    const openSession = jest
+      .spyOn(WorldEngineClient.prototype, 'openSession')
+      .mockImplementation(() => stream);
+
+    const onError = jest.fn();
+    const capabilities = new CapabilitiesRequest().setEmotions(true);
+
+    await Promise.all([
+      client.openSession({
+        name: SCENE,
+        capabilities,
+        sessionToken,
+        onError,
+      }),
+      new Promise((resolve: any) => {
+        stream.emit(
+          'data',
+          generateEmptyPacket().setLoadSceneOutput(loadSceneOutputEvent),
+        );
+        stream.emit(
+          'data',
+          generateEmptyPacket().setLoadSceneOutput(loadSceneOutputEvent),
+        );
+        resolve(true);
+      }),
+    ]);
+
+    expect(openSession).toHaveBeenCalledTimes(1);
+    expect(onError).toHaveBeenCalledTimes(1);
+    expect(onError.mock.calls[0][0]).toEqual(
+      new Error('Unexpected packet received during scene loading'),
+    );
+  });
+
+  test('should do nothing on second load scene event if not onError is not provided', async () => {
+    const stream = getStream();
+    const openSession = jest
+      .spyOn(WorldEngineClient.prototype, 'openSession')
+      .mockImplementation(() => stream);
+
+    const capabilities = new CapabilitiesRequest().setEmotions(true);
+
+    await Promise.all([
+      client.openSession({
+        name: SCENE,
+        capabilities,
+        sessionToken,
+      }),
+      new Promise((resolve: any) => {
+        stream.emit(
+          'data',
+          generateEmptyPacket().setLoadSceneOutput(loadSceneOutputEvent),
+        );
+        stream.emit(
+          'data',
+          generateEmptyPacket().setLoadSceneOutput(loadSceneOutputEvent),
+        );
+        resolve(true);
+      }),
+    ]);
+
+    expect(openSession).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -337,81 +466,126 @@ describe('session', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.restoreAllMocks();
     client = new WorldEngineClientGrpcService();
   });
 
-  test('should create stream with handlers', () => {
-    const stream = new ClientDuplexStreamImpl(jest.fn(), jest.fn());
+  test('should create stream with handlers', async () => {
+    const stream = getStream();
     const clientSession = jest
-      .spyOn(WorldEngineClient.prototype, 'session')
+      .spyOn(WorldEngineClient.prototype, 'openSession')
       .mockImplementation(() => stream);
+
     const on = jest.spyOn(stream, 'on');
     const onError = jest.fn();
     const onMessage = jest.fn();
     const onDisconnect = jest.fn();
 
-    const connection = client.session({
-      sessionToken,
-      onError,
-      onMessage,
-      onDisconnect,
-    });
+    const result = await Promise.all([
+      client.openSession({
+        name: SCENE,
+        capabilities,
+        sessionToken,
+        onError,
+        onMessage,
+        onDisconnect,
+      }),
+      new Promise(emitLoadSceneOutputEvent(stream)),
+    ]);
 
     expect(clientSession).toHaveBeenCalledTimes(1);
     expect(on).toHaveBeenCalledTimes(3);
-    expect(connection).toEqual(stream);
-    expect(on.mock.calls[0][0]).toEqual('data');
-    expect(on.mock.calls[1][0]).toEqual('close');
-    expect(on.mock.calls[2][0]).toEqual('error');
+    expect(result[0][0]).toEqual(stream);
+    expect(on.mock.calls[0][0]).toEqual('close');
+    expect(on.mock.calls[1][0]).toEqual('error');
+    expect(on.mock.calls[2][0]).toEqual('data');
   });
 
-  test('should close connection on error and handle on Error', () => {
-    const stream = new ClientDuplexStreamImpl(jest.fn(), jest.fn());
-    const onError = jest.fn();
-    const end = jest.spyOn(stream, 'end');
+  test('should close connection on error and handle on Error', async () => {
+    const stream = getStream();
+
     jest
-      .spyOn(WorldEngineClient.prototype, 'session')
+      .spyOn(WorldEngineClient.prototype, 'openSession')
       .mockImplementation(() => stream);
 
-    client.session({
-      sessionToken,
-      onError,
-    });
+    const onError = jest.fn();
+    const end = jest.spyOn(stream, 'end');
 
+    await Promise.all([
+      client.openSession({
+        name: SCENE,
+        capabilities,
+        sessionToken,
+        onError,
+      }),
+      new Promise(emitLoadSceneOutputEvent(stream)),
+    ]);
     stream.emit('error');
 
     expect(onError).toHaveBeenCalledTimes(1);
     expect(end).toHaveBeenCalledTimes(1);
   });
 
-  test('should handle on Message', () => {
-    const stream = new ClientDuplexStreamImpl(jest.fn(), jest.fn());
-    const onMessage = jest.fn();
+  test('should handle on Message', async () => {
+    const stream = getStream();
     jest
-      .spyOn(WorldEngineClient.prototype, 'session')
+      .spyOn(WorldEngineClient.prototype, 'openSession')
       .mockImplementation(() => stream);
 
-    client.session({
-      sessionToken,
-      onMessage,
-    });
+    const onMessage = jest.fn();
+
+    await Promise.all([
+      client.openSession({
+        name: SCENE,
+        capabilities,
+        sessionToken,
+        onMessage,
+      }),
+      new Promise(emitLoadSceneOutputEvent(stream)),
+    ]);
 
     stream.emit('data');
 
     expect(onMessage).toHaveBeenCalledTimes(1);
   });
 
-  test('should handle on Disconnect', () => {
-    const stream = new ClientDuplexStreamImpl(jest.fn(), jest.fn());
-    const onDisconnect = jest.fn();
-    jest
-      .spyOn(WorldEngineClient.prototype, 'session')
+  test('should do nothing if onMessage is not provided', async () => {
+    const stream = getStream();
+    const openSession = jest
+      .spyOn(WorldEngineClient.prototype, 'openSession')
       .mockImplementation(() => stream);
 
-    client.session({
-      sessionToken,
-      onDisconnect,
-    });
+    await Promise.all([
+      client.openSession({
+        name: SCENE,
+        capabilities,
+        sessionToken,
+      }),
+      new Promise(emitLoadSceneOutputEvent(stream)),
+    ]);
+
+    stream.emit('data');
+
+    expect(openSession).toHaveBeenCalledTimes(1);
+  });
+
+  test('should handle on Disconnect', async () => {
+    const stream = getStream();
+    jest
+      .spyOn(WorldEngineClient.prototype, 'openSession')
+      .mockImplementation(() => stream);
+
+    const onDisconnect = jest.fn();
+
+    await Promise.all([
+      client.openSession({
+        name: SCENE,
+        capabilities,
+        sessionToken,
+        onDisconnect,
+      }),
+      new Promise(emitLoadSceneOutputEvent(stream)),
+    ]);
 
     stream.emit('close');
 

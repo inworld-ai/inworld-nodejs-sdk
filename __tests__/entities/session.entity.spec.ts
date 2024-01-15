@@ -1,13 +1,6 @@
-import { v4 } from 'uuid';
-
-import { Scene } from '../../src/entities/scene.entity';
 import { Session } from '../../src/entities/session.entity';
-import { createCharacter, sessionToken } from '../helpers';
+import { sessionToken } from '../helpers';
 
-let scene: Scene = {
-  key: v4(),
-  characters: [createCharacter(), createCharacter()],
-};
 let session: Session;
 let json: string;
 
@@ -15,14 +8,12 @@ beforeEach(() => {
   jest.clearAllMocks();
 
   session = new Session({
-    scene,
     sessionToken,
   });
   json = JSON.stringify(session);
 });
 
 test('should return session fields', () => {
-  expect(session.scene).toEqual(scene);
   expect(session.sessionToken).toEqual(sessionToken);
 });
 
@@ -33,6 +24,5 @@ test('should serialize', () => {
 test('should deserialize', () => {
   const result = Session.deserialize(json);
 
-  expect(result.scene).toEqual(session.scene);
-  expect(result.sessionToken).toEqual(session.sessionToken);
+  expect(result?.sessionToken).toEqual(session.sessionToken);
 });

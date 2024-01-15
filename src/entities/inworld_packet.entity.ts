@@ -222,7 +222,7 @@ export class InworldPacket {
     const packetId = proto.getPacketId();
     const routing = proto.getRouting();
     const source = routing.getSource();
-    const target = routing.getTarget();
+    const target = routing.getTargetsList()[0];
     const type = this.getType(proto);
 
     const textEvent = proto.getText();
@@ -277,7 +277,7 @@ export class InworldPacket {
               ({
                 phoneme: info.getPhoneme(),
                 startOffsetS: this.durationToSeconds(info.getStartOffset()),
-              } as AdditionalPhonemeInfo),
+              }) as AdditionalPhonemeInfo,
           ),
         },
       }),

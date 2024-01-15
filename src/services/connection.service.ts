@@ -22,7 +22,9 @@ import { EventFactory } from '../factories/event';
 import { StateSerializationClientGrpcService } from './gprc/state_serialization_client_grpc.service';
 import { WorldEngineClientGrpcService } from './gprc/world_engine_client_grpc.service';
 
-interface ConnectionProps<InworldPacketT> {
+interface ConnectionProps<
+  InworldPacketT extends InworldPacket = InworldPacket,
+> {
   apiKey: ApiKey;
   name?: string;
   user?: User;
@@ -139,7 +141,7 @@ export class ConnectionService<
   close() {
     this.cancelScheduler();
     this.state = ConnectionState.INACTIVE;
-    this.stream?.removeListener('data', this.onMessage);
+    this.stream?.removeAllListeners('data');
     this.stream?.cancel();
     this.clearQueue();
 
@@ -157,31 +159,47 @@ export class ConnectionService<
 
   async getCharactersList() {
     if (!this.scene) {
-      await this.loadScene();
+      await this.open();
     }
 
     return this.scene.characters;
   }
 
   async open() {
+    if (this.state !== ConnectionState.INACTIVE) return;
+
     try {
-      await this.loadScene();
+      await this.loadToken();
 
-      if (this.state === ConnectionState.LOADED) {
-        this.state = ConnectionState.ACTIVATING;
+      const { client, name, sessionContinuation, user } = this.connectionProps;
 
-        this.stream = this.engineService.session({
-          sessionToken: this.sessionToken,
-          onError: this.onError,
-          onDisconnect: this.onDisconnect,
-          ...(this.onMessage && { onMessage: this.onMessage }),
-        });
+      const [stream, scene] = await this.engineService.openSession({
+        client,
+        name,
+        sessionContinuation,
+        user,
+        capabilities: this.connectionProps.config.capabilities,
+        extension: this.connectionProps.extension,
+        sessionToken: this.sessionToken,
+        onError: this.onError,
+        onDisconnect: this.onDisconnect,
+        ...(this.onMessage && { onMessage: this.onMessage }),
+      });
 
-        this.state = ConnectionState.ACTIVE;
-        this.releaseQueue();
+      this.stream = stream;
+      this.scene = scene;
 
-        this.scheduleDisconnect();
+      if (
+        !this.getEventFactory().getCurrentCharacter() &&
+        this.scene.characters.length
+      ) {
+        this.getEventFactory().setCurrentCharacter(this.scene.characters[0]);
       }
+
+      this.state = ConnectionState.ACTIVE;
+      this.releaseQueue();
+
+      this.scheduleDisconnect();
     } catch (err) {
       this.onError(err);
       this.clearQueue();
@@ -262,8 +280,8 @@ export class ConnectionService<
     return packet;
   }
 
-  private async loadScene() {
-    if (this.state === ConnectionState.LOADING) return;
+  private async loadToken() {
+    if (this.state === ConnectionState.ACTIVATING) return;
 
     let session: Session;
 
@@ -272,45 +290,18 @@ export class ConnectionService<
       session = await this.connectionProps.sessionGetterSetter.get();
     }
 
-    try {
-      const previousSessionToken = this.sessionToken;
-      await this.ensureSessionToken({
-        sessionToken: session?.sessionToken,
-        beforeLoading: () => {
-          this.state = ConnectionState.LOADING;
-        },
+    const previousSessionToken = this.sessionToken;
+    await this.ensureSessionToken({
+      sessionToken: session?.sessionToken,
+      beforeLoading: () => {
+        this.state = ConnectionState.ACTIVATING;
+      },
+    });
+    // Try to save session token to provided storage
+    if (previousSessionToken !== this.sessionToken) {
+      this.connectionProps.sessionGetterSetter?.set({
+        sessionToken: this.sessionToken,
       });
-      let changed = previousSessionToken !== this.sessionToken;
-
-      if (!this.scene) {
-        const scene = await this.getOrLoadScene(session?.scene);
-        changed = scene !== this.scene || changed;
-
-        this.scene = scene;
-
-        if (
-          !this.getEventFactory().getCurrentCharacter() &&
-          this.scene.characters.length
-        ) {
-          this.getEventFactory().setCurrentCharacter(this.scene.characters[0]);
-        }
-      }
-
-      // Try to save session token to provided storage
-      if (changed) {
-        this.connectionProps.sessionGetterSetter?.set({
-          sessionToken: this.sessionToken,
-          scene: this.scene,
-        });
-      }
-
-      if (
-        [ConnectionState.LOADING, ConnectionState.INACTIVE].includes(this.state)
-      ) {
-        this.state = ConnectionState.LOADED;
-      }
-    } catch (err) {
-      this.onError(err);
     }
   }
 
@@ -345,29 +336,6 @@ export class ConnectionService<
     this.sessionToken = sessionToken;
 
     return this.sessionToken;
-  }
-
-  private async getOrLoadScene(savedScene?: Scene) {
-    let scene = savedScene;
-
-    // Load scene
-    if (!scene) {
-      const { client, name, sessionContinuation, user } = this.connectionProps;
-
-      const proto = await this.engineService.loadScene({
-        client,
-        name,
-        sessionContinuation,
-        user,
-        capabilities: this.connectionProps.config.capabilities,
-        sessionToken: this.sessionToken,
-        extension: this.connectionProps.extension,
-      });
-
-      scene = Scene.fromProto(proto);
-    }
-
-    return scene;
   }
 
   private scheduleDisconnect() {
