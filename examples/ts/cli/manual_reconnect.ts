@@ -66,6 +66,7 @@ const run = async function () {
     |- /start - starts audio capturing.
     |- /end - ends audio capturing.
     |- /trigger - send trigger.
+    |- /narration - send narrated action.
     |- /info - shows current character.
     |- /list-all - shows available characters (created within the scene).
     |- /character %character-id% - id of the target character (Get full list using /list-all command).
@@ -121,6 +122,15 @@ const run = async function () {
           await connection.sendTrigger(args[0]);
         } else {
           console.log('/trigger requires trigger id name');
+        }
+        break;
+
+      case '/narration':
+        if (args.length) {
+          await connection.sendNarratedAction(args.join(' '));
+          console.log('Narration sent');
+        } else {
+          console.log('/narration requires text');
         }
         break;
 
