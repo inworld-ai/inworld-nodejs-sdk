@@ -1,8 +1,10 @@
-## [1.10.3] - 2024-01-13
+## [Unreleased]
 
 ### Added
 
 - Outgoing narrated actions support
+
+## [1.10.3] - 2024-01-13
 
 ### Changed
 
