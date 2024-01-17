@@ -94,6 +94,12 @@ export class InworldConnectionService<
     );
   }
 
+  async sendNarratedAction(text: string) {
+    return this.connection.send(() =>
+      this.connection.getEventFactory().narratedAction(text),
+    );
+  }
+
   async sendCustomPacket(getPacket: () => ProtoPacket) {
     return this.connection.send(() => getPacket());
   }

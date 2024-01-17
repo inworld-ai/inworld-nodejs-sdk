@@ -238,6 +238,22 @@ describe('event types', () => {
     expect(event.getRouting().getTarget().getName()).toEqual('');
     expect(event.hasTimestamp()).toEqual(true);
   });
+
+  test('should generate narrated action event', () => {
+    const text = v4();
+    const event = factory.narratedAction(text);
+    const packetId = event.getPacketId();
+
+    expect(event.getAction().hasNarratedAction()).toEqual(true);
+    expect(event.getAction().getNarratedAction().getContent()).toEqual(text);
+    expect(packetId.getPacketId()).toBeDefined();
+    expect(packetId.getInteractionId()).toBeDefined();
+    expect(packetId.getUtteranceId()).toBeDefined();
+    expect(packetId.getCorrelationId()).toBeDefined();
+    expect(event.hasRouting()).toEqual(true);
+    expect(event.getRouting().getTarget().getName()).toEqual(character.id);
+    expect(event.hasTimestamp()).toEqual(true);
+  });
 });
 
 describe('convert packet to external one', () => {

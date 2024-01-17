@@ -401,6 +401,8 @@ export class PreviousState extends jspb.Message {
     getStateHoldersList(): Array<PreviousState.StateHolder>;
     setStateHoldersList(value: Array<PreviousState.StateHolder>): PreviousState;
     addStateHolders(value?: PreviousState.StateHolder, index?: number): PreviousState.StateHolder;
+    getGameSessionId(): string;
+    setGameSessionId(value: string): PreviousState;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): PreviousState.AsObject;
@@ -415,6 +417,7 @@ export class PreviousState extends jspb.Message {
 export namespace PreviousState {
     export type AsObject = {
         stateHoldersList: Array<PreviousState.StateHolder.AsObject>,
+        gameSessionId: string,
     }
 
 

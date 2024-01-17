@@ -54,6 +54,10 @@ export class Routing extends jspb.Message {
     clearTarget(): void;
     getTarget(): Actor | undefined;
     setTarget(value?: Actor): Routing;
+    clearTargetsList(): void;
+    getTargetsList(): Array<Actor>;
+    setTargetsList(value: Array<Actor>): Routing;
+    addTargets(value?: Actor, index?: number): Actor;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): Routing.AsObject;
@@ -69,6 +73,7 @@ export namespace Routing {
     export type AsObject = {
         source?: Actor.AsObject,
         target?: Actor.AsObject,
+        targetsList: Array<Actor.AsObject>,
     }
 }
 

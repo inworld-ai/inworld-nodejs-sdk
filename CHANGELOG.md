@@ -1,5 +1,9 @@
 ## [1.10.3] - 2024-01-13
 
+### Added
+
+- Outgoing narrated actions support
+
 ### Changed
 
 - Update license information

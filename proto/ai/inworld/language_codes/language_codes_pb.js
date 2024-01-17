@@ -27,7 +27,8 @@ proto.ai.inworld.language_codes.LanguageCode = {
   LANGUAGE_CODE_UNSPECIFIED: 0,
   EN_US: 1,
   ZH_CN: 2,
-  KO_KR: 3
+  KO_KR: 3,
+  JA_JP: 4
 };
 
 

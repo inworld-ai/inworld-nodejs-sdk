@@ -116,7 +116,7 @@ if (goog.DEBUG && !COMPILED) {
  * @constructor
  */
 proto.Routing = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.Routing.repeatedFields_, null);
 };
 goog.inherits(proto.Routing, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
@@ -1116,6 +1116,13 @@ proto.Actor.prototype.setName = function(value) {
 
 
 
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.Routing.repeatedFields_ = [3];
+
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -1148,7 +1155,9 @@ proto.Routing.prototype.toObject = function(opt_includeInstance) {
 proto.Routing.toObject = function(includeInstance, msg) {
   var f, obj = {
     source: (f = msg.getSource()) && proto.Actor.toObject(includeInstance, f),
-    target: (f = msg.getTarget()) && proto.Actor.toObject(includeInstance, f)
+    target: (f = msg.getTarget()) && proto.Actor.toObject(includeInstance, f),
+    targetsList: jspb.Message.toObjectList(msg.getTargetsList(),
+    proto.Actor.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -1195,6 +1204,11 @@ proto.Routing.deserializeBinaryFromReader = function(msg, reader) {
       reader.readMessage(value,proto.Actor.deserializeBinaryFromReader);
       msg.setTarget(value);
       break;
+    case 3:
+      var value = new proto.Actor;
+      reader.readMessage(value,proto.Actor.deserializeBinaryFromReader);
+      msg.addTargets(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -1236,6 +1250,14 @@ proto.Routing.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeMessage(
       2,
+      f,
+      proto.Actor.serializeBinaryToWriter
+    );
+  }
+  f = message.getTargetsList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      3,
       f,
       proto.Actor.serializeBinaryToWriter
     );
@@ -1314,6 +1336,44 @@ proto.Routing.prototype.clearTarget = function() {
  */
 proto.Routing.prototype.hasTarget = function() {
   return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * repeated Actor targets = 3;
+ * @return {!Array<!proto.Actor>}
+ */
+proto.Routing.prototype.getTargetsList = function() {
+  return /** @type{!Array<!proto.Actor>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.Actor, 3));
+};
+
+
+/**
+ * @param {!Array<!proto.Actor>} value
+ * @return {!proto.Routing} returns this
+*/
+proto.Routing.prototype.setTargetsList = function(value) {
+  return jspb.Message.setRepeatedWrapperField(this, 3, value);
+};
+
+
+/**
+ * @param {!proto.Actor=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.Actor}
+ */
+proto.Routing.prototype.addTargets = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 3, opt_value, proto.Actor, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.Routing} returns this
+ */
+proto.Routing.prototype.clearTargetsList = function() {
+  return this.setTargetsList([]);
 };
 
 
