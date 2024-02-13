@@ -271,7 +271,9 @@ describe('event types', () => {
     expect(packetId.getUtteranceId()).toBeDefined();
     expect(packetId.getCorrelationId()).toBeDefined();
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTarget().getName()).toEqual(character.id);
+    expect(event.getRouting().getTargetsList()[0].getName()).toEqual(
+      character.id,
+    );
     expect(event.hasTimestamp()).toEqual(true);
   });
 });
