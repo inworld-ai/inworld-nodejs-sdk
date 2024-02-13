@@ -3,11 +3,9 @@ import {
   ClientDuplexStreamImpl,
   SurfaceCall,
 } from '@grpc/grpc-js/build/src/call';
+import { CapabilitiesConfiguration } from '@proto/ai/inworld/engine/configuration/configuration_pb';
 import { WorldEngineClient } from '@proto/ai/inworld/engine/world-engine_grpc_pb';
-import {
-  CapabilitiesRequest,
-  ClientRequest,
-} from '@proto/ai/inworld/engine/world-engine_pb';
+import { ClientRequest } from '@proto/ai/inworld/engine/world-engine_pb';
 import {
   Continuation,
   InworldPacket as ProtoPacket,
@@ -24,18 +22,18 @@ import { ExtendedInworldPacket } from '../../data_structures';
 import {
   capabilities,
   characters,
-  emitLoadSceneOutputEvent,
+  emitSessionControlResponseEvent,
   extendedCapabilities,
   extension,
   generateEmptyPacket,
   getStream,
   KEY,
-  loadSceneOutputEvent,
   phrases,
   previousDialog,
   previousState,
   SCENE,
   SECRET,
+  sessionControlResponseEvent,
   sessionProto,
   sessionToken,
   user,
@@ -117,14 +115,14 @@ describe('load scene', () => {
       .mockImplementation(() => stream);
     const write = jest.spyOn(ClientDuplexStreamImpl.prototype, 'write');
 
-    const capabilities = new CapabilitiesRequest().setEmotions(true);
+    const capabilities = new CapabilitiesConfiguration().setEmotions(true);
     const result = await Promise.all([
       client.openSession({
         name: SCENE,
         capabilities,
         sessionToken,
       }),
-      new Promise(emitLoadSceneOutputEvent(stream)),
+      new Promise(emitSessionControlResponseEvent(stream)),
     ]);
 
     expect(openSession).toHaveBeenCalledTimes(1);
@@ -161,7 +159,7 @@ describe('load scene', () => {
     jest.spyOn(os, 'release').mockImplementationOnce(() => osRelease);
 
     const sceneClient = new ClientRequest().setId('client-id');
-    const capabilities = new CapabilitiesRequest().setEmotions(true);
+    const capabilities = new CapabilitiesConfiguration().setEmotions(true);
     await Promise.all([
       client.openSession({
         name: SCENE,
@@ -169,7 +167,7 @@ describe('load scene', () => {
         capabilities,
         sessionToken,
       }),
-      new Promise(emitLoadSceneOutputEvent(stream)),
+      new Promise(emitSessionControlResponseEvent(stream)),
     ]);
 
     const actualClient = write.mock.calls[2][0]
@@ -197,7 +195,7 @@ describe('load scene', () => {
     jest.spyOn(os, 'release').mockImplementationOnce(() => osRelease);
 
     const sceneClient = new ClientRequest();
-    const capabilities = new CapabilitiesRequest().setEmotions(true);
+    const capabilities = new CapabilitiesConfiguration().setEmotions(true);
 
     await Promise.all([
       client.openSession({
@@ -206,7 +204,7 @@ describe('load scene', () => {
         capabilities,
         sessionToken,
       }),
-      new Promise(emitLoadSceneOutputEvent(stream)),
+      new Promise(emitSessionControlResponseEvent(stream)),
     ]);
 
     const actualClient = write.mock.calls[2][0]
@@ -227,7 +225,7 @@ describe('load scene', () => {
       .mockImplementation(() => stream);
     const write = jest.spyOn(ClientDuplexStreamImpl.prototype, 'write');
 
-    const capabilities = new CapabilitiesRequest().setEmotions(true);
+    const capabilities = new CapabilitiesConfiguration().setEmotions(true);
 
     await Promise.all([
       client.openSession({
@@ -239,7 +237,7 @@ describe('load scene', () => {
         }),
         user,
       }),
-      new Promise(emitLoadSceneOutputEvent(stream)),
+      new Promise(emitSessionControlResponseEvent(stream)),
     ]);
 
     const continuation = write.mock.calls[4][0]
@@ -268,7 +266,7 @@ describe('load scene', () => {
         sessionToken,
         user: { fullName: user.fullName },
       }),
-      new Promise(emitLoadSceneOutputEvent(stream)),
+      new Promise(emitSessionControlResponseEvent(stream)),
     ]);
 
     expect(
@@ -293,7 +291,7 @@ describe('load scene', () => {
         sessionToken,
         user: { profile: user.profile },
       }),
-      new Promise(emitLoadSceneOutputEvent(stream)),
+      new Promise(emitSessionControlResponseEvent(stream)),
     ]);
 
     const profileFields = write.mock.calls[3][0]
@@ -327,7 +325,7 @@ describe('load scene', () => {
         sessionContinuation,
         user,
       }),
-      new Promise(emitLoadSceneOutputEvent(stream)),
+      new Promise(emitSessionControlResponseEvent(stream)),
     ]);
 
     const state = write.mock.calls[4][0]
@@ -352,7 +350,7 @@ describe('load scene', () => {
         sessionToken,
         extension,
       }),
-      new Promise(emitLoadSceneOutputEvent(stream)),
+      new Promise(emitSessionControlResponseEvent(stream)),
     ]);
 
     expect(openSession).toHaveBeenCalledTimes(1);
@@ -371,7 +369,7 @@ describe('load scene', () => {
       .mockImplementation(() => stream);
     let errorReceived: ServiceError;
 
-    const capabilities = new CapabilitiesRequest().setEmotions(true);
+    const capabilities = new CapabilitiesConfiguration().setEmotions(true);
 
     try {
       await Promise.all([
@@ -401,7 +399,7 @@ describe('load scene', () => {
       .mockImplementation(() => stream);
 
     const onError = jest.fn();
-    const capabilities = new CapabilitiesRequest().setEmotions(true);
+    const capabilities = new CapabilitiesConfiguration().setEmotions(true);
 
     await Promise.all([
       client.openSession({
@@ -413,11 +411,15 @@ describe('load scene', () => {
       new Promise((resolve: any) => {
         stream.emit(
           'data',
-          generateEmptyPacket().setLoadSceneOutput(loadSceneOutputEvent),
+          generateEmptyPacket().setSessionControlResponse(
+            sessionControlResponseEvent,
+          ),
         );
         stream.emit(
           'data',
-          generateEmptyPacket().setLoadSceneOutput(loadSceneOutputEvent),
+          generateEmptyPacket().setSessionControlResponse(
+            sessionControlResponseEvent,
+          ),
         );
         resolve(true);
       }),
@@ -436,7 +438,7 @@ describe('load scene', () => {
       .spyOn(WorldEngineClient.prototype, 'openSession')
       .mockImplementation(() => stream);
 
-    const capabilities = new CapabilitiesRequest().setEmotions(true);
+    const capabilities = new CapabilitiesConfiguration().setEmotions(true);
 
     await Promise.all([
       client.openSession({
@@ -447,11 +449,15 @@ describe('load scene', () => {
       new Promise((resolve: any) => {
         stream.emit(
           'data',
-          generateEmptyPacket().setLoadSceneOutput(loadSceneOutputEvent),
+          generateEmptyPacket().setSessionControlResponse(
+            sessionControlResponseEvent,
+          ),
         );
         stream.emit(
           'data',
-          generateEmptyPacket().setLoadSceneOutput(loadSceneOutputEvent),
+          generateEmptyPacket().setSessionControlResponse(
+            sessionControlResponseEvent,
+          ),
         );
         resolve(true);
       }),
@@ -490,7 +496,7 @@ describe('session', () => {
         onMessage,
         onDisconnect,
       }),
-      new Promise(emitLoadSceneOutputEvent(stream)),
+      new Promise(emitSessionControlResponseEvent(stream)),
     ]);
 
     expect(clientSession).toHaveBeenCalledTimes(1);
@@ -518,7 +524,7 @@ describe('session', () => {
         sessionToken,
         onError,
       }),
-      new Promise(emitLoadSceneOutputEvent(stream)),
+      new Promise(emitSessionControlResponseEvent(stream)),
     ]);
     stream.emit('error');
 
@@ -541,7 +547,7 @@ describe('session', () => {
         sessionToken,
         onMessage,
       }),
-      new Promise(emitLoadSceneOutputEvent(stream)),
+      new Promise(emitSessionControlResponseEvent(stream)),
     ]);
 
     stream.emit('data');
@@ -561,7 +567,7 @@ describe('session', () => {
         capabilities,
         sessionToken,
       }),
-      new Promise(emitLoadSceneOutputEvent(stream)),
+      new Promise(emitSessionControlResponseEvent(stream)),
     ]);
 
     stream.emit('data');
@@ -584,7 +590,7 @@ describe('session', () => {
         sessionToken,
         onDisconnect,
       }),
-      new Promise(emitLoadSceneOutputEvent(stream)),
+      new Promise(emitSessionControlResponseEvent(stream)),
     ]);
 
     stream.emit('close');

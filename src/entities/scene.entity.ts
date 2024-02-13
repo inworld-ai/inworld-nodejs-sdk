@@ -1,4 +1,7 @@
-import { LoadSceneOutputEvent } from '@proto/ai/inworld/packets/packets_pb';
+import {
+  Agent,
+  SessionControlResponseEvent,
+} from '@proto/ai/inworld/packets/packets_pb';
 
 import { Character } from './character.entity';
 
@@ -25,26 +28,25 @@ export class Scene {
     } catch (e) {}
   }
 
-  static fromProto(proto: LoadSceneOutputEvent) {
-    const characters = proto
-      .getAgentsList()
-      .map((agent: LoadSceneOutputEvent.Agent) => {
-        // const assets = agent.get;
+  static fromProto(proto: SessionControlResponseEvent) {
+    const characters = (proto.getLoadedCharacters()?.getAgentsList() ?? []).map(
+      (agent: Agent) => {
+        const assets = agent.getCharacterAssets();
 
         return new Character({
           id: agent.getAgentId(),
           resourceName: agent.getBrainName(),
           displayName: agent.getGivenName(),
-          assets: {},
-          // assets: {
-          //   avatarImg: assets?.getAvatarImg(),
-          //   avatarImgOriginal: assets?.getAvatarImgOriginal(),
-          //   rpmModelUri: assets?.getRpmModelUri(),
-          //   rpmImageUriPortrait: assets?.getRpmImageUriPortrait(),
-          //   rpmImageUriPosture: assets?.getRpmImageUriPosture(),
-          // },
+          assets: {
+            avatarImg: assets?.getAvatarImg(),
+            avatarImgOriginal: assets?.getAvatarImgOriginal(),
+            rpmModelUri: assets?.getRpmModelUri(),
+            rpmImageUriPortrait: assets?.getRpmImageUriPortrait(),
+            rpmImageUriPosture: assets?.getRpmImageUriPosture(),
+          },
         });
-      });
+      },
+    );
 
     return new Scene({ characters });
   }

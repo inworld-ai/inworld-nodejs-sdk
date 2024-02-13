@@ -214,7 +214,9 @@ proto.configuration.CapabilitiesConfiguration.toObject = function(includeInstanc
     regenerateResponse: jspb.Message.getBooleanFieldWithDefault(msg, 12, false),
     relations: jspb.Message.getBooleanFieldWithDefault(msg, 13, false),
     debugInfo: jspb.Message.getBooleanFieldWithDefault(msg, 14, false),
-    ttsMp3: jspb.Message.getBooleanFieldWithDefault(msg, 15, false)
+    ttsMp3: jspb.Message.getBooleanFieldWithDefault(msg, 15, false),
+    multiAgent: jspb.Message.getBooleanFieldWithDefault(msg, 20, false),
+    audio2face: jspb.Message.getBooleanFieldWithDefault(msg, 21, false)
   };
 
   if (includeInstance) {
@@ -306,6 +308,14 @@ proto.configuration.CapabilitiesConfiguration.deserializeBinaryFromReader = func
     case 15:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setTtsMp3(value);
+      break;
+    case 20:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setMultiAgent(value);
+      break;
+    case 21:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setAudio2face(value);
       break;
     default:
       reader.skipField();
@@ -431,6 +441,20 @@ proto.configuration.CapabilitiesConfiguration.serializeBinaryToWriter = function
   if (f) {
     writer.writeBool(
       15,
+      f
+    );
+  }
+  f = message.getMultiAgent();
+  if (f) {
+    writer.writeBool(
+      20,
+      f
+    );
+  }
+  f = message.getAudio2face();
+  if (f) {
+    writer.writeBool(
+      21,
       f
     );
   }
@@ -686,6 +710,42 @@ proto.configuration.CapabilitiesConfiguration.prototype.getTtsMp3 = function() {
  */
 proto.configuration.CapabilitiesConfiguration.prototype.setTtsMp3 = function(value) {
   return jspb.Message.setProto3BooleanField(this, 15, value);
+};
+
+
+/**
+ * optional bool multi_agent = 20;
+ * @return {boolean}
+ */
+proto.configuration.CapabilitiesConfiguration.prototype.getMultiAgent = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 20, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.configuration.CapabilitiesConfiguration} returns this
+ */
+proto.configuration.CapabilitiesConfiguration.prototype.setMultiAgent = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 20, value);
+};
+
+
+/**
+ * optional bool audio2face = 21;
+ * @return {boolean}
+ */
+proto.configuration.CapabilitiesConfiguration.prototype.getAudio2face = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 21, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.configuration.CapabilitiesConfiguration} returns this
+ */
+proto.configuration.CapabilitiesConfiguration.prototype.setAudio2face = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 21, value);
 };
 
 

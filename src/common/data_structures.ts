@@ -4,11 +4,10 @@ import {
   SessionConfiguration,
   UserConfiguration,
 } from '@proto/ai/inworld/engine/configuration/configuration_pb';
-import { CapabilitiesRequest } from '@proto/ai/inworld/engine/world-engine_pb';
 import {
   Continuation,
   InworldPacket as ProtoPacket,
-  LoadSceneOutputEvent,
+  SessionControlResponseEvent,
 } from '@proto/ai/inworld/packets/packets_pb';
 
 import { InworldPacket } from '../entities/inworld_packet.entity';
@@ -66,7 +65,7 @@ export interface ClientConfiguration {
 
 export interface InternalClientConfiguration {
   connection?: ConnectionConfig;
-  capabilities: CapabilitiesRequest;
+  capabilities: CapabilitiesConfiguration;
 }
 
 export type Awaitable<T> = T | PromiseLike<T>;
@@ -100,5 +99,5 @@ export interface Extension<
 > {
   convertPacketFromProto?: (proto: ProtoPacket) => InworldPacketT;
   beforeLoadScene?: (packets: ProtoPacket[]) => ProtoPacket[];
-  afterLoadScene?: (res: LoadSceneOutputEvent) => void;
+  afterLoadScene?: (res: SessionControlResponseEvent) => void;
 }

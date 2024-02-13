@@ -1,11 +1,12 @@
-import { LoadSceneResponse } from '@proto/ai/inworld/engine/world-engine_pb';
-import { v4 } from 'uuid';
+import {
+  LoadedCharacters,
+  SessionControlResponseEvent,
+} from '@proto/ai/inworld/packets/packets_pb';
 
 import { Character } from '../../src/entities/character.entity';
 import { Scene } from '../../src/entities/scene.entity';
 import { createAgent, createCharacter } from '../helpers';
 
-let key: string;
 let characters: Array<Character> = [];
 let scene: Scene;
 let json: string;
@@ -13,7 +14,6 @@ let json: string;
 beforeEach(() => {
   jest.clearAllMocks();
 
-  key = v4();
   characters = [createCharacter(), createCharacter()];
   scene = new Scene({ characters });
   json = JSON.stringify(scene);
@@ -35,7 +35,10 @@ test('should deserialize', () => {
 
 test('should convert proto to scene', () => {
   const agents = [createAgent(), createAgent(false)];
-  const proto = new LoadSceneResponse().setAgentsList(agents).setKey(key);
+
+  const proto = new SessionControlResponseEvent().setLoadedCharacters(
+    new LoadedCharacters().setAgentsList(agents),
+  );
   const scene = Scene.fromProto(proto);
 
   expect(scene.characters[0].id).toEqual(agents[0].getAgentId());

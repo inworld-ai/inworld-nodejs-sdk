@@ -19,9 +19,7 @@ Here are several ways to enhance the functionality of the Inworld AI Node.js SDK
 
 ```ts
   const beforeLoadScene = (request) => {
-    const capabilities = new CapabilitiesRequest()
-      .setAudio(true)
-      .setText(true)
+    const capabilities = new CapabilitiesConfiguration()
       .setRegenerateResponse(true);
     request.setCapabilities(capabilities);
 

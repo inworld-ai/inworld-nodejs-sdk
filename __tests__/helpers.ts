@@ -2,17 +2,16 @@ import {
   ClientDuplexStream,
   ClientDuplexStreamImpl,
 } from '@grpc/grpc-js/build/src/call';
-import {
-  AccessToken,
-  CapabilitiesRequest,
-  LoadSceneResponse,
-} from '@proto/ai/inworld/engine/world-engine_pb';
+import { CapabilitiesConfiguration } from '@proto/ai/inworld/engine/configuration/configuration_pb';
+import { AccessToken } from '@proto/ai/inworld/engine/world-engine_pb';
 import {
   Actor,
+  Agent,
   InworldPacket as ProtoPacket,
-  LoadSceneOutputEvent,
+  LoadedCharacters,
   PacketId,
   Routing,
+  SessionControlResponseEvent,
 } from '@proto/ai/inworld/packets/packets_pb';
 import { v4 } from 'uuid';
 
@@ -49,9 +48,9 @@ export const createCharacter = () =>
   });
 
 export const createAgent = (useAssets: boolean = true) => {
-  const agent = new LoadSceneResponse.Agent();
+  const agent = new Agent();
   const assets = useAssets
-    ? new LoadSceneResponse.Agent.CharacterAssets()
+    ? new Agent.CharacterAssets()
         .setAvatarImg(v4())
         .setAvatarImgOriginal(v4())
         .setRpmModelUri(v4())
@@ -62,14 +61,22 @@ export const createAgent = (useAssets: boolean = true) => {
   return agent.setAgentId(v4()).setBrainName(v4()).setCharacterAssets(assets);
 };
 
-export const convertAgentsToCharacters = (
-  agents: Array<LoadSceneResponse.Agent>,
-) => {
+export const convertAgentsToCharacters = (agents: Array<Agent>) => {
   return agents.map(
-    (agent: LoadSceneResponse.Agent) =>
+    (agent: Agent) =>
       new Character({
         id: agent.getAgentId(),
-        assets: {},
+        assets: {
+          avatarImg: agent.getCharacterAssets()?.getAvatarImg(),
+          avatarImgOriginal: agent.getCharacterAssets()?.getAvatarImgOriginal(),
+          rpmModelUri: agent.getCharacterAssets()?.getRpmModelUri(),
+          rpmImageUriPortrait: agent
+            .getCharacterAssets()
+            ?.getRpmImageUriPortrait(),
+          rpmImageUriPosture: agent
+            .getCharacterAssets()
+            ?.getRpmImageUriPosture(),
+        },
         resourceName: agent.getBrainName(),
         displayName: agent.getGivenName(),
       }),
@@ -109,15 +116,13 @@ export const capabilitiesProps: Capabilities = {
   silence: true,
 };
 
-export const capabilities = new CapabilitiesRequest()
+export const capabilities = new CapabilitiesConfiguration()
   .setAudio(true)
   .setContinuation(true)
   .setEmotions(true)
   .setInterruptions(true)
   .setPhonemeInfo(true)
   .setSilenceEvents(true)
-  .setText(true)
-  .setTriggers(true)
   .setContinuation(true);
 
 export const user: User = {
@@ -143,14 +148,12 @@ export const convertPacketFromProto = (proto: ProtoPacket) => {
   return packet;
 };
 
-export const extendedCapabilities = new CapabilitiesRequest()
+export const extendedCapabilities = new CapabilitiesConfiguration()
   .setAudio(true)
   .setEmotions(true)
   .setInterruptions(true)
   .setPhonemeInfo(true)
   .setSilenceEvents(true)
-  .setText(true)
-  .setTriggers(true)
   .setRegenerateResponse(true);
 
 export const previousState = v4();
@@ -198,14 +201,17 @@ export const setTimeoutMock = (callback: any) => {
 export const agents = [createAgent(), createAgent()];
 export const characters = convertAgentsToCharacters(agents);
 export const getStream = () => new ClientDuplexStreamImpl(jest.fn(), jest.fn());
-export const loadSceneOutputEvent = new LoadSceneOutputEvent().setAgentsList(
-  agents,
-);
-export const emitLoadSceneOutputEvent =
+export const sessionControlResponseEvent =
+  new SessionControlResponseEvent().setLoadedCharacters(
+    new LoadedCharacters().setAgentsList(agents),
+  );
+export const emitSessionControlResponseEvent =
   (stream: ClientDuplexStream<ProtoPacket, ProtoPacket>) => (resolve: any) => {
     stream.emit(
       'data',
-      generateEmptyPacket().setLoadSceneOutput(loadSceneOutputEvent),
+      generateEmptyPacket().setSessionControlResponse(
+        sessionControlResponseEvent,
+      ),
     );
     resolve(true);
   };

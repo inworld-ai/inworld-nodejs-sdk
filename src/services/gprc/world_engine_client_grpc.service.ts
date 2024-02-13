@@ -5,13 +5,13 @@ import {
   ServiceError,
 } from '@grpc/grpc-js';
 import {
+  CapabilitiesConfiguration,
   SessionConfiguration,
   UserConfiguration,
 } from '@proto/ai/inworld/engine/configuration/configuration_pb';
 import { WorldEngineClient } from '@proto/ai/inworld/engine/world-engine_grpc_pb';
 import {
   AccessToken,
-  CapabilitiesRequest,
   ClientRequest,
   GenerateTokenRequest,
   UserSettings,
@@ -50,7 +50,7 @@ export interface SessionProps<
   user?: User;
   sessionToken: SessionToken;
   sessionContinuation?: SessionContinuation;
-  capabilities: CapabilitiesRequest;
+  capabilities: CapabilitiesConfiguration;
   extension?: Extension<InworldPacketT>;
   onDisconnect?: () => Awaitable<void>;
   onError?: (err: ServiceError) => Awaitable<void>;
@@ -146,15 +146,15 @@ export class WorldEngineClientGrpcService<
 
     return new Promise((resolve, reject) => {
       connection.on('data', async (packet: ProtoPacket) => {
-        if (!loaded && packet.hasLoadSceneOutput()) {
+        if (!loaded && packet.hasSessionControlResponse()) {
           loaded = true;
 
-          const sceneProto = packet.getLoadSceneOutput();
+          const sceneProto = packet.getSessionControlResponse();
 
           props.extension?.afterLoadScene?.(sceneProto);
 
           resolve([connection, Scene.fromProto(sceneProto)]);
-        } else if (loaded && !packet?.hasLoadSceneOutput()) {
+        } else if (loaded && !packet?.hasSessionControlResponse()) {
           onMessage?.(packet);
         } else {
           const err = new Error(

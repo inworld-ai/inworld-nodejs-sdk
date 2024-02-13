@@ -1,8 +1,6 @@
 import { ServiceError } from '@grpc/grpc-js';
-import {
-  CapabilitiesRequest,
-  ClientRequest,
-} from '@proto/ai/inworld/engine/world-engine_pb';
+import { CapabilitiesConfiguration } from '@proto/ai/inworld/engine/configuration/configuration_pb';
+import { ClientRequest } from '@proto/ai/inworld/engine/world-engine_pb';
 
 import { SCENE_PATTERN } from '../common/constants';
 import {
@@ -170,16 +168,16 @@ export class InworldClient<
     };
   }
 
-  private buildCapabilities(capabilities: Capabilities): CapabilitiesRequest {
-    const request = new CapabilitiesRequest()
+  private buildCapabilities(
+    capabilities: Capabilities,
+  ): CapabilitiesConfiguration {
+    const request = new CapabilitiesConfiguration()
       .setAudio(capabilities.audio ?? true)
       .setEmotions(capabilities.emotions ?? false)
       .setInterruptions(capabilities.interruptions ?? false)
       .setNarratedActions(capabilities.narratedActions ?? false)
       .setPhonemeInfo(capabilities.phonemes ?? false)
-      .setSilenceEvents(capabilities.silence ?? false)
-      .setText(true)
-      .setTriggers(true);
+      .setSilenceEvents(capabilities.silence ?? false);
 
     return request;
   }
