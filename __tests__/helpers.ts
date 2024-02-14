@@ -84,9 +84,7 @@ export const convertAgentsToCharacters = (agents: Array<Agent>) => {
 };
 
 export const generateEmptyPacket = () => {
-  const rounting = new Routing()
-    .setSource(new Actor())
-    .setTargetsList([new Actor()]);
+  const rounting = new Routing().setSource(new Actor()).setTarget(new Actor());
 
   return new ProtoPacket()
     .setPacketId(new PacketId().setPacketId(v4()))

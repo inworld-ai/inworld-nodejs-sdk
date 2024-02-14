@@ -200,13 +200,13 @@ export class EventFactory {
       .setType(Actor.Type.AGENT)
       .setName(this.character?.id);
 
-    return new Routing().setSource(source).setTargetsList([target]);
+    return new Routing().setSource(source).setTarget(target);
   }
 
   private openSessionRouting(): Routing {
     const source = new Actor().setType(Actor.Type.PLAYER);
     const target = new Actor().setType(Actor.Type.WORLD);
 
-    return new Routing().setSource(source).setTargetsList([target]);
+    return new Routing().setSource(source).setTarget(target);
   }
 }

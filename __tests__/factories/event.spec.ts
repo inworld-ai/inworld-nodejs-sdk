@@ -57,9 +57,7 @@ describe('event types', () => {
     expect(packetId.getUtteranceId()).toBeFalsy();
     expect(packetId.getCorrelationId()).toBeFalsy();
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTargetsList()[0].getName()).toEqual(
-      character?.id,
-    );
+    expect(event.getRouting().getTarget().getName()).toEqual(character?.id);
     expect(event.hasTimestamp()).toEqual(true);
   });
 
@@ -76,9 +74,7 @@ describe('event types', () => {
     expect(packetId.getUtteranceId()).toBeFalsy();
     expect(packetId.getCorrelationId()).toBeFalsy();
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTargetsList()[0].getName()).toEqual(
-      character?.id,
-    );
+    expect(event.getRouting().getTarget().getName()).toEqual(character?.id);
     expect(event.hasTimestamp()).toEqual(true);
   });
 
@@ -95,9 +91,7 @@ describe('event types', () => {
     expect(packetId.getUtteranceId()).toBeFalsy();
     expect(packetId.getCorrelationId()).toBeFalsy();
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTargetsList()[0].getName()).toEqual(
-      character?.id,
-    );
+    expect(event.getRouting().getTarget().getName()).toEqual(character?.id);
     expect(event.hasTimestamp()).toEqual(true);
   });
 
@@ -114,9 +108,7 @@ describe('event types', () => {
     expect(packetId.getUtteranceId()).toBeFalsy();
     expect(packetId.getCorrelationId()).toBeFalsy();
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTargetsList()[0].getName()).toEqual(
-      character?.id,
-    );
+    expect(event.getRouting().getTarget().getName()).toEqual(character?.id);
     expect(event.hasTimestamp()).toEqual(true);
   });
 
@@ -133,9 +125,7 @@ describe('event types', () => {
     expect(packetId.getUtteranceId()).toBeFalsy();
     expect(packetId.getCorrelationId()).toBeFalsy();
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTargetsList()[0].getName()).toEqual(
-      character?.id,
-    );
+    expect(event.getRouting().getTarget().getName()).toEqual(character?.id);
     expect(event.hasTimestamp()).toEqual(true);
   });
 
@@ -151,9 +141,7 @@ describe('event types', () => {
     expect(packetId.getUtteranceId()).toBeDefined();
     expect(packetId.getCorrelationId()).toBeDefined();
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTargetsList()[0].getName()).toEqual(
-      character?.id,
-    );
+    expect(event.getRouting().getTarget().getName()).toEqual(character?.id);
     expect(event.hasTimestamp()).toEqual(true);
   });
 
@@ -170,9 +158,7 @@ describe('event types', () => {
     expect(packetId.getUtteranceId()).toBeDefined();
     expect(packetId.getCorrelationId()).toBeDefined();
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTargetsList()[0].getName()).toEqual(
-      character?.id,
-    );
+    expect(event.getRouting().getTarget().getName()).toEqual(character?.id);
     expect(event.hasTimestamp()).toEqual(true);
   });
 
@@ -195,9 +181,7 @@ describe('event types', () => {
     expect(packetId.getUtteranceId()).toBeDefined();
     expect(packetId.getCorrelationId()).toBeDefined();
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTargetsList()[0].getName()).toEqual(
-      character?.id,
-    );
+    expect(event.getRouting().getTarget().getName()).toEqual(character?.id);
     expect(event.hasTimestamp()).toEqual(true);
   });
 
@@ -211,9 +195,7 @@ describe('event types', () => {
     expect(packetId.getUtteranceId()).toBeDefined();
     expect(packetId.getCorrelationId()).toBeDefined();
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTargetsList()[0].getName()).toEqual(
-      character?.id,
-    );
+    expect(event.getRouting().getTarget().getName()).toEqual(character?.id);
     expect(event.hasTimestamp()).toEqual(true);
   });
 
@@ -238,9 +220,7 @@ describe('event types', () => {
     expect(packetId.getUtteranceId()).toBeDefined();
     expect(packetId.getCorrelationId()).toBeDefined();
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTargetsList()[0].getName()).toEqual(
-      character.id,
-    );
+    expect(event.getRouting().getTarget().getName()).toEqual(character.id);
     expect(event.hasTimestamp()).toEqual(true);
   });
 
@@ -255,7 +235,7 @@ describe('event types', () => {
     expect(packetId.getUtteranceId()).toBeDefined();
     expect(packetId.getCorrelationId()).toBeDefined();
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTargetsList()[0].getName()).toEqual('');
+    expect(event.getRouting().getTarget().getName()).toEqual('');
     expect(event.hasTimestamp()).toEqual(true);
   });
 
@@ -271,9 +251,7 @@ describe('event types', () => {
     expect(packetId.getUtteranceId()).toBeDefined();
     expect(packetId.getCorrelationId()).toBeDefined();
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTargetsList()[0].getName()).toEqual(
-      character.id,
-    );
+    expect(event.getRouting().getTarget().getName()).toEqual(character.id);
     expect(event.hasTimestamp()).toEqual(true);
   });
 });
@@ -282,7 +260,7 @@ describe('convert packet to external one', () => {
   test('audio', () => {
     const rounting = new Routing()
       .setSource(new Actor())
-      .setTargetsList([new Actor()]);
+      .setTarget(new Actor());
     const dataChunk = new DataChunk()
       .setType(DataChunk.DataType.AUDIO)
       .setChunk(v4())
@@ -328,7 +306,7 @@ describe('convert packet to external one', () => {
   test('emotion', () => {
     const rounting = new Routing()
       .setSource(new Actor())
-      .setTargetsList([new Actor()]);
+      .setTarget(new Actor());
 
     const packet = new ProtoPacket()
       .setPacketId(new PacketId().setPacketId(v4()))
@@ -345,7 +323,7 @@ describe('convert packet to external one', () => {
   test('silence', () => {
     const rounting = new Routing()
       .setSource(new Actor())
-      .setTargetsList([new Actor()]);
+      .setTarget(new Actor());
     const dataChunk = new DataChunk()
       .setType(DataChunk.DataType.SILENCE)
       .setDurationMs(100);
@@ -363,7 +341,7 @@ describe('convert packet to external one', () => {
   test('narrated action', () => {
     const rounting = new Routing()
       .setSource(new Actor())
-      .setTargetsList([new Actor()]);
+      .setTarget(new Actor());
     const action = new ActionEvent().setNarratedAction(
       new NarratedAction().setContent(v4()),
     );
@@ -381,7 +359,7 @@ describe('convert packet to external one', () => {
   test('unknown', () => {
     const rounting = new Routing()
       .setSource(new Actor())
-      .setTargetsList([new Actor()]);
+      .setTarget(new Actor());
 
     const packet = new ProtoPacket()
       .setPacketId(new PacketId().setPacketId(v4()))
@@ -407,9 +385,7 @@ describe('convert packet to external one', () => {
       const packet = new ProtoPacket()
         .setControl(event)
         .setPacketId(new PacketId())
-        .setRouting(
-          new Routing().setSource(new Actor()).setTargetsList([new Actor()]),
-        )
+        .setRouting(new Routing().setSource(new Actor()).setTarget(new Actor()))
         .setTimestamp(protoTimestamp(today));
 
       const result = InworldPacket.fromProto(packet);
@@ -426,9 +402,7 @@ describe('convert packet to external one', () => {
       const packet = new ProtoPacket()
         .setControl(event)
         .setPacketId(new PacketId())
-        .setRouting(
-          new Routing().setSource(new Actor()).setTargetsList([new Actor()]),
-        )
+        .setRouting(new Routing().setSource(new Actor()).setTarget(new Actor()))
         .setTimestamp(protoTimestamp(today));
 
       const result = InworldPacket.fromProto(packet);

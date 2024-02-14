@@ -222,7 +222,7 @@ export class InworldPacket {
     const packetId = proto.getPacketId();
     const routing = proto.getRouting();
     const source = routing.getSource();
-    const target = routing.getTargetsList()[0];
+    const target = routing.getTarget();
     const type = this.getType(proto);
 
     const textEvent = proto.getText();

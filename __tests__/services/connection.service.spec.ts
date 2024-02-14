@@ -98,7 +98,7 @@ describe('message', () => {
 
     const rounting = new Routing()
       .setSource(new Actor())
-      .setTargetsList([new Actor()]);
+      .setTarget(new Actor());
 
     const packet = new ProtoPacket()
       .setPacketId(new PacketId().setPacketId(v4()))
