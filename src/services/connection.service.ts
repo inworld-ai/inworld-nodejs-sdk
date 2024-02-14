@@ -178,7 +178,7 @@ export class ConnectionService<
         name,
         sessionContinuation,
         user,
-        capabilities: this.connectionProps.config.capabilities,
+        config: this.connectionProps.config,
         extension: this.connectionProps.extension,
         sessionToken: this.sessionToken,
         onError: this.onError,

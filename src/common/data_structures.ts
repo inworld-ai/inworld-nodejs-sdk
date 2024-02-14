@@ -59,11 +59,13 @@ export interface ConnectionConfig {
 }
 
 export interface ClientConfiguration {
+  gameSessionId?: string;
   connection?: ConnectionConfig;
   capabilities?: Capabilities;
 }
 
 export interface InternalClientConfiguration {
+  gameSessionId?: string;
   connection?: ConnectionConfig;
   capabilities: CapabilitiesConfiguration;
 }

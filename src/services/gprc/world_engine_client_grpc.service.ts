@@ -5,7 +5,6 @@ import {
   ServiceError,
 } from '@grpc/grpc-js';
 import {
-  CapabilitiesConfiguration,
   SessionConfiguration,
   UserConfiguration,
 } from '@proto/ai/inworld/engine/configuration/configuration_pb';
@@ -30,6 +29,7 @@ import {
   ApiKey,
   Awaitable,
   Extension,
+  InternalClientConfiguration,
   User,
 } from '../../common/data_structures';
 import { grpcOptions } from '../../common/helpers';
@@ -50,7 +50,7 @@ export interface SessionProps<
   user?: User;
   sessionToken: SessionToken;
   sessionContinuation?: SessionContinuation;
-  capabilities: CapabilitiesConfiguration;
+  config: InternalClientConfiguration;
   extension?: Extension<InworldPacketT>;
   onDisconnect?: () => Awaitable<void>;
   onError?: (err: ServiceError) => Awaitable<void>;
@@ -252,20 +252,28 @@ export class WorldEngineClientGrpcService<
   private getPackets(props: SessionProps<InworldPacketT>) {
     const packets: ProtoPacket[] = [
       this.eventFactory.sessionControl({
-        capabilities: props.capabilities,
+        capabilities: props.config.capabilities,
       }),
-      this.eventFactory.sessionControl({
-        sessionConfiguration: new SessionConfiguration().setGameSessionId(
-          props.sessionToken.sessionId,
-        ),
-      }),
+    ];
+
+    if (props.config.gameSessionId) {
+      packets.push(
+        this.eventFactory.sessionControl({
+          sessionConfiguration: new SessionConfiguration().setGameSessionId(
+            props.config.gameSessionId,
+          ),
+        }),
+      );
+    }
+
+    packets.push(
       this.eventFactory.sessionControl({
         clientConfiguration: this.getClient(props),
       }),
       this.eventFactory.sessionControl({
         userConfiguration: this.getUserConfiguration(props),
       }),
-    ];
+    );
 
     const continuation = this.getContinuation(props);
 

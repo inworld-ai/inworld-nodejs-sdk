@@ -12,6 +12,8 @@ import {
 } from '@proto/ai/inworld/packets/packets_pb';
 import os = require('os');
 
+import { v4 } from 'uuid';
+
 import { Config } from '../../../src/common/config';
 import { CLIENT_ID } from '../../../src/common/constants';
 import { Logger } from '../../../src/common/logger';
@@ -119,7 +121,7 @@ describe('load scene', () => {
     const result = await Promise.all([
       client.openSession({
         name: SCENE,
-        capabilities,
+        config: { capabilities },
         sessionToken,
       }),
       new Promise(emitSessionControlResponseEvent(stream)),
@@ -128,18 +130,12 @@ describe('load scene', () => {
     expect(openSession).toHaveBeenCalledTimes(1);
     expect(result[0][0]).toEqual(stream);
     expect(result[0][1].characters).toEqual(characters);
-    expect(write).toHaveBeenCalledTimes(5);
+    expect(write).toHaveBeenCalledTimes(4);
     expect(
       write.mock.calls[0][0].getSessionControl().getCapabilitiesConfiguration(),
     ).toEqual(capabilities);
     expect(
       write.mock.calls[1][0]
-        .getSessionControl()
-        .getSessionConfiguration()
-        .getGameSessionId(),
-    ).toEqual(sessionToken.sessionId);
-    expect(
-      write.mock.calls[2][0]
         .getSessionControl()
         .getClientConfiguration()
         .getId(),
@@ -164,13 +160,13 @@ describe('load scene', () => {
       client.openSession({
         name: SCENE,
         client: sceneClient,
-        capabilities,
+        config: { capabilities },
         sessionToken,
       }),
       new Promise(emitSessionControlResponseEvent(stream)),
     ]);
 
-    const actualClient = write.mock.calls[2][0]
+    const actualClient = write.mock.calls[1][0]
       .getSessionControl()
       .getClientConfiguration();
 
@@ -201,13 +197,13 @@ describe('load scene', () => {
       client.openSession({
         name: SCENE,
         client: sceneClient,
-        capabilities,
+        config: { capabilities },
         sessionToken,
       }),
       new Promise(emitSessionControlResponseEvent(stream)),
     ]);
 
-    const actualClient = write.mock.calls[2][0]
+    const actualClient = write.mock.calls[1][0]
       .getSessionControl()
       .getClientConfiguration();
 
@@ -230,7 +226,7 @@ describe('load scene', () => {
     await Promise.all([
       client.openSession({
         name: SCENE,
-        capabilities,
+        config: { capabilities },
         sessionToken,
         sessionContinuation: new SessionContinuation({
           previousDialog: phrases,
@@ -240,10 +236,10 @@ describe('load scene', () => {
       new Promise(emitSessionControlResponseEvent(stream)),
     ]);
 
-    const continuation = write.mock.calls[4][0]
+    const continuation = write.mock.calls[3][0]
       .getSessionControl()
       .getContinuation();
-    expect(write).toHaveBeenCalledTimes(6);
+    expect(write).toHaveBeenCalledTimes(5);
     expect(continuation.getContinuationType()).toEqual(
       Continuation.ContinuationType.CONTINUATION_TYPE_DIALOG_HISTORY,
     );
@@ -262,7 +258,7 @@ describe('load scene', () => {
     await Promise.all([
       client.openSession({
         name: SCENE,
-        capabilities,
+        config: { capabilities },
         sessionToken,
         user: { fullName: user.fullName },
       }),
@@ -270,7 +266,7 @@ describe('load scene', () => {
     ]);
 
     expect(
-      write.mock.calls[3][0]
+      write.mock.calls[2][0]
         .getSessionControl()
         .getUserConfiguration()
         .getName(),
@@ -287,14 +283,14 @@ describe('load scene', () => {
     await Promise.all([
       client.openSession({
         name: SCENE,
-        capabilities,
+        config: { capabilities },
         sessionToken,
         user: { profile: user.profile },
       }),
       new Promise(emitSessionControlResponseEvent(stream)),
     ]);
 
-    const profileFields = write.mock.calls[3][0]
+    const profileFields = write.mock.calls[2][0]
       .getSessionControl()
       .getUserConfiguration()
       .getUserSettings()
@@ -305,6 +301,33 @@ describe('load scene', () => {
     expect(profileFields[0].getFieldValue()).toEqual(
       user.profile?.fields[0].value,
     );
+  });
+
+  test('should send game session id', async () => {
+    const gameSessionId = v4();
+    const stream = getStream();
+    jest
+      .spyOn(WorldEngineClient.prototype, 'openSession')
+      .mockImplementation(() => stream);
+    const write = jest.spyOn(ClientDuplexStreamImpl.prototype, 'write');
+
+    await Promise.all([
+      client.openSession({
+        name: SCENE,
+        config: { capabilities, gameSessionId },
+        sessionToken,
+        user,
+      }),
+      new Promise(emitSessionControlResponseEvent(stream)),
+    ]);
+
+    const sentGameSessionId = write.mock.calls[1][0]
+      .getSessionControl()
+      .getSessionConfiguration()
+      .getGameSessionId();
+
+    expect(sentGameSessionId).toEqual(gameSessionId);
+    expect(write).toHaveBeenCalledTimes(5);
   });
 
   test('should send previous session state', async () => {
@@ -320,7 +343,7 @@ describe('load scene', () => {
     await Promise.all([
       client.openSession({
         name: SCENE,
-        capabilities,
+        config: { capabilities },
         sessionToken,
         sessionContinuation,
         user,
@@ -328,7 +351,7 @@ describe('load scene', () => {
       new Promise(emitSessionControlResponseEvent(stream)),
     ]);
 
-    const state = write.mock.calls[4][0]
+    const state = write.mock.calls[3][0]
       .getSessionControl()
       .getContinuation()
       .getExternallySavedState();
@@ -346,7 +369,7 @@ describe('load scene', () => {
     await Promise.all([
       client.openSession({
         name: SCENE,
-        capabilities,
+        config: { capabilities },
         sessionToken,
         extension,
       }),
@@ -354,7 +377,7 @@ describe('load scene', () => {
     ]);
 
     expect(openSession).toHaveBeenCalledTimes(1);
-    expect(write).toHaveBeenCalledTimes(5);
+    expect(write).toHaveBeenCalledTimes(4);
     expect(
       write.mock.calls[0][0].getSessionControl().getCapabilitiesConfiguration(),
     ).toEqual(extendedCapabilities);
@@ -375,7 +398,7 @@ describe('load scene', () => {
       await Promise.all([
         client.openSession({
           name: SCENE,
-          capabilities,
+          config: { capabilities },
           sessionToken,
         }),
         new Promise((resolve: any) => {
@@ -404,7 +427,7 @@ describe('load scene', () => {
     await Promise.all([
       client.openSession({
         name: SCENE,
-        capabilities,
+        config: { capabilities },
         sessionToken,
         onError,
       }),
@@ -443,7 +466,7 @@ describe('load scene', () => {
     await Promise.all([
       client.openSession({
         name: SCENE,
-        capabilities,
+        config: { capabilities },
         sessionToken,
       }),
       new Promise((resolve: any) => {
@@ -490,7 +513,7 @@ describe('session', () => {
     const result = await Promise.all([
       client.openSession({
         name: SCENE,
-        capabilities,
+        config: { capabilities },
         sessionToken,
         onError,
         onMessage,
@@ -520,7 +543,7 @@ describe('session', () => {
     await Promise.all([
       client.openSession({
         name: SCENE,
-        capabilities,
+        config: { capabilities },
         sessionToken,
         onError,
       }),
@@ -543,7 +566,7 @@ describe('session', () => {
     await Promise.all([
       client.openSession({
         name: SCENE,
-        capabilities,
+        config: { capabilities },
         sessionToken,
         onMessage,
       }),
@@ -564,7 +587,7 @@ describe('session', () => {
     await Promise.all([
       client.openSession({
         name: SCENE,
-        capabilities,
+        config: { capabilities },
         sessionToken,
       }),
       new Promise(emitSessionControlResponseEvent(stream)),
@@ -586,7 +609,7 @@ describe('session', () => {
     await Promise.all([
       client.openSession({
         name: SCENE,
-        capabilities,
+        config: { capabilities },
         sessionToken,
         onDisconnect,
       }),

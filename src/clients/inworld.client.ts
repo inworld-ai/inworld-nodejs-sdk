@@ -160,9 +160,10 @@ export class InworldClient<
   }
 
   private buildConfiguration(): InternalClientConfiguration {
-    const { connection = {}, capabilities = {} } = this.config;
+    const { connection = {}, capabilities = {}, ...restConfig } = this.config;
 
     return {
+      ...restConfig,
       connection,
       capabilities: this.buildCapabilities(capabilities),
     };
