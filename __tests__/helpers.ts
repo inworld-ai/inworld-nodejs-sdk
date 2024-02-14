@@ -8,7 +8,7 @@ import {
   Actor,
   Agent,
   InworldPacket as ProtoPacket,
-  LoadedCharacters,
+  LoadedScene,
   PacketId,
   Routing,
   SessionControlResponseEvent,
@@ -200,8 +200,8 @@ export const agents = [createAgent(), createAgent()];
 export const characters = convertAgentsToCharacters(agents);
 export const getStream = () => new ClientDuplexStreamImpl(jest.fn(), jest.fn());
 export const sessionControlResponseEvent =
-  new SessionControlResponseEvent().setLoadedCharacters(
-    new LoadedCharacters().setAgentsList(agents),
+  new SessionControlResponseEvent().setLoadedScene(
+    new LoadedScene().setAgentsList(agents),
   );
 export const emitSessionControlResponseEvent =
   (stream: ClientDuplexStream<ProtoPacket, ProtoPacket>) => (resolve: any) => {

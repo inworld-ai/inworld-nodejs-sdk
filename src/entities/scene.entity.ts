@@ -29,7 +29,7 @@ export class Scene {
   }
 
   static fromProto(proto: SessionControlResponseEvent) {
-    const characters = (proto.getLoadedCharacters()?.getAgentsList() ?? []).map(
+    const characters = (proto.getLoadedScene()?.getAgentsList() ?? []).map(
       (agent: Agent) => {
         const assets = agent.getCharacterAssets();
 

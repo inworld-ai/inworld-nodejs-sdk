@@ -1,5 +1,5 @@
 import {
-  LoadedCharacters,
+  LoadedScene,
   SessionControlResponseEvent,
 } from '@proto/ai/inworld/packets/packets_pb';
 
@@ -36,8 +36,8 @@ test('should deserialize', () => {
 test('should convert proto to scene', () => {
   const agents = [createAgent(), createAgent(false)];
 
-  const proto = new SessionControlResponseEvent().setLoadedCharacters(
-    new LoadedCharacters().setAgentsList(agents),
+  const proto = new SessionControlResponseEvent().setLoadedScene(
+    new LoadedScene().setAgentsList(agents),
   );
   const scene = Scene.fromProto(proto);
 
