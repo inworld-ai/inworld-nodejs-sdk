@@ -128,7 +128,7 @@ export class EventFactory {
     return this.baseProtoPacket({ correlationId: true }).setAction(event);
   }
 
-  sessionControl(props: SessionControlProps): ProtoPacket {
+  static sessionControl(props: SessionControlProps): ProtoPacket {
     const event = new SessionControlEvent();
 
     switch (true) {
@@ -156,7 +156,7 @@ export class EventFactory {
       .setSessionControl(event);
   }
 
-  loadScene(name: string): ProtoPacket {
+  static loadScene(name: string): ProtoPacket {
     const mutation = new MutationEvent().setLoadScene(
       new LoadScene().setName(name),
     );
@@ -203,7 +203,7 @@ export class EventFactory {
     return new Routing().setSource(source).setTarget(target);
   }
 
-  private openSessionRouting(): Routing {
+  private static openSessionRouting(): Routing {
     const source = new Actor().setType(Actor.Type.PLAYER);
     const target = new Actor().setType(Actor.Type.WORLD);
 

@@ -72,8 +72,6 @@ export class WorldEngineClientGrpcService<
 
   private logger = Logger.getInstance();
 
-  private eventFactory = new EventFactory();
-
   async generateSessionToken(
     apiKey: ApiKey,
     scene: string,
@@ -251,14 +249,14 @@ export class WorldEngineClientGrpcService<
 
   private getPackets(props: SessionProps<InworldPacketT>) {
     const packets: ProtoPacket[] = [
-      this.eventFactory.sessionControl({
+      EventFactory.sessionControl({
         capabilities: props.config.capabilities,
       }),
     ];
 
     if (props.config.gameSessionId) {
       packets.push(
-        this.eventFactory.sessionControl({
+        EventFactory.sessionControl({
           sessionConfiguration: new SessionConfiguration().setGameSessionId(
             props.config.gameSessionId,
           ),
@@ -267,10 +265,10 @@ export class WorldEngineClientGrpcService<
     }
 
     packets.push(
-      this.eventFactory.sessionControl({
+      EventFactory.sessionControl({
         clientConfiguration: this.getClient(props),
       }),
-      this.eventFactory.sessionControl({
+      EventFactory.sessionControl({
         userConfiguration: this.getUserConfiguration(props),
       }),
     );
@@ -279,13 +277,13 @@ export class WorldEngineClientGrpcService<
 
     if (continuation.getContinuationType()) {
       packets.push(
-        this.eventFactory.sessionControl({
+        EventFactory.sessionControl({
           continuation: this.getContinuation(props),
         }),
       );
     }
 
-    packets.push(this.eventFactory.loadScene(props.name));
+    packets.push(EventFactory.loadScene(props.name));
 
     return props.extension?.beforeLoadScene?.(packets) || packets;
   }
