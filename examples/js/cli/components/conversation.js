@@ -210,18 +210,30 @@ class Conversation {
   };
 
   renderPacket(packet) {
-    const i = packet.packetId.interactionId;
-    const u = packet.packetId.utteranceId;
+    const { interactionId, utteranceId, correlationId } = packet.packetId;
+    const info = [];
+
+    if (interactionId) {
+      info.push(`i=${interactionId}`);
+    }
+
+    if (utteranceId) {
+      info.push(`u=${utteranceId}`);
+    }
+
+    if (correlationId) {
+      info.push(`c=${correlationId}`);
+    }
 
     if (packet.text?.text) {
       console.log(
-        `${this.renderEventRouting(packet)} (i=${i}, u=${u}): ${
+        `${this.renderEventRouting(packet)} (${info.join(', ')}): ${
           packet.text.text
         }`,
       );
     } else if (packet.narratedAction?.text) {
       console.log(
-        `${this.renderEventRouting(packet)} (i=${i}, u=${u}): *${
+        `${this.renderEventRouting(packet)} (${info.join(', ')}): *${
           packet.narratedAction.text
         }*`,
       );
