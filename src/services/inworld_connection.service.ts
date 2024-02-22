@@ -10,14 +10,17 @@ import {
   TriggerParameter,
 } from '../entities/inworld_packet.entity';
 import { ConnectionService } from './connection.service';
+import { FeedbackService } from './feedback.service';
 
 export class InworldConnectionService<
   InworldPacketT extends InworldPacket = InworldPacket,
 > {
+  readonly feedback: FeedbackService<InworldPacketT>;
   private connection: ConnectionService<InworldPacketT>;
 
   constructor(connection: ConnectionService<InworldPacketT>) {
     this.connection = connection;
+    this.feedback = new FeedbackService(connection);
   }
 
   async getSessionState() {
@@ -41,13 +44,11 @@ export class InworldConnectionService<
   }
 
   async getCurrentCharacter() {
-    await this.connection.getCharactersList();
-
-    return this.connection.getEventFactory().getCurrentCharacter();
+    return this.connection.getCurrentCharacter();
   }
 
   setCurrentCharacter(character: Character) {
-    return this.connection.getEventFactory().setCurrentCharacter(character);
+    return this.connection.setCurrentCharacter(character);
   }
 
   async sendText(text: string) {

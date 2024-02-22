@@ -35,6 +35,10 @@ export class CapabilitiesConfiguration extends jspb.Message {
     setDebugInfo(value: boolean): CapabilitiesConfiguration;
     getTtsMp3(): boolean;
     setTtsMp3(value: boolean): CapabilitiesConfiguration;
+    getMultiAgent(): boolean;
+    setMultiAgent(value: boolean): CapabilitiesConfiguration;
+    getAudio2face(): boolean;
+    setAudio2face(value: boolean): CapabilitiesConfiguration;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): CapabilitiesConfiguration.AsObject;
@@ -62,6 +66,8 @@ export namespace CapabilitiesConfiguration {
         relations: boolean,
         debugInfo: boolean,
         ttsMp3: boolean,
+        multiAgent: boolean,
+        audio2face: boolean,
     }
 }
 

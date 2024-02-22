@@ -86,6 +86,8 @@ export class PacketId extends jspb.Message {
     setInteractionId(value: string): PacketId;
     getCorrelationId(): string;
     setCorrelationId(value: string): PacketId;
+    getConversationId(): string;
+    setConversationId(value: string): PacketId;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): PacketId.AsObject;
@@ -103,6 +105,7 @@ export namespace PacketId {
         utteranceId: string,
         interactionId: string,
         correlationId: string,
+        conversationId: string,
     }
 }
 
@@ -188,6 +191,11 @@ export class InworldPacket extends jspb.Message {
     getSessionControlResponse(): SessionControlResponseEvent | undefined;
     setSessionControlResponse(value?: SessionControlResponseEvent): InworldPacket;
 
+    hasA2fEvent(): boolean;
+    clearA2fEvent(): void;
+    getA2fEvent(): Audio2FaceAnimationEvent | undefined;
+    setA2fEvent(value?: Audio2FaceAnimationEvent): InworldPacket;
+
     getPacketCase(): InworldPacket.PacketCase;
 
     serializeBinary(): Uint8Array;
@@ -218,6 +226,7 @@ export namespace InworldPacket {
         debugInfo?: DebugInfoEvent.AsObject,
         sessionControl?: SessionControlEvent.AsObject,
         sessionControlResponse?: SessionControlResponseEvent.AsObject,
+        a2fEvent?: Audio2FaceAnimationEvent.AsObject,
     }
 
     export enum PacketCase {
@@ -235,6 +244,7 @@ export namespace InworldPacket {
         DEBUG_INFO = 18,
         SESSION_CONTROL = 19,
         SESSION_CONTROL_RESPONSE = 20,
+        A2F_EVENT = 21,
     }
 
 }
@@ -344,6 +354,9 @@ export namespace ControlEvent {
     TTS_PLAYBACK_UNMUTE = 7,
     WARNING = 8,
     SESSION_END = 9,
+    CONVERSATION_START = 10,
+    CONVERSATION_UPDATE = 12,
+    CONVERSATION_STARTED = 13,
     }
 
 }
@@ -561,6 +574,7 @@ export namespace DataChunk {
     AUDIO = 1,
     SILENCE = 3,
     STATE = 4,
+    NVIDIA_A2F_ANIMATION = 5,
     }
 
     export enum AudioFormat {
@@ -800,6 +814,11 @@ export class SessionControlResponseEvent extends jspb.Message {
     getLoadedCharacters(): LoadedCharacters | undefined;
     setLoadedCharacters(value?: LoadedCharacters): SessionControlResponseEvent;
 
+    hasSessionHistory(): boolean;
+    clearSessionHistory(): void;
+    getSessionHistory(): SessionHistoryResponse | undefined;
+    setSessionHistory(value?: SessionHistoryResponse): SessionControlResponseEvent;
+
     getResponseCase(): SessionControlResponseEvent.ResponseCase;
 
     serializeBinary(): Uint8Array;
@@ -816,12 +835,14 @@ export namespace SessionControlResponseEvent {
     export type AsObject = {
         loadedScene?: LoadedScene.AsObject,
         loadedCharacters?: LoadedCharacters.AsObject,
+        sessionHistory?: SessionHistoryResponse.AsObject,
     }
 
     export enum ResponseCase {
         RESPONSE_NOT_SET = 0,
         LOADED_SCENE = 1,
         LOADED_CHARACTERS = 2,
+        SESSION_HISTORY = 3,
     }
 
 }
@@ -1108,6 +1129,11 @@ export class Agent extends jspb.Message {
     getGivenName(): string;
     setGivenName(value: string): Agent;
 
+    hasCharacterAssets(): boolean;
+    clearCharacterAssets(): void;
+    getCharacterAssets(): Agent.CharacterAssets | undefined;
+    setCharacterAssets(value?: Agent.CharacterAssets): Agent;
+
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): Agent.AsObject;
     static toObject(includeInstance: boolean, msg: Agent): Agent.AsObject;
@@ -1123,7 +1149,42 @@ export namespace Agent {
         agentId: string,
         brainName: string,
         givenName: string,
+        characterAssets?: Agent.CharacterAssets.AsObject,
     }
+
+
+    export class CharacterAssets extends jspb.Message { 
+        getRpmModelUri(): string;
+        setRpmModelUri(value: string): CharacterAssets;
+        getRpmImageUriPortrait(): string;
+        setRpmImageUriPortrait(value: string): CharacterAssets;
+        getRpmImageUriPosture(): string;
+        setRpmImageUriPosture(value: string): CharacterAssets;
+        getAvatarImg(): string;
+        setAvatarImg(value: string): CharacterAssets;
+        getAvatarImgOriginal(): string;
+        setAvatarImgOriginal(value: string): CharacterAssets;
+
+        serializeBinary(): Uint8Array;
+        toObject(includeInstance?: boolean): CharacterAssets.AsObject;
+        static toObject(includeInstance: boolean, msg: CharacterAssets): CharacterAssets.AsObject;
+        static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+        static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+        static serializeBinaryToWriter(message: CharacterAssets, writer: jspb.BinaryWriter): void;
+        static deserializeBinary(bytes: Uint8Array): CharacterAssets;
+        static deserializeBinaryFromReader(message: CharacterAssets, reader: jspb.BinaryReader): CharacterAssets;
+    }
+
+    export namespace CharacterAssets {
+        export type AsObject = {
+            rpmModelUri: string,
+            rpmImageUriPortrait: string,
+            rpmImageUriPosture: string,
+            avatarImg: string,
+            avatarImgOriginal: string,
+        }
+    }
+
 }
 
 export class DebugInfoEvent extends jspb.Message { 
@@ -1184,6 +1245,11 @@ export class SessionControlEvent extends jspb.Message {
     getContinuation(): Continuation | undefined;
     setContinuation(value?: Continuation): SessionControlEvent;
 
+    hasSessionHistoryRequest(): boolean;
+    clearSessionHistoryRequest(): void;
+    getSessionHistoryRequest(): SessionHistoryRequest | undefined;
+    setSessionHistoryRequest(value?: SessionHistoryRequest): SessionControlEvent;
+
     getSessionControlCase(): SessionControlEvent.SessionControlCase;
 
     serializeBinary(): Uint8Array;
@@ -1203,6 +1269,7 @@ export namespace SessionControlEvent {
         clientConfiguration?: ai_inworld_engine_configuration_configuration_pb.ClientConfiguration.AsObject,
         capabilitiesConfiguration?: ai_inworld_engine_configuration_configuration_pb.CapabilitiesConfiguration.AsObject,
         continuation?: Continuation.AsObject,
+        sessionHistoryRequest?: SessionHistoryRequest.AsObject,
     }
 
     export enum SessionControlCase {
@@ -1212,8 +1279,34 @@ export namespace SessionControlEvent {
         CLIENT_CONFIGURATION = 3,
         CAPABILITIES_CONFIGURATION = 4,
         CONTINUATION = 5,
+        SESSION_HISTORY_REQUEST = 6,
     }
 
+}
+
+export class Audio2FaceAnimationEvent extends jspb.Message { 
+    getAnimdata(): string;
+    setAnimdata(value: string): Audio2FaceAnimationEvent;
+    getAudio(): Uint8Array | string;
+    getAudio_asU8(): Uint8Array;
+    getAudio_asB64(): string;
+    setAudio(value: Uint8Array | string): Audio2FaceAnimationEvent;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): Audio2FaceAnimationEvent.AsObject;
+    static toObject(includeInstance: boolean, msg: Audio2FaceAnimationEvent): Audio2FaceAnimationEvent.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: Audio2FaceAnimationEvent, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): Audio2FaceAnimationEvent;
+    static deserializeBinaryFromReader(message: Audio2FaceAnimationEvent, reader: jspb.BinaryReader): Audio2FaceAnimationEvent;
+}
+
+export namespace Audio2FaceAnimationEvent {
+    export type AsObject = {
+        animdata: string,
+        audio: Uint8Array | string,
+    }
 }
 
 export class Continuation extends jspb.Message { 
@@ -1383,6 +1476,75 @@ export namespace Relations {
         export type AsObject = {
             type: string,
             label: string,
+        }
+    }
+
+}
+
+export class SessionHistoryRequest extends jspb.Message { 
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): SessionHistoryRequest.AsObject;
+    static toObject(includeInstance: boolean, msg: SessionHistoryRequest): SessionHistoryRequest.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: SessionHistoryRequest, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): SessionHistoryRequest;
+    static deserializeBinaryFromReader(message: SessionHistoryRequest, reader: jspb.BinaryReader): SessionHistoryRequest;
+}
+
+export namespace SessionHistoryRequest {
+    export type AsObject = {
+    }
+}
+
+export class SessionHistoryResponse extends jspb.Message { 
+    clearSessionHistoryItemsList(): void;
+    getSessionHistoryItemsList(): Array<SessionHistoryResponse.SessionHistoryItem>;
+    setSessionHistoryItemsList(value: Array<SessionHistoryResponse.SessionHistoryItem>): SessionHistoryResponse;
+    addSessionHistoryItems(value?: SessionHistoryResponse.SessionHistoryItem, index?: number): SessionHistoryResponse.SessionHistoryItem;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): SessionHistoryResponse.AsObject;
+    static toObject(includeInstance: boolean, msg: SessionHistoryResponse): SessionHistoryResponse.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: SessionHistoryResponse, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): SessionHistoryResponse;
+    static deserializeBinaryFromReader(message: SessionHistoryResponse, reader: jspb.BinaryReader): SessionHistoryResponse;
+}
+
+export namespace SessionHistoryResponse {
+    export type AsObject = {
+        sessionHistoryItemsList: Array<SessionHistoryResponse.SessionHistoryItem.AsObject>,
+    }
+
+
+    export class SessionHistoryItem extends jspb.Message { 
+
+        hasAgent(): boolean;
+        clearAgent(): void;
+        getAgent(): Agent | undefined;
+        setAgent(value?: Agent): SessionHistoryItem;
+        clearPacketsList(): void;
+        getPacketsList(): Array<InworldPacket>;
+        setPacketsList(value: Array<InworldPacket>): SessionHistoryItem;
+        addPackets(value?: InworldPacket, index?: number): InworldPacket;
+
+        serializeBinary(): Uint8Array;
+        toObject(includeInstance?: boolean): SessionHistoryItem.AsObject;
+        static toObject(includeInstance: boolean, msg: SessionHistoryItem): SessionHistoryItem.AsObject;
+        static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+        static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+        static serializeBinaryToWriter(message: SessionHistoryItem, writer: jspb.BinaryWriter): void;
+        static deserializeBinary(bytes: Uint8Array): SessionHistoryItem;
+        static deserializeBinaryFromReader(message: SessionHistoryItem, reader: jspb.BinaryReader): SessionHistoryItem;
+    }
+
+    export namespace SessionHistoryItem {
+        export type AsObject = {
+            agent?: Agent.AsObject,
+            packetsList: Array<InworldPacket.AsObject>,
         }
     }
 

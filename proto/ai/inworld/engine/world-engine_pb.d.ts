@@ -49,6 +49,10 @@ export class CapabilitiesRequest extends jspb.Message {
     setDebugInfo(value: boolean): CapabilitiesRequest;
     getTtsMp3(): boolean;
     setTtsMp3(value: boolean): CapabilitiesRequest;
+    getMultiAgent(): boolean;
+    setMultiAgent(value: boolean): CapabilitiesRequest;
+    getAudio2Face(): boolean;
+    setAudio2Face(value: boolean): CapabilitiesRequest;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): CapabilitiesRequest.AsObject;
@@ -80,6 +84,8 @@ export namespace CapabilitiesRequest {
         relations: boolean,
         debugInfo: boolean,
         ttsMp3: boolean,
+        multiAgent: boolean,
+        audio2Face: boolean,
     }
 }
 
@@ -404,6 +410,11 @@ export class PreviousState extends jspb.Message {
     getGameSessionId(): string;
     setGameSessionId(value: string): PreviousState;
 
+    hasConversationState(): boolean;
+    clearConversationState(): void;
+    getConversationState(): ConversationState | undefined;
+    setConversationState(value?: ConversationState): PreviousState;
+
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): PreviousState.AsObject;
     static toObject(includeInstance: boolean, msg: PreviousState): PreviousState.AsObject;
@@ -418,6 +429,7 @@ export namespace PreviousState {
     export type AsObject = {
         stateHoldersList: Array<PreviousState.StateHolder.AsObject>,
         gameSessionId: string,
+        conversationState?: ConversationState.AsObject,
     }
 
 
@@ -817,6 +829,60 @@ export namespace ActorRelations {
         export type AsObject = {
             type: string,
             label: string,
+        }
+    }
+
+}
+
+export class ConversationState extends jspb.Message { 
+    clearConversationsettingsList(): void;
+    getConversationsettingsList(): Array<ConversationState.ConversationSettings>;
+    setConversationsettingsList(value: Array<ConversationState.ConversationSettings>): ConversationState;
+    addConversationsettings(value?: ConversationState.ConversationSettings, index?: number): ConversationState.ConversationSettings;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): ConversationState.AsObject;
+    static toObject(includeInstance: boolean, msg: ConversationState): ConversationState.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: ConversationState, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): ConversationState;
+    static deserializeBinaryFromReader(message: ConversationState, reader: jspb.BinaryReader): ConversationState;
+}
+
+export namespace ConversationState {
+    export type AsObject = {
+        conversationsettingsList: Array<ConversationState.ConversationSettings.AsObject>,
+    }
+
+
+    export class ConversationSettings extends jspb.Message { 
+        getConversationId(): string;
+        setConversationId(value: string): ConversationSettings;
+        clearParticipantsList(): void;
+        getParticipantsList(): Array<string>;
+        setParticipantsList(value: Array<string>): ConversationSettings;
+        addParticipants(value: string, index?: number): string;
+        clearSpectatorsList(): void;
+        getSpectatorsList(): Array<string>;
+        setSpectatorsList(value: Array<string>): ConversationSettings;
+        addSpectators(value: string, index?: number): string;
+
+        serializeBinary(): Uint8Array;
+        toObject(includeInstance?: boolean): ConversationSettings.AsObject;
+        static toObject(includeInstance: boolean, msg: ConversationSettings): ConversationSettings.AsObject;
+        static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+        static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+        static serializeBinaryToWriter(message: ConversationSettings, writer: jspb.BinaryWriter): void;
+        static deserializeBinary(bytes: Uint8Array): ConversationSettings;
+        static deserializeBinaryFromReader(message: ConversationSettings, reader: jspb.BinaryReader): ConversationSettings;
+    }
+
+    export namespace ConversationSettings {
+        export type AsObject = {
+            conversationId: string,
+            participantsList: Array<string>,
+            spectatorsList: Array<string>,
         }
     }
 

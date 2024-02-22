@@ -58,6 +58,11 @@ import {
 import { Scene } from './entities/scene.entity';
 import { Session } from './entities/session.entity';
 import { SessionToken } from './entities/session_token.entity';
+import {
+  DislikeType,
+  FeedbackDislikeProps,
+  FeedbackLikeProps,
+} from './services/feedback.service';
 import { InworldConnectionService } from './services/inworld_connection.service';
 
 const config = Config.getInstance();
@@ -75,10 +80,13 @@ export {
   ConnectionConfig,
   DialogParticipant,
   DialogPhrase,
+  DislikeType,
   EmotionBehavior,
   EmotionBehaviorCode,
   EmotionStrength,
   EmotionStrengthCode,
+  FeedbackDislikeProps,
+  FeedbackLikeProps,
   getHost,
   getSSL,
   InworlControlType,

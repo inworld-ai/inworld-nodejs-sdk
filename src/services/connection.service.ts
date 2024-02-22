@@ -13,6 +13,7 @@ import {
   User,
 } from '../common/data_structures';
 import { Logger } from '../common/logger';
+import { Character } from '../entities/character.entity';
 import { SessionContinuation } from '../entities/continuation/session_continuation.entity';
 import { InworldPacket } from '../entities/inworld_packet.entity';
 import { Scene } from '../entities/scene.entity';
@@ -163,6 +164,16 @@ export class ConnectionService<
     return this.scene.characters;
   }
 
+  async getCurrentCharacter() {
+    await this.getCharactersList();
+
+    return this.getEventFactory().getCurrentCharacter();
+  }
+
+  async setCurrentCharacter(character: Character) {
+    return this.getEventFactory().setCurrentCharacter(character);
+  }
+
   async open() {
     try {
       await this.loadScene();
@@ -289,10 +300,10 @@ export class ConnectionService<
         this.scene = scene;
 
         if (
-          !this.getEventFactory().getCurrentCharacter() &&
+          !(await this.getCurrentCharacter()) &&
           this.scene.characters.length
         ) {
-          this.getEventFactory().setCurrentCharacter(this.scene.characters[0]);
+          this.setCurrentCharacter(this.scene.characters[0]);
         }
       }
 
