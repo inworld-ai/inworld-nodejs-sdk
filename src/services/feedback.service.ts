@@ -1,8 +1,4 @@
-import {
-  InteractionDislikeType,
-  InteractionFeedback,
-} from '@proto/ai/inworld/engine/v1/feedback_pb';
-
+import { DislikeType, Feedback } from '../entities/feedback.entity';
 import { InworldPacket } from '../entities/inworld_packet.entity';
 import { ConnectionService } from './connection.service';
 import { FeedbackClientGrpcService } from './gprc/feedback_client_grpc.service';
@@ -27,16 +23,6 @@ export interface FeedbackDislikeProps extends BaseFeedbackProps {
   types?: DislikeType[];
 }
 
-export enum DislikeType {
-  IRRELEVANT = 'IRRELEVANT',
-  UNSAFE = 'UNSAFE',
-  UNTRUE = 'UNTRUE',
-  INCORRECT_USE_KNOWLEDGE = 'INCORRECT_USE_KNOWLEDGE',
-  UNEXPECTED_ACTION = 'UNEXPECTED_ACTION',
-  UNEXPECTED_GOAL_BEHAVIOR = 'UNEXPECTED_GOAL_BEHAVIOR',
-  REPETITION = 'REPETITION',
-}
-
 export class FeedbackService<
   InworldPacketT extends InworldPacket = InworldPacket,
 > {
@@ -59,19 +45,11 @@ export class FeedbackService<
     const characterId =
       props.characterId ?? (await this.connection.getCurrentCharacter()).id;
     const sessionToken = await this.connection.ensureSessionToken();
-    const interactionFeedback = new InteractionFeedback();
-
-    if (props.isLike) {
-      interactionFeedback.setIsLike(true);
-    } else {
-      interactionFeedback
-        .setIsLike(false)
-        .setTypeList(props.types.map(FeedbackService.convertType));
-
-      if (props.comment) {
-        interactionFeedback.setComment(props.comment);
-      }
-    }
+    const interactionFeedback = new Feedback({
+      isLike: props.isLike,
+      types: props.types,
+      comment: props.comment,
+    }).toProto();
 
     return this.grpcService.createInteractionFeedback({
       characterId,
@@ -79,26 +57,5 @@ export class FeedbackService<
       interactionId: props.interactionId,
       sessionToken,
     });
-  }
-
-  private static convertType(type: string) {
-    switch (type) {
-      case DislikeType.IRRELEVANT:
-        return InteractionDislikeType.INTERACTION_DISLIKE_TYPE_IRRELEVANT;
-      case DislikeType.UNSAFE:
-        return InteractionDislikeType.INTERACTION_DISLIKE_TYPE_UNSAFE;
-      case DislikeType.UNTRUE:
-        return InteractionDislikeType.INTERACTION_DISLIKE_TYPE_UNTRUE;
-      case DislikeType.INCORRECT_USE_KNOWLEDGE:
-        return InteractionDislikeType.INTERACTION_DISLIKE_TYPE_INCORRECT_USE_KNOWLEDGE;
-      case DislikeType.UNEXPECTED_ACTION:
-        return InteractionDislikeType.INTERACTION_DISLIKE_TYPE_UNEXPECTED_ACTION;
-      case DislikeType.UNEXPECTED_GOAL_BEHAVIOR:
-        return InteractionDislikeType.INTERACTION_DISLIKE_TYPE_UNEXPECTED_GOAL_BEHAVIOR;
-      case DislikeType.REPETITION:
-        return InteractionDislikeType.INTERACTION_DISLIKE_TYPE_REPETITION;
-      default:
-        return InteractionDislikeType.INTERACTION_DISLIKE_TYPE_UNSPECIFIED;
-    }
   }
 }

@@ -4,11 +4,9 @@ import {
 } from '@proto/ai/inworld/engine/v1/feedback_pb';
 import { v4 } from 'uuid';
 
+import { DislikeType, Feedback } from '../../src/entities/feedback.entity';
 import { ConnectionService } from '../../src/services/connection.service';
-import {
-  DislikeType,
-  FeedbackService,
-} from '../../src/services/feedback.service';
+import { FeedbackService } from '../../src/services/feedback.service';
 import { FeedbackClientGrpcService } from '../../src/services/gprc/feedback_client_grpc.service';
 import { createCharacter, KEY, SCENE, SECRET, sessionToken } from '../helpers';
 
@@ -24,7 +22,7 @@ describe('should create interaction feedback', () => {
     DislikeType.UNEXPECTED_ACTION,
     DislikeType.UNEXPECTED_GOAL_BEHAVIOR,
     DislikeType.REPETITION,
-    '' as DislikeType,
+    DislikeType.UNSPECIFIED,
   ];
   const protoTypes = [
     InteractionDislikeType.INTERACTION_DISLIKE_TYPE_IRRELEVANT,
@@ -54,7 +52,7 @@ describe('should create interaction feedback', () => {
 
     const createInteractionFeedback = jest
       .spyOn(FeedbackClientGrpcService.prototype, 'createInteractionFeedback')
-      .mockImplementationOnce(() => Promise.resolve());
+      .mockImplementationOnce(() => Promise.resolve(new Feedback()));
 
     await new FeedbackService(connection).like({
       interactionId,
@@ -86,7 +84,7 @@ describe('should create interaction feedback', () => {
 
     const createInteractionFeedback = jest
       .spyOn(FeedbackClientGrpcService.prototype, 'createInteractionFeedback')
-      .mockImplementationOnce(() => Promise.resolve());
+      .mockImplementationOnce(() => Promise.resolve(new Feedback()));
 
     await new FeedbackService(connection).dislike({
       interactionId,

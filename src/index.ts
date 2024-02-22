@@ -44,6 +44,7 @@ import {
   EmotionStrength,
   EmotionStrengthCode,
 } from './entities/emotion_strength.entity';
+import { DislikeType, Feedback } from './entities/feedback.entity';
 import {
   Actor,
   AudioEvent,
@@ -59,7 +60,6 @@ import { Scene } from './entities/scene.entity';
 import { Session } from './entities/session.entity';
 import { SessionToken } from './entities/session_token.entity';
 import {
-  DislikeType,
   FeedbackDislikeProps,
   FeedbackLikeProps,
 } from './services/feedback.service';
@@ -85,6 +85,7 @@ export {
   EmotionBehaviorCode,
   EmotionStrength,
   EmotionStrengthCode,
+  Feedback,
   FeedbackDislikeProps,
   FeedbackLikeProps,
   getHost,

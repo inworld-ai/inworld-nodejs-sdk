@@ -8,6 +8,7 @@ import {
 import { v4 } from 'uuid';
 
 import { Config } from '../../../src/common/config';
+import { Feedback } from '../../../src/entities/feedback.entity';
 import { FeedbackClientGrpcService } from '../../../src/services/gprc/feedback_client_grpc.service';
 import { sessionToken } from '../../helpers';
 
@@ -74,6 +75,6 @@ describe('createInteractionFeedback', () => {
     });
 
     expect(createInteractionFeedback).toHaveBeenCalledTimes(1);
-    expect(result).toEqual(expectedResult);
+    expect(result).toEqual(Feedback.fromProto(expectedResult));
   });
 });

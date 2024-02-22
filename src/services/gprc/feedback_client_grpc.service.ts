@@ -9,6 +9,7 @@ import { promisify } from 'util';
 import { Config } from '../../common/config';
 import { grpcOptions } from '../../common/helpers';
 import { Logger } from '../../common/logger';
+import { Feedback } from '../../entities/feedback.entity';
 import { SessionToken } from '../../entities/session_token.entity';
 
 export interface createInteractionFeedbackProps {
@@ -32,7 +33,7 @@ export class FeedbackClientGrpcService {
 
   public async createInteractionFeedback(
     props: createInteractionFeedbackProps,
-  ): Promise<void> {
+  ): Promise<Feedback> {
     const { characterId, interactionFeedback, interactionId, sessionToken } =
       props;
     const { sessionId: session } = sessionToken;
@@ -59,7 +60,7 @@ export class FeedbackClientGrpcService {
       },
     });
 
-    return response;
+    return Feedback.fromProto(response);
   }
 
   private getMetadata(sessionToken: SessionToken) {
