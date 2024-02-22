@@ -41,6 +41,15 @@ export class FeedbackService<
     return this.send({ ...props, isLike: false });
   }
 
+  async undo(name: string) {
+    const sessionToken = await this.connection.ensureSessionToken();
+
+    return this.grpcService.deleteInteractionFeedback({
+      name,
+      sessionToken,
+    });
+  }
+
   private async send(props: SendFeedbackProps) {
     const characterId =
       props.characterId ?? (await this.connection.getCurrentCharacter()).id;

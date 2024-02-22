@@ -31,9 +31,7 @@ export class StateSerializationClientGrpcService {
 
   private logger = Logger.getInstance();
 
-  public async getSessionState(
-    props: getSessionStateProps,
-  ): Promise<SessionState> {
+  async getSessionState(props: getSessionStateProps): Promise<SessionState> {
     const { scene, sessionToken } = props;
 
     const workspace = SCENE_PATTERN.exec(scene)[1];

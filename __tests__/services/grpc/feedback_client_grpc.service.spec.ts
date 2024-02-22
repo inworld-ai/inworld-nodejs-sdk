@@ -5,6 +5,7 @@ import {
   InteractionDislikeType,
   InteractionFeedback,
 } from '@proto/ai/inworld/engine/v1/feedback_pb';
+import * as google_protobuf_empty_pb from 'google-protobuf/google/protobuf/empty_pb';
 import { v4 } from 'uuid';
 
 import { Config } from '../../../src/common/config';
@@ -76,5 +77,24 @@ describe('createInteractionFeedback', () => {
 
     expect(createInteractionFeedback).toHaveBeenCalledTimes(1);
     expect(result).toEqual(Feedback.fromProto(expectedResult));
+  });
+});
+
+describe('deleteInteractionFeedback', () => {
+  test('should run without errors', async () => {
+    const name = v4();
+    const expectedResult = new google_protobuf_empty_pb.Empty();
+    const deleteInteractionFeedback = jest
+      .spyOn(FeedbackClient.prototype, 'deleteInteractionFeedback')
+      .mockImplementationOnce((_request, _metadata, _options, callback) => {
+        const cb = typeof _options === 'function' ? _options : callback;
+        cb(null, expectedResult);
+        return {} as SurfaceCall;
+      });
+
+    const service = new FeedbackClientGrpcService();
+    await service.deleteInteractionFeedback({ name, sessionToken });
+
+    expect(deleteInteractionFeedback).toHaveBeenCalledTimes(1);
   });
 });

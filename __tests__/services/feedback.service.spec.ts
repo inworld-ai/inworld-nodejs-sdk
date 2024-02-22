@@ -100,4 +100,19 @@ describe('should create interaction feedback', () => {
       interactionFeedback,
     });
   });
+
+  test('delete', async () => {
+    const name = v4();
+    const deleteInteractionFeedback = jest
+      .spyOn(FeedbackClientGrpcService.prototype, 'deleteInteractionFeedback')
+      .mockImplementationOnce(() => Promise.resolve());
+
+    await new FeedbackService(connection).undo(name);
+
+    expect(deleteInteractionFeedback).toHaveBeenCalledTimes(1);
+    expect(deleteInteractionFeedback).toHaveBeenCalledWith({
+      name,
+      sessionToken,
+    });
+  });
 });
