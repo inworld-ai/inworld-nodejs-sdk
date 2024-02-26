@@ -415,7 +415,7 @@ describe('load scene', () => {
     );
   });
 
-  test('should propagate error on second load scene event', async () => {
+  test('should throw error on empty packet', async () => {
     const stream = getStream();
     const openSession = jest
       .spyOn(WorldEngineClient.prototype, 'openSession')
@@ -423,34 +423,27 @@ describe('load scene', () => {
 
     const onError = jest.fn();
     const capabilities = new CapabilitiesConfiguration().setEmotions(true);
+    let errorReceived: ServiceError;
 
-    await Promise.all([
-      client.openSession({
-        name: SCENE,
-        config: { capabilities },
-        sessionToken,
-        onError,
-      }),
-      new Promise((resolve: any) => {
-        stream.emit(
-          'data',
-          generateEmptyPacket().setSessionControlResponse(
-            sessionControlResponseEvent,
-          ),
-        );
-        stream.emit(
-          'data',
-          generateEmptyPacket().setSessionControlResponse(
-            sessionControlResponseEvent,
-          ),
-        );
-        resolve(true);
-      }),
-    ]);
+    try {
+      await Promise.all([
+        client.openSession({
+          name: SCENE,
+          config: { capabilities },
+          sessionToken,
+          onError,
+        }),
+        new Promise((resolve: any) => {
+          stream.emit('data', undefined);
+          resolve(true);
+        }),
+      ]);
+    } catch (err) {
+      errorReceived = err;
+    }
 
     expect(openSession).toHaveBeenCalledTimes(1);
-    expect(onError).toHaveBeenCalledTimes(1);
-    expect(onError.mock.calls[0][0]).toEqual(
+    expect(errorReceived!).toEqual(
       new Error('Unexpected packet received during scene loading'),
     );
   });

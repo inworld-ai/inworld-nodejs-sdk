@@ -144,26 +144,26 @@ export class WorldEngineClientGrpcService<
 
     return new Promise((resolve, reject) => {
       connection.on('data', async (packet: ProtoPacket) => {
-        if (!loaded && packet.hasSessionControlResponse()) {
+        if (!loaded && packet?.hasSessionControlResponse()) {
           loaded = true;
 
           const sceneProto = packet.getSessionControlResponse();
 
           props.extension?.afterLoadScene?.(sceneProto);
 
+          connection.removeAllListeners('data');
+
+          if (onMessage) {
+            connection.addListener('data', onMessage);
+          }
+
           resolve([connection, Scene.fromProto(sceneProto)]);
-        } else if (loaded && !packet?.hasSessionControlResponse()) {
-          onMessage?.(packet);
         } else {
           const err = new Error(
             'Unexpected packet received during scene loading',
           );
 
-          if (loaded) {
-            onError?.(err as ServiceError);
-          } else {
-            reject(err);
-          }
+          reject(err);
         }
       });
 
@@ -173,7 +173,7 @@ export class WorldEngineClientGrpcService<
     });
   }
 
-  private getMetadata(sessionToken?: SessionToken) {
+  private getMetadata(sessionToken: SessionToken) {
     const metadata = new Metadata();
 
     metadata.add('session-id', sessionToken.sessionId);
