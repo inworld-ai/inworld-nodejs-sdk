@@ -6,15 +6,20 @@ import {
   CustomEvent,
   DataChunk,
   InworldPacket as ProtoPacket,
+  LoadScene,
   MutationEvent,
   NarratedAction,
   PacketId,
   Routing,
+  SessionControlEvent,
   TextEvent,
 } from '@proto/ai/inworld/packets/packets_pb';
 import { v4 } from 'uuid';
 
-import { CancelResponsesProps } from '../common/data_structures';
+import {
+  CancelResponsesProps,
+  SessionControlProps,
+} from '../common/data_structures';
 import { protoTimestamp } from '../common/helpers';
 import { Character } from '../entities/character.entity';
 import { TriggerParameter } from '../entities/inworld_packet.entity';
@@ -123,6 +128,46 @@ export class EventFactory {
     return this.baseProtoPacket({ correlationId: true }).setAction(event);
   }
 
+  static sessionControl(props: SessionControlProps): ProtoPacket {
+    const event = new SessionControlEvent();
+
+    switch (true) {
+      case !!props.capabilities:
+        event.setCapabilitiesConfiguration(props.capabilities);
+        break;
+      case !!props.sessionConfiguration:
+        event.setSessionConfiguration(props.sessionConfiguration);
+        break;
+      case !!props.clientConfiguration:
+        event.setClientConfiguration(props.clientConfiguration);
+        break;
+      case !!props.userConfiguration:
+        event.setUserConfiguration(props.userConfiguration);
+        break;
+      case !!props.continuation:
+        event.setContinuation(props.continuation);
+        break;
+    }
+
+    return new ProtoPacket()
+      .setPacketId(new PacketId().setPacketId(v4()))
+      .setRouting(this.openSessionRouting())
+      .setTimestamp(protoTimestamp())
+      .setSessionControl(event);
+  }
+
+  static loadScene(name: string): ProtoPacket {
+    const mutation = new MutationEvent().setLoadScene(
+      new LoadScene().setName(name),
+    );
+
+    return new ProtoPacket()
+      .setPacketId(new PacketId().setPacketId(v4()))
+      .setRouting(this.openSessionRouting())
+      .setTimestamp(protoTimestamp())
+      .setMutation(mutation);
+  }
+
   baseProtoPacket(props?: {
     utteranceId?: boolean;
     interactionId?: boolean;
@@ -154,6 +199,13 @@ export class EventFactory {
     const target = new Actor()
       .setType(Actor.Type.AGENT)
       .setName(this.character?.id);
+
+    return new Routing().setSource(source).setTarget(target);
+  }
+
+  private static openSessionRouting(): Routing {
+    const source = new Actor().setType(Actor.Type.PLAYER);
+    const target = new Actor().setType(Actor.Type.WORLD);
 
     return new Routing().setSource(source).setTarget(target);
   }

@@ -1,17 +1,24 @@
-import { credentials, Metadata, ServiceError } from '@grpc/grpc-js';
+import {
+  ClientDuplexStream,
+  credentials,
+  Metadata,
+  ServiceError,
+} from '@grpc/grpc-js';
+import {
+  SessionConfiguration,
+  UserConfiguration,
+} from '@proto/ai/inworld/engine/configuration/configuration_pb';
 import { WorldEngineClient } from '@proto/ai/inworld/engine/world-engine_grpc_pb';
 import {
   AccessToken,
-  CapabilitiesRequest,
   ClientRequest,
   GenerateTokenRequest,
-  LoadSceneRequest,
-  LoadSceneResponse,
-  SessionContinuation as SessionContinuationProto,
-  UserRequest,
   UserSettings,
 } from '@proto/ai/inworld/engine/world-engine_pb';
-import { InworldPacket as ProtoPacket } from '@proto/ai/inworld/packets/packets_pb';
+import {
+  Continuation,
+  InworldPacket as ProtoPacket,
+} from '@proto/ai/inworld/packets/packets_pb';
 import { promisify } from 'util';
 import os = require('os');
 
@@ -22,32 +29,37 @@ import {
   ApiKey,
   Awaitable,
   Extension,
+  InternalClientConfiguration,
   User,
 } from '../../common/data_structures';
 import { grpcOptions } from '../../common/helpers';
 import { Logger } from '../../common/logger';
 import { SessionContinuation } from '../../entities/continuation/session_continuation.entity';
+import { InworldPacket } from '../../entities/inworld_packet.entity';
+import { Scene } from '../../entities/scene.entity';
 import { SessionToken } from '../../entities/session_token.entity';
+import { EventFactory } from '../../factories/event';
 
 const { version } = require('@root/package.json');
 
-export interface LoadSceneProps<InworldPacketT> {
+export interface SessionProps<
+  InworldPacketT extends InworldPacket = InworldPacket,
+> {
   name: string;
   client?: ClientRequest;
   user?: User;
   sessionToken: SessionToken;
   sessionContinuation?: SessionContinuation;
-  capabilities: CapabilitiesRequest;
+  config: InternalClientConfiguration;
   extension?: Extension<InworldPacketT>;
-}
-export interface SessionProps {
-  sessionToken: SessionToken;
   onDisconnect?: () => Awaitable<void>;
   onError?: (err: ServiceError) => Awaitable<void>;
   onMessage?: (message: ProtoPacket) => Awaitable<void>;
 }
 
-export class WorldEngineClientGrpcService<InworldPacketT> {
+export class WorldEngineClientGrpcService<
+  InworldPacketT extends InworldPacket = InworldPacket,
+> {
   private readonly config = Config.getInstance();
   private readonly address = this.config.getHost();
   private readonly ssl = this.config.getSSL();
@@ -60,7 +72,7 @@ export class WorldEngineClientGrpcService<InworldPacketT> {
 
   private logger = Logger.getInstance();
 
-  public async generateSessionToken(
+  async generateSessionToken(
     apiKey: ApiKey,
     scene: string,
   ): Promise<AccessToken> {
@@ -96,69 +108,13 @@ export class WorldEngineClientGrpcService<InworldPacketT> {
     return response;
   }
 
-  public async loadScene(props: LoadSceneProps<InworldPacketT>) {
-    const { capabilities, name, sessionContinuation, sessionToken, user } =
-      props;
-
-    const request = new LoadSceneRequest()
-      .setName(name)
-      .setCapabilities(capabilities)
-      .setClient(this.getClient(props))
-      .setUserSettings(this.getUserSettings(props));
-
-    if (user?.fullName) {
-      request.setUser(new UserRequest().setName(user.fullName));
-    }
-
-    if (
-      sessionContinuation?.previousDialog ||
-      sessionContinuation?.previousState
-    ) {
-      const continuation = new SessionContinuationProto();
-
-      if (sessionContinuation.previousState) {
-        continuation.setPreviousState(sessionContinuation.previousState);
-      }
-
-      if (sessionContinuation.previousDialog) {
-        continuation.setPreviousDialog(
-          sessionContinuation.previousDialog.toProto(),
-        );
-      }
-
-      request.setSessionContinuation(continuation);
-    }
-
-    const metadata = this.getMetadata(sessionToken);
-    const finalRequest = props.extension?.beforeLoadScene?.(request) || request;
-
-    const response: LoadSceneResponse = await promisify(
-      this.client.loadScene.bind(this.client),
-    )(finalRequest, metadata);
-
-    this.logger.debug({
-      action: 'Load scene',
-      data: {
-        address: this.address,
-        ssl: this.ssl,
-        grpcOptions: this.grpcOptions,
-        metadata: metadata.toJSON(),
-        request: request.toObject(),
-        response: response.toObject(),
-      },
-      sessionId: sessionToken.sessionId,
-    });
-
-    props.extension?.afterLoadScene?.(response);
-
-    return response;
-  }
-
-  public session(props: SessionProps) {
+  openSession(
+    props: SessionProps<InworldPacketT>,
+  ): Promise<[ClientDuplexStream<ProtoPacket, ProtoPacket>, Scene]> {
     const { sessionToken, onDisconnect, onError, onMessage } = props;
 
     const metadata = this.getMetadata(sessionToken);
-    const connection = this.client.session(metadata);
+    const connection = this.client.openSession(metadata);
 
     this.logger.debug({
       action: 'Open session',
@@ -171,9 +127,7 @@ export class WorldEngineClientGrpcService<InworldPacketT> {
       sessionId: sessionToken.sessionId,
     });
 
-    if (onMessage) {
-      connection.on('data', onMessage);
-    }
+    const finalPackets = this.getPackets(props);
 
     if (onDisconnect) {
       connection.on('close', onDisconnect);
@@ -186,7 +140,37 @@ export class WorldEngineClientGrpcService<InworldPacketT> {
       });
     }
 
-    return connection;
+    let loaded = false;
+
+    return new Promise((resolve, reject) => {
+      connection.on('data', async (packet: ProtoPacket) => {
+        if (!loaded && packet?.hasSessionControlResponse()) {
+          loaded = true;
+
+          const sceneProto = packet.getSessionControlResponse();
+
+          props.extension?.afterLoadScene?.(sceneProto);
+
+          connection.removeAllListeners('data');
+
+          if (onMessage) {
+            connection.addListener('data', onMessage);
+          }
+
+          resolve([connection, Scene.fromProto(sceneProto)]);
+        } else {
+          const err = new Error(
+            'Unexpected packet received during scene loading',
+          );
+
+          reject(err);
+        }
+      });
+
+      for (const packet of finalPackets) {
+        connection.write(packet);
+      }
+    });
   }
 
   private getMetadata(sessionToken: SessionToken) {
@@ -198,7 +182,7 @@ export class WorldEngineClientGrpcService<InworldPacketT> {
     return metadata;
   }
 
-  private getClient(props: LoadSceneProps<InworldPacketT>) {
+  private getClient(props: SessionProps<InworldPacketT>) {
     const containerInfo = `${os.type()} ${os.release()} (Node.js ${
       process.version
     })`;
@@ -214,11 +198,13 @@ export class WorldEngineClientGrpcService<InworldPacketT> {
       .setDescription(description.join('; '));
   }
 
-  private getUserSettings(props: LoadSceneProps<InworldPacketT>) {
+  private getUserConfiguration(props: SessionProps<InworldPacketT>) {
     const { user } = props;
 
+    const userConfiguration = new UserConfiguration();
+
     if (user?.profile?.fields?.length) {
-      return new UserSettings().setPlayerProfile(
+      const settings = new UserSettings().setPlayerProfile(
         new UserSettings.PlayerProfile().setFieldsList(
           user.profile.fields.map(({ id, value }) =>
             new UserSettings.PlayerProfile.PlayerField()
@@ -227,6 +213,78 @@ export class WorldEngineClientGrpcService<InworldPacketT> {
           ),
         ),
       );
+
+      userConfiguration.setUserSettings(settings);
     }
+
+    if (user?.fullName) {
+      userConfiguration.setName(user.fullName);
+    }
+
+    return userConfiguration;
+  }
+
+  private getContinuation(props: SessionProps<InworldPacketT>) {
+    const { sessionContinuation } = props;
+
+    const continuation = new Continuation();
+
+    if (sessionContinuation?.previousState) {
+      continuation
+        .setContinuationType(
+          Continuation.ContinuationType
+            .CONTINUATION_TYPE_EXTERNALLY_SAVED_STATE,
+        )
+        .setExternallySavedState(sessionContinuation.previousState);
+    } else if (sessionContinuation?.previousDialog) {
+      continuation
+        .setContinuationType(
+          Continuation.ContinuationType.CONTINUATION_TYPE_DIALOG_HISTORY,
+        )
+        .setDialogHistory(sessionContinuation.previousDialog.toProto());
+    }
+
+    return continuation;
+  }
+
+  private getPackets(props: SessionProps<InworldPacketT>) {
+    const packets: ProtoPacket[] = [
+      EventFactory.sessionControl({
+        capabilities: props.config.capabilities,
+      }),
+    ];
+
+    if (props.config.gameSessionId) {
+      packets.push(
+        EventFactory.sessionControl({
+          sessionConfiguration: new SessionConfiguration().setGameSessionId(
+            props.config.gameSessionId,
+          ),
+        }),
+      );
+    }
+
+    packets.push(
+      EventFactory.sessionControl({
+        clientConfiguration: this.getClient(props),
+      }),
+      EventFactory.sessionControl({
+        userConfiguration: this.getUserConfiguration(props),
+      }),
+    );
+
+    const continuation = this.getContinuation(props);
+
+    if (continuation.getContinuationType()) {
+      packets.push(
+        EventFactory.sessionControl({
+          continuation: this.getContinuation(props),
+        }),
+      );
+    }
+
+    packets.push(EventFactory.loadScene(props.name));
+
+    return props.extension?.beforeLoadScene?.(packets) || packets;
   }
 }

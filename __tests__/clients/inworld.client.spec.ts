@@ -35,7 +35,10 @@ describe('should finish with success', () => {
     client = new InworldClient()
       .setApiKey({ key: KEY, secret: SECRET })
       .setScene(SCENE)
-      .setConfiguration({ capabilities: capabilitiesProps })
+      .setConfiguration({
+        capabilities: capabilitiesProps,
+        gameSessionId: v4(),
+      })
       .setUser({ fullName: user.fullName })
       .setClient({ id: 'test-client' })
       .setOnDisconnect(onDisconnect)

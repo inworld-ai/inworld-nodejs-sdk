@@ -7,6 +7,32 @@
 import * as jspb from "google-protobuf";
 import * as ai_inworld_language_codes_language_codes_pb from "../../../ai/inworld/language_codes/language_codes_pb";
 
+export class InworldV2Metadata extends jspb.Message { 
+    getVoiceId(): string;
+    setVoiceId(value: string): InworldV2Metadata;
+    getAccent(): Accent;
+    setAccent(value: Accent): InworldV2Metadata;
+    getCustom(): boolean;
+    setCustom(value: boolean): InworldV2Metadata;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): InworldV2Metadata.AsObject;
+    static toObject(includeInstance: boolean, msg: InworldV2Metadata): InworldV2Metadata.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: InworldV2Metadata, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): InworldV2Metadata;
+    static deserializeBinaryFromReader(message: InworldV2Metadata, reader: jspb.BinaryReader): InworldV2Metadata;
+}
+
+export namespace InworldV2Metadata {
+    export type AsObject = {
+        voiceId: string,
+        accent: Accent,
+        custom: boolean,
+    }
+}
+
 export class Voice extends jspb.Message { 
     getBasename(): string;
     setBasename(value: string): Voice;
@@ -29,11 +55,18 @@ export class Voice extends jspb.Message {
     setLanguageCode(value: string): Voice;
     getLanguage(): ai_inworld_language_codes_language_codes_pb.LanguageCode;
     setLanguage(value: ai_inworld_language_codes_language_codes_pb.LanguageCode): Voice;
+    getAccent(): Accent;
+    setAccent(value: Accent): Voice;
 
     hasElevenlabsMetadata(): boolean;
     clearElevenlabsMetadata(): void;
     getElevenlabsMetadata(): Voice.ElevenLabsMetadata | undefined;
     setElevenlabsMetadata(value?: Voice.ElevenLabsMetadata): Voice;
+
+    hasInworldV2Metadata(): boolean;
+    clearInworldV2Metadata(): void;
+    getInworldV2Metadata(): InworldV2Metadata | undefined;
+    setInworldV2Metadata(value?: InworldV2Metadata): Voice;
 
     getTtsMetadataCase(): Voice.TtsMetadataCase;
 
@@ -60,7 +93,9 @@ export namespace Voice {
         age: Age,
         languageCode: string,
         language: ai_inworld_language_codes_language_codes_pb.LanguageCode,
+        accent: Accent,
         elevenlabsMetadata?: Voice.ElevenLabsMetadata.AsObject,
+        inworldV2Metadata?: InworldV2Metadata.AsObject,
     }
 
 
@@ -88,6 +123,7 @@ export namespace Voice {
     export enum TtsMetadataCase {
         TTS_METADATA_NOT_SET = 0,
         ELEVENLABS_METADATA = 100,
+        INWORLD_V2_METADATA = 101,
     }
 
 }
@@ -111,4 +147,13 @@ export enum TTSType {
     TTS_TYPE_ADVANCED = 1,
     TTS_TYPE_ELEVEN_LABS = 2,
     TTS_TYPE_ADVANCED_V2 = 3,
+}
+
+export enum Accent {
+    ACCENT_UNSPECIFIED = 0,
+    ACCENT_BRITISH = 1,
+    ACCENT_RUSSIAN = 2,
+    ACCENT_AUSTRALIAN = 3,
+    ACCENT_GERMAN = 4,
+    ACCENT_FRENCH = 5,
 }

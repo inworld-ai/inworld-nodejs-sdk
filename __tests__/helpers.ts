@@ -1,16 +1,17 @@
 import {
-  AccessToken,
-  CapabilitiesRequest,
-  LoadSceneRequest,
-  LoadSceneResponse,
-  PreviousDialog as PreviousDialogProto,
-  SessionContinuation,
-} from '@proto/ai/inworld/engine/world-engine_pb';
+  ClientDuplexStream,
+  ClientDuplexStreamImpl,
+} from '@grpc/grpc-js/build/src/call';
+import { CapabilitiesConfiguration } from '@proto/ai/inworld/engine/configuration/configuration_pb';
+import { AccessToken } from '@proto/ai/inworld/engine/world-engine_pb';
 import {
   Actor,
+  Agent,
   InworldPacket as ProtoPacket,
+  LoadedScene,
   PacketId,
   Routing,
+  SessionControlResponseEvent,
 } from '@proto/ai/inworld/packets/packets_pb';
 import { v4 } from 'uuid';
 
@@ -47,9 +48,9 @@ export const createCharacter = () =>
   });
 
 export const createAgent = (useAssets: boolean = true) => {
-  const agent = new LoadSceneResponse.Agent();
+  const agent = new Agent();
   const assets = useAssets
-    ? new LoadSceneResponse.Agent.CharacterAssets()
+    ? new Agent.CharacterAssets()
         .setAvatarImg(v4())
         .setAvatarImgOriginal(v4())
         .setRpmModelUri(v4())
@@ -60,11 +61,9 @@ export const createAgent = (useAssets: boolean = true) => {
   return agent.setAgentId(v4()).setBrainName(v4()).setCharacterAssets(assets);
 };
 
-export const convertAgentsToCharacters = (
-  agents: Array<LoadSceneResponse.Agent>,
-) => {
+export const convertAgentsToCharacters = (agents: Array<Agent>) => {
   return agents.map(
-    (agent: LoadSceneResponse.Agent) =>
+    (agent: Agent) =>
       new Character({
         id: agent.getAgentId(),
         assets: {
@@ -115,15 +114,13 @@ export const capabilitiesProps: Capabilities = {
   silence: true,
 };
 
-export const capabilities = new CapabilitiesRequest()
+export const capabilities = new CapabilitiesConfiguration()
   .setAudio(true)
   .setContinuation(true)
   .setEmotions(true)
   .setInterruptions(true)
   .setPhonemeInfo(true)
   .setSilenceEvents(true)
-  .setText(true)
-  .setTriggers(true)
   .setContinuation(true);
 
 export const user: User = {
@@ -149,40 +146,29 @@ export const convertPacketFromProto = (proto: ProtoPacket) => {
   return packet;
 };
 
-export const extendedCapabilities = new CapabilitiesRequest()
+export const extendedCapabilities = new CapabilitiesConfiguration()
   .setAudio(true)
   .setEmotions(true)
   .setInterruptions(true)
   .setPhonemeInfo(true)
   .setSilenceEvents(true)
-  .setText(true)
-  .setTriggers(true)
   .setRegenerateResponse(true);
 
-const previousDialogProto = new PreviousDialogProto().setPhrasesList([
-  new PreviousDialogProto.Phrase()
-    .setPhrase(v4())
-    .setTalker(PreviousDialogProto.DialogParticipant.CHARACTER),
-  new PreviousDialogProto.Phrase()
-    .setPhrase(v4())
-    .setTalker(PreviousDialogProto.DialogParticipant.PLAYER),
-]);
-
 export const previousState = v4();
-
-export const sessionContinuation = new SessionContinuation().setPreviousDialog(
-  previousDialogProto,
-);
 
 export const extension: Extension<ExtendedInworldPacket> = {
   convertPacketFromProto,
   afterLoadScene: jest.fn(),
-  beforeLoadScene: jest.fn((req: LoadSceneRequest) => {
-    req
-      .setCapabilities(extendedCapabilities)
-      .setSessionContinuation(sessionContinuation);
+  beforeLoadScene: jest.fn((packets: ProtoPacket[]) => {
+    return packets.map((packet: ProtoPacket) => {
+      if (packet.getSessionControl()?.hasCapabilitiesConfiguration()) {
+        packet
+          .getSessionControl()
+          .setCapabilitiesConfiguration(extendedCapabilities);
+      }
 
-    return req;
+      return packet;
+    });
   }),
 };
 
@@ -209,3 +195,21 @@ export const setTimeoutMock = (callback: any) => {
 
   return { hasRef: () => false } as NodeJS.Timeout;
 };
+
+export const agents = [createAgent(), createAgent()];
+export const characters = convertAgentsToCharacters(agents);
+export const getStream = () => new ClientDuplexStreamImpl(jest.fn(), jest.fn());
+export const sessionControlResponseEvent =
+  new SessionControlResponseEvent().setLoadedScene(
+    new LoadedScene().setAgentsList(agents),
+  );
+export const emitSessionControlResponseEvent =
+  (stream: ClientDuplexStream<ProtoPacket, ProtoPacket>) => (resolve: any) => {
+    stream.emit(
+      'data',
+      generateEmptyPacket().setSessionControlResponse(
+        sessionControlResponseEvent,
+      ),
+    );
+    resolve(true);
+  };

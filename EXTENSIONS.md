@@ -18,14 +18,32 @@ Here are several ways to enhance the functionality of the Inworld AI Node.js SDK
 ## Extend load scene request
 
 ```ts
-  const beforeLoadScene = (request) => {
-    const capabilities = new CapabilitiesRequest()
-      .setAudio(true)
-      .setText(true)
-      .setRegenerateResponse(true);
-    request.setCapabilities(capabilities);
+  import {
+    CapabilitiesConfiguration
+  } from '@inworld/nodejs-sdk/proto/ai/inworld/engine/configuration/configuration_pb';
+  import {
+    InworldPacket as ProtoPacket,
+    MutationEvent,
+    RegenerateResponse,
+  } from '@inworld/nodejs-sdk/proto/packets_pb';
+  import {
+    InworldClient,
+    InworldPacket,
+  } from '@inworld/nodejs-sdk';
 
-    return request;
+   const extendedCapabilities = new CapabilitiesConfiguration()
+      .setRegenerateResponse(true);
+
+  const beforeLoadScene = (packets: ProtoPacket) => {
+    return packets.map((packet: ProtoPacket) => {
+      if (packet.getSessionControl()?.hasCapabilitiesConfiguration()) {
+        packet
+          .getSessionControl()
+          .setCapabilitiesConfiguration(extendedCapabilities);
+      }
+
+      return packet;
+    });
   };
 
   const client = new InworldClient()
@@ -35,7 +53,7 @@ Here are several ways to enhance the functionality of the Inworld AI Node.js SDK
     ...
     .setExtension({ beforeLoadScene });
 
-  this.connection = client.build();
+  const connection = client.build();
 ```
 
 ## Parse load scene response
@@ -52,7 +70,7 @@ Here are several ways to enhance the functionality of the Inworld AI Node.js SDK
     ...
     .setExtension({ afterLoadScene });
 
-  this.connection = client.build();
+  const connection = client.build();
 ```
 
 ## Send custom packet
@@ -63,7 +81,7 @@ Here are several ways to enhance the functionality of the Inworld AI Node.js SDK
   }
 
   const sendRegenerateResponse = (interactionId?: string) => {
-    const customPacket = this.connection.baseProtoPacket();
+    const customPacket = connection.baseProtoPacket();
     const mutation = new MutationEvent().setRegenerateResponse(
       new RegenerateResponse().setInteractionId(interactionId ?? uuid()),
     );
@@ -96,7 +114,7 @@ Here are several ways to enhance the functionality of the Inworld AI Node.js SDK
       beforeLoadScene,
     });
 
-  this.connection = client.build();
+  const connection = client.build();
 
-  this.connection.sendCustomPacket(() => sendRegenerateResponse(interactionId));
+  connection.sendCustomPacket(() => sendRegenerateResponse(interactionId));
 ```
