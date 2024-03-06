@@ -414,14 +414,15 @@ export class ConnectionService<
   }
 
   private ensureCurrentCharacter() {
-    if (
-      !this.getEventFactory().getCurrentCharacter() ||
-      !this.scene.characters?.find(
-        (c) => c.id === this.getEventFactory().getCurrentCharacter()?.id,
-      )
-    ) {
-      this.getEventFactory().setCurrentCharacter(this.scene.characters?.[0]);
-    }
+    const factory = this.getEventFactory();
+    const currentCharacter = factory.getCurrentCharacter();
+    const sameCharacter = currentCharacter
+      ? this.scene.characters.find(
+          (c) => c.resourceName === currentCharacter?.resourceName,
+        )
+      : undefined;
+
+    factory.setCurrentCharacter(sameCharacter ?? this.scene.characters[0]);
   }
 
   private setSceneFromProtoEvent(proto: LoadedScene) {

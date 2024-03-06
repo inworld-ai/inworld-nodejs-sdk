@@ -130,7 +130,7 @@ describe('load scene', () => {
 
     expect(openSession).toHaveBeenCalledTimes(1);
     expect(result[0][0]).toEqual(stream);
-    expect(Scene.fromProto(result[0][1]).characters).toEqual(characters);
+    expect(Scene.fromProto(SCENE, result[0][1]).characters).toEqual(characters);
     expect(write).toHaveBeenCalledTimes(4);
     expect(
       write.mock.calls[0][0].getSessionControl().getCapabilitiesConfiguration(),

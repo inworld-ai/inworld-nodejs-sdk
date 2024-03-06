@@ -160,7 +160,6 @@ describe('message', () => {
       .setControl(control)
       .setTimestamp(protoTimestamp());
 
-
     jest
       .spyOn(connection, 'generateSessionToken')
       .mockImplementationOnce(() => Promise.resolve(sessionToken));

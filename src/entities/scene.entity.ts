@@ -29,9 +29,9 @@ export class Scene {
   }
 
   static fromProto(name: string, proto: LoadedScene) {
-    const characters = (proto.getAgentsList() ?? []).map((agent: Agent) =>
-      Character.fromProto(agent),
-    );
+    const characters = proto
+      .getAgentsList()
+      .map((agent: Agent) => Character.fromProto(agent));
 
     return new Scene({ name, characters });
   }
