@@ -31,6 +31,8 @@ export class Conversation {
       return;
     }
 
+    this.queue.push({ packet, isApplied: false });
+
     this.player.addToQueue({
       packet,
       onAfterPlaying: (packet: InworldPacket) => {
