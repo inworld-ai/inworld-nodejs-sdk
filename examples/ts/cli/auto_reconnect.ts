@@ -2,7 +2,13 @@ import 'dotenv/config';
 
 import { Client } from './components/client';
 import { Recorder } from './components/recorder';
-import { changeCharacter, characterInfo, listAll } from './helpers';
+import {
+  addCharacters,
+  changeCharacter,
+  changeScene,
+  characterInfo,
+  listAll,
+} from './helpers';
 
 const split = require('split');
 
@@ -40,7 +46,9 @@ const run = async function () {
     |- /narration - send narrated action.
     |- /info - shows current character.
     |- /list-all - shows available characters (created within the scene).
-    |- /character %character-id% - id of the target character (Get full list using /list-all command).
+    |- /character %character% - id of the target character (Get full list using /list-all command).
+    |- /change-scene %scene% - scene resource name to be loaded: workspaces/{workspace}/scenes/{scene}
+    |- /add-characters %characters% - list of characters to be loaded: workspaces/{workspace}/characters/{character}. Use comma to separate characters.
     |- c - cancel current response.
     |- <any other text> - sends text event to server.
   `);
@@ -71,6 +79,18 @@ const run = async function () {
 
       case '/character':
         changeCharacter(connection, args[0]);
+        break;
+
+      case '/change-scene':
+        changeScene(connection, args[0]);
+        break;
+
+      case '/add-characters':
+        if (args.length) {
+          await addCharacters(connection, args);
+        } else {
+          console.log('/add-characters requires characters list');
+        }
         break;
 
       case 'c':

@@ -31,3 +31,19 @@ export const changeCharacter = async (
     console.log('Character not found');
   }
 };
+
+export const changeScene = async (
+  connection: InworldConnectionService,
+  scene: string,
+) => {
+  const done = await connection.changeScene(scene);
+  console.log(done ? 'Scene changed' : 'Scene not changed.');
+};
+
+export const addCharacters = async (
+  connection: InworldConnectionService,
+  characters: string[],
+) => {
+  const done = await connection.addCharacters(characters);
+  console.log(done ? 'Characters loaded' : 'Characters not loaded.');
+};

@@ -27,8 +27,20 @@ const changeCharacter = async (connection, id) => {
   }
 };
 
+const changeScene = async (connection, scene) => {
+  const done = await connection.changeScene(scene);
+  console.log(done ? 'Scene changed' : 'Scene not changed.');
+};
+
+const addCharacters = async (connection, characters) => {
+  const done = await connection.addCharacters(characters);
+  console.log(done ? 'Characters loaded' : 'Characters not loaded.');
+};
+
 module.exports = {
   listAll,
   changeCharacter,
   characterInfo,
+  changeScene,
+  addCharacters,
 };
