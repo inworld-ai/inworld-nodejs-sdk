@@ -10,6 +10,7 @@ import {
 import { ChildProcess, fork } from 'child_process';
 import * as kill from 'tree-kill';
 
+import { characterInfo } from '../helpers';
 import { CLIENT_ACTION, CONVERSATION_ACTION, DISPLAY_WHEN } from './types';
 
 export interface ClientProps {
@@ -152,6 +153,25 @@ export class Client {
         action: CONVERSATION_ACTION.NARRATED_ACTION,
         packet,
       });
+    }
+
+    // CHANGES IN SCENE
+    if (packet.isSceneMutationResponse()) {
+      const { loadedCharacters, addedCharacters } = packet.sceneMutation;
+
+      if (loadedCharacters?.length) {
+        console.log('Character loaded in scene:');
+        for (const character of loadedCharacters) {
+          console.log(characterInfo(character));
+        }
+      }
+
+      if (addedCharacters?.length) {
+        console.log('Characters added to scene:');
+        for (const character of addedCharacters) {
+          console.log(characterInfo(character));
+        }
+      }
     }
 
     // INTERACTION_END

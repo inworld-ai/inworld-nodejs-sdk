@@ -61,3 +61,23 @@ export const listConversations = async (
     console.log('No conversations');
   }
 };
+
+export const changeScene = async (
+  connection: InworldConnectionService,
+  scene: string,
+) => {
+  try {
+    await connection.changeScene(scene);
+    console.log('Scene changed');
+  } catch (e) {
+    console.log('Scene not changed: ', e.message);
+  }
+};
+
+export const addCharacters = async (
+  connection: InworldConnectionService,
+  characters: string[],
+) => {
+  const done = await connection.addCharacters(characters);
+  console.log(done ? 'Characters loaded' : 'Characters not loaded.');
+};

@@ -4,7 +4,13 @@ const { DislikeType } = require('@inworld/nodejs-sdk');
 
 const { Client } = require('./components/client');
 const { Recorder } = require('./components/recorder');
-const { changeCharacter, characterInfo, listCharacters } = require('./helpers');
+const {
+  changeCharacter,
+  characterInfo,
+  changeScene,
+  addCharacters,
+  listCharacters,
+} = require('./helpers');
 
 const split = require('split');
 
@@ -49,6 +55,8 @@ const run = async function () {
           ', ',
         )}.
     |- /undo-feedback %name% - undo like or dislike.
+    |- /change-scene %scene% - scene resource name to be loaded: workspaces/{workspace}/scenes/{scene}
+    |- /add-characters %characters% - list of characters to be loaded: workspaces/{workspace}/characters/{character}. Use comma to separate characters.
     |- c - cancel current response.
     |- <any other text> - sends text event to server.
   `);
@@ -119,6 +127,18 @@ const run = async function () {
           .catch((err) =>
             console.log('Feedback was not undone successfully: ', err.message),
           );
+        break;
+
+      case '/change-scene':
+        changeScene(connection, args[0]);
+        break;
+
+      case '/add-characters':
+        if (args.length) {
+          await addCharacters(connection, args);
+        } else {
+          console.log('/add-characters requires characters list');
+        }
         break;
 
       case 'c':
