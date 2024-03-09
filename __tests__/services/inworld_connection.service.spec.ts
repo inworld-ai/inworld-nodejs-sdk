@@ -283,4 +283,32 @@ describe('send', () => {
     expect(service.isActive()).toEqual(true);
     expect(packet.mutation).toEqual({ regenerateResponse: { interactionId } });
   });
+
+  test('should change scene', async () => {
+    const scene = v4();
+    const changeScene = jest.spyOn(EventFactory, 'loadScene');
+
+    const packet = await service.changeScene(scene);
+
+    expect(open).toHaveBeenCalledTimes(0);
+    expect(service.isActive()).toEqual(true);
+    expect(changeScene).toHaveBeenCalledTimes(1);
+    expect(changeScene).toHaveBeenCalledWith(scene);
+    expect(packet).toBeInstanceOf(InworldPacket);
+    expect(packet?.isSceneMutationRequest()).toEqual(true);
+  });
+
+  test('should add character', async () => {
+    const characters = [v4(), v4()];
+    const addCharacters = jest.spyOn(EventFactory, 'loadCharacters');
+
+    const packet = await service.addCharacters(characters);
+
+    expect(open).toHaveBeenCalledTimes(0);
+    expect(service.isActive()).toEqual(true);
+    expect(addCharacters).toHaveBeenCalledTimes(1);
+    expect(addCharacters).toHaveBeenCalledWith(characters);
+    expect(packet).toBeInstanceOf(InworldPacket);
+    expect(packet?.isSceneMutationRequest()).toEqual(true);
+  });
 });

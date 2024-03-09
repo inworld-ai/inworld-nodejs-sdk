@@ -19,6 +19,7 @@ import { CLIENT_ID } from '../../../src/common/constants';
 import { Logger } from '../../../src/common/logger';
 import { PreviousDialog } from '../../../src/entities/continuation/previous_dialog.entity';
 import { SessionContinuation } from '../../../src/entities/continuation/session_continuation.entity';
+import { Scene } from '../../../src/entities/scene.entity';
 import { WorldEngineClientGrpcService } from '../../../src/services/gprc/world_engine_client_grpc.service';
 import { ExtendedInworldPacket } from '../../data_structures';
 import {
@@ -129,7 +130,7 @@ describe('load scene', () => {
 
     expect(openSession).toHaveBeenCalledTimes(1);
     expect(result[0][0]).toEqual(stream);
-    expect(result[0][1].characters).toEqual(characters);
+    expect(Scene.fromProto(result[0][1]).characters).toEqual(characters);
     expect(write).toHaveBeenCalledTimes(4);
     expect(
       write.mock.calls[0][0].getSessionControl().getCapabilitiesConfiguration(),
@@ -382,7 +383,6 @@ describe('load scene', () => {
       write.mock.calls[0][0].getSessionControl().getCapabilitiesConfiguration(),
     ).toEqual(extendedCapabilities);
     expect(extension.beforeLoadScene).toHaveBeenCalledTimes(1);
-    expect(extension.afterLoadScene).toHaveBeenCalledTimes(1);
   });
 
   test('should throw error on unexpected event during scene loading', async () => {

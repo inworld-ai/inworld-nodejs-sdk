@@ -1,6 +1,10 @@
 import { ClientDuplexStream, ServiceError } from '@grpc/grpc-js';
 import { ClientRequest } from '@proto/ai/inworld/engine/world-engine_pb';
-import { InworldPacket as ProtoPacket } from '@proto/ai/inworld/packets/packets_pb';
+import {
+  InworldPacket as ProtoPacket,
+  LoadedCharacters,
+  LoadedScene,
+} from '@proto/ai/inworld/packets/packets_pb';
 
 import {
   ApiKey,
@@ -85,6 +89,14 @@ export class ConnectionService<
     this.onError = this.connectionProps.onError;
 
     this.onMessage = async (packet: ProtoPacket) => {
+      const sessionControlResponse = packet.getSessionControlResponse();
+
+      if (sessionControlResponse?.hasLoadedScene()) {
+        this.setSceneFromProtoEvent(sessionControlResponse.getLoadedScene());
+      } else if (sessionControlResponse?.hasLoadedCharacters()) {
+        this.addCharactersToScene(sessionControlResponse.getLoadedCharacters());
+      }
+
       const inworldPacket = this.convertPacketFromProto(packet);
 
       this.connectionProps.onMessage?.(inworldPacket);
@@ -205,7 +217,7 @@ export class ConnectionService<
 
       const { client, name, sessionContinuation, user } = this.connectionProps;
 
-      const [stream, scene] = await this.engineService.openSession({
+      const [stream, sessionProto] = await this.engineService.openSession({
         client,
         name,
         sessionContinuation,
@@ -218,20 +230,10 @@ export class ConnectionService<
         ...(this.onMessage && { onMessage: this.onMessage }),
       });
 
+      this.setSceneFromProtoEvent(sessionProto);
       this.stream = stream;
-      this.scene = scene;
-      this.sceneIsLoaded = true;
-
-      if (
-        !this.getEventFactory().getCurrentCharacter() &&
-        this.scene.characters.length
-      ) {
-        this.getEventFactory().setCurrentCharacter(this.scene.characters[0]);
-      }
-
       this.state = ConnectionState.ACTIVE;
       this.releaseQueue();
-
       this.scheduleDisconnect();
     } catch (err) {
       this.onError(err);
@@ -409,5 +411,34 @@ export class ConnectionService<
     return this.connectionProps.extension?.convertPacketFromProto
       ? this.connectionProps.extension.convertPacketFromProto(packet)
       : (InworldPacket.fromProto(packet) as InworldPacketT);
+  }
+
+  private ensureCurrentCharacter() {
+    if (
+      !this.getEventFactory().getCurrentCharacter() ||
+      !this.scene.characters?.find(
+        (c) => c.id === this.getEventFactory().getCurrentCharacter()?.id,
+      )
+    ) {
+      this.getEventFactory().setCurrentCharacter(this.scene.characters?.[0]);
+    }
+  }
+
+  private setSceneFromProtoEvent(proto: LoadedScene) {
+    this.scene = Scene.fromProto(this.scene.name, proto);
+    this.sceneIsLoaded = true;
+
+    this.connectionProps.extension?.afterLoadScene?.(proto);
+    this.ensureCurrentCharacter();
+  }
+
+  private addCharactersToScene(proto: LoadedCharacters) {
+    const characters = proto.getAgentsList().map((c) => Character.fromProto(c));
+
+    this.scene.characters = [
+      ...new Set(this.scene.characters.concat(characters)),
+    ];
+
+    this.ensureCurrentCharacter();
   }
 }

@@ -18,6 +18,7 @@ import {
 import {
   Continuation,
   InworldPacket as ProtoPacket,
+  LoadedScene,
 } from '@proto/ai/inworld/packets/packets_pb';
 import { promisify } from 'util';
 import os = require('os');
@@ -36,7 +37,6 @@ import { grpcOptions } from '../../common/helpers';
 import { Logger } from '../../common/logger';
 import { SessionContinuation } from '../../entities/continuation/session_continuation.entity';
 import { InworldPacket } from '../../entities/packets/inworld_packet.entity';
-import { Scene } from '../../entities/scene.entity';
 import { SessionToken } from '../../entities/session_token.entity';
 import { EventFactory } from '../../factories/event';
 
@@ -109,7 +109,7 @@ export class WorldEngineClientGrpcService<
 
   openSession(
     props: SessionProps<InworldPacketT>,
-  ): Promise<[ClientDuplexStream<ProtoPacket, ProtoPacket>, Scene]> {
+  ): Promise<[ClientDuplexStream<ProtoPacket, ProtoPacket>, LoadedScene]> {
     const { sessionToken, onDisconnect, onError, onMessage } = props;
 
     const metadata = this.getMetadata(sessionToken);
@@ -145,9 +145,7 @@ export class WorldEngineClientGrpcService<
         if (!loaded && packet?.hasSessionControlResponse()) {
           loaded = true;
 
-          const sceneProto = packet.getSessionControlResponse();
-
-          props.extension?.afterLoadScene?.(sceneProto);
+          const proto = packet.getSessionControlResponse();
 
           connection.removeAllListeners('data');
 
@@ -155,7 +153,7 @@ export class WorldEngineClientGrpcService<
             connection.addListener('data', onMessage);
           }
 
-          resolve([connection, Scene.fromProto(props.name, sceneProto)]);
+          resolve([connection, proto.getLoadedScene()]);
         } else {
           const err = new Error(
             'Unexpected packet received during scene loading',

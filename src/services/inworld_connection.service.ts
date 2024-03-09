@@ -7,6 +7,7 @@ import { CancelResponsesProps } from '../common/data_structures';
 import { Character } from '../entities/character.entity';
 import { InworldPacket } from '../entities/packets/inworld_packet.entity';
 import { TriggerParameter } from '../entities/packets/trigger.entity';
+import { EventFactory } from '../factories/event';
 import { ConnectionService } from './connection.service';
 import { FeedbackService } from './feedback.service';
 
@@ -97,6 +98,14 @@ export class InworldConnectionService<
     return this.connection.send(() =>
       this.connection.getEventFactory().narratedAction(text),
     );
+  }
+
+  async changeScene(name: string) {
+    return this.connection.send(() => EventFactory.loadScene(name));
+  }
+
+  async addCharacters(names: string[]) {
+    return this.connection.send(() => EventFactory.loadCharacters(names));
   }
 
   async sendCustomPacket(getPacket: () => ProtoPacket) {

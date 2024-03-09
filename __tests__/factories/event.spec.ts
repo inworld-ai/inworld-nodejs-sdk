@@ -13,10 +13,18 @@ import {
 import { Duration } from 'google-protobuf/google/protobuf/duration_pb';
 import { v4 } from 'uuid';
 
+import {
+  LoadCharacters,
+  LoadedCharacters,
+  LoadedScene,
+  LoadScene,
+  MutationEvent,
+  SessionControlResponseEvent,
+} from '../../proto/ai/inworld/packets/packets_pb';
 import { protoTimestamp } from '../../src/common/helpers';
 import { InworldPacket } from '../../src/entities/packets/inworld_packet.entity';
 import { EventFactory } from '../../src/factories/event';
-import { createCharacter } from '../helpers';
+import { agents, characters, createCharacter } from '../helpers';
 
 let factory: EventFactory;
 
@@ -254,6 +262,28 @@ describe('event types', () => {
     expect(event.getRouting().getTarget().getName()).toEqual(character.id);
     expect(event.hasTimestamp()).toEqual(true);
   });
+
+  test('should generate load characters event', () => {
+    const names = [v4(), v4()];
+    const event = EventFactory.loadCharacters(names);
+    const packetId = event.getPacketId();
+
+    expect(event.getMutation().hasLoadCharacters()).toEqual(true);
+    expect(packetId.getPacketId()).toBeDefined();
+    expect(packetId.getInteractionId()).toBeFalsy();
+    expect(packetId.getUtteranceId()).toBeFalsy();
+    expect(packetId.getCorrelationId()).toBeFalsy();
+    expect(event.hasRouting()).toEqual(true);
+    expect(event.getRouting().getTarget().getType()).toEqual(Actor.Type.WORLD);
+    expect(
+      event
+        .getMutation()
+        .getLoadCharacters()
+        .getNameList()
+        .map((n: LoadCharacters.CharacterName) => n.getName()),
+    ).toEqual(names);
+    expect(event.hasTimestamp()).toEqual(true);
+  });
 });
 
 describe('convert packet to external one', () => {
@@ -354,6 +384,89 @@ describe('convert packet to external one', () => {
 
     expect(result).toBeInstanceOf(InworldPacket);
     expect(result.isNarratedAction()).toEqual(true);
+  });
+
+  test('scene mutation request with name', () => {
+    const name = v4();
+    const rounting = new Routing()
+      .setSource(new Actor())
+      .setTarget(new Actor());
+    const mutation = new MutationEvent().setLoadScene(
+      new LoadScene().setName(name),
+    );
+    const packet = new ProtoPacket()
+      .setPacketId(new PacketId().setPacketId(v4()))
+      .setRouting(rounting)
+      .setTimestamp(protoTimestamp())
+      .setMutation(mutation);
+    const result = InworldPacket.fromProto(packet);
+
+    expect(result).toBeInstanceOf(InworldPacket);
+    expect(result.isSceneMutationRequest()).toEqual(true);
+    expect(result.sceneMutation.name).toEqual(name);
+  });
+
+  test('scene mutation request with characters', () => {
+    const rounting = new Routing()
+      .setSource(new Actor())
+      .setTarget(new Actor());
+    const mutation = new MutationEvent().setLoadCharacters(
+      new LoadCharacters().setNameList(
+        characters.map((c) =>
+          new LoadCharacters.CharacterName().setName(c.resourceName),
+        ),
+      ),
+    );
+    const packet = new ProtoPacket()
+      .setPacketId(new PacketId().setPacketId(v4()))
+      .setRouting(rounting)
+      .setTimestamp(protoTimestamp())
+      .setMutation(mutation);
+    const result = InworldPacket.fromProto(packet);
+
+    expect(result).toBeInstanceOf(InworldPacket);
+    expect(result.isSceneMutationRequest()).toEqual(true);
+    expect(result.sceneMutation.characterNames).toEqual(
+      characters.map((c) => c.resourceName),
+    );
+  });
+
+  test('scene mutation response with loaded characters', () => {
+    const rounting = new Routing()
+      .setSource(new Actor())
+      .setTarget(new Actor());
+    const event = new SessionControlResponseEvent().setLoadedScene(
+      new LoadedScene().setAgentsList(agents),
+    );
+    const packet = new ProtoPacket()
+      .setPacketId(new PacketId().setPacketId(v4()))
+      .setRouting(rounting)
+      .setTimestamp(protoTimestamp())
+      .setSessionControlResponse(event);
+    const result = InworldPacket.fromProto(packet);
+
+    expect(result).toBeInstanceOf(InworldPacket);
+    expect(result.isSceneMutationResponse()).toEqual(true);
+    expect(result.sceneMutation.loadedCharacters).toEqual(characters);
+  });
+
+  test('scene mutation response with added characters', () => {
+    const rounting = new Routing()
+      .setSource(new Actor())
+      .setTarget(new Actor());
+    const event = new SessionControlResponseEvent().setLoadedCharacters(
+      new LoadedCharacters().setAgentsList(agents),
+    );
+    const packet = new ProtoPacket()
+      .setPacketId(new PacketId().setPacketId(v4()))
+      .setRouting(rounting)
+      .setTimestamp(protoTimestamp())
+      .setSessionControlResponse(event);
+    const result = InworldPacket.fromProto(packet);
+
+    expect(result).toBeInstanceOf(InworldPacket);
+    expect(result.isSceneMutationResponse()).toEqual(true);
+    expect(result.sceneMutation.addedCharacters).toEqual(characters);
   });
 
   test('unknown', () => {

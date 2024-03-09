@@ -1,3 +1,5 @@
+import { Agent } from '@proto/ai/inworld/packets/packets_pb';
+
 export interface CharacterProps {
   id: string;
   resourceName: string;
@@ -24,5 +26,22 @@ export class Character {
     this.resourceName = props.resourceName;
     this.displayName = props.displayName;
     this.assets = props.assets;
+  }
+
+  static fromProto(proto: Agent) {
+    const assets = proto.getCharacterAssets();
+
+    return new Character({
+      id: proto.getAgentId(),
+      resourceName: proto.getBrainName(),
+      displayName: proto.getGivenName(),
+      assets: {
+        avatarImg: assets?.getAvatarImg(),
+        avatarImgOriginal: assets?.getAvatarImgOriginal(),
+        rpmModelUri: assets?.getRpmModelUri(),
+        rpmImageUriPortrait: assets?.getRpmImageUriPortrait(),
+        rpmImageUriPosture: assets?.getRpmImageUriPosture(),
+      },
+    });
   }
 }

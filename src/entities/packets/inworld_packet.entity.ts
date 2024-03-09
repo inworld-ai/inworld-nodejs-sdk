@@ -1,12 +1,15 @@
 import {
+  Agent,
   DataChunk,
   InworldPacket as ProtoPacket,
+  LoadCharacters,
 } from '@proto/ai/inworld/packets/packets_pb';
 
 import {
   InworlControlType,
   InworldPacketType,
 } from '../../common/data_structures';
+import { Character } from '../character.entity';
 import { AudioEvent } from './audio.entity';
 import { CancelResponsesEvent } from './cancel_responses.entity';
 import { ControlEvent } from './control.entity';
@@ -29,8 +32,16 @@ export interface InworldPacketProps {
   routing: Routing;
   text?: TextEvent;
   narratedAction?: NarratedAction;
+  sceneMutation?: SceneMutation;
   date: string;
   type: InworldPacketType;
+}
+
+export interface SceneMutation {
+  name?: string;
+  characterNames?: string[];
+  loadedCharacters?: Character[];
+  addedCharacters?: Character[];
 }
 
 export class InworldPacket {
@@ -49,6 +60,7 @@ export class InworldPacket {
   readonly silence: SilenceEvent;
   readonly narratedAction: NarratedAction;
   readonly cancelResponses: CancelResponsesEvent;
+  readonly sceneMutation: SceneMutation;
 
   constructor(props: InworldPacketProps) {
     this.packetId = props.packetId;
@@ -86,6 +98,10 @@ export class InworldPacket {
 
     if (this.isNarratedAction()) {
       this.narratedAction = props.narratedAction;
+    }
+
+    if (this.isSceneMutationResponse() || this.isSceneMutationRequest()) {
+      this.sceneMutation = props.sceneMutation;
     }
   }
 
@@ -146,6 +162,14 @@ export class InworldPacket {
     return this.type === InworldPacketType.NARRATED_ACTION;
   }
 
+  isSceneMutationRequest() {
+    return this.type === InworldPacketType.SCENE_MUTATION_REQUEST;
+  }
+
+  isSceneMutationResponse() {
+    return this.type === InworldPacketType.SCENE_MUTATION_RESPONSE;
+  }
+
   static fromProto(proto: ProtoPacket): InworldPacket {
     const type = this.getType(proto);
 
@@ -178,6 +202,37 @@ export class InworldPacket {
       ...(type === InworldPacketType.NARRATED_ACTION && {
         narratedAction: NarratedAction.fromProto(proto.getAction()),
       }),
+      ...([
+        InworldPacketType.SCENE_MUTATION_REQUEST,
+        InworldPacketType.SCENE_MUTATION_RESPONSE,
+      ].includes(type) && {
+        sceneMutation: {
+          ...(proto.getMutation()?.hasLoadScene() && {
+            name: proto.getMutation().getLoadScene().getName(),
+          }),
+          ...(proto.getMutation()?.hasLoadCharacters() && {
+            characterNames: proto
+              .getMutation()
+              .getLoadCharacters()
+              .getNameList()
+              .map((c: LoadCharacters.CharacterName) => c.getName()),
+          }),
+          ...(proto.getSessionControlResponse()?.hasLoadedScene() && {
+            loadedCharacters: proto
+              .getSessionControlResponse()
+              .getLoadedScene()
+              .getAgentsList()
+              .map((agent: Agent) => Character.fromProto(agent)),
+          }),
+          ...(proto.getSessionControlResponse()?.hasLoadedCharacters() && {
+            addedCharacters: proto
+              .getSessionControlResponse()
+              .getLoadedCharacters()
+              .getAgentsList()
+              .map((agent: Agent) => Character.fromProto(agent)),
+          }),
+        },
+      }),
     });
   }
 
@@ -201,6 +256,12 @@ export class InworldPacket {
         return InworldPacketType.CANCEL_RESPONSE;
       case packet.getAction()?.hasNarratedAction():
         return InworldPacketType.NARRATED_ACTION;
+      case packet.getSessionControlResponse()?.hasLoadedScene():
+      case packet.getSessionControlResponse()?.hasLoadedCharacters():
+        return InworldPacketType.SCENE_MUTATION_RESPONSE;
+      case packet.getMutation()?.hasLoadCharacters():
+      case packet.getMutation()?.hasLoadScene():
+        return InworldPacketType.SCENE_MUTATION_REQUEST;
       default:
         return InworldPacketType.UNKNOWN;
     }
