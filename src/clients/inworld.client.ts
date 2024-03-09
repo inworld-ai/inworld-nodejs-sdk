@@ -2,7 +2,6 @@ import { ServiceError } from '@grpc/grpc-js';
 import { CapabilitiesConfiguration } from '@proto/ai/inworld/engine/configuration/configuration_pb';
 import { ClientRequest } from '@proto/ai/inworld/engine/world-engine_pb';
 
-import { SCENE_PATTERN } from '../common/constants';
 import {
   ApiKey,
   Awaitable,
@@ -15,6 +14,7 @@ import {
   InternalClientConfiguration,
   User,
 } from '../common/data_structures';
+import { SCENE_HAS_INVALID_FORMAT } from '../common/errors';
 import { Logger } from '../common/logger';
 import {
   SessionContinuation,
@@ -22,6 +22,7 @@ import {
 } from '../entities/continuation/session_continuation.entity';
 import { InworldPacket } from '../entities/packets/inworld_packet.entity';
 import { Session } from '../entities/session.entity';
+import { sceneHasValidFormat } from '../guard/scene';
 import { ConnectionService } from '../services/connection.service';
 import { InworldConnectionService } from '../services/inworld_connection.service';
 
@@ -194,8 +195,8 @@ export class InworldClient<
       throw Error('Scene name is required');
     }
 
-    if (!SCENE_PATTERN.test(this.scene)) {
-      throw Error('Scene name has wrong format');
+    if (!sceneHasValidFormat(this.scene)) {
+      throw Error(SCENE_HAS_INVALID_FORMAT);
     }
   }
 

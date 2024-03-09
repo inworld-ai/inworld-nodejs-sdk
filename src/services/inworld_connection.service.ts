@@ -4,10 +4,16 @@ import {
 } from '@proto/ai/inworld/packets/packets_pb';
 
 import { CancelResponsesProps } from '../common/data_structures';
+import {
+  CHARACTER_HAS_INVALID_FORMAT,
+  SCENE_HAS_INVALID_FORMAT,
+  SCENE_NAME_THE_SAME,
+} from '../common/errors';
 import { Character } from '../entities/character.entity';
 import { InworldPacket } from '../entities/packets/inworld_packet.entity';
 import { TriggerParameter } from '../entities/packets/trigger.entity';
 import { EventFactory } from '../factories/event';
+import { characterHasValidFormat, sceneHasValidFormat } from '../guard/scene';
 import { ConnectionService } from './connection.service';
 import { FeedbackService } from './feedback.service';
 
@@ -100,11 +106,33 @@ export class InworldConnectionService<
     );
   }
 
+  async reloadScene() {
+    return this.connection.send(() =>
+      EventFactory.loadScene(this.connection.getSceneName()),
+    );
+  }
+
   async changeScene(name: string) {
+    if (!sceneHasValidFormat(name)) {
+      throw Error(SCENE_HAS_INVALID_FORMAT);
+    }
+
+    if (this.connection.getSceneName() === name) {
+      throw Error(SCENE_NAME_THE_SAME);
+    }
+
+    this.connection.setNextSceneName(name);
+
     return this.connection.send(() => EventFactory.loadScene(name));
   }
 
   async addCharacters(names: string[]) {
+    const invalid = names.find((name) => !characterHasValidFormat(name));
+
+    if (invalid) {
+      throw Error(CHARACTER_HAS_INVALID_FORMAT);
+    }
+
     return this.connection.send(() => EventFactory.loadCharacters(names));
   }
 

@@ -8,8 +8,8 @@ export interface SceneProps {
 }
 
 export class Scene {
-  name: string;
-  characters: Array<Character>;
+  readonly name: string;
+  readonly characters: Array<Character>;
 
   constructor(props: SceneProps) {
     this.name = props.name;
@@ -29,10 +29,11 @@ export class Scene {
   }
 
   static fromProto(name: string, proto: LoadedScene) {
-    const characters = proto
-      .getAgentsList()
-      .map((agent: Agent) => Character.fromProto(agent));
-
-    return new Scene({ name, characters });
+    return new Scene({
+      name,
+      characters: proto
+        .getAgentsList()
+        .map((agent: Agent) => Character.fromProto(agent)),
+    });
   }
 }

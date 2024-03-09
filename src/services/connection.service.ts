@@ -54,8 +54,8 @@ export class ConnectionService<
 > {
   private state: ConnectionState = ConnectionState.INACTIVE;
 
+  private nextSceneName: string | undefined;
   private scene: Scene;
-  private sceneIsLoaded: boolean = false;
   private sessionToken: SessionToken;
   private stream: ClientDuplexStream<ProtoPacket, ProtoPacket>;
   private connectionProps: ConnectionProps<InworldPacketT>;
@@ -133,6 +133,10 @@ export class ConnectionService<
     return this.scene.name;
   }
 
+  setNextSceneName(name?: string) {
+    this.nextSceneName = name;
+  }
+
   async generateSessionToken() {
     const proto = await this.engineService.generateSessionToken(
       this.connectionProps.apiKey,
@@ -192,9 +196,7 @@ export class ConnectionService<
   }
 
   async getCharactersList() {
-    if (!this.sceneIsLoaded) {
-      await this.open();
-    }
+    await this.open();
 
     return this.scene.characters;
   }
@@ -426,8 +428,9 @@ export class ConnectionService<
   }
 
   private setSceneFromProtoEvent(proto: LoadedScene) {
-    this.scene = Scene.fromProto(this.scene.name, proto);
-    this.sceneIsLoaded = true;
+    const name = this.nextSceneName || this.scene.name;
+
+    this.scene = Scene.fromProto(name, proto);
 
     this.connectionProps.extension?.afterLoadScene?.(proto);
     this.ensureCurrentCharacter();
@@ -436,9 +439,10 @@ export class ConnectionService<
   private addCharactersToScene(proto: LoadedCharacters) {
     const characters = proto.getAgentsList().map((c) => Character.fromProto(c));
 
-    this.scene.characters = [
-      ...new Set(this.scene.characters.concat(characters)),
-    ];
+    this.scene = new Scene({
+      name: this.scene.name,
+      characters: [...new Set(this.scene.characters.concat(characters))],
+    });
 
     this.ensureCurrentCharacter();
   }

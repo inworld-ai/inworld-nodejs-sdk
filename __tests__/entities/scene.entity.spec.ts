@@ -5,14 +5,16 @@ import { Scene } from '../../src/entities/scene.entity';
 import { createAgent, createCharacter, SCENE } from '../helpers';
 
 let characters: Array<Character> = [];
+let name: string;
 let scene: Scene;
 let json: string;
 
 beforeEach(() => {
   jest.clearAllMocks();
 
+  name = SCENE;
   characters = [createCharacter(), createCharacter()];
-  scene = new Scene({ name: SCENE, characters });
+  scene = new Scene({ name, characters });
   json = JSON.stringify(scene);
 });
 
