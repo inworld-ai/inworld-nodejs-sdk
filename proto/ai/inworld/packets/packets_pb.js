@@ -4623,7 +4623,8 @@ proto.DataChunk.DataType = {
   AUDIO: 1,
   SILENCE: 3,
   STATE: 4,
-  NVIDIA_A2F_ANIMATION: 5
+  NVIDIA_A2F_ANIMATION: 5,
+  NVIDIA_A2F_ANIMATION_HEADER: 6
 };
 
 /**
@@ -5784,7 +5785,7 @@ proto.RelationInfo.prototype.hasRelationUpdate = function() {
  * @private {!Array<!Array<number>>}
  * @const
  */
-proto.MutationEvent.oneofGroups_ = [[1,2,3,4,5,6]];
+proto.MutationEvent.oneofGroups_ = [[1,2,3,4,5,6,7]];
 
 /**
  * @enum {number}
@@ -5796,7 +5797,8 @@ proto.MutationEvent.MutationCase = {
   APPLY_RESPONSE: 3,
   LOAD_SCENE: 4,
   MODIFY_EXACT_RESPONSE: 5,
-  LOAD_CHARACTERS: 6
+  LOAD_CHARACTERS: 6,
+  UNLOAD_CHARACTERS: 7
 };
 
 /**
@@ -5842,7 +5844,8 @@ proto.MutationEvent.toObject = function(includeInstance, msg) {
     applyResponse: (f = msg.getApplyResponse()) && proto.ApplyResponse.toObject(includeInstance, f),
     loadScene: (f = msg.getLoadScene()) && proto.LoadScene.toObject(includeInstance, f),
     modifyExactResponse: (f = msg.getModifyExactResponse()) && proto.ModifyExactResponse.toObject(includeInstance, f),
-    loadCharacters: (f = msg.getLoadCharacters()) && proto.LoadCharacters.toObject(includeInstance, f)
+    loadCharacters: (f = msg.getLoadCharacters()) && proto.LoadCharacters.toObject(includeInstance, f),
+    unloadCharacters: (f = msg.getUnloadCharacters()) && proto.UnloadCharacters.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -5908,6 +5911,11 @@ proto.MutationEvent.deserializeBinaryFromReader = function(msg, reader) {
       var value = new proto.LoadCharacters;
       reader.readMessage(value,proto.LoadCharacters.deserializeBinaryFromReader);
       msg.setLoadCharacters(value);
+      break;
+    case 7:
+      var value = new proto.UnloadCharacters;
+      reader.readMessage(value,proto.UnloadCharacters.deserializeBinaryFromReader);
+      msg.setUnloadCharacters(value);
       break;
     default:
       reader.skipField();
@@ -5984,6 +5992,14 @@ proto.MutationEvent.serializeBinaryToWriter = function(message, writer) {
       6,
       f,
       proto.LoadCharacters.serializeBinaryToWriter
+    );
+  }
+  f = message.getUnloadCharacters();
+  if (f != null) {
+    writer.writeMessage(
+      7,
+      f,
+      proto.UnloadCharacters.serializeBinaryToWriter
     );
   }
 };
@@ -6208,6 +6224,43 @@ proto.MutationEvent.prototype.clearLoadCharacters = function() {
  */
 proto.MutationEvent.prototype.hasLoadCharacters = function() {
   return jspb.Message.getField(this, 6) != null;
+};
+
+
+/**
+ * optional UnloadCharacters unload_characters = 7;
+ * @return {?proto.UnloadCharacters}
+ */
+proto.MutationEvent.prototype.getUnloadCharacters = function() {
+  return /** @type{?proto.UnloadCharacters} */ (
+    jspb.Message.getWrapperField(this, proto.UnloadCharacters, 7));
+};
+
+
+/**
+ * @param {?proto.UnloadCharacters|undefined} value
+ * @return {!proto.MutationEvent} returns this
+*/
+proto.MutationEvent.prototype.setUnloadCharacters = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 7, proto.MutationEvent.oneofGroups_[0], value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.MutationEvent} returns this
+ */
+proto.MutationEvent.prototype.clearUnloadCharacters = function() {
+  return this.setUnloadCharacters(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.MutationEvent.prototype.hasUnloadCharacters = function() {
+  return jspb.Message.getField(this, 7) != null;
 };
 
 

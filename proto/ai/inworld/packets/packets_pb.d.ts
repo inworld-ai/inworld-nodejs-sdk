@@ -575,6 +575,7 @@ export namespace DataChunk {
     SILENCE = 3,
     STATE = 4,
     NVIDIA_A2F_ANIMATION = 5,
+    NVIDIA_A2F_ANIMATION_HEADER = 6,
     }
 
     export enum AudioFormat {
@@ -768,6 +769,11 @@ export class MutationEvent extends jspb.Message {
     getLoadCharacters(): LoadCharacters | undefined;
     setLoadCharacters(value?: LoadCharacters): MutationEvent;
 
+    hasUnloadCharacters(): boolean;
+    clearUnloadCharacters(): void;
+    getUnloadCharacters(): UnloadCharacters | undefined;
+    setUnloadCharacters(value?: UnloadCharacters): MutationEvent;
+
     getMutationCase(): MutationEvent.MutationCase;
 
     serializeBinary(): Uint8Array;
@@ -788,6 +794,7 @@ export namespace MutationEvent {
         loadScene?: LoadScene.AsObject,
         modifyExactResponse?: ModifyExactResponse.AsObject,
         loadCharacters?: LoadCharacters.AsObject,
+        unloadCharacters?: UnloadCharacters.AsObject,
     }
 
     export enum MutationCase {
@@ -798,6 +805,7 @@ export namespace MutationEvent {
         LOAD_SCENE = 4,
         MODIFY_EXACT_RESPONSE = 5,
         LOAD_CHARACTERS = 6,
+        UNLOAD_CHARACTERS = 7,
     }
 
 }

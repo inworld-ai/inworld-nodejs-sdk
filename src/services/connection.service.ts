@@ -49,6 +49,7 @@ export class ConnectionService<
   private state: ConnectionState = ConnectionState.INACTIVE;
 
   private scene: Scene;
+  private sceneIsLoaded: boolean = false;
   private sessionToken: SessionToken;
   private stream: ClientDuplexStream<ProtoPacket, ProtoPacket>;
   private connectionProps: ConnectionProps<InworldPacketT>;
@@ -71,6 +72,9 @@ export class ConnectionService<
 
   constructor(props: ConnectionProps<InworldPacketT>) {
     this.connectionProps = props;
+    this.scene = new Scene({
+      name: this.connectionProps.name,
+    });
 
     this.onDisconnect = async () => {
       this.state = ConnectionState.INACTIVE;
@@ -98,10 +102,14 @@ export class ConnectionService<
     return this.connectionProps.config?.connection?.autoReconnect ?? true;
   }
 
+  getSceneName() {
+    return this.scene.name;
+  }
+
   async generateSessionToken() {
     const proto = await this.engineService.generateSessionToken(
       this.connectionProps.apiKey,
-      this.connectionProps.name,
+      this.getSceneName(),
     );
 
     return SessionToken.fromProto(proto);
@@ -112,7 +120,7 @@ export class ConnectionService<
       const token = await this.ensureSessionToken();
       return this.stateService.getSessionState({
         sessionToken: token,
-        scene: this.connectionProps.name,
+        scene: this.getSceneName(),
       });
     } catch (err) {
       this.onError(err);
@@ -157,7 +165,7 @@ export class ConnectionService<
   }
 
   async getCharactersList() {
-    if (!this.scene) {
+    if (!this.sceneIsLoaded) {
       await this.loadScene();
     }
 
@@ -293,11 +301,12 @@ export class ConnectionService<
       });
       let changed = previousSessionToken !== this.sessionToken;
 
-      if (!this.scene) {
+      if (!this.sceneIsLoaded) {
         const scene = await this.getOrLoadScene(session?.scene);
         changed = scene !== this.scene || changed;
 
         this.scene = scene;
+        this.sceneIsLoaded = true;
 
         if (
           !(await this.getCurrentCharacter()) &&
@@ -363,7 +372,8 @@ export class ConnectionService<
 
     // Load scene
     if (!scene) {
-      const { client, name, sessionContinuation, user } = this.connectionProps;
+      const { client, sessionContinuation, user } = this.connectionProps;
+      const name = this.getSceneName();
 
       const proto = await this.engineService.loadScene({
         client,
@@ -375,7 +385,7 @@ export class ConnectionService<
         extension: this.connectionProps.extension,
       });
 
-      scene = Scene.fromProto(proto);
+      scene = Scene.fromProto(name, proto);
     }
 
     return scene;

@@ -12,7 +12,7 @@ import { createCharacter, KEY, SCENE, SECRET, sessionToken } from '../helpers';
 
 describe('should create interaction feedback', () => {
   const interactionId = v4();
-  const characterId = v4();
+  const correlationId = v4();
   const comment = v4();
   const types = [
     DislikeType.IRRELEVANT,
@@ -56,13 +56,14 @@ describe('should create interaction feedback', () => {
 
     await new FeedbackService(connection).like({
       interactionId,
-      characterId,
+      correlationId,
     });
 
     expect(createInteractionFeedback).toHaveBeenCalledTimes(1);
     expect(createInteractionFeedback).toHaveBeenCalledWith({
+      scene: SCENE,
       sessionToken,
-      characterId,
+      correlationId,
       interactionId,
       interactionFeedback,
     });
@@ -88,13 +89,15 @@ describe('should create interaction feedback', () => {
 
     await new FeedbackService(connection).dislike({
       interactionId,
+      correlationId,
       types,
       comment,
     });
 
     expect(createInteractionFeedback).toHaveBeenCalledTimes(1);
     expect(createInteractionFeedback).toHaveBeenCalledWith({
-      characterId: character.id,
+      scene: SCENE,
+      correlationId,
       sessionToken,
       interactionId,
       interactionFeedback,

@@ -219,7 +219,7 @@ describe('open', () => {
     const sessionGetterSetter = {
       get: jest.fn().mockImplementationOnce(() =>
         Promise.resolve({
-          scene: Scene.fromProto(scene),
+          scene: Scene.fromProto(SCENE, scene),
           sessionToken,
         } as Session),
       ),

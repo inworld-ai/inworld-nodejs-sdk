@@ -3,7 +3,7 @@ import { v4 } from 'uuid';
 
 import { Character } from '../../src/entities/character.entity';
 import { Scene } from '../../src/entities/scene.entity';
-import { createAgent, createCharacter } from '../helpers';
+import { createAgent, createCharacter, SCENE } from '../helpers';
 
 let key: string;
 let characters: Array<Character> = [];
@@ -16,6 +16,7 @@ beforeEach(() => {
   key = v4();
   characters = [createCharacter(), createCharacter()];
   scene = new Scene({
+    name: SCENE,
     characters,
     key,
   });
@@ -34,6 +35,7 @@ test('should serialize', () => {
 test('should deserialize', () => {
   const result = Scene.deserialize(json);
 
+  expect(result.name).toEqual(scene.name);
   expect(result.key).toEqual(scene.key);
   expect(result.characters).toEqual(scene.characters);
 });
@@ -41,7 +43,7 @@ test('should deserialize', () => {
 test('should convert proto to scene', () => {
   const agents = [createAgent(), createAgent(false)];
   const proto = new LoadSceneResponse().setAgentsList(agents).setKey(key);
-  const scene = Scene.fromProto(proto);
+  const scene = Scene.fromProto(SCENE, proto);
 
   expect(scene.key).toEqual(key);
   expect(scene.characters[0].id).toEqual(agents[0].getAgentId());

@@ -9,9 +9,10 @@ import * as google_protobuf_empty_pb from 'google-protobuf/google/protobuf/empty
 import { v4 } from 'uuid';
 
 import { Config } from '../../../src/common/config';
+import { SCENE_PATTERN } from '../../../src/common/constants';
 import { Feedback } from '../../../src/entities/feedback.entity';
 import { FeedbackClientGrpcService } from '../../../src/services/gprc/feedback_client_grpc.service';
-import { sessionToken } from '../../helpers';
+import { SCENE, sessionToken } from '../../helpers';
 
 describe('credentials', () => {
   const createSSL = jest.spyOn(credentials, 'createSsl');
@@ -47,17 +48,30 @@ describe('credentials', () => {
 });
 
 describe('createInteractionFeedback', () => {
-  test('should run without errors', async () => {
-    const interactionId = v4();
-    const characterId = v4();
-    const comment = v4();
-    const interactionFeedback = new InteractionFeedback()
+  let interactionId: string;
+  let correlationId: string;
+  let comment: string;
+  let interactionFeedback: InteractionFeedback;
+  let workspace: string;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+
+    interactionId = v4();
+    correlationId = v4();
+    comment = v4();
+    workspace = SCENE_PATTERN.exec(SCENE)[1];
+
+    interactionFeedback = new InteractionFeedback()
       .setIsLike(true)
       .setTypeList([
         InteractionDislikeType.INTERACTION_DISLIKE_TYPE_IRRELEVANT,
         InteractionDislikeType.INTERACTION_DISLIKE_TYPE_UNSAFE,
       ])
       .setComment(comment);
+  });
+
+  test('should work with correlationId', async () => {
     const expectedResult = new InteractionFeedback();
     const createInteractionFeedback = jest
       .spyOn(FeedbackClient.prototype, 'createInteractionFeedback')
@@ -69,13 +83,46 @@ describe('createInteractionFeedback', () => {
 
     const service = new FeedbackClientGrpcService();
     const result = await service.createInteractionFeedback({
+      scene: SCENE,
       interactionId,
       sessionToken,
-      characterId,
+      correlationId,
       interactionFeedback,
     });
 
     expect(createInteractionFeedback).toHaveBeenCalledTimes(1);
+    expect(
+      createInteractionFeedback.mock.calls[0][0].toObject().parent,
+    ).toEqual(
+      `workspaces/${workspace}/sessions/${sessionToken.sessionId}/interactions/${interactionId}/groups/${correlationId}`,
+    );
+    expect(result).toEqual(Feedback.fromProto(expectedResult));
+  });
+
+  test('should work without correlationId', async () => {
+    const expectedResult = new InteractionFeedback();
+    const createInteractionFeedback = jest
+      .spyOn(FeedbackClient.prototype, 'createInteractionFeedback')
+      .mockImplementationOnce((_request, _metadata, _options, callback) => {
+        const cb = typeof _options === 'function' ? _options : callback;
+        cb(null, expectedResult);
+        return {} as SurfaceCall;
+      });
+
+    const service = new FeedbackClientGrpcService();
+    const result = await service.createInteractionFeedback({
+      scene: SCENE,
+      interactionId,
+      sessionToken,
+      interactionFeedback,
+    });
+
+    expect(createInteractionFeedback).toHaveBeenCalledTimes(1);
+    expect(
+      createInteractionFeedback.mock.calls[0][0].toObject().parent,
+    ).toEqual(
+      `workspaces/${workspace}/sessions/${sessionToken.sessionId}/interactions/${interactionId}/groups/default`,
+    );
     expect(result).toEqual(Feedback.fromProto(expectedResult));
   });
 });

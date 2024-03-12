@@ -8,14 +8,16 @@ import {
 import { promisify } from 'util';
 
 import { Config } from '../../common/config';
+import { SCENE_PATTERN } from '../../common/constants';
 import { grpcOptions } from '../../common/helpers';
 import { Logger } from '../../common/logger';
 import { Feedback } from '../../entities/feedback.entity';
 import { SessionToken } from '../../entities/session_token.entity';
 
 export interface CreateInteractionFeedbackProps {
+  scene: string;
+  correlationId?: string;
   sessionToken: SessionToken;
-  characterId: string;
   interactionId: string;
   interactionFeedback: InteractionFeedback;
 }
@@ -40,15 +42,24 @@ export class FeedbackClientGrpcService {
   async createInteractionFeedback(
     props: CreateInteractionFeedbackProps,
   ): Promise<Feedback> {
-    const { characterId, interactionFeedback, interactionId, sessionToken } =
-      props;
+    const {
+      scene,
+      correlationId = 'default',
+      interactionFeedback,
+      interactionId,
+      sessionToken,
+    } = props;
     const { sessionId: session } = sessionToken;
+    const workspace = SCENE_PATTERN.exec(scene)[1];
 
     const metadata = this.getMetadata(sessionToken);
     const request = new CreateInteractionFeedbackRequest()
       .setInteractionFeedback(interactionFeedback)
       .setParent(
-        `session/${session}/agents/${characterId}/interactions/${interactionId}`,
+        `workspaces/${workspace}/` +
+          `sessions/${session}/` +
+          `interactions/${interactionId}/` +
+          `groups/${correlationId}`,
       );
 
     const response = await promisify(
