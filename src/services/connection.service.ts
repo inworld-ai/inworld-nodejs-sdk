@@ -217,8 +217,9 @@ export class ConnectionService<
     try {
       await this.loadToken();
 
-      const { client, name, sessionContinuation, user } = this.connectionProps;
+      const { client, sessionContinuation, user } = this.connectionProps;
 
+      const name = this.getSceneName();
       const [stream, sessionProto] = await this.engineService.openSession({
         client,
         name,
@@ -428,7 +429,7 @@ export class ConnectionService<
   }
 
   private setSceneFromProtoEvent(proto: LoadedScene) {
-    const name = this.nextSceneName || this.scene.name;
+    const name = this.nextSceneName || this.getSceneName();
 
     this.scene = Scene.fromProto(name, proto);
 
