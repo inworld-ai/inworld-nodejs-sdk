@@ -396,6 +396,23 @@ describe('convert packet to external one', () => {
       expect(result.date).toEqual(today.toISOString());
     });
 
+    test('warning', () => {
+      const today = new Date();
+      const event = new ControlEvent().setAction(ControlEvent.Action.WARNING);
+      const packet = new ProtoPacket()
+        .setControl(event)
+        .setPacketId(new PacketId())
+        .setRouting(new Routing().setSource(new Actor()).setTarget(new Actor()))
+        .setTimestamp(protoTimestamp(today));
+
+      const result = InworldPacket.fromProto(packet);
+
+      expect(result).toBeInstanceOf(InworldPacket);
+      expect(result.isControl()).toEqual(true);
+      expect(result.isWarning()).toEqual(true);
+      expect(result.date).toEqual(today.toISOString());
+    });
+
     test('unknown', () => {
       const today = new Date();
       const event = new ControlEvent().setAction(ControlEvent.Action.UNKNOWN);

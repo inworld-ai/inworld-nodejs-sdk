@@ -4,14 +4,23 @@ import { InworlControlType } from '../../common/data_structures';
 
 export class ControlEvent {
   readonly type: InworlControlType;
+  readonly description: string | undefined;
 
-  constructor({ type }: { type: InworlControlType }) {
+  constructor({
+    type,
+    description,
+  }: {
+    type: InworlControlType;
+    description?: string;
+  }) {
     this.type = type;
+    this.description = description;
   }
 
   static fromProto(proto: ProtoControlEvent) {
     return new ControlEvent({
       type: this.getControlType(proto),
+      description: proto.getDescription(),
     });
   }
 
@@ -23,6 +32,8 @@ export class ControlEvent {
         return InworlControlType.TTS_PLAYBACK_MUTE;
       case ProtoControlEvent.Action.TTS_PLAYBACK_UNMUTE:
         return InworlControlType.TTS_PLAYBACK_UNMUTE;
+      case ProtoControlEvent.Action.WARNING:
+        return InworlControlType.WARNING;
       default:
         return InworlControlType.UNKNOWN;
     }

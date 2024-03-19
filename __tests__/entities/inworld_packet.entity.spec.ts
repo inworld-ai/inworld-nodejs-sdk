@@ -156,4 +156,25 @@ describe('control', () => {
     expect(packet.date).toEqual(date);
     expect(packet.packetId).toEqual(packetId);
   });
+
+  test('should get warning packet fields', () => {
+    const control = new ControlEvent({
+      type: InworlControlType.WARNING,
+      description: v4(),
+    });
+    const packet = new InworldPacket({
+      packetId,
+      routing,
+      date,
+      type: InworldPacketType.CONTROL,
+      control,
+    });
+
+    expect(packet.isControl()).toEqual(true);
+    expect(packet.isWarning()).toEqual(true);
+    expect(packet.control).toEqual(control);
+    expect(packet.routing).toEqual(routing);
+    expect(packet.date).toEqual(date);
+    expect(packet.packetId).toEqual(packetId);
+  });
 });
