@@ -79,7 +79,6 @@ const run = async function () {
 
       case '/trigger':
         if (args[0]) {
-          console.log(args[1]);
           await connection.sendTrigger(
             args[0],
             args[1] ? JSON.parse(args[1]) : [],
