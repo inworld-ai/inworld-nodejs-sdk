@@ -9,6 +9,7 @@ import {
 } from '@proto/ai/inworld/packets/packets_pb';
 import { v4 } from 'uuid';
 
+import { ControlEvent } from '../../proto/ai/inworld/packets/packets_pb';
 import { protoTimestamp } from '../../src/common/helpers';
 import { Logger } from '../../src/common/logger';
 import { InworldPacket } from '../../src/entities/packets/inworld_packet.entity';
@@ -699,6 +700,53 @@ describe('send', () => {
 describe('message', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+  });
+
+  test('should receive warn message', async () => {
+    const loggerWarn = jest.spyOn(Logger.prototype, 'warn');
+    const onMessage = jest.fn();
+    const connection = new ConnectionService({
+      apiKey: { key: KEY, secret: SECRET },
+      config: { capabilities },
+      name: SCENE,
+      user,
+      onError,
+      onMessage,
+      onDisconnect,
+    });
+
+    const rounting = new Routing()
+      .setSource(new Actor())
+      .setTarget(new Actor());
+    const control = new ControlEvent().setAction(ControlEvent.Action.WARNING);
+    const packet = new ProtoPacket()
+      .setPacketId(new PacketId().setPacketId(v4()))
+      .setRouting(rounting)
+      .setControl(control)
+      .setTimestamp(protoTimestamp());
+
+    jest
+      .spyOn(connection, 'generateSessionToken')
+      .mockImplementationOnce(() => Promise.resolve(sessionToken));
+    jest
+      .spyOn(WorldEngineClientGrpcService.prototype, 'loadScene')
+      .mockImplementationOnce(() => Promise.resolve(scene));
+    jest
+      .spyOn(WorldEngineClient.prototype, 'session')
+      .mockImplementationOnce(() => stream);
+
+    await connection.open();
+
+    stream.emit('data', packet);
+    expect(onMessage).toHaveBeenCalledTimes(1);
+    expect(onMessage).toHaveBeenCalledWith(InworldPacket.fromProto(packet));
+    expect(loggerWarn).toHaveBeenCalledWith({
+      action: 'Receive warning packet',
+      data: {
+        packet: packet.toObject(),
+      },
+      sessionId: sessionToken.sessionId,
+    });
   });
 
   test('should receive message', async () => {

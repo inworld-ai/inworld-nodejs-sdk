@@ -48,10 +48,10 @@ export class StateSerializationClientGrpcService {
       data: {
         address: this.address,
         ssl: this.ssl,
-        metadata: metadata.toJSON(),
         request: request.toObject(),
         response: response.toObject(),
       },
+      sessionId: sessionToken.sessionId,
     });
 
     return {

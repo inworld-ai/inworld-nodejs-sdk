@@ -83,14 +83,27 @@ export class ConnectionService<
     this.onError = this.connectionProps.onError;
 
     this.onMessage = async (packet: ProtoPacket) => {
-      this.connectionProps.onMessage?.(this.convertPacketFromProto(packet));
-      this.logger.debug({
-        action: 'Receive packet',
-        data: {
-          packet: packet.toObject(),
-        },
-        sessionId: this.sessionToken?.sessionId,
-      });
+      const inworldPacket = this.convertPacketFromProto(packet);
+
+      this.connectionProps.onMessage?.(inworldPacket);
+
+      if (inworldPacket.isWarning()) {
+        this.logger.warn({
+          action: 'Receive warning packet',
+          data: {
+            packet: packet.toObject(),
+          },
+          sessionId: this.sessionToken?.sessionId,
+        });
+      } else {
+        this.logger.debug({
+          action: 'Receive packet',
+          data: {
+            packet: packet.toObject(),
+          },
+          sessionId: this.sessionToken?.sessionId,
+        });
+      }
     };
   }
 
