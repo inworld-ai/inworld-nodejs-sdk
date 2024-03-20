@@ -179,8 +179,7 @@ export class InworldClient<
       .setPhonemeInfo(capabilities.phonemes ?? false)
       .setSilenceEvents(capabilities.silence ?? false)
       .setText(true)
-      .setTriggers(true)
-      .setDebugInfo(true);
+      .setTriggers(true);
 
     return request;
   }
