@@ -212,6 +212,21 @@ describe('message', () => {
       onDisconnect,
     });
 
+    jest
+      .spyOn(connection, 'generateSessionToken')
+      .mockImplementationOnce(() => Promise.resolve(sessionToken));
+    jest
+      .spyOn(WorldEngineClient.prototype, 'openSession')
+      .mockImplementationOnce(() => {
+        setTimeout(
+          () => new Promise(emitSessionControlResponseEvent(stream)),
+          0,
+        );
+        return stream;
+      });
+
+    await connection.open();
+
     currentCharacters = await connection.getCharactersList();
 
     const packet = generateEmptyPacket().setSessionControlResponse(
