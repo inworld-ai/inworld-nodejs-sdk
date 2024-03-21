@@ -58,14 +58,15 @@ proto.ai.inworld.voices.BaseVoice.repeatedFields_ = [1,6];
  * @private {!Array<!Array<number>>}
  * @const
  */
-proto.ai.inworld.voices.BaseVoice.oneofGroups_ = [[100]];
+proto.ai.inworld.voices.BaseVoice.oneofGroups_ = [[100,101]];
 
 /**
  * @enum {number}
  */
 proto.ai.inworld.voices.BaseVoice.TtsMetadataCase = {
   TTS_METADATA_NOT_SET: 0,
-  ELEVENLABS_METADATA: 100
+  ELEVENLABS_METADATA: 100,
+  INWORLD_V2_METADATA: 101
 };
 
 /**
@@ -112,7 +113,8 @@ proto.ai.inworld.voices.BaseVoice.toObject = function(includeInstance, msg) {
     naturalSampleRateHertz: jspb.Message.getFieldWithDefault(msg, 4, 0),
     age: jspb.Message.getFieldWithDefault(msg, 5, 0),
     languagesList: (f = jspb.Message.getRepeatedField(msg, 6)) == null ? undefined : f,
-    elevenlabsMetadata: (f = msg.getElevenlabsMetadata()) && ai_inworld_voices_voices_pb.Voice.ElevenLabsMetadata.toObject(includeInstance, f)
+    elevenlabsMetadata: (f = msg.getElevenlabsMetadata()) && ai_inworld_voices_voices_pb.Voice.ElevenLabsMetadata.toObject(includeInstance, f),
+    inworldV2Metadata: (f = msg.getInworldV2Metadata()) && ai_inworld_voices_voices_pb.InworldV2Metadata.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -179,6 +181,11 @@ proto.ai.inworld.voices.BaseVoice.deserializeBinaryFromReader = function(msg, re
       var value = new ai_inworld_voices_voices_pb.Voice.ElevenLabsMetadata;
       reader.readMessage(value,ai_inworld_voices_voices_pb.Voice.ElevenLabsMetadata.deserializeBinaryFromReader);
       msg.setElevenlabsMetadata(value);
+      break;
+    case 101:
+      var value = new ai_inworld_voices_voices_pb.InworldV2Metadata;
+      reader.readMessage(value,ai_inworld_voices_voices_pb.InworldV2Metadata.deserializeBinaryFromReader);
+      msg.setInworldV2Metadata(value);
       break;
     default:
       reader.skipField();
@@ -257,6 +264,14 @@ proto.ai.inworld.voices.BaseVoice.serializeBinaryToWriter = function(message, wr
       100,
       f,
       ai_inworld_voices_voices_pb.Voice.ElevenLabsMetadata.serializeBinaryToWriter
+    );
+  }
+  f = message.getInworldV2Metadata();
+  if (f != null) {
+    writer.writeMessage(
+      101,
+      f,
+      ai_inworld_voices_voices_pb.InworldV2Metadata.serializeBinaryToWriter
     );
   }
 };
@@ -442,6 +457,43 @@ proto.ai.inworld.voices.BaseVoice.prototype.clearElevenlabsMetadata = function()
  */
 proto.ai.inworld.voices.BaseVoice.prototype.hasElevenlabsMetadata = function() {
   return jspb.Message.getField(this, 100) != null;
+};
+
+
+/**
+ * optional InworldV2Metadata inworld_v2_metadata = 101;
+ * @return {?proto.ai.inworld.voices.InworldV2Metadata}
+ */
+proto.ai.inworld.voices.BaseVoice.prototype.getInworldV2Metadata = function() {
+  return /** @type{?proto.ai.inworld.voices.InworldV2Metadata} */ (
+    jspb.Message.getWrapperField(this, ai_inworld_voices_voices_pb.InworldV2Metadata, 101));
+};
+
+
+/**
+ * @param {?proto.ai.inworld.voices.InworldV2Metadata|undefined} value
+ * @return {!proto.ai.inworld.voices.BaseVoice} returns this
+*/
+proto.ai.inworld.voices.BaseVoice.prototype.setInworldV2Metadata = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 101, proto.ai.inworld.voices.BaseVoice.oneofGroups_[0], value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.ai.inworld.voices.BaseVoice} returns this
+ */
+proto.ai.inworld.voices.BaseVoice.prototype.clearInworldV2Metadata = function() {
+  return this.setInworldV2Metadata(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.ai.inworld.voices.BaseVoice.prototype.hasInworldV2Metadata = function() {
+  return jspb.Message.getField(this, 101) != null;
 };
 
 

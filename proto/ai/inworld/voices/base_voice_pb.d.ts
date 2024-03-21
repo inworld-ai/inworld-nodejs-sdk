@@ -31,6 +31,11 @@ export class BaseVoice extends jspb.Message {
     getElevenlabsMetadata(): ai_inworld_voices_voices_pb.Voice.ElevenLabsMetadata | undefined;
     setElevenlabsMetadata(value?: ai_inworld_voices_voices_pb.Voice.ElevenLabsMetadata): BaseVoice;
 
+    hasInworldV2Metadata(): boolean;
+    clearInworldV2Metadata(): void;
+    getInworldV2Metadata(): ai_inworld_voices_voices_pb.InworldV2Metadata | undefined;
+    setInworldV2Metadata(value?: ai_inworld_voices_voices_pb.InworldV2Metadata): BaseVoice;
+
     getTtsMetadataCase(): BaseVoice.TtsMetadataCase;
 
     serializeBinary(): Uint8Array;
@@ -52,11 +57,13 @@ export namespace BaseVoice {
         age: ai_inworld_voices_voices_pb.Age,
         languagesList: Array<ai_inworld_language_codes_language_codes_pb.LanguageCode>,
         elevenlabsMetadata?: ai_inworld_voices_voices_pb.Voice.ElevenLabsMetadata.AsObject,
+        inworldV2Metadata?: ai_inworld_voices_voices_pb.InworldV2Metadata.AsObject,
     }
 
     export enum TtsMetadataCase {
         TTS_METADATA_NOT_SET = 0,
         ELEVENLABS_METADATA = 100,
+        INWORLD_V2_METADATA = 101,
     }
 
 }

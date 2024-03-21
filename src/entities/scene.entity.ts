@@ -3,17 +3,20 @@ import { LoadSceneResponse } from '@proto/ai/inworld/engine/world-engine_pb';
 import { Character } from './character.entity';
 
 export interface SceneProps {
-  characters: Character[];
-  key: string;
+  name: string;
+  characters?: Character[];
+  key?: string;
 }
 
 export class Scene {
+  name: string;
   characters: Array<Character> = [];
   key: string;
 
   constructor(props: SceneProps) {
-    this.characters = props.characters;
-    this.key = props.key;
+    this.name = props.name;
+    this.characters = props.characters ?? [];
+    this.key = props.key ?? '';
   }
 
   static serialize(scene: Scene) {
@@ -22,13 +25,13 @@ export class Scene {
 
   static deserialize(json: string) {
     try {
-      const { characters, key } = JSON.parse(json) as SceneProps;
+      const { characters, key, name } = JSON.parse(json) as SceneProps;
 
-      return new Scene({ characters, key });
+      return new Scene({ characters, key, name });
     } catch (e) {}
   }
 
-  static fromProto(proto: LoadSceneResponse) {
+  static fromProto(name: string, proto: LoadSceneResponse) {
     const characters = proto
       .getAgentsList()
       .map((agent: LoadSceneResponse.Agent) => {
@@ -49,6 +52,7 @@ export class Scene {
       });
 
     return new Scene({
+      name,
       key: proto.getKey(),
       characters,
     });

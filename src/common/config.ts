@@ -17,11 +17,11 @@ export class Config {
     return Config.instance;
   }
 
-  public getHost() {
+  getHost() {
     return this.ENGINE_HOST;
   }
 
-  public getSSL() {
+  getSSL() {
     return this.ENGINE_SSL;
   }
 }

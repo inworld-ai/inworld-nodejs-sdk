@@ -2,9 +2,10 @@ import { v4 } from 'uuid';
 
 import { Scene } from '../../src/entities/scene.entity';
 import { Session } from '../../src/entities/session.entity';
-import { createCharacter, sessionToken } from '../helpers';
+import { createCharacter, SCENE, sessionToken } from '../helpers';
 
 let scene: Scene = {
+  name: SCENE,
   key: v4(),
   characters: [createCharacter(), createCharacter()],
 };

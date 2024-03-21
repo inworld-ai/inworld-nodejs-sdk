@@ -44,6 +44,7 @@ import {
   EmotionStrength,
   EmotionStrengthCode,
 } from './entities/emotion_strength.entity';
+import { DislikeType, Feedback } from './entities/feedback.entity';
 import {
   Actor,
   AudioEvent,
@@ -58,6 +59,10 @@ import {
 import { Scene } from './entities/scene.entity';
 import { Session } from './entities/session.entity';
 import { SessionToken } from './entities/session_token.entity';
+import {
+  FeedbackDislikeProps,
+  FeedbackLikeProps,
+} from './services/feedback.service';
 import { InworldConnectionService } from './services/inworld_connection.service';
 
 const config = Config.getInstance();
@@ -75,10 +80,14 @@ export {
   ConnectionConfig,
   DialogParticipant,
   DialogPhrase,
+  DislikeType,
   EmotionBehavior,
   EmotionBehaviorCode,
   EmotionStrength,
   EmotionStrengthCode,
+  Feedback,
+  FeedbackDislikeProps,
+  FeedbackLikeProps,
   getHost,
   getSSL,
   InworlControlType,

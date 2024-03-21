@@ -19,8 +19,6 @@ export class InteractionFeedback extends jspb.Message {
     addType(value: InteractionDislikeType, index?: number): InteractionDislikeType;
     getComment(): string;
     setComment(value: string): InteractionFeedback;
-    getResponseId(): string;
-    setResponseId(value: string): InteractionFeedback;
     getName(): string;
     setName(value: string): InteractionFeedback;
 
@@ -39,7 +37,6 @@ export namespace InteractionFeedback {
         isLike: boolean,
         typeList: Array<InteractionDislikeType>,
         comment: string,
-        responseId: string,
         name: string,
     }
 }

@@ -60,7 +60,7 @@ export class WorldEngineClientGrpcService<InworldPacketT> {
 
   private logger = Logger.getInstance();
 
-  public async generateSessionToken(
+  async generateSessionToken(
     apiKey: ApiKey,
     scene: string,
   ): Promise<AccessToken> {
@@ -96,7 +96,7 @@ export class WorldEngineClientGrpcService<InworldPacketT> {
     return response;
   }
 
-  public async loadScene(props: LoadSceneProps<InworldPacketT>) {
+  async loadScene(props: LoadSceneProps<InworldPacketT>) {
     const { capabilities, name, sessionContinuation, sessionToken, user } =
       props;
 
@@ -154,7 +154,7 @@ export class WorldEngineClientGrpcService<InworldPacketT> {
     return response;
   }
 
-  public session(props: SessionProps) {
+  session(props: SessionProps) {
     const { sessionToken, onDisconnect, onError, onMessage } = props;
 
     const metadata = this.getMetadata(sessionToken);

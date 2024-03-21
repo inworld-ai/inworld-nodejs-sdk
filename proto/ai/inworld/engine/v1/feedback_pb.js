@@ -134,7 +134,6 @@ proto.v1.InteractionFeedback.toObject = function(includeInstance, msg) {
     isLike: jspb.Message.getBooleanFieldWithDefault(msg, 1, false),
     typeList: (f = jspb.Message.getRepeatedField(msg, 2)) == null ? undefined : f,
     comment: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    responseId: jspb.Message.getFieldWithDefault(msg, 4, ""),
     name: jspb.Message.getFieldWithDefault(msg, 5, "")
   };
 
@@ -185,10 +184,6 @@ proto.v1.InteractionFeedback.deserializeBinaryFromReader = function(msg, reader)
     case 3:
       var value = /** @type {string} */ (reader.readString());
       msg.setComment(value);
-      break;
-    case 4:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setResponseId(value);
       break;
     case 5:
       var value = /** @type {string} */ (reader.readString());
@@ -241,13 +236,6 @@ proto.v1.InteractionFeedback.serializeBinaryToWriter = function(message, writer)
   if (f.length > 0) {
     writer.writeString(
       3,
-      f
-    );
-  }
-  f = message.getResponseId();
-  if (f.length > 0) {
-    writer.writeString(
-      4,
       f
     );
   }
@@ -331,24 +319,6 @@ proto.v1.InteractionFeedback.prototype.getComment = function() {
  */
 proto.v1.InteractionFeedback.prototype.setComment = function(value) {
   return jspb.Message.setProto3StringField(this, 3, value);
-};
-
-
-/**
- * optional string response_id = 4;
- * @return {string}
- */
-proto.v1.InteractionFeedback.prototype.getResponseId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.v1.InteractionFeedback} returns this
- */
-proto.v1.InteractionFeedback.prototype.setResponseId = function(value) {
-  return jspb.Message.setProto3StringField(this, 4, value);
 };
 
 
