@@ -10,7 +10,7 @@ import {
   SessionControlResponseEvent,
 } from '@proto/ai/inworld/packets/packets_pb';
 
-import { InworldPacket } from '../entities/inworld_packet.entity';
+import { InworldPacket } from '../entities/packets/inworld_packet.entity';
 import { SessionToken } from '../entities/session_token.entity';
 
 export interface ApiKey {
@@ -102,4 +102,24 @@ export interface Extension<
   convertPacketFromProto?: (proto: ProtoPacket) => InworldPacketT;
   beforeLoadScene?: (packets: ProtoPacket[]) => ProtoPacket[];
   afterLoadScene?: (res: SessionControlResponseEvent) => void;
+}
+
+export enum InworldPacketType {
+  UNKNOWN = 'UNKNOWN',
+  TEXT = 'TEXT',
+  AUDIO = 'AUDIO',
+  TRIGGER = 'TRIGGER',
+  EMOTION = 'EMOTION',
+  CONTROL = 'CONTROL',
+  SILENCE = 'SILENCE',
+  CANCEL_RESPONSE = 'CANCEL_RESPONSE',
+  NARRATED_ACTION = 'NARRATED_ACTION',
+}
+
+export enum InworlControlType {
+  UNKNOWN = 'UNKNOWN',
+  INTERACTION_END = 'INTERACTION_END',
+  TTS_PLAYBACK_MUTE = 'TTS_PLAYBACK_MUTE',
+  TTS_PLAYBACK_UNMUTE = 'TTS_PLAYBACK_UNMUTE',
+  WARNING = 'WARNING',
 }

@@ -22,7 +22,7 @@ import {
 } from '../common/data_structures';
 import { protoTimestamp } from '../common/helpers';
 import { Character } from '../entities/character.entity';
-import { TriggerParameter } from '../entities/inworld_packet.entity';
+import { TriggerParameter } from '../entities/packets/trigger.entity';
 
 export class EventFactory {
   private character: Character = null;

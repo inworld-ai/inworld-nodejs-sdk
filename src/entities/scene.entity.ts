@@ -6,14 +6,17 @@ import {
 import { Character } from './character.entity';
 
 export interface SceneProps {
-  characters: Character[];
+  name: string;
+  characters?: Character[];
 }
 
 export class Scene {
-  characters: Array<Character> = [];
+  name: string;
+  characters: Array<Character>;
 
   constructor(props: SceneProps) {
-    this.characters = props.characters;
+    this.name = props.name;
+    this.characters = props.characters ?? [];
   }
 
   static serialize(scene: Scene) {
@@ -22,13 +25,13 @@ export class Scene {
 
   static deserialize(json: string) {
     try {
-      const { characters } = JSON.parse(json) as SceneProps;
+      const { name, characters } = JSON.parse(json) as SceneProps;
 
-      return new Scene({ characters });
+      return new Scene({ name, characters });
     } catch (e) {}
   }
 
-  static fromProto(proto: SessionControlResponseEvent) {
+  static fromProto(name: string, proto: SessionControlResponseEvent) {
     const characters = (proto.getLoadedScene()?.getAgentsList() ?? []).map(
       (agent: Agent) => {
         const assets = agent.getCharacterAssets();
@@ -48,6 +51,6 @@ export class Scene {
       },
     );
 
-    return new Scene({ characters });
+    return new Scene({ name, characters });
   }
 }

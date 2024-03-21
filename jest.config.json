@@ -1,5 +1,5 @@
 {
-  "coveragePathIgnorePatterns": ["node_modules", "proto"],
+  "coveragePathIgnorePatterns": ["node_modules", "proto", "build"],
   "preset": "ts-jest",
   "moduleNameMapper": {
     "@proto/(.*)": "<rootDir>/proto/$1",

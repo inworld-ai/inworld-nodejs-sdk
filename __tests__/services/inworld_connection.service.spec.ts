@@ -5,7 +5,7 @@ import {
 } from '@proto/ai/inworld/packets/packets_pb';
 import { v4 } from 'uuid';
 
-import { InworldPacket } from '../../src/entities/inworld_packet.entity';
+import { InworldPacket } from '../../src/entities/packets/inworld_packet.entity';
 import { EventFactory } from '../../src/factories/event';
 import { ConnectionService } from '../../src/services/connection.service';
 import { InworldConnectionService } from '../../src/services/inworld_connection.service';
@@ -79,8 +79,8 @@ describe('character', () => {
 
   test('should return current character', async () => {
     const getCurrentCharacter = jest
-      .spyOn(eventFactory, 'getCurrentCharacter')
-      .mockImplementationOnce(() => characters[0]);
+      .spyOn(ConnectionService.prototype, 'getCurrentCharacter')
+      .mockImplementation(() => Promise.resolve(characters[0]));
 
     const result = await service.getCurrentCharacter();
 
@@ -89,7 +89,10 @@ describe('character', () => {
   });
 
   test('should set current character', async () => {
-    const setCurrentCharacter = jest.spyOn(eventFactory, 'setCurrentCharacter');
+    const setCurrentCharacter = jest.spyOn(
+      ConnectionService.prototype,
+      'setCurrentCharacter',
+    );
 
     service.setCurrentCharacter(characters[0]);
 

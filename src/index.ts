@@ -21,6 +21,8 @@ import {
   Capabilities,
   ClientConfiguration,
   ConnectionConfig,
+  InworlControlType,
+  InworldPacketType,
   SessionTokenProps,
   User,
   UserProfile,
@@ -36,28 +38,32 @@ import {
   SessionContinuation,
   SessionContinuationProps,
 } from './entities/continuation/session_continuation.entity';
+import { DislikeType, Feedback } from './entities/feedback.entity';
+import { AudioEvent } from './entities/packets/audio.entity';
+import { EmotionEvent } from './entities/packets/emotion/emotion.entity';
 import {
   EmotionBehavior,
   EmotionBehaviorCode,
-} from './entities/emotion_behavior.entity';
+} from './entities/packets/emotion/emotion_behavior.entity';
 import {
   EmotionStrength,
   EmotionStrengthCode,
-} from './entities/emotion_strength.entity';
+} from './entities/packets/emotion/emotion_strength.entity';
+import { InworldPacket } from './entities/packets/inworld_packet.entity';
+import { PacketId } from './entities/packets/packet_id.entity';
+import { Actor, Routing } from './entities/packets/routing.entity';
+import { TextEvent } from './entities/packets/text.entity';
 import {
-  Actor,
-  AudioEvent,
-  InworlControlType,
-  InworldPacket,
-  InworldPacketType,
-  PacketId,
-  Routing,
-  TextEvent,
+  TriggerEvent,
   TriggerParameter,
-} from './entities/inworld_packet.entity';
+} from './entities/packets/trigger.entity';
 import { Scene } from './entities/scene.entity';
 import { Session } from './entities/session.entity';
 import { SessionToken } from './entities/session_token.entity';
+import {
+  FeedbackDislikeProps,
+  FeedbackLikeProps,
+} from './services/feedback.service';
 import { InworldConnectionService } from './services/inworld_connection.service';
 
 const config = Config.getInstance();
@@ -75,10 +81,15 @@ export {
   ConnectionConfig,
   DialogParticipant,
   DialogPhrase,
+  DislikeType,
   EmotionBehavior,
   EmotionBehaviorCode,
+  EmotionEvent,
   EmotionStrength,
   EmotionStrengthCode,
+  Feedback,
+  FeedbackDislikeProps,
+  FeedbackLikeProps,
   getHost,
   getSSL,
   InworlControlType,
@@ -98,6 +109,7 @@ export {
   SessionTokenProps,
   status,
   TextEvent,
+  TriggerEvent,
   TriggerParameter,
   User,
   UserProfile,

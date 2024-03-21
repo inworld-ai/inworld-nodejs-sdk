@@ -13,8 +13,9 @@ import {
   User,
 } from '../common/data_structures';
 import { Logger } from '../common/logger';
+import { Character } from '../entities/character.entity';
 import { SessionContinuation } from '../entities/continuation/session_continuation.entity';
-import { InworldPacket } from '../entities/inworld_packet.entity';
+import { InworldPacket } from '../entities/packets/inworld_packet.entity';
 import { Scene } from '../entities/scene.entity';
 import { Session } from '../entities/session.entity';
 import { SessionToken } from '../entities/session_token.entity';
@@ -50,6 +51,7 @@ export class ConnectionService<
   private state: ConnectionState = ConnectionState.INACTIVE;
 
   private scene: Scene;
+  private sceneIsLoaded: boolean = false;
   private sessionToken: SessionToken;
   private stream: ClientDuplexStream<ProtoPacket, ProtoPacket>;
   private connectionProps: ConnectionProps<InworldPacketT>;
@@ -72,6 +74,9 @@ export class ConnectionService<
 
   constructor(props: ConnectionProps<InworldPacketT>) {
     this.connectionProps = props;
+    this.scene = new Scene({
+      name: this.connectionProps.name,
+    });
 
     this.onDisconnect = async () => {
       this.state = ConnectionState.INACTIVE;
@@ -80,14 +85,27 @@ export class ConnectionService<
     this.onError = this.connectionProps.onError;
 
     this.onMessage = async (packet: ProtoPacket) => {
-      this.connectionProps.onMessage?.(this.convertPacketFromProto(packet));
-      this.logger.debug({
-        action: 'Receive packet',
-        data: {
-          packet: packet.toObject(),
-        },
-        sessionId: this.sessionToken?.sessionId,
-      });
+      const inworldPacket = this.convertPacketFromProto(packet);
+
+      this.connectionProps.onMessage?.(inworldPacket);
+
+      if (inworldPacket.isWarning()) {
+        this.logger.warn({
+          action: 'Receive warning packet',
+          data: {
+            packet: packet.toObject(),
+          },
+          sessionId: this.sessionToken?.sessionId,
+        });
+      } else {
+        this.logger.debug({
+          action: 'Receive packet',
+          data: {
+            packet: packet.toObject(),
+          },
+          sessionId: this.sessionToken?.sessionId,
+        });
+      }
     };
   }
 
@@ -99,10 +117,14 @@ export class ConnectionService<
     return this.connectionProps.config?.connection?.autoReconnect ?? true;
   }
 
+  getSceneName() {
+    return this.scene.name;
+  }
+
   async generateSessionToken() {
     const proto = await this.engineService.generateSessionToken(
       this.connectionProps.apiKey,
-      this.connectionProps.name,
+      this.getSceneName(),
     );
 
     return SessionToken.fromProto(proto);
@@ -113,7 +135,7 @@ export class ConnectionService<
       const token = await this.ensureSessionToken();
       return this.stateService.getSessionState({
         sessionToken: token,
-        scene: this.connectionProps.name,
+        scene: this.getSceneName(),
       });
     } catch (err) {
       this.onError(err);
@@ -158,11 +180,21 @@ export class ConnectionService<
   }
 
   async getCharactersList() {
-    if (!this.scene) {
+    if (!this.sceneIsLoaded) {
       await this.open();
     }
 
     return this.scene.characters;
+  }
+
+  async getCurrentCharacter() {
+    await this.getCharactersList();
+
+    return this.getEventFactory().getCurrentCharacter();
+  }
+
+  async setCurrentCharacter(character: Character) {
+    return this.getEventFactory().setCurrentCharacter(character);
   }
 
   async open() {
@@ -188,6 +220,7 @@ export class ConnectionService<
 
       this.stream = stream;
       this.scene = scene;
+      this.sceneIsLoaded = true;
 
       if (
         !this.getEventFactory().getCurrentCharacter() &&

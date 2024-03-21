@@ -1,5 +1,10 @@
 ## [Unreleased]
 
+### Added
+
+- Allow to like, dislike or undo feedback
+- Handle runtime warnings
+
 ### Changed
 
 - Change internal way to open session

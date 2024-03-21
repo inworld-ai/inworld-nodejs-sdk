@@ -2,6 +2,7 @@ import { ClientDuplexStreamImpl } from '@grpc/grpc-js/build/src/call';
 import { WorldEngineClient } from '@proto/ai/inworld/engine/world-engine_grpc_pb';
 import {
   Actor,
+  ControlEvent,
   InworldPacket as ProtoPacket,
   PacketId,
   Routing,
@@ -11,7 +12,7 @@ import { v4 } from 'uuid';
 
 import { protoTimestamp } from '../../src/common/helpers';
 import { Logger } from '../../src/common/logger';
-import { InworldPacket } from '../../src/entities/inworld_packet.entity';
+import { InworldPacket } from '../../src/entities/packets/inworld_packet.entity';
 import { Scene } from '../../src/entities/scene.entity';
 import { Session } from '../../src/entities/session.entity';
 import { SessionToken } from '../../src/entities/session_token.entity';
@@ -39,7 +40,7 @@ const onError = jest.fn();
 const onMessage = jest.fn();
 const onDisconnect = jest.fn();
 
-const scene = new Scene({ characters });
+const scene = new Scene({ name: SCENE, characters });
 const timeoutMockCalls = (timeout: any) =>
   timeout.mock.calls.filter((ctx: any) => ctx[1] !== 0).length;
 const DISCONNECT_TIMEOUT = 100;
@@ -126,6 +127,57 @@ describe('message', () => {
     expect(openSession).toHaveBeenCalledTimes(1);
     expect(onMessage).toHaveBeenCalledTimes(1);
     expect(onMessage).toHaveBeenCalledWith(InworldPacket.fromProto(packet));
+  });
+
+  test('should receive warn message', async () => {
+    const stream = getStream();
+    const loggerWarn = jest.spyOn(Logger.prototype, 'warn');
+    const onMessage = jest.fn();
+    const connection = new ConnectionService({
+      apiKey: { key: KEY, secret: SECRET },
+      config: { capabilities },
+      name: SCENE,
+      user,
+      onError,
+      onMessage,
+      onDisconnect,
+    });
+
+    const rounting = new Routing()
+      .setSource(new Actor())
+      .setTarget(new Actor());
+    const control = new ControlEvent().setAction(ControlEvent.Action.WARNING);
+    const packet = new ProtoPacket()
+      .setPacketId(new PacketId().setPacketId(v4()))
+      .setRouting(rounting)
+      .setControl(control)
+      .setTimestamp(protoTimestamp());
+
+    jest
+      .spyOn(connection, 'generateSessionToken')
+      .mockImplementationOnce(() => Promise.resolve(sessionToken));
+    jest
+      .spyOn(WorldEngineClient.prototype, 'openSession')
+      .mockImplementationOnce(() => {
+        setTimeout(
+          () => new Promise(emitSessionControlResponseEvent(stream)),
+          0,
+        );
+        return stream;
+      });
+
+    await connection.open();
+
+    stream.emit('data', packet);
+    expect(onMessage).toHaveBeenCalledTimes(1);
+    expect(onMessage).toHaveBeenCalledWith(InworldPacket.fromProto(packet));
+    expect(loggerWarn).toHaveBeenCalledWith({
+      action: 'Receive warning packet',
+      data: {
+        packet: packet.toObject(),
+      },
+      sessionId: sessionToken.sessionId,
+    });
   });
 });
 
@@ -258,7 +310,7 @@ describe('open', () => {
     const sessionGetterSetter = {
       get: jest.fn().mockImplementationOnce(() =>
         Promise.resolve({
-          scene: Scene.fromProto(new SessionControlResponseEvent()),
+          scene: Scene.fromProto(SCENE, new SessionControlResponseEvent()),
           sessionToken,
         } as Session),
       ),
@@ -771,5 +823,50 @@ describe('getCharactersList', () => {
     expect(openSession).toHaveBeenCalledTimes(1);
     expect(setCurrentCharacter).toHaveBeenCalledTimes(1);
     expect(getCurrentCharacter).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('character', () => {
+  let connection: ConnectionService;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+
+    connection = new ConnectionService({
+      apiKey: { key: KEY, secret: SECRET },
+      name: SCENE,
+      config: { capabilities },
+      user,
+      onError,
+      onMessage,
+      onDisconnect,
+    });
+  });
+
+  test('should return current character', async () => {
+    const getCharactersList = jest
+      .spyOn(connection, 'getCharactersList')
+      .mockImplementationOnce(jest.fn());
+
+    const getCurrentCharacter = jest
+      .spyOn(EventFactory.prototype, 'getCurrentCharacter')
+      .mockImplementationOnce(() => characters[0]);
+
+    const result = await connection.getCurrentCharacter();
+
+    expect(result).toEqual(characters[0]);
+    expect(getCharactersList).toHaveBeenCalledTimes(1);
+    expect(getCurrentCharacter).toHaveBeenCalledTimes(1);
+  });
+
+  test('should set current character', async () => {
+    const setCurrentCharacter = jest.spyOn(
+      EventFactory.prototype,
+      'setCurrentCharacter',
+    );
+    connection.setCurrentCharacter(characters[0]);
+
+    expect(setCurrentCharacter).toHaveBeenCalledTimes(1);
+    expect(setCurrentCharacter).toHaveBeenCalledWith(characters[0]);
   });
 });

@@ -57,8 +57,6 @@ function deserialize_google_protobuf_Empty(buffer_arg) {
 // Contains methods to post feedback
 var FeedbackService = exports.FeedbackService = {
   // Creates a feedback for session message from agent
-// (-- api-linter: core::0133::method-signature=disabled
-//     aip.dev/not-precedent: Parent entity is Interaction --)
 createInteractionFeedback: {
     path: '/ai.inworld.engine.v1.Feedback/CreateInteractionFeedback',
     requestStream: false,

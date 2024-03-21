@@ -35,7 +35,7 @@ import {
 import { grpcOptions } from '../../common/helpers';
 import { Logger } from '../../common/logger';
 import { SessionContinuation } from '../../entities/continuation/session_continuation.entity';
-import { InworldPacket } from '../../entities/inworld_packet.entity';
+import { InworldPacket } from '../../entities/packets/inworld_packet.entity';
 import { Scene } from '../../entities/scene.entity';
 import { SessionToken } from '../../entities/session_token.entity';
 import { EventFactory } from '../../factories/event';
@@ -99,7 +99,6 @@ export class WorldEngineClientGrpcService<
       data: {
         address: this.address,
         ssl: this.ssl,
-        metadata: metadata.toJSON(),
         request: request.toObject(),
         response: response.toObject(),
       },
@@ -122,7 +121,6 @@ export class WorldEngineClientGrpcService<
         address: this.address,
         ssl: this.ssl,
         grpcOptions: this.grpcOptions,
-        metadata: metadata.toJSON(),
       },
       sessionId: sessionToken.sessionId,
     });
@@ -157,7 +155,7 @@ export class WorldEngineClientGrpcService<
             connection.addListener('data', onMessage);
           }
 
-          resolve([connection, Scene.fromProto(sceneProto)]);
+          resolve([connection, Scene.fromProto(props.name, sceneProto)]);
         } else {
           const err = new Error(
             'Unexpected packet received during scene loading',
