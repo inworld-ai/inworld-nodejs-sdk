@@ -5,10 +5,8 @@ import {
 
 import { CancelResponsesProps } from '../common/data_structures';
 import { Character } from '../entities/character.entity';
-import {
-  InworldPacket,
-  TriggerParameter,
-} from '../entities/inworld_packet.entity';
+import { InworldPacket } from '../entities/packets/inworld_packet.entity';
+import { TriggerParameter } from '../entities/packets/trigger.entity';
 import { ConnectionService } from './connection.service';
 import { FeedbackService } from './feedback.service';
 

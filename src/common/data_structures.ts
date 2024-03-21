@@ -87,3 +87,22 @@ export interface Extension<InworldPacketT> {
   beforeLoadScene?: (request: LoadSceneRequest) => LoadSceneRequest;
   afterLoadScene?: (res: LoadSceneResponse) => void;
 }
+
+export enum InworldPacketType {
+  UNKNOWN = 'UNKNOWN',
+  TEXT = 'TEXT',
+  AUDIO = 'AUDIO',
+  TRIGGER = 'TRIGGER',
+  EMOTION = 'EMOTION',
+  CONTROL = 'CONTROL',
+  SILENCE = 'SILENCE',
+  CANCEL_RESPONSE = 'CANCEL_RESPONSE',
+  NARRATED_ACTION = 'NARRATED_ACTION',
+}
+
+export enum InworlControlType {
+  UNKNOWN = 'UNKNOWN',
+  INTERACTION_END = 'INTERACTION_END',
+  TTS_PLAYBACK_MUTE = 'TTS_PLAYBACK_MUTE',
+  TTS_PLAYBACK_UNMUTE = 'TTS_PLAYBACK_UNMUTE',
+}

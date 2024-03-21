@@ -11,7 +11,7 @@ import { v4 } from 'uuid';
 
 import { protoTimestamp } from '../../src/common/helpers';
 import { Logger } from '../../src/common/logger';
-import { InworldPacket } from '../../src/entities/inworld_packet.entity';
+import { InworldPacket } from '../../src/entities/packets/inworld_packet.entity';
 import { Scene } from '../../src/entities/scene.entity';
 import { Session } from '../../src/entities/session.entity';
 import { SessionToken } from '../../src/entities/session_token.entity';
