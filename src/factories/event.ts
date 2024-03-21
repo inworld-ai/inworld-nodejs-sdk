@@ -6,6 +6,7 @@ import {
   CustomEvent,
   DataChunk,
   InworldPacket as ProtoPacket,
+  LoadCharacters,
   LoadScene,
   MutationEvent,
   NarratedAction,
@@ -151,7 +152,7 @@ export class EventFactory {
 
     return new ProtoPacket()
       .setPacketId(new PacketId().setPacketId(v4()))
-      .setRouting(this.openSessionRouting())
+      .setRouting(this.worldRouting())
       .setTimestamp(protoTimestamp())
       .setSessionControl(event);
   }
@@ -163,7 +164,20 @@ export class EventFactory {
 
     return new ProtoPacket()
       .setPacketId(new PacketId().setPacketId(v4()))
-      .setRouting(this.openSessionRouting())
+      .setRouting(this.worldRouting())
+      .setTimestamp(protoTimestamp())
+      .setMutation(mutation);
+  }
+
+  static loadCharacters(names: string[]): ProtoPacket {
+    const characters = new LoadCharacters().setNameList(
+      names.map((name) => new LoadCharacters.CharacterName().setName(name)),
+    );
+    const mutation = new MutationEvent().setLoadCharacters(characters);
+
+    return new ProtoPacket()
+      .setPacketId(new PacketId().setPacketId(v4()))
+      .setRouting(this.worldRouting())
       .setTimestamp(protoTimestamp())
       .setMutation(mutation);
   }
@@ -203,7 +217,7 @@ export class EventFactory {
     return new Routing().setSource(source).setTarget(target);
   }
 
-  private static openSessionRouting(): Routing {
+  private static worldRouting(): Routing {
     const source = new Actor().setType(Actor.Type.PLAYER);
     const target = new Actor().setType(Actor.Type.WORLD);
 

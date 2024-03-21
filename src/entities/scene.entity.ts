@@ -1,7 +1,4 @@
-import {
-  Agent,
-  SessionControlResponseEvent,
-} from '@proto/ai/inworld/packets/packets_pb';
+import { Agent, LoadedScene } from '@proto/ai/inworld/packets/packets_pb';
 
 import { Character } from './character.entity';
 
@@ -11,8 +8,8 @@ export interface SceneProps {
 }
 
 export class Scene {
-  name: string;
-  characters: Array<Character>;
+  readonly name: string;
+  readonly characters: Array<Character>;
 
   constructor(props: SceneProps) {
     this.name = props.name;
@@ -31,26 +28,12 @@ export class Scene {
     } catch (e) {}
   }
 
-  static fromProto(name: string, proto: SessionControlResponseEvent) {
-    const characters = (proto.getLoadedScene()?.getAgentsList() ?? []).map(
-      (agent: Agent) => {
-        const assets = agent.getCharacterAssets();
-
-        return new Character({
-          id: agent.getAgentId(),
-          resourceName: agent.getBrainName(),
-          displayName: agent.getGivenName(),
-          assets: {
-            avatarImg: assets?.getAvatarImg(),
-            avatarImgOriginal: assets?.getAvatarImgOriginal(),
-            rpmModelUri: assets?.getRpmModelUri(),
-            rpmImageUriPortrait: assets?.getRpmImageUriPortrait(),
-            rpmImageUriPosture: assets?.getRpmImageUriPosture(),
-          },
-        });
-      },
-    );
-
-    return new Scene({ name, characters });
+  static fromProto(name: string, proto: LoadedScene) {
+    return new Scene({
+      name,
+      characters: proto
+        .getAgentsList()
+        .map((agent: Agent) => Character.fromProto(agent)),
+    });
   }
 }

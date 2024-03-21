@@ -5,17 +5,19 @@ import {
 } from '@proto/ai/inworld/packets/packets_pb';
 import { v4 } from 'uuid';
 
+import { SCENE_NAME_THE_SAME } from '../../src/common/errors';
 import { InworldPacket } from '../../src/entities/packets/inworld_packet.entity';
 import { EventFactory } from '../../src/factories/event';
 import { ConnectionService } from '../../src/services/connection.service';
 import { InworldConnectionService } from '../../src/services/inworld_connection.service';
 import { ExtendedInworldPacket } from '../data_structures';
-import { createCharacter, extension, KEY, SECRET } from '../helpers';
+import { createCharacter, extension, KEY, SCENE, SECRET } from '../helpers';
 
 const characters = [createCharacter(), createCharacter()];
 const connection = new ConnectionService({
   apiKey: { key: KEY, secret: SECRET },
   onError: jest.fn(),
+  name: SCENE,
 });
 const eventFactory = new EventFactory();
 
@@ -282,5 +284,72 @@ describe('send', () => {
     expect(open).toHaveBeenCalledTimes(0);
     expect(service.isActive()).toEqual(true);
     expect(packet.mutation).toEqual({ regenerateResponse: { interactionId } });
+  });
+
+  test('should reload scene', async () => {
+    const loadScene = jest.spyOn(EventFactory, 'loadScene');
+
+    const packet = await service.reloadScene();
+
+    expect(open).toHaveBeenCalledTimes(0);
+    expect(service.isActive()).toEqual(true);
+    expect(loadScene).toHaveBeenCalledTimes(1);
+    expect(packet).toBeInstanceOf(InworldPacket);
+    expect(packet?.isSceneMutationRequest()).toEqual(true);
+  });
+
+  test('should change scene', async () => {
+    const scene = `workspaces/${v4()}/scenes/${v4()}`;
+    const changeScene = jest.spyOn(EventFactory, 'loadScene');
+
+    const packet = await service.changeScene(scene);
+
+    expect(open).toHaveBeenCalledTimes(0);
+    expect(service.isActive()).toEqual(true);
+    expect(changeScene).toHaveBeenCalledTimes(1);
+    expect(changeScene).toHaveBeenCalledWith(scene);
+    expect(packet).toBeInstanceOf(InworldPacket);
+    expect(packet?.isSceneMutationRequest()).toEqual(true);
+  });
+
+  test('should throw error in case of the same scene for change', async () => {
+    jest.spyOn(EventFactory, 'loadScene');
+
+    await expect(service.changeScene(SCENE)).rejects.toEqual(
+      new Error(SCENE_NAME_THE_SAME),
+    );
+  });
+
+  test('should throw error in case wrong scene format', async () => {
+    jest.spyOn(EventFactory, 'loadScene');
+
+    await expect(service.changeScene(v4())).rejects.toEqual(
+      new Error('Scene name has wrong format'),
+    );
+  });
+
+  test('should add character', async () => {
+    const characters = [
+      `workspaces/${v4()}/characters/${v4()}`,
+      `workspaces/${v4()}/characters/${v4()}`,
+    ];
+    const addCharacters = jest.spyOn(EventFactory, 'loadCharacters');
+
+    const packet = await service.addCharacters(characters);
+
+    expect(open).toHaveBeenCalledTimes(0);
+    expect(service.isActive()).toEqual(true);
+    expect(addCharacters).toHaveBeenCalledTimes(1);
+    expect(addCharacters).toHaveBeenCalledWith(characters);
+    expect(packet).toBeInstanceOf(InworldPacket);
+    expect(packet?.isSceneMutationRequest()).toEqual(true);
+  });
+
+  test('should throw error in case wrong character format', async () => {
+    jest.spyOn(EventFactory, 'loadCharacters');
+
+    await expect(service.addCharacters([v4()])).rejects.toEqual(
+      new Error('Character name has wrong format'),
+    );
   });
 });

@@ -7,7 +7,7 @@ import {
 import {
   Continuation,
   InworldPacket as ProtoPacket,
-  SessionControlResponseEvent,
+  LoadedScene,
 } from '@proto/ai/inworld/packets/packets_pb';
 
 import { InworldPacket } from '../entities/packets/inworld_packet.entity';
@@ -101,7 +101,7 @@ export interface Extension<
 > {
   convertPacketFromProto?: (proto: ProtoPacket) => InworldPacketT;
   beforeLoadScene?: (packets: ProtoPacket[]) => ProtoPacket[];
-  afterLoadScene?: (res: SessionControlResponseEvent) => void;
+  afterLoadScene?: (res: LoadedScene) => void;
 }
 
 export enum InworldPacketType {
@@ -114,6 +114,8 @@ export enum InworldPacketType {
   SILENCE = 'SILENCE',
   CANCEL_RESPONSE = 'CANCEL_RESPONSE',
   NARRATED_ACTION = 'NARRATED_ACTION',
+  SCENE_MUTATION_REQUEST = 'SCENE_MUTATION_REQUEST',
+  SCENE_MUTATION_RESPONSE = 'SCENE_MUTATION_RESPONSE',
 }
 
 export enum InworlControlType {

@@ -2,6 +2,7 @@
 
 ### Added
 
+- Allow to change scene and add characters to current scene
 - Allow to like, dislike or undo feedback
 - Handle runtime warnings
 
