@@ -1,15 +1,15 @@
 import { ClientDuplexStreamImpl } from '@grpc/grpc-js/build/src/call';
 import { WorldEngineClient } from '@proto/ai/inworld/engine/world-engine_grpc_pb';
-import { LoadSceneResponse } from '@proto/ai/inworld/engine/world-engine_pb';
 import {
   Actor,
+  ControlEvent,
   InworldPacket as ProtoPacket,
   PacketId,
   Routing,
+  SessionControlResponseEvent,
 } from '@proto/ai/inworld/packets/packets_pb';
 import { v4 } from 'uuid';
 
-import { ControlEvent } from '../../proto/ai/inworld/packets/packets_pb';
 import { protoTimestamp } from '../../src/common/helpers';
 import { Logger } from '../../src/common/logger';
 import { InworldPacket } from '../../src/entities/packets/inworld_packet.entity';
@@ -22,9 +22,10 @@ import { StateSerializationClientGrpcService } from '../../src/services/gprc/sta
 import { WorldEngineClientGrpcService } from '../../src/services/gprc/world_engine_client_grpc.service';
 import {
   capabilities,
-  convertAgentsToCharacters,
-  createAgent,
+  characters,
+  emitSessionControlResponseEvent,
   generateEmptyPacket,
+  getStream,
   KEY,
   previousState,
   SCENE,
@@ -39,10 +40,7 @@ const onError = jest.fn();
 const onMessage = jest.fn();
 const onDisconnect = jest.fn();
 
-const agents = [createAgent(), createAgent()];
-const characters = convertAgentsToCharacters(agents);
-const scene = new LoadSceneResponse().setAgentsList(agents);
-const stream = new ClientDuplexStreamImpl(jest.fn(), jest.fn());
+const scene = new Scene({ name: SCENE, characters });
 const timeoutMockCalls = (timeout: any) =>
   timeout.mock.calls.filter((ctx: any) => ctx[1] !== 0).length;
 const DISCONNECT_TIMEOUT = 100;
@@ -79,6 +77,108 @@ test('should generate session token', async () => {
 
   expect(generateSessionToken).toHaveBeenCalledTimes(1);
   expect(result).toEqual(sessionToken);
+});
+
+describe('message', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  test('should receive message', async () => {
+    const stream = getStream();
+    const onMessage = jest.fn();
+    const connection = new ConnectionService({
+      apiKey: { key: KEY, secret: SECRET },
+      config: { capabilities },
+      name: SCENE,
+      user,
+      onError,
+      onMessage,
+      onDisconnect,
+    });
+
+    const rounting = new Routing()
+      .setSource(new Actor())
+      .setTarget(new Actor());
+
+    const packet = new ProtoPacket()
+      .setPacketId(new PacketId().setPacketId(v4()))
+      .setRouting(rounting)
+      .setTimestamp(protoTimestamp());
+
+    const generateSessionToken = jest
+      .spyOn(connection, 'generateSessionToken')
+      .mockImplementationOnce(() => Promise.resolve(sessionToken));
+    const openSession = jest
+      .spyOn(WorldEngineClient.prototype, 'openSession')
+      .mockImplementationOnce(() => {
+        setTimeout(
+          () => new Promise(emitSessionControlResponseEvent(stream)),
+          0,
+        );
+        return stream;
+      });
+
+    await connection.open();
+
+    stream.emit('data', packet);
+
+    expect(generateSessionToken).toHaveBeenCalledTimes(1);
+    expect(openSession).toHaveBeenCalledTimes(1);
+    expect(onMessage).toHaveBeenCalledTimes(1);
+    expect(onMessage).toHaveBeenCalledWith(InworldPacket.fromProto(packet));
+  });
+
+  test('should receive warn message', async () => {
+    const stream = getStream();
+    const loggerWarn = jest.spyOn(Logger.prototype, 'warn');
+    const onMessage = jest.fn();
+    const connection = new ConnectionService({
+      apiKey: { key: KEY, secret: SECRET },
+      config: { capabilities },
+      name: SCENE,
+      user,
+      onError,
+      onMessage,
+      onDisconnect,
+    });
+
+    const rounting = new Routing()
+      .setSource(new Actor())
+      .setTarget(new Actor());
+    const control = new ControlEvent().setAction(ControlEvent.Action.WARNING);
+    const packet = new ProtoPacket()
+      .setPacketId(new PacketId().setPacketId(v4()))
+      .setRouting(rounting)
+      .setControl(control)
+      .setTimestamp(protoTimestamp());
+
+    jest
+      .spyOn(connection, 'generateSessionToken')
+      .mockImplementationOnce(() => Promise.resolve(sessionToken));
+    jest
+      .spyOn(WorldEngineClient.prototype, 'openSession')
+      .mockImplementationOnce(() => {
+        setTimeout(
+          () => new Promise(emitSessionControlResponseEvent(stream)),
+          0,
+        );
+        return stream;
+      });
+
+    await connection.open();
+
+    stream.emit('data', packet);
+    expect(onMessage).toHaveBeenCalledTimes(1);
+    expect(onMessage).toHaveBeenCalledWith(InworldPacket.fromProto(packet));
+    expect(loggerWarn).toHaveBeenCalledWith({
+      action: 'Receive warning packet',
+      data: {
+        packet: packet.toObject(),
+      },
+      sessionId: sessionToken.sessionId,
+    });
+  });
 });
 
 describe('getSessionState', () => {
@@ -154,34 +254,26 @@ describe('open', () => {
   });
 
   test('should execute without errors', async () => {
+    const stream = getStream();
     const generateSessionToken = jest
       .spyOn(connection, 'generateSessionToken')
       .mockImplementationOnce(() => Promise.resolve(sessionToken));
     const openSession = jest
-      .spyOn(WorldEngineClientGrpcService.prototype, 'session')
-      .mockImplementationOnce(() => stream);
-    const loadScene = jest
-      .spyOn(WorldEngineClientGrpcService.prototype, 'loadScene')
-      .mockImplementationOnce(() => Promise.resolve(scene));
+      .spyOn(WorldEngineClientGrpcService.prototype, 'openSession')
+      .mockImplementationOnce(() => Promise.resolve([stream, scene]));
 
     await connection.open();
 
     const loaded = await connection.getCharactersList();
 
     expect(generateSessionToken).toHaveBeenCalledTimes(1);
-    expect(loadScene).toHaveBeenCalledTimes(1);
-    expect(loadScene).toHaveBeenCalledWith({
-      name: SCENE,
-      capabilities,
-      sessionToken,
-      user,
-    });
     expect(openSession).toHaveBeenCalledTimes(1);
     expect(loaded[0].id).toBe(characters[0].id);
     expect(loaded[1].id).toBe(characters[1].id);
   });
 
   test('should call external generate session token', async () => {
+    const stream = getStream();
     const generateSessionTokenFn = jest
       .fn()
       .mockImplementationOnce(() => Promise.resolve(sessionToken));
@@ -202,11 +294,8 @@ describe('open', () => {
       .mockImplementationOnce(() => Promise.resolve(sessionToken));
 
     jest
-      .spyOn(WorldEngineClientGrpcService.prototype, 'session')
-      .mockImplementationOnce(() => stream);
-    jest
-      .spyOn(WorldEngineClientGrpcService.prototype, 'loadScene')
-      .mockImplementationOnce(() => Promise.resolve(scene));
+      .spyOn(WorldEngineClientGrpcService.prototype, 'openSession')
+      .mockImplementationOnce(() => Promise.resolve([stream, scene]));
 
     await connection.open();
 
@@ -217,10 +306,11 @@ describe('open', () => {
   });
 
   test('should call getter and setter for session', async () => {
+    const stream = getStream();
     const sessionGetterSetter = {
       get: jest.fn().mockImplementationOnce(() =>
         Promise.resolve({
-          scene: Scene.fromProto(SCENE, scene),
+          scene: Scene.fromProto(SCENE, new SessionControlResponseEvent()),
           sessionToken,
         } as Session),
       ),
@@ -242,11 +332,8 @@ describe('open', () => {
       .mockImplementationOnce(() => Promise.resolve(sessionToken));
 
     jest
-      .spyOn(WorldEngineClientGrpcService.prototype, 'session')
-      .mockImplementationOnce(() => stream);
-    jest
-      .spyOn(WorldEngineClientGrpcService.prototype, 'loadScene')
-      .mockImplementationOnce(() => Promise.resolve(scene));
+      .spyOn(WorldEngineClientGrpcService.prototype, 'openSession')
+      .mockImplementationOnce(() => Promise.resolve([stream, scene]));
 
     await connection.open();
 
@@ -271,12 +358,9 @@ describe('open', () => {
     jest
       .spyOn(connection, 'generateSessionToken')
       .mockImplementationOnce(() => Promise.resolve(sessionToken));
-    jest
-      .spyOn(WorldEngineClientGrpcService.prototype, 'loadScene')
-      .mockImplementationOnce(() => Promise.resolve(scene));
     const err = new Error();
     const openSession = jest
-      .spyOn(WorldEngineClientGrpcService.prototype, 'session')
+      .spyOn(WorldEngineClientGrpcService.prototype, 'openSession')
       .mockImplementationOnce(() => {
         throw err;
       });
@@ -289,15 +373,19 @@ describe('open', () => {
   });
 
   test('should inactivate connection on disconnect stream event', async () => {
+    const stream = getStream();
     jest
       .spyOn(connection, 'generateSessionToken')
       .mockImplementationOnce(() => Promise.resolve(sessionToken));
     jest
-      .spyOn(WorldEngineClientGrpcService.prototype, 'loadScene')
-      .mockImplementationOnce(() => Promise.resolve(scene));
-    jest
-      .spyOn(WorldEngineClient.prototype, 'session')
-      .mockImplementationOnce(() => stream);
+      .spyOn(WorldEngineClient.prototype, 'openSession')
+      .mockImplementationOnce(() => {
+        setTimeout(
+          () => new Promise(emitSessionControlResponseEvent(stream)),
+          0,
+        );
+        return stream;
+      });
 
     await connection.open();
 
@@ -310,6 +398,7 @@ describe('open', () => {
   });
 
   test('should not throw error on close event without onDisconnect handler', async () => {
+    const stream = getStream();
     const connection = new ConnectionService({
       apiKey: { key: KEY, secret: SECRET },
       name: SCENE,
@@ -323,11 +412,14 @@ describe('open', () => {
       .spyOn(connection, 'generateSessionToken')
       .mockImplementationOnce(() => Promise.resolve(sessionToken));
     jest
-      .spyOn(WorldEngineClientGrpcService.prototype, 'loadScene')
-      .mockImplementationOnce(() => Promise.resolve(scene));
-    jest
-      .spyOn(WorldEngineClient.prototype, 'session')
-      .mockImplementationOnce(() => stream);
+      .spyOn(WorldEngineClient.prototype, 'openSession')
+      .mockImplementationOnce(() => {
+        setTimeout(
+          () => new Promise(emitSessionControlResponseEvent(stream)),
+          0,
+        );
+        return stream;
+      });
 
     await connection.open();
 
@@ -339,51 +431,48 @@ describe('open', () => {
   });
 
   test('should not generate actual token twice', async () => {
+    const stream = getStream();
     const generateSessionToken = jest
       .spyOn(connection, 'generateSessionToken')
       .mockImplementationOnce(() => Promise.resolve(sessionToken));
-    jest
-      .spyOn(WorldEngineClientGrpcService.prototype, 'session')
-      .mockImplementationOnce(() => stream);
-    jest
-      .spyOn(WorldEngineClientGrpcService.prototype, 'loadScene')
-      .mockImplementationOnce(() => Promise.resolve(scene));
+    const openSession = jest
+      .spyOn(WorldEngineClientGrpcService.prototype, 'openSession')
+      .mockImplementationOnce(() => Promise.resolve([stream, scene]));
 
     await connection.open();
     await connection.open();
 
     expect(generateSessionToken).toHaveBeenCalledTimes(1);
+    expect(openSession).toHaveBeenCalledTimes(1);
   });
 
   test('should regenerate expired token', async () => {
+    const stream = getStream();
     const expiredSession = new SessionToken({
       ...sessionToken,
       expirationTime: new Date(),
     });
-    const generateSessionToken = jest.spyOn(connection, 'generateSessionToken');
 
-    jest
+    const generateSessionToken = jest
       .spyOn(connection, 'generateSessionToken')
+      .mockImplementationOnce(() => Promise.resolve(expiredSession))
       .mockImplementationOnce(() => Promise.resolve(expiredSession));
-    jest
-      .spyOn(WorldEngineClientGrpcService.prototype, 'session')
-      .mockImplementationOnce(() => stream);
-    jest
-      .spyOn(WorldEngineClientGrpcService.prototype, 'loadScene')
-      .mockImplementationOnce(() => Promise.resolve(scene));
+    const openSession = jest
+      .spyOn(WorldEngineClientGrpcService.prototype, 'openSession')
+      .mockImplementation(() => Promise.resolve([stream, scene]));
 
     await connection.open();
 
-    jest
-      .spyOn(connection, 'generateSessionToken')
-      .mockImplementationOnce(() => Promise.resolve(expiredSession));
+    connection.close();
 
     await connection.open();
 
     expect(generateSessionToken).toHaveBeenCalledTimes(2);
+    expect(openSession).toHaveBeenCalledTimes(2);
   });
 
   test('should schedule disconnect', async () => {
+    const stream = getStream();
     const connection = new ConnectionService({
       apiKey: { key: KEY, secret: SECRET },
       config: {
@@ -403,11 +492,8 @@ describe('open', () => {
       .spyOn(connection, 'generateSessionToken')
       .mockImplementationOnce(() => Promise.resolve(sessionToken));
     jest
-      .spyOn(WorldEngineClientGrpcService.prototype, 'session')
-      .mockImplementationOnce(() => stream);
-    jest
-      .spyOn(WorldEngineClientGrpcService.prototype, 'loadScene')
-      .mockImplementationOnce(() => Promise.resolve(scene));
+      .spyOn(WorldEngineClientGrpcService.prototype, 'openSession')
+      .mockImplementationOnce(() => Promise.resolve([stream, scene]));
 
     const setTimeout = jest
       .spyOn(global, 'setTimeout')
@@ -484,9 +570,6 @@ describe('open manually', () => {
     jest
       .spyOn(connection, 'generateSessionToken')
       .mockImplementationOnce(() => Promise.resolve(sessionToken));
-    jest
-      .spyOn(WorldEngineClientGrpcService.prototype, 'loadScene')
-      .mockImplementationOnce(() => Promise.resolve(scene));
 
     await connection.openManually();
 
@@ -515,6 +598,7 @@ describe('close', () => {
   });
 
   test('should execute for existing stream', async () => {
+    const stream = getStream();
     const loggerDebug = jest.spyOn(Logger.prototype, 'debug');
     const connection = new ConnectionService({
       apiKey: { key: KEY, secret: SECRET },
@@ -532,11 +616,8 @@ describe('close', () => {
       .spyOn(connection, 'generateSessionToken')
       .mockImplementationOnce(() => Promise.resolve(sessionToken));
     jest
-      .spyOn(WorldEngineClientGrpcService.prototype, 'session')
-      .mockImplementationOnce(() => stream);
-    jest
-      .spyOn(WorldEngineClientGrpcService.prototype, 'loadScene')
-      .mockImplementationOnce(() => Promise.resolve(scene));
+      .spyOn(WorldEngineClientGrpcService.prototype, 'openSession')
+      .mockImplementationOnce(() => Promise.resolve([stream, scene]));
 
     await connection.open();
 
@@ -571,6 +652,7 @@ describe('send', () => {
   });
 
   test('should execute for existing stream', async () => {
+    const stream = getStream();
     const connection = new ConnectionService({
       apiKey: { key: KEY, secret: SECRET },
       name: SCENE,
@@ -588,11 +670,8 @@ describe('send', () => {
       .spyOn(connection, 'generateSessionToken')
       .mockImplementationOnce(() => Promise.resolve(sessionToken));
     jest
-      .spyOn(WorldEngineClientGrpcService.prototype, 'session')
-      .mockImplementationOnce(() => stream);
-    jest
-      .spyOn(WorldEngineClientGrpcService.prototype, 'loadScene')
-      .mockImplementationOnce(() => Promise.resolve(scene));
+      .spyOn(WorldEngineClientGrpcService.prototype, 'openSession')
+      .mockImplementationOnce(() => Promise.resolve([stream, scene]));
 
     await connection.send(generateEmptyPacket);
 
@@ -656,6 +735,7 @@ describe('send', () => {
   });
 
   test('should load scene once in case of simultaneity sent packets', async () => {
+    const stream = getStream();
     const connection = new ConnectionService({
       apiKey: { key: KEY, secret: SECRET },
       config: {
@@ -669,16 +749,18 @@ describe('send', () => {
       onDisconnect,
     });
 
-    const loadScene = jest
-      .spyOn(WorldEngineClientGrpcService.prototype, 'loadScene')
-      .mockImplementation(() => Promise.resolve(scene));
-
     jest
       .spyOn(connection, 'generateSessionToken')
       .mockImplementation(() => Promise.resolve(sessionToken));
     jest
-      .spyOn(WorldEngineClient.prototype, 'session')
-      .mockImplementation(() => stream);
+      .spyOn(WorldEngineClient.prototype, 'openSession')
+      .mockImplementationOnce(() => {
+        setTimeout(
+          () => new Promise(emitSessionControlResponseEvent(stream)),
+          0,
+        );
+        return stream;
+      });
 
     const protoPackets: ProtoPacket[] = [];
     const send = () => {
@@ -689,7 +771,6 @@ describe('send', () => {
 
     await Promise.all([connection.send(send), connection.send(send)]).then(
       (values) => {
-        expect(loadScene).toHaveBeenCalledTimes(1);
         expect(values[0]).toEqual(InworldPacket.fromProto(protoPackets[0]));
         expect(values[1]).toEqual(InworldPacket.fromProto(protoPackets[1]));
       },
@@ -697,99 +778,7 @@ describe('send', () => {
   });
 });
 
-describe('message', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
-  test('should receive warn message', async () => {
-    const loggerWarn = jest.spyOn(Logger.prototype, 'warn');
-    const onMessage = jest.fn();
-    const connection = new ConnectionService({
-      apiKey: { key: KEY, secret: SECRET },
-      config: { capabilities },
-      name: SCENE,
-      user,
-      onError,
-      onMessage,
-      onDisconnect,
-    });
-
-    const rounting = new Routing()
-      .setSource(new Actor())
-      .setTarget(new Actor());
-    const control = new ControlEvent().setAction(ControlEvent.Action.WARNING);
-    const packet = new ProtoPacket()
-      .setPacketId(new PacketId().setPacketId(v4()))
-      .setRouting(rounting)
-      .setControl(control)
-      .setTimestamp(protoTimestamp());
-
-    jest
-      .spyOn(connection, 'generateSessionToken')
-      .mockImplementationOnce(() => Promise.resolve(sessionToken));
-    jest
-      .spyOn(WorldEngineClientGrpcService.prototype, 'loadScene')
-      .mockImplementationOnce(() => Promise.resolve(scene));
-    jest
-      .spyOn(WorldEngineClient.prototype, 'session')
-      .mockImplementationOnce(() => stream);
-
-    await connection.open();
-
-    stream.emit('data', packet);
-    expect(onMessage).toHaveBeenCalledTimes(1);
-    expect(onMessage).toHaveBeenCalledWith(InworldPacket.fromProto(packet));
-    expect(loggerWarn).toHaveBeenCalledWith({
-      action: 'Receive warning packet',
-      data: {
-        packet: packet.toObject(),
-      },
-      sessionId: sessionToken.sessionId,
-    });
-  });
-
-  test('should receive message', async () => {
-    const onMessage = jest.fn();
-    const connection = new ConnectionService({
-      apiKey: { key: KEY, secret: SECRET },
-      config: { capabilities },
-      name: SCENE,
-      user,
-      onError,
-      onMessage,
-      onDisconnect,
-    });
-
-    const rounting = new Routing()
-      .setSource(new Actor())
-      .setTarget(new Actor());
-
-    const packet = new ProtoPacket()
-      .setPacketId(new PacketId().setPacketId(v4()))
-      .setRouting(rounting)
-      .setTimestamp(protoTimestamp());
-
-    jest
-      .spyOn(connection, 'generateSessionToken')
-      .mockImplementationOnce(() => Promise.resolve(sessionToken));
-    jest
-      .spyOn(WorldEngineClientGrpcService.prototype, 'loadScene')
-      .mockImplementationOnce(() => Promise.resolve(scene));
-    jest
-      .spyOn(WorldEngineClient.prototype, 'session')
-      .mockImplementationOnce(() => stream);
-
-    await connection.open();
-
-    stream.emit('data', packet);
-
-    expect(onMessage).toHaveBeenCalledTimes(1);
-    expect(onMessage).toHaveBeenCalledWith(InworldPacket.fromProto(packet));
-  });
-});
-
-describe('character list', () => {
+describe('getCharactersList', () => {
   let connection: ConnectionService;
 
   beforeEach(() => {
@@ -807,6 +796,7 @@ describe('character list', () => {
   });
 
   test("should load scene if it's required", async () => {
+    const stream = getStream();
     const getCurrentCharacter = jest.spyOn(
       EventFactory.prototype,
       'getCurrentCharacter',
@@ -819,10 +809,10 @@ describe('character list', () => {
       .spyOn(connection, 'generateSessionToken')
       .mockImplementationOnce(() => Promise.resolve(sessionToken))
       .mockImplementationOnce(() => Promise.resolve(sessionToken));
-    const loadScene = jest
-      .spyOn(WorldEngineClientGrpcService.prototype, 'loadScene')
-      .mockImplementationOnce(() => Promise.resolve(scene))
-      .mockImplementationOnce(() => Promise.resolve(scene));
+    const openSession = jest
+      .spyOn(WorldEngineClientGrpcService.prototype, 'openSession')
+      .mockImplementationOnce(() => Promise.resolve([stream, scene]))
+      .mockImplementationOnce(() => Promise.resolve([stream, scene]));
 
     const loadedCharactersFirst = await connection.getCharactersList();
     const loadedCharactersSecond = await connection.getCharactersList();
@@ -830,7 +820,7 @@ describe('character list', () => {
     expect(loadedCharactersFirst).toEqual(characters);
     expect(loadedCharactersSecond).toEqual(characters);
     expect(generateSessionToken).toHaveBeenCalledTimes(1);
-    expect(loadScene).toHaveBeenCalledTimes(1);
+    expect(openSession).toHaveBeenCalledTimes(1);
     expect(setCurrentCharacter).toHaveBeenCalledTimes(1);
     expect(getCurrentCharacter).toHaveBeenCalledTimes(1);
   });

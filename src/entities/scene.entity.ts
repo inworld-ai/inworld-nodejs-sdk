@@ -1,22 +1,22 @@
-import { LoadSceneResponse } from '@proto/ai/inworld/engine/world-engine_pb';
+import {
+  Agent,
+  SessionControlResponseEvent,
+} from '@proto/ai/inworld/packets/packets_pb';
 
 import { Character } from './character.entity';
 
 export interface SceneProps {
   name: string;
   characters?: Character[];
-  key?: string;
 }
 
 export class Scene {
   name: string;
-  characters: Array<Character> = [];
-  key: string;
+  characters: Array<Character>;
 
   constructor(props: SceneProps) {
     this.name = props.name;
     this.characters = props.characters ?? [];
-    this.key = props.key ?? '';
   }
 
   static serialize(scene: Scene) {
@@ -25,16 +25,15 @@ export class Scene {
 
   static deserialize(json: string) {
     try {
-      const { characters, key, name } = JSON.parse(json) as SceneProps;
+      const { name, characters } = JSON.parse(json) as SceneProps;
 
-      return new Scene({ characters, key, name });
+      return new Scene({ name, characters });
     } catch (e) {}
   }
 
-  static fromProto(name: string, proto: LoadSceneResponse) {
-    const characters = proto
-      .getAgentsList()
-      .map((agent: LoadSceneResponse.Agent) => {
+  static fromProto(name: string, proto: SessionControlResponseEvent) {
+    const characters = (proto.getLoadedScene()?.getAgentsList() ?? []).map(
+      (agent: Agent) => {
         const assets = agent.getCharacterAssets();
 
         return new Character({
@@ -49,12 +48,9 @@ export class Scene {
             rpmImageUriPosture: assets?.getRpmImageUriPosture(),
           },
         });
-      });
+      },
+    );
 
-    return new Scene({
-      name,
-      key: proto.getKey(),
-      characters,
-    });
+    return new Scene({ name, characters });
   }
 }

@@ -1,4 +1,4 @@
-import { SessionContinuation as SessionContinuationProto } from '@proto/ai/inworld/engine/world-engine_pb';
+import { Continuation } from '@proto/ai/inworld/packets/packets_pb';
 
 import { PreviousDialog } from '../../src/entities/continuation/previous_dialog.entity';
 import { SessionContinuation } from '../../src/entities/continuation/session_continuation.entity';
@@ -14,12 +14,10 @@ describe('Previous Dialog', () => {
   });
 
   test('should convert proto to external object', () => {
-    const proto = new SessionContinuationProto().setPreviousDialog(
-      previousDialog.toProto(),
-    );
+    const proto = new Continuation().setDialogHistory(previousDialog.toProto());
 
     expect(previousDialog).toEqual(
-      PreviousDialog.fromProto(proto.getPreviousDialog()),
+      PreviousDialog.fromProto(proto.getDialogHistory()),
     );
   });
 });

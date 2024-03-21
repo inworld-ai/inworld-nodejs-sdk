@@ -57,7 +57,7 @@ describe('event types', () => {
     expect(packetId.getUtteranceId()).toBeFalsy();
     expect(packetId.getCorrelationId()).toBeFalsy();
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTarget().getName()).toEqual(character.id);
+    expect(event.getRouting().getTarget().getName()).toEqual(character?.id);
     expect(event.hasTimestamp()).toEqual(true);
   });
 
@@ -74,7 +74,7 @@ describe('event types', () => {
     expect(packetId.getUtteranceId()).toBeFalsy();
     expect(packetId.getCorrelationId()).toBeFalsy();
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTarget().getName()).toEqual(character.id);
+    expect(event.getRouting().getTarget().getName()).toEqual(character?.id);
     expect(event.hasTimestamp()).toEqual(true);
   });
 
@@ -91,7 +91,7 @@ describe('event types', () => {
     expect(packetId.getUtteranceId()).toBeFalsy();
     expect(packetId.getCorrelationId()).toBeFalsy();
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTarget().getName()).toEqual(character.id);
+    expect(event.getRouting().getTarget().getName()).toEqual(character?.id);
     expect(event.hasTimestamp()).toEqual(true);
   });
 
@@ -108,7 +108,7 @@ describe('event types', () => {
     expect(packetId.getUtteranceId()).toBeFalsy();
     expect(packetId.getCorrelationId()).toBeFalsy();
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTarget().getName()).toEqual(character.id);
+    expect(event.getRouting().getTarget().getName()).toEqual(character?.id);
     expect(event.hasTimestamp()).toEqual(true);
   });
 
@@ -125,7 +125,7 @@ describe('event types', () => {
     expect(packetId.getUtteranceId()).toBeFalsy();
     expect(packetId.getCorrelationId()).toBeFalsy();
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTarget().getName()).toEqual(character.id);
+    expect(event.getRouting().getTarget().getName()).toEqual(character?.id);
     expect(event.hasTimestamp()).toEqual(true);
   });
 
@@ -141,7 +141,7 @@ describe('event types', () => {
     expect(packetId.getUtteranceId()).toBeDefined();
     expect(packetId.getCorrelationId()).toBeDefined();
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTarget().getName()).toEqual(character.id);
+    expect(event.getRouting().getTarget().getName()).toEqual(character?.id);
     expect(event.hasTimestamp()).toEqual(true);
   });
 
@@ -158,7 +158,7 @@ describe('event types', () => {
     expect(packetId.getUtteranceId()).toBeDefined();
     expect(packetId.getCorrelationId()).toBeDefined();
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTarget().getName()).toEqual(character.id);
+    expect(event.getRouting().getTarget().getName()).toEqual(character?.id);
     expect(event.hasTimestamp()).toEqual(true);
   });
 
@@ -181,7 +181,7 @@ describe('event types', () => {
     expect(packetId.getUtteranceId()).toBeDefined();
     expect(packetId.getCorrelationId()).toBeDefined();
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTarget().getName()).toEqual(character.id);
+    expect(event.getRouting().getTarget().getName()).toEqual(character?.id);
     expect(event.hasTimestamp()).toEqual(true);
   });
 
@@ -195,7 +195,7 @@ describe('event types', () => {
     expect(packetId.getUtteranceId()).toBeDefined();
     expect(packetId.getCorrelationId()).toBeDefined();
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTarget().getName()).toEqual(character.id);
+    expect(event.getRouting().getTarget().getName()).toEqual(character?.id);
     expect(event.hasTimestamp()).toEqual(true);
   });
 

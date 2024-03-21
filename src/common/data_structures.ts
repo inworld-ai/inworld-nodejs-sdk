@@ -1,10 +1,16 @@
 import {
-  CapabilitiesRequest,
-  LoadSceneRequest,
-  LoadSceneResponse,
-} from '@proto/ai/inworld/engine/world-engine_pb';
-import { InworldPacket as ProtoPacket } from '@proto/ai/inworld/packets/packets_pb';
+  CapabilitiesConfiguration,
+  ClientConfiguration as ControlClientConfiguration,
+  SessionConfiguration,
+  UserConfiguration,
+} from '@proto/ai/inworld/engine/configuration/configuration_pb';
+import {
+  Continuation,
+  InworldPacket as ProtoPacket,
+  SessionControlResponseEvent,
+} from '@proto/ai/inworld/packets/packets_pb';
 
+import { InworldPacket } from '../entities/packets/inworld_packet.entity';
 import { SessionToken } from '../entities/session_token.entity';
 
 export interface ApiKey {
@@ -39,19 +45,29 @@ export interface Client {
   id?: string;
 }
 
+export interface SessionControlProps {
+  capabilities?: CapabilitiesConfiguration;
+  sessionConfiguration?: SessionConfiguration;
+  userConfiguration?: UserConfiguration;
+  clientConfiguration?: ControlClientConfiguration;
+  continuation?: Continuation;
+}
+
 export interface ConnectionConfig {
   autoReconnect?: boolean;
   disconnectTimeout?: number;
 }
 
 export interface ClientConfiguration {
+  gameSessionId?: string;
   connection?: ConnectionConfig;
   capabilities?: Capabilities;
 }
 
 export interface InternalClientConfiguration {
+  gameSessionId?: string;
   connection?: ConnectionConfig;
-  capabilities: CapabilitiesRequest;
+  capabilities: CapabilitiesConfiguration;
 }
 
 export type Awaitable<T> = T | PromiseLike<T>;
@@ -77,15 +93,15 @@ export interface GetterSetter<T> {
 export enum ConnectionState {
   ACTIVE = 'ACTIVE',
   ACTIVATING = 'ACTIVATING',
-  LOADED = 'LOADED',
-  LOADING = 'LOADING',
   INACTIVE = 'INACTIVE',
 }
 
-export interface Extension<InworldPacketT> {
+export interface Extension<
+  InworldPacketT extends InworldPacket = InworldPacket,
+> {
   convertPacketFromProto?: (proto: ProtoPacket) => InworldPacketT;
-  beforeLoadScene?: (request: LoadSceneRequest) => LoadSceneRequest;
-  afterLoadScene?: (res: LoadSceneResponse) => void;
+  beforeLoadScene?: (packets: ProtoPacket[]) => ProtoPacket[];
+  afterLoadScene?: (res: SessionControlResponseEvent) => void;
 }
 
 export enum InworldPacketType {
