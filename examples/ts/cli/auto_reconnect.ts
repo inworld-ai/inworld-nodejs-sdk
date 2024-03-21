@@ -36,7 +36,7 @@ const run = async function () {
   console.info(`Console commands:
     |- /start - starts audio capturing.
     |- /end - ends audio capturing.
-    |- /trigger - send trigger.
+    |- /trigger %name% %params%  - send trigger with name and params. (Params should be in JSON format such as [{"name":"value","value":"invalid"}]. Params are optional.)
     |- /narration - send narrated action.
     |- /info - shows current character.
     |- /list-all - shows available characters (created within the scene).
@@ -79,9 +79,12 @@ const run = async function () {
 
       case '/trigger':
         if (args[0]) {
-          await connection.sendTrigger(args[0]);
+          await connection.sendTrigger(
+            args[0],
+            args[1] ? JSON.parse(args[1]) : [],
+          );
         } else {
-          console.log('/trigger requires trigger id name');
+          console.log('/trigger requires trigger name');
         }
         break;
 

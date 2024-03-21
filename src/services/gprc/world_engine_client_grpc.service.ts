@@ -87,7 +87,6 @@ export class WorldEngineClientGrpcService<InworldPacketT> {
       data: {
         address: this.address,
         ssl: this.ssl,
-        metadata: metadata.toJSON(),
         request: request.toObject(),
         response: response.toObject(),
       },
@@ -142,7 +141,6 @@ export class WorldEngineClientGrpcService<InworldPacketT> {
         address: this.address,
         ssl: this.ssl,
         grpcOptions: this.grpcOptions,
-        metadata: metadata.toJSON(),
         request: request.toObject(),
         response: response.toObject(),
       },
@@ -166,7 +164,6 @@ export class WorldEngineClientGrpcService<InworldPacketT> {
         address: this.address,
         ssl: this.ssl,
         grpcOptions: this.grpcOptions,
-        metadata: metadata.toJSON(),
       },
       sessionId: sessionToken.sessionId,
     });

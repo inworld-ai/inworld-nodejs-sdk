@@ -14,7 +14,7 @@ import { Duration } from 'google-protobuf/google/protobuf/duration_pb';
 import { v4 } from 'uuid';
 
 import { protoTimestamp } from '../../src/common/helpers';
-import { InworldPacket } from '../../src/entities/inworld_packet.entity';
+import { InworldPacket } from '../../src/entities/packets/inworld_packet.entity';
 import { EventFactory } from '../../src/factories/event';
 import { createCharacter } from '../helpers';
 
@@ -393,6 +393,23 @@ describe('convert packet to external one', () => {
       expect(result).toBeInstanceOf(InworldPacket);
       expect(result.isControl()).toEqual(true);
       expect(result.isInteractionEnd()).toEqual(true);
+      expect(result.date).toEqual(today.toISOString());
+    });
+
+    test('warning', () => {
+      const today = new Date();
+      const event = new ControlEvent().setAction(ControlEvent.Action.WARNING);
+      const packet = new ProtoPacket()
+        .setControl(event)
+        .setPacketId(new PacketId())
+        .setRouting(new Routing().setSource(new Actor()).setTarget(new Actor()))
+        .setTimestamp(protoTimestamp(today));
+
+      const result = InworldPacket.fromProto(packet);
+
+      expect(result).toBeInstanceOf(InworldPacket);
+      expect(result.isControl()).toEqual(true);
+      expect(result.isWarning()).toEqual(true);
       expect(result.date).toEqual(today.toISOString());
     });
 

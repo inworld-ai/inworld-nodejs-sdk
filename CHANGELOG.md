@@ -3,6 +3,7 @@
 ### Added
 
 - Allow to like, dislike or undo feedback
+- Handle runtime warnings
 
 ## [1.11.0] - 2024-01-20
 

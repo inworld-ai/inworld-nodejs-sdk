@@ -15,7 +15,7 @@ import {
 import { Logger } from '../common/logger';
 import { Character } from '../entities/character.entity';
 import { SessionContinuation } from '../entities/continuation/session_continuation.entity';
-import { InworldPacket } from '../entities/inworld_packet.entity';
+import { InworldPacket } from '../entities/packets/inworld_packet.entity';
 import { Scene } from '../entities/scene.entity';
 import { Session } from '../entities/session.entity';
 import { SessionToken } from '../entities/session_token.entity';
@@ -83,14 +83,27 @@ export class ConnectionService<
     this.onError = this.connectionProps.onError;
 
     this.onMessage = async (packet: ProtoPacket) => {
-      this.connectionProps.onMessage?.(this.convertPacketFromProto(packet));
-      this.logger.debug({
-        action: 'Receive packet',
-        data: {
-          packet: packet.toObject(),
-        },
-        sessionId: this.sessionToken?.sessionId,
-      });
+      const inworldPacket = this.convertPacketFromProto(packet);
+
+      this.connectionProps.onMessage?.(inworldPacket);
+
+      if (inworldPacket.isWarning()) {
+        this.logger.warn({
+          action: 'Receive warning packet',
+          data: {
+            packet: packet.toObject(),
+          },
+          sessionId: this.sessionToken?.sessionId,
+        });
+      } else {
+        this.logger.debug({
+          action: 'Receive packet',
+          data: {
+            packet: packet.toObject(),
+          },
+          sessionId: this.sessionToken?.sessionId,
+        });
+      }
     };
   }
 

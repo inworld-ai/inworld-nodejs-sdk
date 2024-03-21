@@ -21,7 +21,7 @@ import {
   DialogParticipant,
   PreviousDialog,
 } from '../src/entities/continuation/previous_dialog.entity';
-import { InworldPacket } from '../src/entities/inworld_packet.entity';
+import { InworldPacket } from '../src/entities/packets/inworld_packet.entity';
 import { SessionToken } from '../src/entities/session_token.entity';
 import { ExtendedInworldPacket } from './data_structures';
 

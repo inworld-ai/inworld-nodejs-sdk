@@ -1,58 +1,62 @@
 import { ServiceError } from '@grpc/grpc-js';
-import path = require('path');
 import {
   createLogger,
   format,
   Logger as WinstonLogger,
   transports,
 } from 'winston';
+const { File: TransportsFile } = transports;
 
 interface LoggerMessage {
-  action: string;
+  action?: string;
   data?: any;
   sessionId?: string;
+}
+
+export enum LoggerLevel {
+  DEBUG = 'debug',
+  WARN = 'warn',
+  ERROR = 'error',
 }
 
 export class Logger {
   private static instance: Logger;
 
-  private ENABLED: boolean;
-  private FOLDER: string;
+  private level: LoggerLevel;
+  private file: string | undefined;
   private logger: WinstonLogger;
 
   constructor() {
-    this.FOLDER = process.env.NODE_SDK_INWORLD_LOGGER_FOLDER;
-    this.ENABLED =
-      process.env.NODE_SDK_INWORLD_LOGGER_ENABLED === 'true' ? true : false;
+    this.file = process.env.NODE_SDK_INWORLD_LOGGER_FILE;
+    this.level = Logger.getLevel();
 
-    if (this.ENABLED) {
+    if (this.level) {
+      const transports = [
+        this.createTransport(this.level as string, this.file),
+      ];
       this.logger = createLogger({
         format: format.combine(
           format.timestamp(),
           format.errors({ stack: true }),
           format.splat(),
           format.json(),
+          format.prettyPrint(),
         ),
-        ...(this.FOLDER
-          ? {
-              exceptionHandlers: [
-                new transports.File({
-                  filename: path.join(this.FOLDER, 'exceptions.log'),
-                }),
-              ],
-              transports: [
-                this.createTransport('debug', this.FOLDER),
-                this.createTransport('error', this.FOLDER),
-              ],
-            }
-          : {
-              transports: [
-                this.createTransport('debug'),
-                this.createTransport('error'),
-              ],
-            }),
+        transports,
+        exceptionHandlers: this.createTransport(
+          this.level as string,
+          this.file,
+        ),
       });
     }
+  }
+
+  static getLevel() {
+    const parsed =
+      process.env.NODE_SDK_INWORLD_LOGGER_LEVEL?.trim()?.toLocaleLowerCase() ??
+      '';
+
+    return parsed as LoggerLevel;
   }
 
   static getInstance(): Logger {
@@ -65,14 +69,18 @@ export class Logger {
     this.logger?.debug(message);
   }
 
+  warn(message: LoggerMessage) {
+    this.logger?.warn(message);
+  }
+
   error(err: ServiceError | Error) {
     this.logger?.error(err);
   }
 
-  private createTransport(level: string, folder?: string) {
-    return folder
-      ? new transports.File({
-          filename: path.join(folder, `${level}.log`),
+  private createTransport(level: string, file?: string) {
+    return file
+      ? new TransportsFile({
+          filename: file,
           level,
         })
       : new transports.Console({ level });

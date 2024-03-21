@@ -22,7 +22,7 @@ import {
   SessionContinuation,
   SessionContinuationProps,
 } from '../entities/continuation/session_continuation.entity';
-import { InworldPacket } from '../entities/inworld_packet.entity';
+import { InworldPacket } from '../entities/packets/inworld_packet.entity';
 import { Session } from '../entities/session.entity';
 import { ConnectionService } from '../services/connection.service';
 import { InworldConnectionService } from '../services/inworld_connection.service';

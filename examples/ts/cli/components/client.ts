@@ -154,6 +154,11 @@ export class Client {
         packet,
       });
     }
+
+    // WARNING
+    if (packet.isWarning()) {
+      console.log(`Warning: ${packet.control.description}`);
+    }
   };
 
   private onConversationProcessMessage = (props: {

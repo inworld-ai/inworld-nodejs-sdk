@@ -57,7 +57,7 @@ export class PreviousDialog {
           ({
             talker: DialogTalker.fromProto(item.getTalker()),
             phrase: item.getPhrase(),
-          } as DialogPhrase),
+          }) as DialogPhrase,
       ),
     );
   }
