@@ -42,7 +42,7 @@ import { EventFactory } from '../../factories/event';
 
 const { version } = require('@root/package.json');
 
-export interface SessionProps<
+export interface OpenSessionProps<
   InworldPacketT extends InworldPacket = InworldPacket,
 > {
   name: string;
@@ -52,6 +52,13 @@ export interface SessionProps<
   sessionContinuation?: SessionContinuation;
   config: InternalClientConfiguration;
   extension?: Extension<InworldPacketT>;
+  onDisconnect?: () => Awaitable<void>;
+  onError?: (err: ServiceError) => Awaitable<void>;
+  onMessage?: (message: ProtoPacket) => Awaitable<void>;
+}
+
+export interface ReopenSessionProps {
+  sessionToken: SessionToken;
   onDisconnect?: () => Awaitable<void>;
   onError?: (err: ServiceError) => Awaitable<void>;
   onMessage?: (message: ProtoPacket) => Awaitable<void>;
@@ -108,7 +115,7 @@ export class WorldEngineClientGrpcService<
   }
 
   openSession(
-    props: SessionProps<InworldPacketT>,
+    props: OpenSessionProps<InworldPacketT>,
   ): Promise<[ClientDuplexStream<ProtoPacket, ProtoPacket>, LoadedScene]> {
     const { sessionToken, onDisconnect, onError, onMessage } = props;
 
@@ -150,7 +157,7 @@ export class WorldEngineClientGrpcService<
           connection.removeAllListeners('data');
 
           if (onMessage) {
-            connection.addListener('data', onMessage);
+            connection.on('data', onMessage);
           }
 
           resolve([connection, proto.getLoadedScene()]);
@@ -169,6 +176,42 @@ export class WorldEngineClientGrpcService<
     });
   }
 
+  reopenSession(
+    props: ReopenSessionProps,
+  ): ClientDuplexStream<ProtoPacket, ProtoPacket> {
+    const { sessionToken, onDisconnect, onError, onMessage } = props;
+
+    const metadata = this.getMetadata(sessionToken);
+    const connection = this.client.openSession(metadata);
+
+    this.logger.debug({
+      action: 'Reopen session',
+      data: {
+        address: this.address,
+        ssl: this.ssl,
+        grpcOptions: this.grpcOptions,
+      },
+      sessionId: sessionToken.sessionId,
+    });
+
+    if (onDisconnect) {
+      connection.on('close', onDisconnect);
+    }
+
+    if (onError) {
+      connection.on('error', (err: ServiceError) => {
+        onError(err);
+        connection.end();
+      });
+    }
+
+    if (onMessage) {
+      connection.on('data', onMessage);
+    }
+
+    return connection;
+  }
+
   private getMetadata(sessionToken: SessionToken) {
     const metadata = new Metadata();
 
@@ -178,7 +221,7 @@ export class WorldEngineClientGrpcService<
     return metadata;
   }
 
-  private getClient(props: SessionProps<InworldPacketT>) {
+  private getClient(props: OpenSessionProps<InworldPacketT>) {
     const containerInfo = `${os.type()} ${os.release()} (Node.js ${
       process.version
     })`;
@@ -194,7 +237,7 @@ export class WorldEngineClientGrpcService<
       .setDescription(description.join('; '));
   }
 
-  private getUserConfiguration(props: SessionProps<InworldPacketT>) {
+  private getUserConfiguration(props: OpenSessionProps<InworldPacketT>) {
     const { user } = props;
 
     const userConfiguration = new UserConfiguration();
@@ -220,7 +263,7 @@ export class WorldEngineClientGrpcService<
     return userConfiguration;
   }
 
-  private getContinuation(props: SessionProps<InworldPacketT>) {
+  private getContinuation(props: OpenSessionProps<InworldPacketT>) {
     const { sessionContinuation } = props;
 
     const continuation = new Continuation();
@@ -243,7 +286,7 @@ export class WorldEngineClientGrpcService<
     return continuation;
   }
 
-  private getPackets(props: SessionProps<InworldPacketT>) {
+  private getPackets(props: OpenSessionProps<InworldPacketT>) {
     const packets: ProtoPacket[] = [
       EventFactory.sessionControl({
         capabilities: props.config.capabilities,

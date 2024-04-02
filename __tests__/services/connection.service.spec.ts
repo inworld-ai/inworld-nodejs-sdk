@@ -569,6 +569,10 @@ describe('open', () => {
     const openSession = jest
       .spyOn(WorldEngineClientGrpcService.prototype, 'openSession')
       .mockImplementation(() => Promise.resolve([stream, sceneProto]));
+    const reopenSession = jest.spyOn(
+      WorldEngineClientGrpcService.prototype,
+      'reopenSession',
+    );
 
     await connection.open();
 
@@ -577,7 +581,8 @@ describe('open', () => {
     await connection.open();
 
     expect(generateSessionToken).toHaveBeenCalledTimes(2);
-    expect(openSession).toHaveBeenCalledTimes(2);
+    expect(openSession).toHaveBeenCalledTimes(1);
+    expect(reopenSession).toHaveBeenCalledTimes(1);
   });
 
   test('should schedule disconnect', async () => {
@@ -920,7 +925,6 @@ describe('getCharactersList', () => {
       .mockImplementationOnce(() => Promise.resolve(sessionToken));
     const openSession = jest
       .spyOn(WorldEngineClientGrpcService.prototype, 'openSession')
-      .mockImplementationOnce(() => Promise.resolve([stream, sceneProto]))
       .mockImplementationOnce(() => Promise.resolve([stream, sceneProto]));
 
     const loadedCharactersFirst = await connection.getCharactersList();
