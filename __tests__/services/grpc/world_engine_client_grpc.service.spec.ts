@@ -483,7 +483,7 @@ describe('load scene', () => {
   });
 });
 
-describe('session', () => {
+describe('openSession', () => {
   let client: WorldEngineClientGrpcService<ExtendedInworldPacket>;
 
   beforeEach(() => {
@@ -516,7 +516,7 @@ describe('session', () => {
     ]);
 
     expect(clientSession).toHaveBeenCalledTimes(1);
-    expect(on).toHaveBeenCalledTimes(3);
+    expect(on).toHaveBeenCalledTimes(4);
     expect(result[0][0]).toEqual(stream);
     expect(on.mock.calls[0][0]).toEqual('close');
     expect(on.mock.calls[1][0]).toEqual('error');
@@ -609,6 +609,110 @@ describe('session', () => {
       new Promise(emitSessionControlResponseEvent(stream)),
     ]);
 
+    stream.emit('close');
+
+    expect(onDisconnect).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('reopenSession', () => {
+  let client: WorldEngineClientGrpcService<ExtendedInworldPacket>;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.restoreAllMocks();
+    client = new WorldEngineClientGrpcService();
+  });
+
+  test('should create stream with handlers', () => {
+    const stream = getStream();
+    const clientSession = jest
+      .spyOn(WorldEngineClient.prototype, 'openSession')
+      .mockImplementation(() => stream);
+
+    const on = jest.spyOn(stream, 'on');
+    const onError = jest.fn();
+    const onMessage = jest.fn();
+    const onDisconnect = jest.fn();
+
+    const result = client.reopenSession({
+      sessionToken,
+      onError,
+      onMessage,
+      onDisconnect,
+    });
+
+    expect(clientSession).toHaveBeenCalledTimes(1);
+    expect(on).toHaveBeenCalledTimes(3);
+    expect(result).toEqual(stream);
+    expect(on.mock.calls[0][0]).toEqual('close');
+    expect(on.mock.calls[1][0]).toEqual('error');
+    expect(on.mock.calls[2][0]).toEqual('data');
+  });
+
+  test('should close connection on error and handle on Error', async () => {
+    const stream = getStream();
+
+    jest
+      .spyOn(WorldEngineClient.prototype, 'openSession')
+      .mockImplementation(() => stream);
+
+    const onError = jest.fn();
+    const end = jest.spyOn(stream, 'end');
+
+    client.reopenSession({
+      sessionToken,
+      onError,
+    });
+    stream.emit('error');
+
+    expect(onError).toHaveBeenCalledTimes(1);
+    expect(end).toHaveBeenCalledTimes(1);
+  });
+
+  test('should handle on Message', async () => {
+    const stream = getStream();
+    jest
+      .spyOn(WorldEngineClient.prototype, 'openSession')
+      .mockImplementation(() => stream);
+
+    const onMessage = jest.fn();
+
+    client.reopenSession({
+      sessionToken,
+      onMessage,
+    });
+    stream.emit('data');
+
+    expect(onMessage).toHaveBeenCalledTimes(1);
+  });
+
+  test('should do nothing if onMessage is not provided', async () => {
+    const stream = getStream();
+    const openSession = jest
+      .spyOn(WorldEngineClient.prototype, 'openSession')
+      .mockImplementation(() => stream);
+
+    client.reopenSession({
+      sessionToken,
+    });
+    stream.emit('data');
+
+    expect(openSession).toHaveBeenCalledTimes(1);
+  });
+
+  test('should handle on Disconnect', async () => {
+    const stream = getStream();
+    jest
+      .spyOn(WorldEngineClient.prototype, 'openSession')
+      .mockImplementation(() => stream);
+
+    const onDisconnect = jest.fn();
+
+    client.reopenSession({
+      sessionToken,
+      onDisconnect,
+    });
     stream.emit('close');
 
     expect(onDisconnect).toHaveBeenCalledTimes(1);

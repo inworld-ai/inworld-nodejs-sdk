@@ -56,6 +56,7 @@ export class ConnectionService<
 
   private nextSceneName: string | undefined;
   private scene: Scene;
+  private sceneIsLoaded = false;
   private sessionToken: SessionToken;
   private stream: ClientDuplexStream<ProtoPacket, ProtoPacket>;
   private connectionProps: ConnectionProps<InworldPacketT>;
@@ -220,20 +221,34 @@ export class ConnectionService<
       const { client, sessionContinuation, user } = this.connectionProps;
 
       const name = this.getSceneName();
-      const [stream, sessionProto] = await this.engineService.openSession({
-        client,
-        name,
-        sessionContinuation,
-        user,
-        config: this.connectionProps.config,
-        extension: this.connectionProps.extension,
-        sessionToken: this.sessionToken,
-        onError: this.onError,
-        onDisconnect: this.onDisconnect,
-        ...(this.onMessage && { onMessage: this.onMessage }),
-      });
+      let stream: ClientDuplexStream<ProtoPacket, ProtoPacket>;
+      let sessionProto: LoadedScene;
 
-      this.setSceneFromProtoEvent(sessionProto);
+      if (this.sceneIsLoaded) {
+        stream = this.engineService.reopenSession({
+          sessionToken: this.sessionToken,
+          onError: this.onError,
+          onDisconnect: this.onDisconnect,
+          onMessage: this.onMessage,
+        });
+      } else {
+        [stream, sessionProto] = await this.engineService.openSession({
+          client,
+          name,
+          sessionContinuation,
+          user,
+          config: this.connectionProps.config,
+          extension: this.connectionProps.extension,
+          sessionToken: this.sessionToken,
+          onError: this.onError,
+          onDisconnect: this.onDisconnect,
+          onMessage: this.onMessage,
+        });
+
+        this.sceneIsLoaded = true;
+        this.setSceneFromProtoEvent(sessionProto);
+      }
+
       this.stream = stream;
       this.state = ConnectionState.ACTIVE;
       this.releaseQueue();
