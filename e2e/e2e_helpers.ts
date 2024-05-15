@@ -89,9 +89,9 @@ export async function sendAudio(
       .setScene(scene)
       .setUser({ fullName: username })
       .setOnError((err: ServiceError) => {
-        console.error(`Error: ${err.message}`);
+        // console.error(`Error: ${err.message}`);
         reject(err);
-        // exit(1);
+        // process.exit(1);
       })
       .setOnMessage((packet: InworldPacket) => {
         if (packet.isText() && packet.routing.source.isPlayer) {
@@ -120,7 +120,7 @@ export async function sendAudio(
     audioStream.on('data', sendChunk).on('end', async () => {
       audioStream.close();
 
-      const silenceStream = fs.createReadStream('e2e/silence.wav', {
+      const silenceStream = fs.createReadStream('e2e/audio/silence.wav', {
         highWaterMark,
       });
 
