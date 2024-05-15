@@ -1,4 +1,10 @@
-import { InworldClient, status } from '@inworld/nodejs-sdk';
+import {
+  InworldClient,
+  InworldPacket,
+  ServiceError,
+  status,
+} from '@inworld/nodejs-sdk';
+import * as fs from 'fs';
 
 export async function sendText(
   apikey: [string, string],
@@ -25,24 +31,18 @@ export async function sendText(
           case status.CANCELLED:
             break;
           default:
-            // console.error(`Error: ${err.message}`);
-            reject(err); // Reject the promise if there's an error
+            reject(err);
             break;
         }
       })
       .setOnMessage((packet) => {
         // TEXT
         if (packet.isText()) {
-          // console.log(`Text: ${packet.text.text}`);
           output[0] += packet.text.text + '\n';
         }
 
         // EMOTION
         if (packet.isEmotion()) {
-          // console.log(`Emotions:
-          //   behavior = ${packet.emotions.behavior.code},
-          //   strength = ${packet.emotions.strength.code}
-          // `);
           output[1] += packet.emotions.behavior.code + '\n';
           output[1] += packet.emotions.strength.code + '\n';
         }
@@ -57,5 +57,76 @@ export async function sendText(
     const connection = client.build();
 
     await connection.sendText(message);
+  });
+}
+
+export async function sendAudio(
+  apikey: [string, string],
+  username: string,
+  scene: string,
+  audio: string,
+): Promise<string> {
+  let output: string = '';
+  const timeout = 200;
+  const highWaterMark = 1024 * 5;
+
+  return new Promise<string>(async (resolve, reject) => {
+    let i = 0;
+
+    const audioStream = fs.createReadStream(audio, { highWaterMark });
+    const sendChunk = (chunk: string) => {
+      setTimeout(() => {
+        connection.sendAudio(chunk);
+      }, timeout * i);
+      i++;
+    };
+
+    const connection = new InworldClient()
+      .setApiKey({
+        key: apikey[0],
+        secret: apikey[1],
+      })
+      .setScene(scene)
+      .setUser({ fullName: username })
+      .setOnError((err: ServiceError) => {
+        console.error(`Error: ${err.message}`);
+        reject(err);
+        // exit(1);
+      })
+      .setOnMessage((packet: InworldPacket) => {
+        if (packet.isText() && packet.routing.source.isPlayer) {
+          // console.log(
+          //   `Recognized: ${packet.text.text}${packet.text.final ? '' : '...'}`,
+          // );
+          if (packet.text.final) {
+            connection.sendAudioSessionEnd();
+          }
+        }
+
+        if (packet.isText() && packet.routing.source.isCharacter) {
+          output += packet.text.text + '\n';
+        }
+
+        if (packet.isInteractionEnd()) {
+          connection.close();
+          resolve(output);
+          // process.exit(0);
+        }
+      })
+      .build();
+
+    await connection.sendAudioSessionStart();
+
+    audioStream.on('data', sendChunk).on('end', async () => {
+      audioStream.close();
+
+      const silenceStream = fs.createReadStream('e2e/silence.wav', {
+        highWaterMark,
+      });
+
+      silenceStream
+        .on('data', sendChunk)
+        .on('end', () => silenceStream.close());
+    });
   });
 }
