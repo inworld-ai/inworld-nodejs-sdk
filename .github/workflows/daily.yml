@@ -11,6 +11,8 @@ jobs:
   run-tests:
     runs-on: ubuntu-latest
     steps:
+      - name: Install Packages
+        run: npm install
       - name: Run Tests
         run: yarn jest 
 
