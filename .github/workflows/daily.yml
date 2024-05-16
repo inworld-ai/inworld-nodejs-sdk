@@ -3,7 +3,7 @@ name: Daily Run
 on:
   push:
     branches:
-      - TEST-55-integration-tests-create-helper-functions 
+      - TEST-55-integration-tests-create-helper-functions #Leave in until you know daily job works
   schedule:
     - cron: '0 1 * * *' 
 
@@ -22,7 +22,7 @@ jobs:
       - name: Install inworld/nodejs-sdk
         run: npm install @inworld/nodejs-sdk
       - name: Run Tests
-        run: yarn jest e2e/text/text.spec.ts
+        run: yarn jest
 
 
 
