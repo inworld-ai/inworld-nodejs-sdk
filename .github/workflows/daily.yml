@@ -10,12 +10,16 @@ on:
 jobs:
   run-tests:
     runs-on: ubuntu-latest
+    env:
+      INWORLD_KEY_TEXT: ${{ secrets.INWORLD_KEY_TEXT }}
+      INWORLD_SECRET_TEXT: ${{ secrets.INWORLD_SECRET_TEXT }}
+      INWORLD_SCENE_TEXT: ${{ secrets.INWORLD_SCENE_TEXT }}
     steps:
       - name: Checkout source code
         uses: actions/checkout@v3
       - name: Install Packages
         run: npm install
-      - name: Install nodejs-sdk
+      - name: Install inworld/nodejs-sdk
         run: npm install @inworld/nodejs-sdk
       - name: Run Tests
         run: yarn jest e2e/text/text.spec.ts
