@@ -5,7 +5,7 @@ on:
     inputs:
       test_suite:
         description: 'Select the test suite to run'
-        required: false
+        required: true
         default: 'e2e/text/text.spec.ts'
   push:
     branches:
@@ -14,11 +14,6 @@ on:
 jobs:
   run-tests:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        test_suite: 
-          - 'all'
-          - ${{ github.event.inputs.test_suite }}
     env:
       INWORLD_KEY_TEXT: ${{ secrets.INWORLD_KEY_TEXT }}
       INWORLD_SECRET_TEXT: ${{ secrets.INWORLD_SECRET_TEXT }}
@@ -31,9 +26,5 @@ jobs:
       - name: Install inworld/nodejs-sdk
         run: npm install @inworld/nodejs-sdk
       - name: Run Tests
-        run: |
-          if [ "${{ matrix.test_suite }}" = "all" ]; then
-            yarn jest
-          else
-            yarn jest "${{ matrix.test_suite }}"
-          fi 
+        run: yarn jest "${{ github.event.inputs.test_suite }}"
+        
