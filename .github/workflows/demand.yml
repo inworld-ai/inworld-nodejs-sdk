@@ -13,7 +13,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        test_suite: [ 'all', ${{ github.event.inputs.test_suite }} ]
+        test_suite: 
+          - 'all'
+          - ${{ github.event.inputs.test_suite }}
     env:
       INWORLD_KEY_TEXT: ${{ secrets.INWORLD_KEY_TEXT }}
       INWORLD_SECRET_TEXT: ${{ secrets.INWORLD_SECRET_TEXT }}
