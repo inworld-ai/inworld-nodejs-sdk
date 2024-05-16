@@ -1,15 +1,19 @@
-name: Daily Tests Run
+name: On Demand Test Run
 
 on:
-  push:
-    branches:
-      - TEST-55-integration-tests-create-helper-functions #Leave in until you know daily job works
-  schedule:
-    - cron: '0 1 * * *' 
+  workflow_dispatch:
+    inputs:
+      test_suite:
+        description: 'Select the test suite to run'
+        required: false
+        default: 'e2e/text/text.spec.ts'
 
 jobs:
   run-tests:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        test_suite: [ 'all', ${{ github.event.inputs.test_suite }} ]
     env:
       INWORLD_KEY_TEXT: ${{ secrets.INWORLD_KEY_TEXT }}
       INWORLD_SECRET_TEXT: ${{ secrets.INWORLD_SECRET_TEXT }}
@@ -22,9 +26,9 @@ jobs:
       - name: Install inworld/nodejs-sdk
         run: npm install @inworld/nodejs-sdk
       - name: Run Tests
-        run: yarn jest
-
-
-
-
-
+        run: |
+          if [ "${{ matrix.test_suite }}" = "all" ]; then
+            yarn jest
+          else
+            yarn jest "${{ matrix.test_suite }}"
+          fi 
