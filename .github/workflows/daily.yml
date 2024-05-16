@@ -10,7 +10,12 @@ on:
 jobs:
   run-tests:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./inworld-nodejs-sdk
     steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
       - name: Install Packages
         run: npm install
       - name: Run Tests
