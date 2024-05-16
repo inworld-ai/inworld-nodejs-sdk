@@ -1,0 +1,20 @@
+name: Daily Run
+
+on:
+  push:
+    branches:
+      - TEST-55-integration-tests-create-helper-functions 
+  schedule:
+    - cron: '0 1 * * *' 
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Tests
+        run: yarn jest 
+
+
+
+
+
