@@ -89,15 +89,10 @@ export async function sendAudio(
       .setScene(scene)
       .setUser({ fullName: username })
       .setOnError((err: ServiceError) => {
-        // console.error(`Error: ${err.message}`);
         reject(err);
-        // process.exit(1);
       })
       .setOnMessage((packet: InworldPacket) => {
         if (packet.isText() && packet.routing.source.isPlayer) {
-          // console.log(
-          //   `Recognized: ${packet.text.text}${packet.text.final ? '' : '...'}`,
-          // );
           if (packet.text.final) {
             connection.sendAudioSessionEnd();
           }
@@ -110,7 +105,6 @@ export async function sendAudio(
         if (packet.isInteractionEnd()) {
           connection.close();
           resolve(output);
-          // process.exit(0);
         }
       })
       .build();

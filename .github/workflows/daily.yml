@@ -27,8 +27,3 @@ jobs:
         run: npm install @inworld/nodejs-sdk
       - name: Run Tests
         run: yarn jest
-
-
-
-
-
