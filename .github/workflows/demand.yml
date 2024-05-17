@@ -19,6 +19,10 @@ jobs:
       INWORLD_SECRET_TEXT: ${{ secrets.INWORLD_SECRET_TEXT }}
       INWORLD_SCENE_TEXT: ${{ secrets.INWORLD_SCENE_TEXT }}
     steps:
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
       - name: Checkout source code
         uses: actions/checkout@v3
       - name: Install Packages
