@@ -25,7 +25,7 @@ export async function sendText(
         capabilities: { emotions: true },
       })
       .setScene(scene)
-      .setOnError((err) => {
+      .setOnError((err: any) => {
         switch (err.code) {
           case status.ABORTED:
           case status.CANCELLED:
@@ -35,7 +35,7 @@ export async function sendText(
             break;
         }
       })
-      .setOnMessage((packet) => {
+      .setOnMessage((packet: InworldPacket) => {
         // TEXT
         if (packet.isText()) {
           output[0] += packet.text.text + '\n';
