@@ -1,5 +1,3 @@
-import 'dotenv/config'; // uncomment for local runs
-
 import { sendText } from '../e2e_helpers';
 
 let key: [string, string] = [
