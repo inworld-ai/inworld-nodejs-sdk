@@ -1,0 +1,34 @@
+name: On Demand Test Run
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_suite:
+        description: 'Select the test suite to run'
+        required: true
+        default: 'e2e/text/text.spec.ts'
+  push:
+    branches:
+      - TEST-55-integration-tests-create-helper-functions #Leave in until you know demand job works
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    env:
+      INWORLD_KEY_TEXT: ${{ secrets.INWORLD_KEY_TEXT }}
+      INWORLD_SECRET_TEXT: ${{ secrets.INWORLD_SECRET_TEXT }}
+      INWORLD_SCENE_TEXT: ${{ secrets.INWORLD_SCENE_TEXT }}
+    steps:
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+      - name: Checkout source code
+        uses: actions/checkout@v3
+      - name: Install Packages
+        run: npm install
+      - name: Install inworld/nodejs-sdk
+        run: npm install @inworld/nodejs-sdk
+      - name: Run Tests
+        run: yarn jest "${{ github.event.inputs.test_suite }}"
+        

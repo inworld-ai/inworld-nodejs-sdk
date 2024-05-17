@@ -15,7 +15,7 @@ jobs:
       - name: Run build
         uses: ./.github/actions/build_package
       - name: Run tests
-        run: yarn test
+        run: yarn test:unit
       - name: Ensure working directory is clean
         uses: CatChen/check-git-status-action@v1
         with:
