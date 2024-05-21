@@ -14,10 +14,10 @@ jobs:
     env:
       INWORLD_E2E_KEY: ${{ secrets.INWORLD_E2E_KEY }}
       INWORLD_E2E_SECRET: ${{ secrets.INWORLD_E2E_SECRET }}
-      INWORLD_E2E_SCENE_TEXT: ${{ secrets.INWORLD_E2E_SCENE_TEXT }}
-      INWORLD_E2E_SCENE_SCENE: ${{ secrets.INWORLD_E2E_SCENE_SCENE }}
-      INWORLD_E2E_SCENE_VERB: ${{ secrets.INWORLD_E2E_SCENE_VERB }}
-      INWORLD_E2E_SCENE_AUDIO: ${{ secrets.INWORLD_E2E_SCENE_AUDIO }}
+      INWORLD_E2E_SCENE_TEXT: ${{ vars.INWORLD_E2E_SCENE_TEXT }}
+      INWORLD_E2E_SCENE_SCENE: ${{ vars.INWORLD_E2E_SCENE_SCENE }}
+      INWORLD_E2E_SCENE_VERB: ${{ vars.INWORLD_E2E_SCENE_VERB }}
+      INWORLD_E2E_SCENE_AUDIO: ${{ vars.INWORLD_E2E_SCENE_AUDIO }}
     steps:
       - name: Setup node
         uses: actions/setup-node@v3
