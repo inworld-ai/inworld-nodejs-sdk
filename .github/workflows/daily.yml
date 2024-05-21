@@ -8,17 +8,11 @@ jobs:
   run-tests:
     runs-on: ubuntu-latest
     env:
-      INWORLD_KEY_TEXT: ${{ secrets.INWORLD_KEY_TEXT }}
-      INWORLD_SECRET_TEXT: ${{ secrets.INWORLD_SECRET_TEXT }}
+      INWORLD_KEY: ${{ secrets.INWORLD_KEY }}
+      INWORLD_SECRET: ${{ secrets.INWORLD_SECRET }}
       INWORLD_SCENE_TEXT: ${{ secrets.INWORLD_SCENE_TEXT }}
-      INWORLD_KEY_SCENE: ${{ secrets.INWORLD_KEY_SCENE }}
-      INWORLD_SECRET_SCENE: ${{ secrets.INWORLD_SECRET_SCENE }}
       INWORLD_SCENE_SCENE: ${{ secrets.INWORLD_SCENE_SCENE }}
-      INWORLD_KEY_VERB: ${{ secrets.INWORLD_KEY_VERB }}
-      INWORLD_SECRET_VERB: ${{ secrets.INWORLD_SECRET_VERB }}
       INWORLD_SCENE_VERB: ${{ secrets.INWORLD_SCENE_VERB }}
-      INWORLD_KEY_AUDIO: ${{ secrets.INWORLD_KEY_AUDIO }}
-      INWORLD_SECRET_AUDIO: ${{ secrets.INWORLD_SECRET_AUDIO }}
       INWORLD_SCENE_AUDIO: ${{ secrets.INWORLD_SCENE_AUDIO }}
     steps:
       - name: Setup node
