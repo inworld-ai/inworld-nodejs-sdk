@@ -7,9 +7,6 @@ on:
         description: 'Select the test suite to run'
         required: true
         default: 'e2e/text/text.spec.ts'
-  push:
-    branches:
-      - TEST-55-integration-tests-create-helper-functions #Leave in until you know demand job works
 
 jobs:
   run-tests:
@@ -30,5 +27,4 @@ jobs:
       - name: Install inworld/nodejs-sdk
         run: npm install @inworld/nodejs-sdk
       - name: Run Tests
-        run: yarn jest "${{ github.event.inputs.test_suite }}"
-        
+        run: yarn jest "${{ github.event.inputs.test_suite }}"     

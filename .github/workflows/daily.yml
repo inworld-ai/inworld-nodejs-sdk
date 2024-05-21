@@ -1,9 +1,6 @@
 name: Daily Tests Run
 
 on:
-  push:
-    branches:
-      - TEST-55-integration-tests-create-helper-functions #Leave in until you know daily job works
   schedule:
     - cron: '0 1 * * *' 
 
