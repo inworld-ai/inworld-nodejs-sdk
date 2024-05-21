@@ -7,7 +7,7 @@ let key: [string, string] = [
   process.env.INWORLD_E2E_SECRET!,
 ];
 let name: string = 'Billy';
-let scene: string = process.env.INWORLD_E2E_SCENE_TEXT!;
+let scene: string = process.env.INWORLD_E2E_SCENE_VERB!;
 
 test('Get stronger', async () => {
   const result = await sendText(key, name, scene, 'Where are we?');
