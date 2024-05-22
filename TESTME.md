@@ -12,8 +12,8 @@ This document provides information on the testing procedures for the Inworld AI 
 6. Click **Run workflow** to run tests
 7. View results by clicking on the latest workflow run
 > [!IMPORTANT]
-> To run a single test, write the exact test file name ex. `e2e/text/text.spec.ts`
-> To run all tests in a folder use an asterisk ex. `e2e/text/*`
+> To run a single test, write the exact test file name ex. `e2e/text/text.spec.ts`.
+> To run all tests in a folder use an asterisk ex. `e2e/text/*`.
 > To run all tests use only an asterisk ex. `*`, `__tests__/*`, `e2e/*`
 
 
