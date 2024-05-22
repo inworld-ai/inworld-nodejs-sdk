@@ -2,12 +2,48 @@
 
 This document provides information on the testing procedures for the Inworld AI Node.js SDK.
 
-## Running Unit Tests
+## Running Tests Through GitHub Actions
+
+1. Navigate to the **Actions** tab
+2. Click **On Demand Test Run** workflow
+3. Click **Run workflow**
+4. Select which branch you want to run from
+5. Select which test suite or test spec to run
+6. Click **Run workflow** to run tests
+7. View results by clicking on the latest workflow run
+> [!IMPORTANT]
+> To run a single spec
+> 
+
+
+
+## Running Unit Tests Locally
 
 Execute the following command to run unit tests:
 
 ```sh
-yarn test
+yarn test:unit
+```
+
+## Running E2E Tests Locally
+
+To run E2E tests first create a **.env** file in the main directory using the following variables
+
+```sh
+INWORLD_E2E_KEY=
+INWORLD_E2E_SECRET=
+INWORLD_E2E_SCENE_TEXT=
+INWORLD_E2E_SCENE_AUDIO=
+INWORLD_E2E_SCENE_VERB=
+INWORLD_E2E_SCENE_SCENE=
+```
+
+Fill in the **INWORLD_E2E_KEY** and **INWORLD_E2E_SECRET** with your own Inworld application key and secret
+
+Execute the following command to run E2E tests:
+
+```sh
+yarn test:e2e
 ```
 
 ## Performing Manual Tests
