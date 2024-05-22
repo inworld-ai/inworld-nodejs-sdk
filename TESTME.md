@@ -12,8 +12,9 @@ This document provides information on the testing procedures for the Inworld AI 
 6. Click **Run workflow** to run tests
 7. View results by clicking on the latest workflow run
 > [!IMPORTANT]
-> To run a single spec
-> 
+> To run a single test, write the exact test file name ex. `e2e/text/text.spec.ts`
+> To run all tests in a folder use an asterisk ex. `e2e/text/*`
+> To run all tests use only an asterisk ex. `*`, `__tests__/*`, `e2e/*`
 
 
 
@@ -27,7 +28,7 @@ yarn test:unit
 
 ## Running E2E Tests Locally
 
-To run E2E tests first create a **.env** file in the main directory using the following variables
+To run E2E tests first create a `.env` file in the main directory using the following variables
 
 ```sh
 INWORLD_E2E_KEY=
@@ -38,7 +39,7 @@ INWORLD_E2E_SCENE_VERB=
 INWORLD_E2E_SCENE_SCENE=
 ```
 
-Fill in the **INWORLD_E2E_KEY** and **INWORLD_E2E_SECRET** with your own Inworld application key and secret
+Fill in the `INWORLD_E2E_KEY` and `INWORLD_E2E_SECRET` with your own Inworld application key and secret
 
 Execute the following command to run E2E tests:
 
