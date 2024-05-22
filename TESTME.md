@@ -16,8 +16,6 @@ This document provides information on the testing procedures for the Inworld AI 
 > To run all tests in a folder use an asterisk ex. `e2e/text/*`.
 > To run all tests use only an asterisk ex. `*`, `__tests__/*`, `e2e/*`
 
-
-
 ## Running Unit Tests Locally
 
 Execute the following command to run unit tests:
