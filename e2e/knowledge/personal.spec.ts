@@ -1,4 +1,4 @@
-// import 'dotenv/config';
+import 'dotenv/config';
 
 import { sendText } from '../e2e_helpers';
 
@@ -9,7 +9,7 @@ let key: [string, string] = [
 let name: string = 'Billy';
 let scene: string = process.env.INWORLD_E2E_SCENE_SCENE!;
 
-test('Get stronger', async () => {
-  const result = await sendText(key, name, scene, 'Where are we?');
-  expect(result[0]).not.toBe('');
+test('Should know personal knowledge', async () => {
+  const result = await sendText(key, name, scene, 'Do you have a twin?');
+  expect(result[0]).toContain('Johnny');
 }, 10000);
