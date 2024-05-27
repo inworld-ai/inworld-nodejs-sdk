@@ -1,4 +1,4 @@
-import 'dotenv/config';
+// import 'dotenv/config';
 
 import { sendText } from '../e2e_helpers';
 
