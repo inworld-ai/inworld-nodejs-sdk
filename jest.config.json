@@ -10,5 +10,15 @@
     "__tests__/helpers.ts",
     "__tests__/mocks",
     "examples"
+  ],
+  "testEnvironment": "allure-jest/node",
+  "testEnvironmentOptions": {
+    "resultsDir": "./build/allure-results"
+  },
+  "reporters": [
+    "default",
+    ["./node_modules/jest-html-reporter", {
+      "pageTitle": "Test Report"
+    }]
   ]
 }
