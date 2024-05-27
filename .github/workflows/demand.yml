@@ -36,8 +36,10 @@ jobs:
         run: npm install @inworld/nodejs-sdk
       - name: Run Tests
         run: yarn jest "${{ github.event.inputs.test_suite }}"     
-      - name: HTML Preview
-        id: html_preview
-        uses: pavi2410/html-preview-action@v2
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()    
         with:
-          html_file: 'test-report.html'
+          name: JEST Tests            # Name of the check run which will be created
+          path: build/*.json    # Path to test results
+          reporter: jest-junit        # Format of test results
