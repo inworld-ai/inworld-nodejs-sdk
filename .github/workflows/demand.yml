@@ -36,10 +36,9 @@ jobs:
         run: npm install @inworld/nodejs-sdk
       - name: Run Tests
         run: yarn jest "${{ github.event.inputs.test_suite }}"     
-      - name: Test Report
-        uses: dorny/test-reporter@v1
-        if: success() || failure()    
+      - name: Upload Test Result Artifact
+        uses: actions/upload-artifact@v4
         with:
-          name: JEST Tests            # Name of the check run which will be created
-          path: build/*.json    # Path to test results
-          reporter: jest-junit        # Format of test results
+          name: test-report
+          path: test-report.html
+          
