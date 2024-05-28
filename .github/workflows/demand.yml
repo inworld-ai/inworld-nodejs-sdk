@@ -34,6 +34,11 @@ jobs:
           node-version: '18.x'
       - name: Checkout source code
         uses: actions/checkout@v3
+      - id: "secrets"
+        uses: 'google-github-actions/get-secretmanager-secrets@v2'
+        with:
+          secrets: |-
+            ALLURE_TOKEN:inworld-ai-prod/allure-token
       - name: Install Packages
         run: npm install
       - name: Install Reporter packages
