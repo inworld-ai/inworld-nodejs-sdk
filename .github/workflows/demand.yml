@@ -12,6 +12,9 @@ on:
           description: 'Job run ID for Allure. Leave blank'
           required: false
 
+env:
+  PROD_AUTH_IDENTITY_PROVIDER: projects/760085515784/locations/global/workloadIdentityPools/github-prod-pool/providers/github-prvdr
+  PROD_AUTH_SERVICE_ACCOUNT: prod-github-actions-sa-k8s@inworld-ai-prod.iam.gserviceaccount.com
 jobs:
   run-tests:
     runs-on: ubuntu-latest
@@ -34,6 +37,13 @@ jobs:
           node-version: '18.x'
       - name: Checkout source code
         uses: actions/checkout@v3
+      - id: "auth"
+        name: "Authenticate to Google Cloud"
+        uses: "google-github-actions/auth@v2"
+        with:
+          token_format: "access_token"
+          workload_identity_provider: "${{ env.PROD_AUTH_IDENTITY_PROVIDER }}"
+          service_account: "${{ env.PROD_AUTH_SERVICE_ACCOUNT }}"
       - id: "secrets"
         uses: 'google-github-actions/get-secretmanager-secrets@v2'
         with:
