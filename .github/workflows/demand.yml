@@ -24,7 +24,7 @@ jobs:
       INWORLD_E2E_SCENE_AUDIO: ${{ vars.INWORLD_E2E_SCENE_AUDIO }}
       ALLURE_ENDPOINT: 'https://inworld.testops.cloud/'
       ALLURE_PROJECT_ID: '35'
-      ALLURE_TOKEN: 'inworld-ai-prod/allure-token'
+      ALLURE_TOKEN: ${{ secrets.ALLURE_TOKEN }}
       ALLURE_JOB_RUN_ID: "${{ github.event.inputs.ALLURE_JOB_RUN_ID }}"
       ALLURE_RESULTS: 'build/allure-results'
     steps:
