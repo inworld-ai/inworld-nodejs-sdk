@@ -52,10 +52,15 @@ jobs:
           allure-project-id: ${{ env.ALLURE_PROJECT_ID }}
         continue-on-error: true
       - name: Run Tests
-        run: allurectl watch -- yarn jest "${{ github.event.inputs.test_suite }}"     
+        run: yarn jest "${{ github.event.inputs.test_suite }}"     
       - name: Upload Test Result Artifact
         uses: actions/upload-artifact@v4
         with:
           name: test-report
           path: test-report.html
+      - name: Upload Allure Results
+        env:
+          ALLURE_TOKEN: '${{ env.ALLURE_TOKEN }}'
+        if: always()
+        run: allurectl upload ${{ env.ALLURE_RESULTS }}
           
