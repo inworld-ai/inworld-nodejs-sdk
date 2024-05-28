@@ -1,4 +1,4 @@
-name: On Demand Test Run
+name: On Demand Test Run - PROD
 
 on:
   workflow_dispatch:

@@ -1,4 +1,4 @@
-name: Daily Tests Run
+name: Daily Tests Run - PROD
 
 on:
   schedule:
@@ -32,8 +32,3 @@ jobs:
         run: npm install @inworld/nodejs-sdk
       - name: Run Tests
         run: yarn jest
-      - name: HTML Preview
-        id: html_preview
-        uses: pavi2410/html-preview-action@v2
-        with:
-          html_file: 'test-report.html'
