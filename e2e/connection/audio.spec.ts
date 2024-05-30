@@ -1,5 +1,3 @@
-import 'dotenv/config';
-
 import { sendAudio } from '../e2e_helpers';
 
 let key: [string, string] = [

@@ -1,5 +1,3 @@
-import 'dotenv/config';
-
 import { sendText } from '../e2e_helpers';
 
 let key: [string, string] = [
@@ -15,6 +13,6 @@ test('Should know NPCs name', async () => {
 }, 10000);
 
 test('Should know player name', async () => {
-  const result = await sendText(key, name, scene, 'Whats my name?');
+  const result = await sendText(key, name, scene, 'Can you say my name?');
   expect(result[0]).toContain('Billy');
 }, 10000);
