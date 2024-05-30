@@ -64,7 +64,7 @@ jobs:
         uses: allure-framework/setup-allurectl@v1.0.0
         with:
           allure-endpoint: ${{ env.ALLURE_ENDPOINT }}
-          allure-token: '${{ secrets.ALLURE_TOKEN }}'
+          allure-token: '${{ steps.secrets.outputs.ALLURE_TOKEN }}'
           allure-project-id: ${{ env.ALLURE_PROJECT_ID }}
         continue-on-error: true
       - name: Run Tests
@@ -76,7 +76,7 @@ jobs:
           path: test-report.html
       - name: Upload Allure Results
         env:
-          ALLURE_TOKEN: '${{ secrets.ALLURE_TOKEN }}'
+          ALLURE_TOKEN: '${{ steps.secrets.outputs.ALLURE_TOKEN }}'
         if: always()
         run: allurectl upload ${{ env.ALLURE_RESULTS }}
           
