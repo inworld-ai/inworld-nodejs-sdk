@@ -1,0 +1,9 @@
+{
+  "name": "e2e",
+  "type": "module",
+  "devDependencies": {
+    "allure-commandline": "^2.29.0",
+    "allure-jest": "^2.15.1",
+    "jest-html-reporter": "^3.10.2"
+  }
+}
