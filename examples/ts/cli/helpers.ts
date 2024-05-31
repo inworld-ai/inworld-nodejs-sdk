@@ -1,6 +1,10 @@
-import { Character, InworldConnectionService } from '@inworld/nodejs-sdk';
+import {
+  Character,
+  ConversationService,
+  InworldConnectionService,
+} from '@inworld/nodejs-sdk';
 
-export const listAll = async (connection: InworldConnectionService) => {
+export const listCharacters = async (connection: InworldConnectionService) => {
   const characters = await connection.getCharacters();
 
   if (characters.length) {
@@ -29,5 +33,31 @@ export const changeCharacter = async (
     console.log('------------------------------');
   } else {
     console.log('Character not found');
+  }
+};
+
+export const conversationInfo = async (conversation: ConversationService) => {
+  console.log(`ConversartionId: ${conversation.getConversationId()}`);
+  conversation.getCharacters().forEach((c) => {
+    console.log(`${conversation.getConversationId()}: ${characterInfo(c)}`);
+  });
+  console.log('------------------------------');
+};
+
+export const listConversations = async (
+  connection: InworldConnectionService,
+) => {
+  const conversations = connection.getConversations();
+
+  if (conversations.length) {
+    conversations.map((c) => {
+      console.log(`Conversartion (${c.conversationId})`);
+      c.characters.forEach((c) => {
+        console.log(characterInfo(c));
+      });
+      console.log('------------------------------');
+    });
+  } else {
+    console.log('No conversations');
   }
 };

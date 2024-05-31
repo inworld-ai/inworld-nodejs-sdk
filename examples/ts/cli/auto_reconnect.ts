@@ -2,7 +2,7 @@ import 'dotenv/config';
 
 import { Client } from './components/client';
 import { Recorder } from './components/recorder';
-import { changeCharacter, characterInfo, listAll } from './helpers';
+import { changeCharacter, characterInfo, listCharacters } from './helpers';
 
 const split = require('split');
 
@@ -15,6 +15,7 @@ const client = new Client({
   config: {
     capabilities: {
       audio: true,
+      debugInfo: true,
       emotions: true,
       narratedActions: true,
       silence: true,
@@ -60,7 +61,7 @@ const run = async function () {
         break;
 
       case '/list-all':
-        listAll(connection);
+        listCharacters(connection);
         break;
 
       case '/info':
@@ -79,10 +80,9 @@ const run = async function () {
 
       case '/trigger':
         if (args[0]) {
-          await connection.sendTrigger(
-            args[0],
-            args[1] ? JSON.parse(args[1]) : [],
-          );
+          await connection.sendTrigger(args[0], {
+            parameters: args[1] ? JSON.parse(args[1]) : [],
+          });
         } else {
           console.log('/trigger requires trigger name');
         }

@@ -17,6 +17,7 @@ export class Conversation {
   private order: DISPLAY_WHEN = DISPLAY_WHEN.BEFORE_AUDIO_PLAYING;
   private queue: ConversationQueueItem[] = [];
   private cancelResponses: CancelResponses = {};
+  private multiCharacters = false;
 
   constructor() {
     this.player = new Player();
@@ -24,6 +25,10 @@ export class Conversation {
 
   setDisplayOrder(order: DISPLAY_WHEN) {
     this.order = order;
+  }
+
+  setMultiCharacters(multiCharacters: boolean = false) {
+    this.multiCharacters = multiCharacters;
   }
 
   playAudio(packet: InworldPacket) {
@@ -54,7 +59,7 @@ export class Conversation {
 
         const interactionEnd = this.queue.find(
           (item: ConversationQueueItem) =>
-            item.packet.control?.type === InworlControlAction.INTERACTION_END,
+            item.packet.control?.action === InworlControlAction.INTERACTION_END,
         );
 
         if (interactionEnd) {
@@ -225,26 +230,27 @@ export class Conversation {
   private renderPacket(packet: InworldPacket) {
     const i = packet.packetId.interactionId;
     const u = packet.packetId.utteranceId;
+    const c = this.multiCharacters ? packet.packetId.conversationId : '';
+    const parts = [`i=${i}`, `u=${u}`];
 
-    if (packet.text?.text) {
+    if (this.multiCharacters) {
+      parts.push(`c=${c}`);
+    }
+
+    const text = packet.text?.text || packet.narratedAction?.text;
+
+    if (text) {
       console.log(
-        `${this.renderEventRouting(packet)} (i=${i}, u=${u}): ${
-          packet.text.text
-        }`,
-      );
-    } else if (packet.narratedAction?.text) {
-      console.log(
-        `${this.renderEventRouting(packet)} (i=${i}, u=${u}): *${
-          packet.narratedAction.text
-        }*`,
+        `${this.renderEventRouting(packet)} (${parts.join()}): ${text}`,
       );
     }
   }
 
   private renderEventRouting = (packet: InworldPacket) => {
-    return `${this.renderActor(packet.routing.source)} to ${this.renderActor(
-      packet.routing.target,
-    )}`;
+    const source = this.renderActor(packet.routing.source);
+    const targets = packet.routing.targets.map(this.renderActor);
+
+    return `${source} to ${targets.join(' and ')}`;
   };
 
   private renderActor = (actor: Actor) => {

@@ -11,8 +11,9 @@ process.on(
     action: CONVERSATION_ACTION;
     packet: InworldPacket;
     order?: DISPLAY_WHEN;
+    multiCharacters?: boolean;
   }) => {
-    const { action, packet, order } = props;
+    const { action, packet, order, multiCharacters } = props;
 
     switch (action) {
       case CONVERSATION_ACTION.DISPLAY_TEXT:
@@ -44,6 +45,9 @@ process.on(
         if (order) {
           conversation.setDisplayOrder(order);
         }
+        break;
+      case CONVERSATION_ACTION.SET_MULTI_CHARACTERS:
+        conversation.setMultiCharacters(multiCharacters);
         break;
     }
   },
