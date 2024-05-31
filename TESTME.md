@@ -31,10 +31,10 @@ To run E2E tests first create a `.env` file in the main directory using the foll
 ```sh
 INWORLD_E2E_KEY=
 INWORLD_E2E_SECRET=
-INWORLD_E2E_SCENE_TEXT=
-INWORLD_E2E_SCENE_AUDIO=
-INWORLD_E2E_SCENE_VERB=
-INWORLD_E2E_SCENE_SCENE=
+INWORLD_E2E_SCENE_HOUSE=
+INWORLD_E2E_SCENE_STUDIO=
+INWORLD_E2E_SCENE_CASTLE=
+INWORLD_E2E_SCENE_MOVIESET=
 ```
 
 Fill in the `INWORLD_E2E_KEY` and `INWORLD_E2E_SECRET` with your own Inworld application key and secret

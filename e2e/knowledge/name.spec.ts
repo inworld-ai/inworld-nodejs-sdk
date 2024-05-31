@@ -5,7 +5,7 @@ let key: [string, string] = [
   process.env.INWORLD_E2E_SECRET!,
 ];
 let name: string = 'Billy';
-let scene: string = process.env.INWORLD_E2E_SCENE_SCENE!;
+let scene: string = process.env.INWORLD_E2E_SCENE_MOVIESET!;
 
 test('Should know NPCs name', async () => {
   const result = await sendText(key, name, scene, 'Whats your name?');

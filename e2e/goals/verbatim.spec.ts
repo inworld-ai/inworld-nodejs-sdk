@@ -5,7 +5,7 @@ let key: [string, string] = [
   process.env.INWORLD_E2E_SECRET!,
 ];
 let name: string = 'Tester';
-let scene: string = process.env.INWORLD_E2E_SCENE_VERB!;
+let scene: string = process.env.INWORLD_E2E_SCENE_CASTLE!;
 
 test('Should tell player exact phrase', async () => {
   const result = await sendText(key, name, scene, 'How can I get stronger?');
