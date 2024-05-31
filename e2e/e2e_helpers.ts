@@ -29,8 +29,6 @@ export async function sendText(
         switch (err.code) {
           case status.ABORTED:
           case status.CANCELLED:
-            connection.close();
-            reject(err);
             break;
           default:
             connection.close();
