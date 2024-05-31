@@ -61,11 +61,6 @@ jobs:
         continue-on-error: true
       - name: Run Tests
         run: yarn test:e2e
-      - name: Upload Test Result Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-report
-          path: test-report.html
       - name: Upload Allure Results
         env:
           ALLURE_TOKEN: '${{ steps.secrets.outputs.ALLURE_TOKEN }}'
