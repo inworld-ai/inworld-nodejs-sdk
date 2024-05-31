@@ -129,7 +129,7 @@ describe('catch error in runtime', () => {
   test('should pass error to console.error', async () => {
     jest
       .spyOn(ConnectionService.prototype, 'isActive')
-      .mockImplementationOnce(() => false);
+      .mockImplementation(() => true);
     const consoleErr = jest
       .spyOn(console, 'error')
       .mockImplementation(() => {});
@@ -143,12 +143,15 @@ describe('catch error in runtime', () => {
 
     expect(loggerError).toHaveBeenCalledTimes(1);
     expect(consoleErr).toHaveBeenCalledTimes(1);
+    expect(consoleErr).toHaveBeenCalledWith(
+      new Error('Connection is already open'),
+    );
   });
 
   test('should pass error to custom error callback', async () => {
     jest
       .spyOn(ConnectionService.prototype, 'isActive')
-      .mockImplementationOnce(() => false);
+      .mockImplementation(() => true);
 
     const connection = new InworldClient()
       .setConfiguration({ connection: { autoReconnect: false } })
@@ -161,5 +164,8 @@ describe('catch error in runtime', () => {
     expect(onError).toHaveBeenCalledTimes(1);
     expect(loggerError).toHaveBeenCalledTimes(1);
     expect(consoleErr).toHaveBeenCalledTimes(0);
+    expect(onError).toHaveBeenCalledWith(
+      new Error('Connection is already open'),
+    );
   });
 });

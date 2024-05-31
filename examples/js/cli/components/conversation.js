@@ -1,4 +1,4 @@
-const { InworlControlType } = require('@inworld/nodejs-sdk');
+const { InworlControlAction } = require('@inworld/nodejs-sdk');
 
 const { Player } = require('./player.js');
 const { DISPLAY_WHEN } = require('./types.js');
@@ -45,7 +45,7 @@ class Conversation {
 
         const interactionEnd = this.queue.find(
           (item) =>
-            item.packet.control?.type === InworlControlType.INTERACTION_END,
+            item.packet.control?.type === InworlControlAction.INTERACTION_END,
         );
 
         if (interactionEnd) {

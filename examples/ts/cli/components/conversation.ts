@@ -1,4 +1,4 @@
-import { Actor, InworlControlType, InworldPacket } from '@inworld/nodejs-sdk';
+import { Actor, InworlControlAction, InworldPacket } from '@inworld/nodejs-sdk';
 
 import { Player } from './player';
 import { DISPLAY_WHEN } from './types';
@@ -54,7 +54,7 @@ export class Conversation {
 
         const interactionEnd = this.queue.find(
           (item: ConversationQueueItem) =>
-            item.packet.control?.type === InworlControlType.INTERACTION_END,
+            item.packet.control?.type === InworlControlAction.INTERACTION_END,
         );
 
         if (interactionEnd) {

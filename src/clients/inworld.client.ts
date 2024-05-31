@@ -1,11 +1,9 @@
 import { ServiceError } from '@grpc/grpc-js';
-import { CapabilitiesConfiguration } from '@proto/ai/inworld/engine/configuration/configuration_pb';
 import { ClientRequest } from '@proto/ai/inworld/engine/world-engine_pb';
 
 import {
   ApiKey,
   Awaitable,
-  Capabilities,
   Client,
   ClientConfiguration,
   Extension,
@@ -16,6 +14,7 @@ import {
 } from '../common/data_structures';
 import { SCENE_HAS_INVALID_FORMAT } from '../common/errors';
 import { Logger } from '../common/logger';
+import { Capability } from '../entities/capability.entity';
 import {
   SessionContinuation,
   SessionContinuationProps,
@@ -166,22 +165,8 @@ export class InworldClient<
     return {
       ...restConfig,
       connection,
-      capabilities: this.buildCapabilities(capabilities),
+      capabilities: Capability.toProto(capabilities),
     };
-  }
-
-  private buildCapabilities(
-    capabilities: Capabilities,
-  ): CapabilitiesConfiguration {
-    const request = new CapabilitiesConfiguration()
-      .setAudio(capabilities.audio ?? true)
-      .setEmotions(capabilities.emotions ?? false)
-      .setInterruptions(capabilities.interruptions ?? false)
-      .setNarratedActions(capabilities.narratedActions ?? false)
-      .setPhonemeInfo(capabilities.phonemes ?? false)
-      .setSilenceEvents(capabilities.silence ?? false);
-
-    return request;
   }
 
   private validateApiKey() {

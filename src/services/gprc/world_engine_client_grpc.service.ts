@@ -5,6 +5,7 @@ import {
   ServiceError,
 } from '@grpc/grpc-js';
 import {
+  CapabilitiesConfiguration,
   SessionConfiguration,
   UserConfiguration,
 } from '@proto/ai/inworld/engine/configuration/configuration_pb';
@@ -51,16 +52,29 @@ export interface OpenSessionProps<
   sessionToken: SessionToken;
   sessionContinuation?: SessionContinuation;
   config: InternalClientConfiguration;
-  extension?: Extension<InworldPacketT>;
+  extension: Extension<InworldPacketT>;
   onDisconnect?: () => Awaitable<void>;
   onError?: (err: ServiceError) => Awaitable<void>;
-  onMessage?: (message: ProtoPacket) => Awaitable<void>;
+  onMessage: (message: ProtoPacket) => Awaitable<void>;
 }
 
 export interface ReopenSessionProps {
   sessionToken: SessionToken;
   onDisconnect?: () => Awaitable<void>;
   onError?: (err: ServiceError) => Awaitable<void>;
+  onMessage: (message: ProtoPacket) => Awaitable<void>;
+}
+
+interface UpdateSessionProps<
+  InworldPacketT extends InworldPacket = InworldPacket,
+> {
+  sessionToken: SessionToken;
+  connection: ClientDuplexStream<ProtoPacket, ProtoPacket>;
+  name: string;
+  extension: Extension<InworldPacketT>;
+  gameSessionId?: string;
+  capabilities?: CapabilitiesConfiguration;
+  sessionContinuation?: SessionContinuation;
   onMessage?: (message: ProtoPacket) => Awaitable<void>;
 }
 
@@ -132,7 +146,16 @@ export class WorldEngineClientGrpcService<
       sessionId: sessionToken.sessionId,
     });
 
-    const finalPackets = this.getPackets(props);
+    const finalPackets = this.getPackets({
+      extension: props.extension,
+      capabilities: props.config.capabilities,
+      client: props.client,
+      gameSessionId: props.config.gameSessionId,
+      name: props.name,
+      sessionContinuation: props.sessionContinuation,
+      user: props.user,
+      useDefaultClient: !props.client,
+    });
 
     if (onDisconnect) {
       connection.on('close', onDisconnect);
@@ -145,34 +168,19 @@ export class WorldEngineClientGrpcService<
       });
     }
 
-    let loaded = false;
+    for (const packet of finalPackets) {
+      connection.write(packet);
+    }
 
-    return new Promise((resolve, reject) => {
-      connection.on('data', async (packet: ProtoPacket) => {
-        if (!loaded && packet?.hasSessionControlResponse()) {
-          loaded = true;
-
-          const proto = packet.getSessionControlResponse();
-
-          connection.removeAllListeners('data');
-
-          if (onMessage) {
-            connection.on('data', onMessage);
-          }
-
-          resolve([connection, proto.getLoadedScene()]);
-        } else {
-          const err = new Error(
-            'Unexpected packet received during scene loading',
-          );
-
-          reject(err);
-        }
-      });
-
-      for (const packet of finalPackets) {
-        connection.write(packet);
-      }
+    return new Promise((resolve) => {
+      connection.on(
+        'data',
+        this.onLoadScene({
+          connection,
+          resolve,
+          onMessage,
+        }),
+      );
     });
   }
 
@@ -212,6 +220,81 @@ export class WorldEngineClientGrpcService<
     return connection;
   }
 
+  updateSession(
+    props: UpdateSessionProps<InworldPacketT>,
+  ): Promise<[ClientDuplexStream<ProtoPacket, ProtoPacket>, LoadedScene]> {
+    const { connection, onMessage, sessionToken } = props;
+
+    this.logger.debug({
+      action: 'Update session',
+      data: {
+        address: this.address,
+        ssl: this.ssl,
+        grpcOptions: this.grpcOptions,
+      },
+      sessionId: sessionToken.sessionId,
+    });
+
+    connection.removeAllListeners('data');
+
+    const finalPackets = this.getPackets({
+      extension: props.extension,
+      capabilities: props.capabilities,
+      gameSessionId: props.gameSessionId,
+      name: props.name,
+      sessionContinuation: props.sessionContinuation,
+    });
+
+    for (const packet of finalPackets) {
+      connection.write(packet);
+    }
+
+    return new Promise((resolve) => {
+      connection.on(
+        'data',
+        this.onLoadScene({
+          firstLoad: false,
+          connection,
+          resolve,
+          onMessage,
+        }),
+      );
+    });
+  }
+
+  private onLoadScene(props: {
+    connection: ClientDuplexStream<ProtoPacket, ProtoPacket>;
+    resolve: (
+      value: [ClientDuplexStream<ProtoPacket, ProtoPacket>, LoadedScene],
+    ) => void;
+    firstLoad?: boolean;
+    onMessage?: (message: ProtoPacket) => Awaitable<void>;
+  }) {
+    let loaded = false;
+
+    const { connection, firstLoad = true, onMessage, resolve } = props;
+
+    return (packet: ProtoPacket) => {
+      if (!loaded && packet?.hasSessionControlResponse()) {
+        if (!firstLoad) {
+          onMessage(packet);
+        }
+
+        loaded = true;
+
+        const proto = packet.getSessionControlResponse();
+
+        connection.removeAllListeners('data');
+
+        if (onMessage) {
+          connection.on('data', onMessage);
+        }
+
+        resolve([connection, proto.getLoadedScene()]);
+      }
+    };
+  }
+
   private getMetadata(sessionToken: SessionToken) {
     const metadata = new Metadata();
 
@@ -221,7 +304,7 @@ export class WorldEngineClientGrpcService<
     return metadata;
   }
 
-  private getClient(props: OpenSessionProps<InworldPacketT>) {
+  private getClient(props: { client?: ClientRequest }) {
     const containerInfo = `${os.type()} ${os.release()} (Node.js ${
       process.version
     })`;
@@ -237,7 +320,7 @@ export class WorldEngineClientGrpcService<
       .setDescription(description.join('; '));
   }
 
-  private getUserConfiguration(props: OpenSessionProps<InworldPacketT>) {
+  private getUserConfiguration(props: { user?: User }) {
     const { user } = props;
 
     const userConfiguration = new UserConfiguration();
@@ -263,7 +346,9 @@ export class WorldEngineClientGrpcService<
     return userConfiguration;
   }
 
-  private getContinuation(props: OpenSessionProps<InworldPacketT>) {
+  private getContinuation(props: {
+    sessionContinuation?: SessionContinuation;
+  }) {
     const { sessionContinuation } = props;
 
     const continuation = new Continuation();
@@ -286,31 +371,55 @@ export class WorldEngineClientGrpcService<
     return continuation;
   }
 
-  private getPackets(props: OpenSessionProps<InworldPacketT>) {
-    const packets: ProtoPacket[] = [
-      EventFactory.sessionControl({
-        capabilities: props.config.capabilities,
-      }),
-    ];
+  private getPackets(props: {
+    name: string;
+    capabilities?: CapabilitiesConfiguration;
+    client?: ClientRequest;
+    user?: User;
+    sessionContinuation?: SessionContinuation;
+    gameSessionId?: string;
+    useDefaultClient?: boolean;
+    extension: Extension<InworldPacketT>;
+  }) {
+    const packets: ProtoPacket[] = [];
 
-    if (props.config.gameSessionId) {
+    if (props.capabilities) {
+      packets.push(
+        EventFactory.sessionControl({
+          capabilities: props.capabilities,
+        }),
+      );
+    }
+
+    if (props.gameSessionId) {
       packets.push(
         EventFactory.sessionControl({
           sessionConfiguration: new SessionConfiguration().setGameSessionId(
-            props.config.gameSessionId,
+            props.gameSessionId,
           ),
         }),
       );
     }
 
-    packets.push(
-      EventFactory.sessionControl({
-        clientConfiguration: this.getClient(props),
-      }),
-      EventFactory.sessionControl({
-        userConfiguration: this.getUserConfiguration(props),
-      }),
-    );
+    if (props.client || props.useDefaultClient) {
+      packets.push(
+        EventFactory.sessionControl({
+          clientConfiguration: this.getClient({
+            client: props.client,
+          }),
+        }),
+      );
+    }
+
+    if (props.user) {
+      packets.push(
+        EventFactory.sessionControl({
+          userConfiguration: this.getUserConfiguration({
+            user: props.user,
+          }),
+        }),
+      );
+    }
 
     const continuation = this.getContinuation(props);
 
@@ -324,6 +433,6 @@ export class WorldEngineClientGrpcService<
 
     packets.push(EventFactory.loadScene(props.name));
 
-    return props.extension?.beforeLoadScene?.(packets) || packets;
+    return props.extension.beforeLoadScene?.(packets) || packets;
   }
 }

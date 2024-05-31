@@ -1,7 +1,7 @@
 import { v4 } from 'uuid';
 
 import {
-  InworlControlType,
+  InworlControlAction,
   InworldPacketType,
 } from '../../src/common/data_structures';
 import { AudioEvent } from '../../src/entities/packets/audio.entity';
@@ -28,11 +28,13 @@ const routing: Routing = {
     isPlayer: true,
     isCharacter: false,
   },
-  target: {
-    name: v4(),
-    isPlayer: false,
-    isCharacter: true,
-  },
+  targets: [
+    {
+      name: v4(),
+      isPlayer: false,
+      isCharacter: true,
+    },
+  ],
 };
 const date = new Date().toISOString();
 
@@ -50,6 +52,7 @@ test('should get audio packet fields', () => {
   });
 
   expect(packet.isAudio()).toEqual(true);
+  expect(packet.shouldHaveConversationId()).toEqual(true);
   expect(packet.audio).toEqual(audio);
   expect(packet.routing).toEqual(routing);
   expect(packet.date).toEqual(date);
@@ -71,6 +74,7 @@ test('should get text packet fields', () => {
   });
 
   expect(packet.isText()).toEqual(true);
+  expect(packet.shouldHaveConversationId()).toEqual(true);
   expect(packet.text).toEqual(text);
   expect(packet.routing).toEqual(routing);
   expect(packet.date).toEqual(date);
@@ -90,6 +94,7 @@ test('should get trigger packet fields', () => {
   });
 
   expect(packet.isTrigger()).toEqual(true);
+  expect(packet.shouldHaveConversationId()).toEqual(true);
   expect(packet.trigger).toEqual(trigger);
   expect(packet.routing).toEqual(routing);
   expect(packet.date).toEqual(date);
@@ -119,6 +124,7 @@ test('should get silence packet fields', () => {
   });
 
   expect(packet.isSilence()).toEqual(true);
+  expect(packet.shouldHaveConversationId()).toEqual(true);
   expect(packet.routing).toEqual(routing);
   expect(packet.date).toEqual(date);
   expect(packet.packetId).toEqual(packetId);
@@ -135,6 +141,7 @@ test('should get narracted action packet fields', () => {
   });
 
   expect(packet.isNarratedAction()).toEqual(true);
+  expect(packet.shouldHaveConversationId()).toEqual(true);
   expect(packet.routing).toEqual(routing);
   expect(packet.date).toEqual(date);
   expect(packet.packetId).toEqual(packetId);
@@ -216,7 +223,9 @@ describe('control', () => {
       routing,
       date,
       type: InworldPacketType.CONTROL,
-      control: new ControlEvent({ type: InworlControlType.INTERACTION_END }),
+      control: new ControlEvent({
+        action: InworlControlAction.INTERACTION_END,
+      }),
     });
 
     expect(packet.isControl()).toEqual(true);
@@ -228,7 +237,7 @@ describe('control', () => {
 
   test('should get warning packet fields', () => {
     const control = new ControlEvent({
-      type: InworlControlType.WARNING,
+      action: InworlControlAction.WARNING,
       description: v4(),
     });
     const packet = new InworldPacket({
