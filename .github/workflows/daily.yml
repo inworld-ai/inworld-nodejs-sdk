@@ -1,9 +1,6 @@
 name: Daily Tests Run - PROD
 
 on:
-  push:
-    branches:
-      - TEST-56-create-gha-workflows-for-e-2-e-tests
   schedule:
     - cron: '0 1 * * *' 
 
