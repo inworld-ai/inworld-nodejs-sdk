@@ -47,12 +47,12 @@ jobs:
           secrets: |-
             ALLURE_TOKEN:inworld-ai-prod/allure-token
       - name: Install Packages
-        run: npm install
+        run: yarn install
       - name: Install Reporter packages
         run: | 
-          npm install allure-commandline
-          npm install allure-jest
-          npm install jest-html-reporter
+          yarn add allure-commandline
+          yarn add allure-jest
+          yarn add jest-html-reporter
       - name: Install inworld/nodejs-sdk
         run: npm install @inworld/nodejs-sdk
       - name: Setup Allure TestOps
