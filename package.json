@@ -32,7 +32,7 @@
     "release:publish": "yarn build && yarn publish",
     "release:bump": "release-it",
     "test": "jest --no-cache --reporters=default",
-    "test:unit": "jest __tests__/* --no-cache --reporters=default",
+    "test:unit": "jest __tests__/* --no-cache --reporters=default --env=node",
     "test:e2e": "jest e2e/* --no-cache --reporters=default",
     "test:coverage": "jest --coverage",
     "lint:check": "eslint --cache  \"./**/*.{js,jsx,ts,tsx}\"",

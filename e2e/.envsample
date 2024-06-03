@@ -1,0 +1,6 @@
+INWORLD_E2E_KEY=
+INWORLD_E2E_SECRET=
+INWORLD_E2E_SCENE_HOUSE=workspaces/test_workspace-top3b/scenes/texts_house
+INWORLD_E2E_SCENE_STUDIO=workspaces/test_workspace-top3b/scenes/audios_studio
+INWORLD_E2E_SCENE_CASTLE=workspaces/test_workspace-top3b/scenes/castle
+INWORLD_E2E_SCENE_MOVIESET=workspaces/test_workspace-top3b/scenes/movie_set

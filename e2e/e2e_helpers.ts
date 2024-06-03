@@ -31,6 +31,7 @@ export async function sendText(
           case status.CANCELLED:
             break;
           default:
+            connection.close();
             reject(err);
             break;
         }
@@ -114,7 +115,7 @@ export async function sendAudio(
     audioStream.on('data', sendChunk).on('end', async () => {
       audioStream.close();
 
-      const silenceStream = fs.createReadStream('e2e/audio/silence.wav', {
+      const silenceStream = fs.createReadStream('e2e/connection/silence.wav', {
         highWaterMark,
       });
 

@@ -1,4 +1,4 @@
-name: On Demand Test Run
+name: On Demand Test Run - PROD
 
 on:
   workflow_dispatch:
@@ -6,18 +6,36 @@ on:
       test_suite:
         description: 'Select the test suite to run'
         required: true
-        default: 'e2e/text/text.spec.ts'
-  push:
-    branches:
-      - TEST-55-integration-tests-create-helper-functions #Leave in until you know demand job works
-
+        default: 'e2e/*'
+      os:
+        type: choice
+        description: Choose OS to run on
+        default: ubuntu-latest
+        options:
+        - ubuntu-latest
+        - windows-latest
+        - macos-latest
+        
+  
 jobs:
   run-tests:
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.inputs.os }}
     env:
-      INWORLD_KEY_TEXT: ${{ secrets.INWORLD_KEY_TEXT }}
-      INWORLD_SECRET_TEXT: ${{ secrets.INWORLD_SECRET_TEXT }}
-      INWORLD_SCENE_TEXT: ${{ secrets.INWORLD_SCENE_TEXT }}
+      INWORLD_E2E_KEY: ${{ secrets.INWORLD_E2E_KEY }}
+      INWORLD_E2E_SECRET: ${{ secrets.INWORLD_E2E_SECRET }}
+      INWORLD_E2E_SCENE_HOUSE: ${{ vars.INWORLD_E2E_SCENE_HOUSE }}
+      INWORLD_E2E_SCENE_MOVIESET: ${{ vars.INWORLD_E2E_SCENE_MOVIESET }}
+      INWORLD_E2E_SCENE_CASTLE: ${{ vars.INWORLD_E2E_SCENE_CASTLE }}
+      INWORLD_E2E_SCENE_STUDIO: ${{ vars.INWORLD_E2E_SCENE_STUDIO }}
+      ALLURE_ENDPOINT: 'https://inworld.testops.cloud/'
+      ALLURE_PROJECT_ID: '35'
+      ALLURE_JOB_RUN_ID: ''
+      ALLURE_RESULTS: 'build/allure-results'
+      PROD_AUTH_IDENTITY_PROVIDER: projects/760085515784/locations/global/workloadIdentityPools/github-prod-pool/providers/github-prvdr
+      PROD_AUTH_SERVICE_ACCOUNT: inworld-nodejs-sdk@inworld-ai-prod.iam.gserviceaccount.com
+    permissions:
+        contents: 'read'
+        id-token: 'write'
     steps:
       - name: Setup node
         uses: actions/setup-node@v3
@@ -25,10 +43,40 @@ jobs:
           node-version: '18.x'
       - name: Checkout source code
         uses: actions/checkout@v3
+      - id: "auth"
+        name: "Authenticate to Google Cloud"
+        uses: "google-github-actions/auth@v2"
+        with:
+          token_format: "access_token"
+          workload_identity_provider: "${{ env.PROD_AUTH_IDENTITY_PROVIDER }}"
+          service_account: "${{ env.PROD_AUTH_SERVICE_ACCOUNT }}"
+      - id: "secrets"
+        uses: 'google-github-actions/get-secretmanager-secrets@v2'
+        with:
+          secrets: |-
+            ALLURE_TOKEN:inworld-ai-prod/allure-token
       - name: Install Packages
-        run: npm install
+        run: yarn install
+      - name: Install Reporter packages
+        run: | 
+          yarn add allure-commandline
+          yarn add allure-jest
+          yarn add jest-html-reporter
       - name: Install inworld/nodejs-sdk
-        run: npm install @inworld/nodejs-sdk
+        run: yarn add @inworld/nodejs-sdk
+      - name: Setup Allure TestOps
+        if: always()
+        uses: allure-framework/setup-allurectl@v1.0.0
+        with:
+          allure-endpoint: ${{ env.ALLURE_ENDPOINT }}
+          allure-token: '${{ steps.secrets.outputs.ALLURE_TOKEN }}'
+          allure-project-id: ${{ env.ALLURE_PROJECT_ID }}
+        continue-on-error: true
       - name: Run Tests
-        run: yarn jest "${{ github.event.inputs.test_suite }}"
-        
+        run: yarn jest "${{ github.event.inputs.test_suite }}"     
+      - name: Upload Allure Results
+        env:
+          ALLURE_TOKEN: '${{ steps.secrets.outputs.ALLURE_TOKEN }}'
+        if: always()
+        run: allurectl upload ${{ env.ALLURE_RESULTS }}
+          
