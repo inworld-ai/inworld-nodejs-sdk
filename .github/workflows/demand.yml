@@ -6,7 +6,7 @@ on:
       test_suite:
         description: 'Select the test suite to run'
         required: true
-        default: 'e2e/connection/text.spec.ts'
+        default: 'e2e/*'
       os:
         type: choice
         description: Choose OS to run on
