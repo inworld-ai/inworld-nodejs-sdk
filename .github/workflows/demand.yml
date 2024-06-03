@@ -7,13 +7,19 @@ on:
         description: 'Select the test suite to run'
         required: true
         default: 'e2e/connection/text.spec.ts'
+      os:
+        type: choice
+        description: Choose OS to run on
+        default: ubuntu-latest
+        options:
+        - ubuntu-latest
+        - windows-latest
+        - macos-latest
+        
   
 jobs:
   run-tests:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ github.event.inputs.os }}
     env:
       INWORLD_E2E_KEY: ${{ secrets.INWORLD_E2E_KEY }}
       INWORLD_E2E_SECRET: ${{ secrets.INWORLD_E2E_SECRET }}
