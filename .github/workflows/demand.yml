@@ -10,7 +10,10 @@ on:
   
 jobs:
   run-tests:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     env:
       INWORLD_E2E_KEY: ${{ secrets.INWORLD_E2E_KEY }}
       INWORLD_E2E_SECRET: ${{ secrets.INWORLD_E2E_SECRET }}
