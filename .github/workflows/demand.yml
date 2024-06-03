@@ -54,7 +54,7 @@ jobs:
           yarn add allure-jest
           yarn add jest-html-reporter
       - name: Install inworld/nodejs-sdk
-        run: npm install @inworld/nodejs-sdk
+        run: yarn add @inworld/nodejs-sdk
       - name: Setup Allure TestOps
         if: always()
         uses: allure-framework/setup-allurectl@v1.0.0
