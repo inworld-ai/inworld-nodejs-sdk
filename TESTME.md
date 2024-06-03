@@ -9,8 +9,9 @@ This document provides information on the testing procedures for the Inworld AI 
 3. Click **Run workflow**
 4. Select which branch you want to run from
 5. Select which test suite or test spec to run
-6. Click **Run workflow** to run tests
-7. View results by clicking on the latest workflow run
+6. Select which OS to run on
+7. Click **Run workflow** to run tests
+8. View results by clicking on the latest workflow run
 > [!IMPORTANT]
 > To run a single test, write the exact test file name ex. `e2e/connection/text.spec.ts`.
 > To run all tests in a folder use an asterisk ex. `e2e/connection/*`.
@@ -26,18 +27,11 @@ yarn test:unit
 
 ## Running E2E Tests Locally
 
-To run E2E tests first create a `.env` file in the main directory using the following variables
-
-```sh
-INWORLD_E2E_KEY=
-INWORLD_E2E_SECRET=
-INWORLD_E2E_SCENE_HOUSE=
-INWORLD_E2E_SCENE_STUDIO=
-INWORLD_E2E_SCENE_CASTLE=
-INWORLD_E2E_SCENE_MOVIESET=
-```
+To run E2E tests, first rename `.envsample` file to `.env` and place in root folder.
 
 Fill in the `INWORLD_E2E_KEY` and `INWORLD_E2E_SECRET` with your own Inworld application key and secret
+
+Import the dotenv package by running `npm install dotenv` and importing the package on the tests you wish to run 
 
 Execute the following command to run E2E tests:
 
