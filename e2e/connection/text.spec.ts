@@ -21,7 +21,7 @@ test('Should return a response', async () => {
     'This test confirms that a response is recieved when sending text to an NPC',
   );
   await allure.displayName(
-    'Node js > Connection >Text: Should return a response',
+    'Node js > Connection > Text: Should return a response',
   );
-  await allure.testCaseId('925');
+  await allure.allureId('925');
 }, 10000);
