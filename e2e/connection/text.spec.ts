@@ -18,7 +18,10 @@ test('Should return a response', async () => {
   await allure.feature('Connection');
   await allure.story('Text');
   await allure.description(
-    'This test attempts to log into the website using a login and a password. Fails if any error happens.\n\nNote that this test does not test 2-Factor Authentication.',
+    'This test confirms that a response is recieved when sending text to an NPC',
   );
-  await allure.owner('John Doe');
+  await allure.displayName(
+    'Node js > Connection >Text: Should return a response',
+  );
+  await allure.testCaseId('925');
 }, 10000);
