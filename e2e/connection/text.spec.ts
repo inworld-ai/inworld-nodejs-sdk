@@ -14,8 +14,7 @@ let scene: string = process.env.INWORLD_E2E_SCENE_HOUSE!;
 test('Should return a response', async () => {
   const result = await sendText(key, name, scene, 'Hi there!');
   expect(result[0]).not.toBe('');
+  await parentSuite('Tests for web interface');
+  await suite('Tests for essential features');
+  await subSuite('Tests for authentication');
 }, 10000);
-
-await parentSuite('Tests for web interface');
-await suite('Tests for essential features');
-await subSuite('Tests for authentication');
