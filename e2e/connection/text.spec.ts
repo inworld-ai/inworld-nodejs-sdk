@@ -16,7 +16,7 @@ test('Should return a response', async () => {
   expect(result[0]).not.toBe('');
   await allure.suite('Node.js SDK');
   await allure.feature('Connection');
-  await allure.label('component', 'Text');
+  await allure.label('Component', 'Text');
   await allure.description(
     'This test attempts to log into the website using a login and a password. Fails if any error happens.\n\nNote that this test does not test 2-Factor Authentication.',
   );
