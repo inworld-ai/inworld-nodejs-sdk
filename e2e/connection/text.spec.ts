@@ -12,8 +12,7 @@ let name: string = 'Tester';
 let scene: string = process.env.INWORLD_E2E_SCENE_HOUSE!;
 
 test('Should return a response', async () => {
-  const result = await sendText(key, name, scene, 'Hi there!');
-  expect(result[0]).not.toBe('');
+  await allure.allureId('925');
   await allure.suite('Node.js SDK');
   await allure.feature('Connection');
   await allure.story('Text');
@@ -23,5 +22,7 @@ test('Should return a response', async () => {
   await allure.displayName(
     'Node js > Connection > Text: Should return a response',
   );
-  await allure.allureId('925');
+
+  const result = await sendText(key, name, scene, 'Hi there!');
+  expect(result[0]).not.toBe('');
 }, 10000);
