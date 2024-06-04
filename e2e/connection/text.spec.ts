@@ -1,6 +1,6 @@
 // import 'dotenv/config';
 
-import { parentSuite, subSuite, suite } from 'allure-js-commons';
+import * as allure from 'allure-js-commons';
 
 import { sendText } from '../e2e_helpers';
 
@@ -14,7 +14,11 @@ let scene: string = process.env.INWORLD_E2E_SCENE_HOUSE!;
 test('Should return a response', async () => {
   const result = await sendText(key, name, scene, 'Hi there!');
   expect(result[0]).not.toBe('');
-  await parentSuite('Tests for web interface');
-  await suite('Tests for essential features');
-  await subSuite('Tests for authentication');
+  await allure.parentSuite('Tests for web interface');
+  await allure.suite('Tests for essential features');
+  await allure.subSuite('Tests for authentication');
+  await allure.description(
+    'This test attempts to log into the website using a login and a password. Fails if any error happens.\n\nNote that this test does not test 2-Factor Authentication.',
+  );
+  await allure.owner('John Doe');
 }, 10000);
