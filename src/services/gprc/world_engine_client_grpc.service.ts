@@ -18,8 +18,8 @@ import {
 } from '@proto/ai/inworld/engine/world-engine_pb';
 import {
   Continuation,
+  CurrentSceneStatus,
   InworldPacket as ProtoPacket,
-  LoadedScene,
 } from '@proto/ai/inworld/packets/packets_pb';
 import { promisify } from 'util';
 import os = require('os');
@@ -130,7 +130,9 @@ export class WorldEngineClientGrpcService<
 
   openSession(
     props: OpenSessionProps<InworldPacketT>,
-  ): Promise<[ClientDuplexStream<ProtoPacket, ProtoPacket>, LoadedScene]> {
+  ): Promise<
+    [ClientDuplexStream<ProtoPacket, ProtoPacket>, CurrentSceneStatus]
+  > {
     const { sessionToken, onDisconnect, onError, onMessage } = props;
 
     const metadata = this.getMetadata(sessionToken);
@@ -222,7 +224,9 @@ export class WorldEngineClientGrpcService<
 
   updateSession(
     props: UpdateSessionProps<InworldPacketT>,
-  ): Promise<[ClientDuplexStream<ProtoPacket, ProtoPacket>, LoadedScene]> {
+  ): Promise<
+    [ClientDuplexStream<ProtoPacket, ProtoPacket>, CurrentSceneStatus]
+  > {
     const { connection, onMessage, sessionToken } = props;
 
     this.logger.debug({
@@ -265,7 +269,7 @@ export class WorldEngineClientGrpcService<
   private onLoadScene(props: {
     connection: ClientDuplexStream<ProtoPacket, ProtoPacket>;
     resolve: (
-      value: [ClientDuplexStream<ProtoPacket, ProtoPacket>, LoadedScene],
+      value: [ClientDuplexStream<ProtoPacket, ProtoPacket>, CurrentSceneStatus],
     ) => void;
     firstLoad?: boolean;
     onMessage?: (message: ProtoPacket) => Awaitable<void>;
@@ -275,14 +279,12 @@ export class WorldEngineClientGrpcService<
     const { connection, firstLoad = true, onMessage, resolve } = props;
 
     return (packet: ProtoPacket) => {
-      if (!loaded && packet?.hasSessionControlResponse()) {
+      if (!loaded && packet?.getControl()?.hasCurrentSceneStatus()) {
         if (!firstLoad) {
           onMessage(packet);
         }
 
         loaded = true;
-
-        const proto = packet.getSessionControlResponse();
 
         connection.removeAllListeners('data');
 
@@ -290,7 +292,7 @@ export class WorldEngineClientGrpcService<
           connection.on('data', onMessage);
         }
 
-        resolve([connection, proto.getLoadedScene()]);
+        resolve([connection, packet.getControl().getCurrentSceneStatus()]);
       }
     };
   }
@@ -368,7 +370,7 @@ export class WorldEngineClientGrpcService<
         .setDialogHistory(sessionContinuation.previousDialog.toProto());
     }
 
-    return continuation;
+    return continuation.getContinuationType() ? continuation : undefined;
   }
 
   private getPackets(props: {
@@ -381,57 +383,30 @@ export class WorldEngineClientGrpcService<
     useDefaultClient?: boolean;
     extension: Extension<InworldPacketT>;
   }) {
-    const packets: ProtoPacket[] = [];
+    const continuation = this.getContinuation(props);
 
-    if (props.capabilities) {
-      packets.push(
-        EventFactory.sessionControl({
+    const packets: ProtoPacket[] = [
+      EventFactory.sessionControl({
+        ...(props.capabilities && {
           capabilities: props.capabilities,
         }),
-      );
-    }
-
-    if (props.gameSessionId) {
-      packets.push(
-        EventFactory.sessionControl({
+        ...(props.gameSessionId && {
           sessionConfiguration: new SessionConfiguration().setGameSessionId(
             props.gameSessionId,
           ),
         }),
-      );
-    }
-
-    if (props.client || props.useDefaultClient) {
-      packets.push(
-        EventFactory.sessionControl({
+        ...((props.client || props.useDefaultClient) && {
           clientConfiguration: this.getClient({
             client: props.client,
           }),
         }),
-      );
-    }
-
-    if (props.user) {
-      packets.push(
-        EventFactory.sessionControl({
-          userConfiguration: this.getUserConfiguration({
-            user: props.user,
-          }),
+        ...(props.user && {
+          userConfiguration: this.getUserConfiguration(props),
         }),
-      );
-    }
-
-    const continuation = this.getContinuation(props);
-
-    if (continuation.getContinuationType()) {
-      packets.push(
-        EventFactory.sessionControl({
-          continuation: this.getContinuation(props),
-        }),
-      );
-    }
-
-    packets.push(EventFactory.loadScene(props.name));
+        ...(continuation && { continuation }),
+      }),
+      EventFactory.loadScene(props.name),
+    ];
 
     return props.extension.beforeLoadScene?.(packets) || packets;
   }

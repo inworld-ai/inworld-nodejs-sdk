@@ -1,8 +1,9 @@
 import { ClientDuplexStream, ServiceError } from '@grpc/grpc-js';
 import { ClientRequest } from '@proto/ai/inworld/engine/world-engine_pb';
 import {
+  ControlEvent,
+  CurrentSceneStatus,
   InworldPacket as ProtoPacket,
-  LoadedCharacters,
   LoadedScene,
 } from '@proto/ai/inworld/packets/packets_pb';
 
@@ -59,7 +60,6 @@ export class ConnectionService<
 > {
   private state: ConnectionState = ConnectionState.INACTIVE;
 
-  private nextSceneName: string | undefined;
   private scene: Scene;
   private sceneIsLoaded = false;
   private sessionToken: SessionToken;
@@ -106,10 +106,6 @@ export class ConnectionService<
 
   getSceneName() {
     return this.scene.name;
-  }
-
-  setNextSceneName(name?: string) {
-    this.nextSceneName = name;
   }
 
   async generateSessionToken() {
@@ -487,21 +483,10 @@ export class ConnectionService<
     factory.setCharacters(this.scene.characters);
   }
 
-  private setSceneFromProtoEvent(proto: LoadedScene) {
+  private setSceneFromProtoEvent(proto: CurrentSceneStatus) {
     this.scene = Scene.fromProto(proto);
 
     this.connectionProps.extension?.afterLoadScene?.(proto);
-    this.ensureCurrentCharacter();
-  }
-
-  private addCharactersToScene(proto: LoadedCharacters) {
-    const characters = proto.getAgentsList().map((c) => Character.fromProto(c));
-
-    this.scene = new Scene({
-      name: this.scene.name,
-      characters: [...new Set(this.scene.characters.concat(characters))],
-    });
-
     this.ensureCurrentCharacter();
   }
 
@@ -524,12 +509,14 @@ export class ConnectionService<
       const conversation =
         conversationId && this.conversations.get(conversationId);
 
-      const sessionControlResponse = packet.getSessionControlResponse();
+      const sceneStatus = packet.getControl()?.getCurrentSceneStatus();
 
-      if (sessionControlResponse?.hasLoadedScene()) {
-        this.setSceneFromProtoEvent(sessionControlResponse.getLoadedScene());
-      } else if (sessionControlResponse?.hasLoadedCharacters()) {
-        this.addCharactersToScene(sessionControlResponse.getLoadedCharacters());
+      if (
+        packet.getControl()?.getAction() ===
+          ControlEvent.Action.CURRENT_SCENE_STATUS &&
+        sceneStatus
+      ) {
+        this.setSceneFromProtoEvent(sceneStatus);
       }
 
       // Update conversation state.

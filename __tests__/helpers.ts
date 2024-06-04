@@ -9,11 +9,10 @@ import {
   Agent,
   ControlEvent,
   ConversationEventPayload,
+  CurrentSceneStatus,
   InworldPacket as ProtoPacket,
-  LoadedScene,
   PacketId,
   Routing,
-  SessionControlResponseEvent,
 } from '@proto/ai/inworld/packets/packets_pb';
 import { v4 } from 'uuid';
 
@@ -168,9 +167,10 @@ export const extension: Extension<ExtendedInworldPacket> = {
   afterLoadScene: jest.fn(),
   beforeLoadScene: jest.fn((packets: ProtoPacket[]) => {
     return packets.map((packet: ProtoPacket) => {
-      if (packet.getSessionControl()?.hasCapabilitiesConfiguration()) {
+      if (packet.getControl()?.hasSessionConfiguration()) {
         packet
-          .getSessionControl()
+          .getControl()
+          .getSessionConfiguration()
           .setCapabilitiesConfiguration(extendedCapabilities);
       }
 
@@ -210,18 +210,12 @@ export const setTimeoutMock = (callback: any) => {
 export const agents = [createAgent(), createAgent()];
 export const characters = convertAgentsToCharacters(agents);
 export const getStream = () => new ClientDuplexStreamImpl(jest.fn(), jest.fn());
-export const sessionControlResponseEvent =
-  new SessionControlResponseEvent().setLoadedScene(
-    new LoadedScene().setAgentsList(agents),
-  );
-export const emitSessionControlResponseEvent =
+export const sceneStatusEvent = new ControlEvent()
+  .setAction(ControlEvent.Action.CURRENT_SCENE_STATUS)
+  .setCurrentSceneStatus(new CurrentSceneStatus().setAgentsList(agents));
+export const emitSceneStatusEvent =
   (stream: ClientDuplexStream<ProtoPacket, ProtoPacket>) => (resolve: any) => {
-    stream.emit(
-      'data',
-      generateEmptyPacket().setSessionControlResponse(
-        sessionControlResponseEvent,
-      ),
-    );
+    stream.emit('data', generateEmptyPacket().setControl(sceneStatusEvent));
     resolve(true);
   };
 

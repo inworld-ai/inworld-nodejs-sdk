@@ -22,7 +22,7 @@ import { ExtendedInworldPacket } from '../../data_structures';
 import {
   capabilities,
   characters,
-  emitSessionControlResponseEvent,
+  emitSceneStatusEvent,
   extendedCapabilities,
   extension,
   generateEmptyPacket,
@@ -32,8 +32,8 @@ import {
   previousDialog,
   previousState,
   SCENE,
+  sceneStatusEvent,
   SECRET,
-  sessionControlResponseEvent,
   sessionProto,
   sessionToken,
   simpleExtension,
@@ -127,22 +127,19 @@ describe('load scene', () => {
         extension: simpleExtension,
         onMessage,
       }),
-      new Promise(emitSessionControlResponseEvent(stream)),
+      new Promise(emitSceneStatusEvent(stream)),
     ]);
 
     expect(openSession).toHaveBeenCalledTimes(1);
     expect(result[0][0]).toEqual(stream);
     expect(Scene.fromProto(result[0][1]).characters).toEqual(characters);
-    expect(write).toHaveBeenCalledTimes(3);
-    expect(
-      write.mock.calls[0][0].getSessionControl().getCapabilitiesConfiguration(),
-    ).toEqual(capabilities);
-    expect(
-      write.mock.calls[1][0]
-        .getSessionControl()
-        .getClientConfiguration()
-        .getId(),
-    ).toEqual(CLIENT_ID);
+    expect(write).toHaveBeenCalledTimes(2);
+
+    const configuration = write.mock.calls[0][0]
+      .getControl()
+      .getSessionConfiguration();
+    expect(configuration.getCapabilitiesConfiguration()).toEqual(capabilities);
+    expect(configuration.getClientConfiguration().getId()).toEqual(CLIENT_ID);
     expect(loggerDebug).toHaveBeenCalledTimes(1);
   });
 
@@ -168,11 +165,12 @@ describe('load scene', () => {
         extension,
         onMessage,
       }),
-      new Promise(emitSessionControlResponseEvent(stream)),
+      new Promise(emitSceneStatusEvent(stream)),
     ]);
 
-    const actualClient = write.mock.calls[1][0]
-      .getSessionControl()
+    const actualClient = write.mock.calls[0][0]
+      .getControl()
+      .getSessionConfiguration()
       .getClientConfiguration();
 
     expect(actualClient.getId()).toEqual(CLIENT_ID);
@@ -207,11 +205,12 @@ describe('load scene', () => {
         extension,
         onMessage,
       }),
-      new Promise(emitSessionControlResponseEvent(stream)),
+      new Promise(emitSceneStatusEvent(stream)),
     ]);
 
-    const actualClient = write.mock.calls[1][0]
-      .getSessionControl()
+    const actualClient = write.mock.calls[0][0]
+      .getControl()
+      .getSessionConfiguration()
       .getClientConfiguration();
 
     expect(actualClient.getId()).toEqual(CLIENT_ID);
@@ -242,13 +241,14 @@ describe('load scene', () => {
         extension,
         onMessage,
       }),
-      new Promise(emitSessionControlResponseEvent(stream)),
+      new Promise(emitSceneStatusEvent(stream)),
     ]);
 
-    const continuation = write.mock.calls[3][0]
-      .getSessionControl()
+    const continuation = write.mock.calls[0][0]
+      .getControl()
+      .getSessionConfiguration()
       .getContinuation();
-    expect(write).toHaveBeenCalledTimes(5);
+    expect(write).toHaveBeenCalledTimes(2);
     expect(continuation.getContinuationType()).toEqual(
       Continuation.ContinuationType.CONTINUATION_TYPE_DIALOG_HISTORY,
     );
@@ -273,12 +273,13 @@ describe('load scene', () => {
         extension,
         onMessage,
       }),
-      new Promise(emitSessionControlResponseEvent(stream)),
+      new Promise(emitSceneStatusEvent(stream)),
     ]);
 
     expect(
-      write.mock.calls[2][0]
-        .getSessionControl()
+      write.mock.calls[0][0]
+        .getControl()
+        .getSessionConfiguration()
         .getUserConfiguration()
         .getName(),
     ).toEqual(user.fullName);
@@ -300,11 +301,12 @@ describe('load scene', () => {
         extension,
         onMessage,
       }),
-      new Promise(emitSessionControlResponseEvent(stream)),
+      new Promise(emitSceneStatusEvent(stream)),
     ]);
 
-    const profileFields = write.mock.calls[2][0]
-      .getSessionControl()
+    const profileFields = write.mock.calls[0][0]
+      .getControl()
+      .getSessionConfiguration()
       .getUserConfiguration()
       .getUserSettings()
       .getPlayerProfile()
@@ -333,16 +335,17 @@ describe('load scene', () => {
         extension,
         onMessage,
       }),
-      new Promise(emitSessionControlResponseEvent(stream)),
+      new Promise(emitSceneStatusEvent(stream)),
     ]);
 
-    const sentGameSessionId = write.mock.calls[1][0]
-      .getSessionControl()
+    const sentGameSessionId = write.mock.calls[0][0]
+      .getControl()
+      .getSessionConfiguration()
       .getSessionConfiguration()
       .getGameSessionId();
 
     expect(sentGameSessionId).toEqual(gameSessionId);
-    expect(write).toHaveBeenCalledTimes(5);
+    expect(write).toHaveBeenCalledTimes(2);
   });
 
   test('should send previous session state', async () => {
@@ -365,11 +368,12 @@ describe('load scene', () => {
         extension,
         onMessage,
       }),
-      new Promise(emitSessionControlResponseEvent(stream)),
+      new Promise(emitSceneStatusEvent(stream)),
     ]);
 
-    const state = write.mock.calls[3][0]
-      .getSessionControl()
+    const state = write.mock.calls[0][0]
+      .getControl()
+      .getSessionConfiguration()
       .getContinuation()
       .getExternallySavedState();
 
@@ -391,13 +395,16 @@ describe('load scene', () => {
         extension,
         onMessage,
       }),
-      new Promise(emitSessionControlResponseEvent(stream)),
+      new Promise(emitSceneStatusEvent(stream)),
     ]);
 
     expect(openSession).toHaveBeenCalledTimes(1);
-    expect(write).toHaveBeenCalledTimes(3);
+    expect(write).toHaveBeenCalledTimes(2);
     expect(
-      write.mock.calls[0][0].getSessionControl().getCapabilitiesConfiguration(),
+      write.mock.calls[0][0]
+        .getControl()
+        .getSessionConfiguration()
+        .getCapabilitiesConfiguration(),
     ).toEqual(extendedCapabilities);
     expect(extension.beforeLoadScene).toHaveBeenCalledTimes(1);
   });
@@ -419,18 +426,8 @@ describe('load scene', () => {
         onMessage,
       }),
       new Promise((resolve: any) => {
-        stream.emit(
-          'data',
-          generateEmptyPacket().setSessionControlResponse(
-            sessionControlResponseEvent,
-          ),
-        );
-        stream.emit(
-          'data',
-          generateEmptyPacket().setSessionControlResponse(
-            sessionControlResponseEvent,
-          ),
-        );
+        stream.emit('data', generateEmptyPacket().setControl(sceneStatusEvent));
+        stream.emit('data', generateEmptyPacket().setControl(sceneStatusEvent));
         resolve(true);
       }),
     ]);
@@ -469,7 +466,7 @@ describe('openSession', () => {
         onMessage,
         onDisconnect,
       }),
-      new Promise(emitSessionControlResponseEvent(stream)),
+      new Promise(emitSceneStatusEvent(stream)),
     ]);
 
     expect(clientSession).toHaveBeenCalledTimes(1);
@@ -500,7 +497,7 @@ describe('openSession', () => {
         onError,
         onMessage,
       }),
-      new Promise(emitSessionControlResponseEvent(stream)),
+      new Promise(emitSceneStatusEvent(stream)),
     ]);
     stream.emit('error');
 
@@ -524,7 +521,7 @@ describe('openSession', () => {
         extension,
         onMessage,
       }),
-      new Promise(emitSessionControlResponseEvent(stream)),
+      new Promise(emitSceneStatusEvent(stream)),
     ]);
 
     stream.emit('data');
@@ -547,7 +544,7 @@ describe('openSession', () => {
         sessionToken,
         onMessage,
       }),
-      new Promise(emitSessionControlResponseEvent(stream)),
+      new Promise(emitSceneStatusEvent(stream)),
     ]);
 
     stream.emit('data');
@@ -573,7 +570,7 @@ describe('openSession', () => {
         onDisconnect,
         onMessage,
       }),
-      new Promise(emitSessionControlResponseEvent(stream)),
+      new Promise(emitSceneStatusEvent(stream)),
     ]);
 
     stream.emit('close');

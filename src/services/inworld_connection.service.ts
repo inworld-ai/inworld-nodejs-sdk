@@ -193,8 +193,6 @@ export class InworldConnectionService<
     this.oneToOneConversation = undefined;
     this.connection.conversations.clear();
 
-    this.connection.setNextSceneName(name);
-
     return this.connection.change(name, props);
   }
 

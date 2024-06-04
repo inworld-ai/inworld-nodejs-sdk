@@ -6,18 +6,16 @@ import {
   ControlEvent,
   ConversationEventPayload,
   ConversationUpdatePayload,
+  CurrentSceneStatus,
   DataChunk,
   EmotionEvent,
   InworldPacket as ProtoPacket,
   LoadCharacters,
-  LoadedCharacters,
-  LoadedScene,
   LoadScene,
   MutationEvent,
   NarratedAction,
   PacketId,
   Routing,
-  SessionControlResponseEvent,
 } from '@proto/ai/inworld/packets/packets_pb';
 import { Duration } from 'google-protobuf/google/protobuf/duration_pb';
 import { v4 } from 'uuid';
@@ -559,7 +557,7 @@ describe('convert packet to external one', () => {
 
     expect(result).toBeInstanceOf(InworldPacket);
     expect(result.isSceneMutationRequest()).toEqual(true);
-    expect(result.sceneMutation.characterNames).toEqual(
+    expect(result.sceneMutation.addedCharacterNames).toEqual(
       characters.map((c) => c.resourceName),
     );
   });
@@ -568,14 +566,14 @@ describe('convert packet to external one', () => {
     const rounting = new Routing()
       .setSource(new Actor())
       .setTarget(new Actor());
-    const event = new SessionControlResponseEvent().setLoadedScene(
-      new LoadedScene().setAgentsList(agents),
-    );
+    const event = new ControlEvent()
+      .setAction(ControlEvent.Action.CURRENT_SCENE_STATUS)
+      .setCurrentSceneStatus(new CurrentSceneStatus().setAgentsList(agents));
     const packet = new ProtoPacket()
       .setPacketId(new PacketId().setPacketId(v4()))
       .setRouting(rounting)
       .setTimestamp(protoTimestamp())
-      .setSessionControlResponse(event);
+      .setControl(event);
     const result = InworldPacket.fromProto(packet);
 
     expect(result).toBeInstanceOf(InworldPacket);
@@ -587,19 +585,19 @@ describe('convert packet to external one', () => {
     const rounting = new Routing()
       .setSource(new Actor())
       .setTarget(new Actor());
-    const event = new SessionControlResponseEvent().setLoadedCharacters(
-      new LoadedCharacters().setAgentsList(agents),
-    );
+    const event = new ControlEvent()
+      .setAction(ControlEvent.Action.CURRENT_SCENE_STATUS)
+      .setCurrentSceneStatus(new CurrentSceneStatus().setAgentsList(agents));
     const packet = new ProtoPacket()
       .setPacketId(new PacketId().setPacketId(v4()))
       .setRouting(rounting)
       .setTimestamp(protoTimestamp())
-      .setSessionControlResponse(event);
+      .setControl(event);
     const result = InworldPacket.fromProto(packet);
 
     expect(result).toBeInstanceOf(InworldPacket);
     expect(result.isSceneMutationResponse()).toEqual(true);
-    expect(result.sceneMutation.addedCharacters).toEqual(characters);
+    expect(result.sceneMutation.loadedCharacters).toEqual(characters);
   });
 
   test('unknown', () => {

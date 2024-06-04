@@ -3,12 +3,11 @@ import { WorldEngineClient } from '@proto/ai/inworld/engine/world-engine_grpc_pb
 import {
   Actor,
   ControlEvent,
+  CurrentSceneStatus,
   InworldPacket as ProtoPacket,
-  LoadedCharacters,
   LoadedScene,
   PacketId,
   Routing,
-  SessionControlResponseEvent,
 } from '@proto/ai/inworld/packets/packets_pb';
 import { v4 } from 'uuid';
 
@@ -30,7 +29,7 @@ import {
   capabilities,
   characters,
   createAgent,
-  emitSessionControlResponseEvent,
+  emitSceneStatusEvent,
   generateEmptyPacket,
   getStream,
   KEY,
@@ -119,10 +118,7 @@ describe('message', () => {
     const openSession = jest
       .spyOn(WorldEngineClient.prototype, 'openSession')
       .mockImplementationOnce(() => {
-        setTimeout(
-          () => new Promise(emitSessionControlResponseEvent(stream)),
-          0,
-        );
+        setTimeout(() => new Promise(emitSceneStatusEvent(stream)), 0);
         return stream;
       });
 
@@ -166,10 +162,7 @@ describe('message', () => {
     jest
       .spyOn(WorldEngineClient.prototype, 'openSession')
       .mockImplementationOnce(() => {
-        setTimeout(
-          () => new Promise(emitSessionControlResponseEvent(stream)),
-          0,
-        );
+        setTimeout(() => new Promise(emitSceneStatusEvent(stream)), 0);
         return stream;
       });
 
@@ -218,10 +211,7 @@ describe('message', () => {
     jest
       .spyOn(WorldEngineClient.prototype, 'openSession')
       .mockImplementationOnce(() => {
-        setTimeout(
-          () => new Promise(emitSessionControlResponseEvent(stream)),
-          0,
-        );
+        setTimeout(() => new Promise(emitSceneStatusEvent(stream)), 0);
         return stream;
       });
 
@@ -229,10 +219,12 @@ describe('message', () => {
 
     currentCharacters = await connection.getCharactersList();
 
-    const packet = generateEmptyPacket().setSessionControlResponse(
-      new SessionControlResponseEvent().setLoadedScene(
-        new LoadedScene().setAgentsList(newAgents),
-      ),
+    const packet = generateEmptyPacket().setControl(
+      new ControlEvent()
+        .setAction(ControlEvent.Action.CURRENT_SCENE_STATUS)
+        .setCurrentSceneStatus(
+          new CurrentSceneStatus().setAgentsList(newAgents),
+        ),
     );
 
     stream.emit('data', packet);
@@ -275,10 +267,7 @@ describe('message', () => {
     jest
       .spyOn(WorldEngineClient.prototype, 'openSession')
       .mockImplementationOnce(() => {
-        setTimeout(
-          () => new Promise(emitSessionControlResponseEvent(stream)),
-          0,
-        );
+        setTimeout(() => new Promise(emitSceneStatusEvent(stream)), 0);
         return stream;
       });
 
@@ -286,10 +275,12 @@ describe('message', () => {
 
     currentCharacters = await connection.getCharactersList();
 
-    const packet = generateEmptyPacket().setSessionControlResponse(
-      new SessionControlResponseEvent().setLoadedCharacters(
-        new LoadedCharacters().setAgentsList(newAgents),
-      ),
+    const packet = generateEmptyPacket().setControl(
+      new ControlEvent()
+        .setAction(ControlEvent.Action.CURRENT_SCENE_STATUS)
+        .setCurrentSceneStatus(
+          new CurrentSceneStatus().setAgentsList([...agents, ...newAgents]),
+        ),
     );
 
     stream.emit('data', packet);
@@ -495,10 +486,7 @@ describe('open', () => {
     jest
       .spyOn(WorldEngineClient.prototype, 'openSession')
       .mockImplementationOnce(() => {
-        setTimeout(
-          () => new Promise(emitSessionControlResponseEvent(stream)),
-          0,
-        );
+        setTimeout(() => new Promise(emitSceneStatusEvent(stream)), 0);
         return stream;
       });
 
@@ -543,10 +531,7 @@ describe('open', () => {
     jest
       .spyOn(WorldEngineClient.prototype, 'openSession')
       .mockImplementationOnce(() => {
-        setTimeout(
-          () => new Promise(emitSessionControlResponseEvent(stream)),
-          0,
-        );
+        setTimeout(() => new Promise(emitSceneStatusEvent(stream)), 0);
         return stream;
       });
 
@@ -962,10 +947,7 @@ describe('send', () => {
     jest
       .spyOn(WorldEngineClient.prototype, 'openSession')
       .mockImplementationOnce(() => {
-        setTimeout(
-          () => new Promise(emitSessionControlResponseEvent(stream)),
-          0,
-        );
+        setTimeout(() => new Promise(emitSceneStatusEvent(stream)), 0);
         return stream;
       });
 

@@ -36,9 +36,10 @@ Here are several ways to enhance the functionality of the Inworld AI Node.js SDK
 
   const beforeLoadScene = (packets: ProtoPacket) => {
     return packets.map((packet: ProtoPacket) => {
-      if (packet.getSessionControl()?.hasCapabilitiesConfiguration()) {
+      if (packet.getControl()?.getSessionConfiguration()?.hasCapabilitiesConfiguration()) {
         packet
-          .getSessionControl()
+          .getControl()
+          .getSessionConfiguration()
           .setCapabilitiesConfiguration(extendedCapabilities);
       }
 

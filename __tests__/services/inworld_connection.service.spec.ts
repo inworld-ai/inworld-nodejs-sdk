@@ -2,8 +2,8 @@ import { ClientDuplexStreamImpl } from '@grpc/grpc-js/build/src/call';
 import {
   ControlEvent,
   ConversationEventPayload,
+  CurrentSceneStatus,
   DataChunk,
-  LoadedScene,
   MutationEvent,
   RegenerateResponse,
 } from '@proto/ai/inworld/packets/packets_pb';
@@ -35,7 +35,7 @@ const connection = new ConnectionService({
   name: SCENE,
 });
 const eventFactory = new EventFactory();
-const sceneProto = new LoadedScene().setAgentsList(agents);
+const sceneProto = new CurrentSceneStatus().setAgentsList(agents);
 
 beforeEach(() => {
   jest.clearAllMocks();
