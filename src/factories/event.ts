@@ -1,8 +1,10 @@
 import {
   ActionEvent,
   Actor,
+  Agent,
   CancelResponsesEvent,
   ControlEvent,
+  ConversationUpdatePayload,
   CustomEvent,
   DataChunk,
   InworldPacket as ProtoPacket,
@@ -14,19 +16,27 @@ import {
   Routing,
   SessionControlEvent,
   TextEvent,
+  UnloadCharacters,
 } from '@proto/ai/inworld/packets/packets_pb';
 import { v4 } from 'uuid';
 
 import {
-  CancelResponsesProps,
+  SendPacketParams,
+  SendTriggerPacketParams,
   SessionControlProps,
 } from '../common/data_structures';
 import { protoTimestamp } from '../common/helpers';
 import { Character } from '../entities/character.entity';
-import { TriggerParameter } from '../entities/packets/trigger.entity';
+
+export interface SendCancelResponsePacketParams {
+  interactionId?: string;
+  utteranceId?: string[];
+  character: Character;
+}
 
 export class EventFactory {
-  private character: Character = null;
+  private character: Character | undefined = undefined;
+  private characters: Character[] = [];
 
   getCurrentCharacter(): Character {
     return this.character;
@@ -36,16 +46,29 @@ export class EventFactory {
     this.character = character;
   }
 
-  dataChunk(chunk: string, type: DataChunk.DataType): ProtoPacket {
+  setCharacters(characters: Character[]) {
+    this.characters = characters;
+  }
+
+  getCharacters() {
+    return this.characters;
+  }
+
+  dataChunk(
+    chunk: string,
+    type: DataChunk.DataType,
+    params: SendPacketParams,
+  ): ProtoPacket {
     const event = new DataChunk().setType(type).setChunk(chunk);
 
     return this.baseProtoPacket({
       utteranceId: false,
       interactionId: false,
+      conversationId: params.conversationId,
     }).setDataChunk(event);
   }
 
-  audioSessionStart(): ProtoPacket {
+  audioSessionStart(params: SendPacketParams): ProtoPacket {
     const event = new ControlEvent().setAction(
       ControlEvent.Action.AUDIO_SESSION_START,
     );
@@ -53,10 +76,11 @@ export class EventFactory {
     return this.baseProtoPacket({
       utteranceId: false,
       interactionId: false,
+      conversationId: params.conversationId,
     }).setControl(event);
   }
 
-  audioSessionEnd(): ProtoPacket {
+  audioSessionEnd(params: SendPacketParams): ProtoPacket {
     const event = new ControlEvent().setAction(
       ControlEvent.Action.AUDIO_SESSION_END,
     );
@@ -64,10 +88,11 @@ export class EventFactory {
     return this.baseProtoPacket({
       utteranceId: false,
       interactionId: false,
+      conversationId: params.conversationId,
     }).setControl(event);
   }
 
-  mutePlayback(isMuted: boolean): ProtoPacket {
+  mutePlayback(isMuted: boolean, params: SendPacketParams): ProtoPacket {
     const event = new ControlEvent().setAction(
       isMuted
         ? ControlEvent.Action.TTS_PLAYBACK_MUTE
@@ -77,19 +102,25 @@ export class EventFactory {
     return this.baseProtoPacket({
       utteranceId: false,
       interactionId: false,
+      conversationId: params.conversationId,
     }).setControl(event);
   }
 
-  text(text: string): ProtoPacket {
+  text(text: string, params: SendPacketParams): ProtoPacket {
     const event = new TextEvent()
       .setText(text)
       .setSourceType(TextEvent.SourceType.TYPED_IN)
       .setFinal(true);
 
-    return this.baseProtoPacket({ correlationId: true }).setText(event);
+    return this.baseProtoPacket({
+      correlationId: true,
+      conversationId: params.conversationId,
+    }).setText(event);
   }
 
-  trigger(name: string, parameters: TriggerParameter[] = []): ProtoPacket {
+  trigger(name: string, params: SendTriggerPacketParams): ProtoPacket {
+    const { parameters = [], character, conversationId } = params;
+
     const event = new CustomEvent().setName(name);
 
     if (parameters.length) {
@@ -100,33 +131,75 @@ export class EventFactory {
       );
     }
 
-    return this.baseProtoPacket({ correlationId: true }).setCustom(event);
-  }
+    const base = this.baseProtoPacket({
+      correlationId: true,
+      conversationId,
+    }).setCustom(event);
 
-  cancelResponse(cancelResponses?: CancelResponsesProps): ProtoPacket {
-    const event = new CancelResponsesEvent();
-
-    if (cancelResponses?.interactionId) {
-      event.setInteractionId(cancelResponses.interactionId);
+    if (character) {
+      base.setRouting(this.routing({ character }));
     }
 
-    if (cancelResponses?.utteranceId) {
-      event.setUtteranceIdList(cancelResponses.utteranceId);
+    return base;
+  }
+
+  cancelResponse(params: SendCancelResponsePacketParams): ProtoPacket {
+    const event = new CancelResponsesEvent();
+
+    if (params.interactionId) {
+      event.setInteractionId(params.interactionId);
+    }
+
+    if (params.utteranceId) {
+      event.setUtteranceIdList(params.utteranceId);
     }
 
     return this.baseProtoPacket({
       utteranceId: false,
       interactionId: false,
       correlationId: true,
-    }).setMutation(new MutationEvent().setCancelResponses(event));
+    })
+      .setMutation(new MutationEvent().setCancelResponses(event))
+      .setRouting(
+        this.routing({
+          character: params.character,
+        }),
+      );
   }
 
-  narratedAction(content: string): ProtoPacket {
+  narratedAction(content: string, params: SendPacketParams): ProtoPacket {
     const event = new ActionEvent().setNarratedAction(
       new NarratedAction().setContent(content),
     );
 
-    return this.baseProtoPacket({ correlationId: true }).setAction(event);
+    return this.baseProtoPacket({
+      correlationId: true,
+      conversationId: params.conversationId,
+    }).setAction(event);
+  }
+
+  static conversation(
+    participants: string[],
+    params: SendPacketParams,
+  ): ProtoPacket {
+    const control = new ControlEvent()
+      .setAction(ControlEvent.Action.CONVERSATION_UPDATE)
+      .setConversationUpdate(
+        new ConversationUpdatePayload().setParticipantsList(
+          participants.map((p) =>
+            new Actor().setName(p).setType(Actor.Type.AGENT),
+          ),
+        ),
+      );
+
+    return new ProtoPacket()
+      .setPacketId(
+        new PacketId()
+          .setPacketId(v4())
+          .setConversationId(params.conversationId),
+      )
+      .setTimestamp(protoTimestamp())
+      .setControl(control);
   }
 
   static sessionControl(props: SessionControlProps): ProtoPacket {
@@ -182,10 +255,24 @@ export class EventFactory {
       .setMutation(mutation);
   }
 
+  static unloadCharacters(ids: string[]): ProtoPacket {
+    const agents = ids.map((agentId) => new Agent().setAgentId(agentId));
+    const mutation = new MutationEvent().setUnloadCharacters(
+      new UnloadCharacters().setAgentsList(agents),
+    );
+
+    return new ProtoPacket()
+      .setPacketId(new PacketId().setPacketId(v4()))
+      .setRouting(this.worldRouting())
+      .setTimestamp(protoTimestamp())
+      .setMutation(mutation);
+  }
+
   baseProtoPacket(props?: {
     utteranceId?: boolean;
     interactionId?: boolean;
     correlationId?: boolean;
+    conversationId?: string;
   }) {
     const packetId = new PacketId().setPacketId(v4());
 
@@ -201,20 +288,28 @@ export class EventFactory {
       packetId.setCorrelationId(v4());
     }
 
+    if (props?.conversationId) {
+      packetId.setConversationId(props.conversationId);
+    }
+
     return new ProtoPacket()
       .setPacketId(packetId)
       .setRouting(this.routing())
       .setTimestamp(protoTimestamp());
   }
 
-  private routing(): Routing {
-    const source = new Actor().setType(Actor.Type.PLAYER);
+  private routing(props?: { character: Character }): Routing {
+    const routing = new Routing().setSource(
+      new Actor().setType(Actor.Type.PLAYER),
+    );
 
-    const target = new Actor()
-      .setType(Actor.Type.AGENT)
-      .setName(this.character?.id);
+    if (props?.character) {
+      routing.setTarget(
+        new Actor().setType(Actor.Type.AGENT).setName(props.character.id),
+      );
+    }
 
-    return new Routing().setSource(source).setTarget(target);
+    return routing;
   }
 
   private static worldRouting(): Routing {

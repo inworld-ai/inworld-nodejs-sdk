@@ -34,7 +34,7 @@
     "test": "jest --no-cache --reporters=default",
     "test:unit": "jest __tests__/* --no-cache --reporters=default --env=node",
     "test:e2e": "jest e2e/* --no-cache --reporters=default",
-    "test:coverage": "jest --coverage",
+    "test:coverage": "jest __tests__/* --coverage",
     "lint:check": "eslint --cache  \"./**/*.{js,jsx,ts,tsx}\"",
     "lint:fix": "yarn run lint:check --fix",
     "prettier:check": "yarn prettier --check \"./{src,__tests__,examples}/**/*.{js,jsx,ts,tsx}\" --ignore-path .gitignore",

@@ -4,16 +4,15 @@ import {
   Actor,
   ControlEvent,
   InworldPacket as ProtoPacket,
+  LoadedCharacters,
+  LoadedScene,
   PacketId,
   Routing,
+  SessionControlResponseEvent,
 } from '@proto/ai/inworld/packets/packets_pb';
 import { v4 } from 'uuid';
 
-import {
-  LoadedCharacters,
-  LoadedScene,
-  SessionControlResponseEvent,
-} from '../../proto/ai/inworld/packets/packets_pb';
+import { ConversationState } from '../../src/common/data_structures';
 import { protoTimestamp } from '../../src/common/helpers';
 import { Logger } from '../../src/common/logger';
 import { Character } from '../../src/entities/character.entity';
@@ -23,6 +22,7 @@ import { Session } from '../../src/entities/session.entity';
 import { SessionToken } from '../../src/entities/session_token.entity';
 import { EventFactory } from '../../src/factories/event';
 import { ConnectionService } from '../../src/services/connection.service';
+import { ConversationService } from '../../src/services/conversation.service';
 import { StateSerializationClientGrpcService } from '../../src/services/gprc/state_serialization_client_grpc.service';
 import { WorldEngineClientGrpcService } from '../../src/services/gprc/world_engine_client_grpc.service';
 import {
@@ -238,7 +238,7 @@ describe('message', () => {
     stream.emit('data', packet);
   });
 
-  test('should add characters to scene', async () => {
+  test('should add and remove characters', async () => {
     let currentCharacters: Character[];
     const newAgents = [createAgent(), createAgent()];
     const stream = getStream();
@@ -259,6 +259,12 @@ describe('message', () => {
         expect(newCharacters[1].id).toEqual(currentCharacters[1].id);
         expect(newCharacters[2].id).toEqual(newAgents[0].getAgentId());
         expect(newCharacters[3].id).toEqual(newAgents[1].getAgentId());
+
+        connection.removeCharacters([
+          newCharacters[0].resourceName,
+          newCharacters[1].resourceName,
+        ]);
+        expect((await connection.getCharactersList()).length).toEqual(2);
       },
       onDisconnect,
     });
@@ -419,7 +425,7 @@ describe('open', () => {
     const sessionGetterSetter = {
       get: jest.fn().mockImplementationOnce(() =>
         Promise.resolve({
-          scene: Scene.fromProto(SCENE, new LoadedScene()),
+          scene: Scene.fromProto(new LoadedScene().setSceneName(SCENE)),
           sessionToken,
         } as Session),
       ),
@@ -496,6 +502,16 @@ describe('open', () => {
         return stream;
       });
 
+    const conversationService = new ConversationService(connection, {
+      participants: [characters[0].resourceName, characters[1].resourceName],
+      addCharacters: jest.fn(),
+    });
+
+    connection.conversations.set(conversationService.getConversationId(), {
+      service: conversationService,
+      state: ConversationState.ACTIVE,
+    });
+
     await connection.open();
 
     expect(connection.isActive()).toEqual(true);
@@ -504,6 +520,10 @@ describe('open', () => {
 
     expect(connection.isActive()).toEqual(false);
     expect(onDisconnect).toHaveBeenCalledTimes(1);
+    expect(
+      connection.conversations.get(conversationService.getConversationId())
+        ?.state,
+    ).toEqual(ConversationState.INACTIVE);
   });
 
   test('should not throw error on close event without onDisconnect handler', async () => {
@@ -689,6 +709,79 @@ describe('open manually', () => {
 
     expect(isActive).toHaveBeenCalledTimes(1);
     expect(open).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('change scene', () => {
+  let connection: ConnectionService;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+
+    connection = new ConnectionService({
+      apiKey: { key: KEY, secret: SECRET },
+      name: SCENE,
+      config: { capabilities },
+      user,
+      onError,
+      onMessage,
+      onDisconnect,
+    });
+  });
+
+  test('should execute without errors', async () => {
+    const stream = getStream();
+    const generateSessionToken = jest
+      .spyOn(connection, 'generateSessionToken')
+      .mockImplementationOnce(() => Promise.resolve(sessionToken));
+    const openSession = jest
+      .spyOn(WorldEngineClientGrpcService.prototype, 'openSession')
+      .mockImplementationOnce(() => Promise.resolve([stream, sceneProto]));
+    const updateSession = jest
+      .spyOn(WorldEngineClientGrpcService.prototype, 'updateSession')
+      .mockImplementationOnce(() => Promise.resolve([stream, sceneProto]));
+
+    await connection.open();
+    await connection.change(`workspaces/${v4()}/characters/${v4()}`);
+
+    expect(generateSessionToken).toHaveBeenCalledTimes(1);
+    expect(openSession).toHaveBeenCalledTimes(1);
+    expect(updateSession).toHaveBeenCalledTimes(1);
+  });
+
+  test('should reopen connection at first', async () => {
+    const stream = getStream();
+    const generateSessionToken = jest
+      .spyOn(connection, 'generateSessionToken')
+      .mockImplementationOnce(() => Promise.resolve(sessionToken));
+    const openSession = jest
+      .spyOn(WorldEngineClientGrpcService.prototype, 'openSession')
+      .mockImplementationOnce(() => Promise.resolve([stream, sceneProto]));
+    const updateSession = jest
+      .spyOn(WorldEngineClientGrpcService.prototype, 'updateSession')
+      .mockImplementationOnce(() => Promise.resolve([stream, sceneProto]));
+    const reopenSession = jest
+      .spyOn(WorldEngineClientGrpcService.prototype, 'reopenSession')
+      .mockImplementationOnce(jest.fn());
+
+    await connection.open();
+
+    jest.spyOn(connection, 'isActive').mockImplementation(() => false);
+
+    await connection.change(`workspaces/${v4()}/characters/${v4()}`);
+
+    expect(generateSessionToken).toHaveBeenCalledTimes(1);
+    expect(openSession).toHaveBeenCalledTimes(1);
+    expect(reopenSession).toHaveBeenCalledTimes(1);
+    expect(updateSession).toHaveBeenCalledTimes(1);
+  });
+
+  test('should throw error if scene is not loaded yet', async () => {
+    await expect(
+      connection.change(`workspaces/${v4()}/characters/${v4()}`),
+    ).rejects.toEqual(
+      new Error('Unable to change scene that is not loaded yet'),
+    );
   });
 });
 
@@ -981,5 +1074,42 @@ describe('character', () => {
 
     expect(setCurrentCharacter).toHaveBeenCalledTimes(1);
     expect(setCurrentCharacter).toHaveBeenCalledWith(characters[0]);
+  });
+
+  test('should find character by id', () => {
+    jest
+      .spyOn(Scene.prototype, 'getCharactersByIds')
+      .mockImplementation((ids) => {
+        return characters.filter((character) => ids.includes(character.id));
+      });
+
+    expect(connection.getCharactersByIds([characters[0].id])[0]).toEqual(
+      characters[0],
+    );
+    expect(connection.getCharactersByIds([characters[1].id])[0]).toEqual(
+      characters[1],
+    );
+  });
+
+  test('should find character by resource name', () => {
+    jest
+      .spyOn(Scene.prototype, 'getCharactersByResourceNames')
+      .mockImplementation((names) => {
+        return characters.filter((character) =>
+          names.includes(character.resourceName),
+        );
+      });
+
+    expect(
+      connection.getCharactersByResourceNames([characters[0].resourceName])[0],
+    ).toEqual(characters[0]);
+    expect(
+      connection.getCharactersByResourceNames([characters[1].resourceName])[0],
+    ).toEqual(characters[1]);
+  });
+
+  test('should return undefined if character is not found', () => {
+    expect(connection.getCharactersByIds([v4()])).toEqual([]);
+    expect(connection.getCharactersByResourceNames([v4()])).toEqual([]);
   });
 });

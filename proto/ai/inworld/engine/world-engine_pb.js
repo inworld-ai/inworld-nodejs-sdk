@@ -48,6 +48,7 @@ goog.exportSymbol('proto.LogErrorRequest', null, global);
 goog.exportSymbol('proto.PreviousDialog', null, global);
 goog.exportSymbol('proto.PreviousDialog.DialogParticipant', null, global);
 goog.exportSymbol('proto.PreviousDialog.Phrase', null, global);
+goog.exportSymbol('proto.PreviousDialog.Phrase.PayloadCase', null, global);
 goog.exportSymbol('proto.PreviousState', null, global);
 goog.exportSymbol('proto.PreviousState.StateHolder', null, global);
 goog.exportSymbol('proto.PreviousState.StateHolder.StateFormat', null, global);
@@ -302,7 +303,7 @@ if (goog.DEBUG && !COMPILED) {
  * @constructor
  */
 proto.PreviousDialog.Phrase = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, null, proto.PreviousDialog.Phrase.oneofGroups_);
 };
 goog.inherits(proto.PreviousDialog.Phrase, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
@@ -699,7 +700,8 @@ proto.CapabilitiesRequest.toObject = function(includeInstance, msg) {
     debugInfo: jspb.Message.getBooleanFieldWithDefault(msg, 18, false),
     ttsMp3: jspb.Message.getBooleanFieldWithDefault(msg, 19, false),
     multiAgent: jspb.Message.getBooleanFieldWithDefault(msg, 20, false),
-    audio2Face: jspb.Message.getBooleanFieldWithDefault(msg, 21, false)
+    audio2Face: jspb.Message.getBooleanFieldWithDefault(msg, 21, false),
+    inspect: jspb.Message.getBooleanFieldWithDefault(msg, 22, false)
   };
 
   if (includeInstance) {
@@ -815,6 +817,10 @@ proto.CapabilitiesRequest.deserializeBinaryFromReader = function(msg, reader) {
     case 21:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setAudio2Face(value);
+      break;
+    case 22:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setInspect(value);
       break;
     default:
       reader.skipField();
@@ -982,6 +988,13 @@ proto.CapabilitiesRequest.serializeBinaryToWriter = function(message, writer) {
   if (f) {
     writer.writeBool(
       21,
+      f
+    );
+  }
+  f = message.getInspect();
+  if (f) {
+    writer.writeBool(
+      22,
       f
     );
   }
@@ -1345,6 +1358,24 @@ proto.CapabilitiesRequest.prototype.getAudio2Face = function() {
  */
 proto.CapabilitiesRequest.prototype.setAudio2Face = function(value) {
   return jspb.Message.setProto3BooleanField(this, 21, value);
+};
+
+
+/**
+ * optional bool inspect = 22;
+ * @return {boolean}
+ */
+proto.CapabilitiesRequest.prototype.getInspect = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 22, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.CapabilitiesRequest} returns this
+ */
+proto.CapabilitiesRequest.prototype.setInspect = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 22, value);
 };
 
 
@@ -3309,9 +3340,36 @@ proto.PreviousDialog.serializeBinaryToWriter = function(message, writer) {
 proto.PreviousDialog.DialogParticipant = {
   UNKNOWN: 0,
   PLAYER: 1,
-  CHARACTER: 2
+  CHARACTER: 2,
+  WORLD: 3
 };
 
+
+/**
+ * Oneof group definitions for this message. Each group defines the field
+ * numbers belonging to that group. When of these fields' value is set, all
+ * other fields in the group are cleared. During deserialization, if multiple
+ * fields are encountered for a group, only the last value seen will be kept.
+ * @private {!Array<!Array<number>>}
+ * @const
+ */
+proto.PreviousDialog.Phrase.oneofGroups_ = [[2,5]];
+
+/**
+ * @enum {number}
+ */
+proto.PreviousDialog.Phrase.PayloadCase = {
+  PAYLOAD_NOT_SET: 0,
+  PHRASE: 2,
+  NARRATIVE_ACTION: 5
+};
+
+/**
+ * @return {proto.PreviousDialog.Phrase.PayloadCase}
+ */
+proto.PreviousDialog.Phrase.prototype.getPayloadCase = function() {
+  return /** @type {proto.PreviousDialog.Phrase.PayloadCase} */(jspb.Message.computeOneofCase(this, proto.PreviousDialog.Phrase.oneofGroups_[0]));
+};
 
 
 
@@ -3345,7 +3403,9 @@ proto.PreviousDialog.Phrase.prototype.toObject = function(opt_includeInstance) {
 proto.PreviousDialog.Phrase.toObject = function(includeInstance, msg) {
   var f, obj = {
     talker: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    phrase: jspb.Message.getFieldWithDefault(msg, 2, "")
+    talkerDisplayName: jspb.Message.getFieldWithDefault(msg, 4, ""),
+    phrase: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    narrativeAction: jspb.Message.getFieldWithDefault(msg, 5, "")
   };
 
   if (includeInstance) {
@@ -3386,9 +3446,17 @@ proto.PreviousDialog.Phrase.deserializeBinaryFromReader = function(msg, reader) 
       var value = /** @type {!proto.PreviousDialog.DialogParticipant} */ (reader.readEnum());
       msg.setTalker(value);
       break;
+    case 4:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setTalkerDisplayName(value);
+      break;
     case 2:
       var value = /** @type {string} */ (reader.readString());
       msg.setPhrase(value);
+      break;
+    case 5:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setNarrativeAction(value);
       break;
     default:
       reader.skipField();
@@ -3426,10 +3494,24 @@ proto.PreviousDialog.Phrase.serializeBinaryToWriter = function(message, writer) 
       f
     );
   }
-  f = message.getPhrase();
+  f = message.getTalkerDisplayName();
   if (f.length > 0) {
     writer.writeString(
+      4,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 2));
+  if (f != null) {
+    writer.writeString(
       2,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 5));
+  if (f != null) {
+    writer.writeString(
+      5,
       f
     );
   }
@@ -3455,6 +3537,24 @@ proto.PreviousDialog.Phrase.prototype.setTalker = function(value) {
 
 
 /**
+ * optional string talker_display_name = 4;
+ * @return {string}
+ */
+proto.PreviousDialog.Phrase.prototype.getTalkerDisplayName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.PreviousDialog.Phrase} returns this
+ */
+proto.PreviousDialog.Phrase.prototype.setTalkerDisplayName = function(value) {
+  return jspb.Message.setProto3StringField(this, 4, value);
+};
+
+
+/**
  * optional string phrase = 2;
  * @return {string}
  */
@@ -3468,7 +3568,61 @@ proto.PreviousDialog.Phrase.prototype.getPhrase = function() {
  * @return {!proto.PreviousDialog.Phrase} returns this
  */
 proto.PreviousDialog.Phrase.prototype.setPhrase = function(value) {
-  return jspb.Message.setProto3StringField(this, 2, value);
+  return jspb.Message.setOneofField(this, 2, proto.PreviousDialog.Phrase.oneofGroups_[0], value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.PreviousDialog.Phrase} returns this
+ */
+proto.PreviousDialog.Phrase.prototype.clearPhrase = function() {
+  return jspb.Message.setOneofField(this, 2, proto.PreviousDialog.Phrase.oneofGroups_[0], undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.PreviousDialog.Phrase.prototype.hasPhrase = function() {
+  return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * optional string narrative_action = 5;
+ * @return {string}
+ */
+proto.PreviousDialog.Phrase.prototype.getNarrativeAction = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.PreviousDialog.Phrase} returns this
+ */
+proto.PreviousDialog.Phrase.prototype.setNarrativeAction = function(value) {
+  return jspb.Message.setOneofField(this, 5, proto.PreviousDialog.Phrase.oneofGroups_[0], value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.PreviousDialog.Phrase} returns this
+ */
+proto.PreviousDialog.Phrase.prototype.clearNarrativeAction = function() {
+  return jspb.Message.setOneofField(this, 5, proto.PreviousDialog.Phrase.oneofGroups_[0], undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.PreviousDialog.Phrase.prototype.hasNarrativeAction = function() {
+  return jspb.Message.getField(this, 5) != null;
 };
 
 
@@ -6858,7 +7012,7 @@ proto.ConversationState.serializeBinaryToWriter = function(message, writer) {
  * @private {!Array<number>}
  * @const
  */
-proto.ConversationState.ConversationSettings.repeatedFields_ = [2,3];
+proto.ConversationState.ConversationSettings.repeatedFields_ = [2,3,4];
 
 
 
@@ -6893,7 +7047,9 @@ proto.ConversationState.ConversationSettings.toObject = function(includeInstance
   var f, obj = {
     conversationId: jspb.Message.getFieldWithDefault(msg, 1, ""),
     participantsList: (f = jspb.Message.getRepeatedField(msg, 2)) == null ? undefined : f,
-    spectatorsList: (f = jspb.Message.getRepeatedField(msg, 3)) == null ? undefined : f
+    spectatorsList: (f = jspb.Message.getRepeatedField(msg, 3)) == null ? undefined : f,
+    participatingActorsList: jspb.Message.toObjectList(msg.getParticipatingActorsList(),
+    ai_inworld_packets_packets_pb.Actor.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -6941,6 +7097,11 @@ proto.ConversationState.ConversationSettings.deserializeBinaryFromReader = funct
     case 3:
       var value = /** @type {string} */ (reader.readString());
       msg.addSpectators(value);
+      break;
+    case 4:
+      var value = new ai_inworld_packets_packets_pb.Actor;
+      reader.readMessage(value,ai_inworld_packets_packets_pb.Actor.deserializeBinaryFromReader);
+      msg.addParticipatingActors(value);
       break;
     default:
       reader.skipField();
@@ -6990,6 +7151,14 @@ proto.ConversationState.ConversationSettings.serializeBinaryToWriter = function(
     writer.writeRepeatedString(
       3,
       f
+    );
+  }
+  f = message.getParticipatingActorsList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      4,
+      f,
+      ai_inworld_packets_packets_pb.Actor.serializeBinaryToWriter
     );
   }
 };
@@ -7084,6 +7253,44 @@ proto.ConversationState.ConversationSettings.prototype.addSpectators = function(
  */
 proto.ConversationState.ConversationSettings.prototype.clearSpectatorsList = function() {
   return this.setSpectatorsList([]);
+};
+
+
+/**
+ * repeated ai.inworld.packets.Actor participating_actors = 4;
+ * @return {!Array<!proto.Actor>}
+ */
+proto.ConversationState.ConversationSettings.prototype.getParticipatingActorsList = function() {
+  return /** @type{!Array<!proto.Actor>} */ (
+    jspb.Message.getRepeatedWrapperField(this, ai_inworld_packets_packets_pb.Actor, 4));
+};
+
+
+/**
+ * @param {!Array<!proto.Actor>} value
+ * @return {!proto.ConversationState.ConversationSettings} returns this
+*/
+proto.ConversationState.ConversationSettings.prototype.setParticipatingActorsList = function(value) {
+  return jspb.Message.setRepeatedWrapperField(this, 4, value);
+};
+
+
+/**
+ * @param {!proto.Actor=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.Actor}
+ */
+proto.ConversationState.ConversationSettings.prototype.addParticipatingActors = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 4, opt_value, proto.Actor, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.ConversationState.ConversationSettings} returns this
+ */
+proto.ConversationState.ConversationSettings.prototype.clearParticipatingActorsList = function() {
+  return this.setParticipatingActorsList([]);
 };
 
 

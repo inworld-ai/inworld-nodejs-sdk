@@ -21,13 +21,15 @@ import {
   Capabilities,
   ClientConfiguration,
   ConnectionConfig,
-  InworlControlType,
+  InworlControlAction,
   InworldPacketType,
   SessionTokenProps,
+  TriggerParameter,
   User,
   UserProfile,
   UserProfileField,
 } from './common/data_structures';
+import * as InworldTriggers from './common/inworld_triggers';
 import { Character } from './entities/character.entity';
 import {
   DialogParticipant,
@@ -53,13 +55,11 @@ import { InworldPacket } from './entities/packets/inworld_packet.entity';
 import { PacketId } from './entities/packets/packet_id.entity';
 import { Actor, Routing } from './entities/packets/routing.entity';
 import { TextEvent } from './entities/packets/text.entity';
-import {
-  TriggerEvent,
-  TriggerParameter,
-} from './entities/packets/trigger.entity';
+import { TriggerEvent } from './entities/packets/trigger.entity';
 import { Scene } from './entities/scene.entity';
 import { Session } from './entities/session.entity';
 import { SessionToken } from './entities/session_token.entity';
+import { ConversationService } from './services/conversation.service';
 import {
   FeedbackDislikeProps,
   FeedbackLikeProps,
@@ -79,6 +79,7 @@ export {
   Character,
   ClientConfiguration,
   ConnectionConfig,
+  ConversationService,
   DialogParticipant,
   DialogPhrase,
   DislikeType,
@@ -92,11 +93,12 @@ export {
   FeedbackLikeProps,
   getHost,
   getSSL,
-  InworlControlType,
+  InworlControlAction,
   InworldClient,
   InworldConnectionService,
   InworldPacket,
   InworldPacketType,
+  InworldTriggers,
   PacketId,
   PreviousDialog,
   Routing,

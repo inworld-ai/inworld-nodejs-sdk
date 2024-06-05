@@ -1,4 +1,5 @@
 import { LoadedScene } from '@proto/ai/inworld/packets/packets_pb';
+import { v4 } from 'uuid';
 
 import { Character } from '../../src/entities/character.entity';
 import { Scene } from '../../src/entities/scene.entity';
@@ -36,10 +37,36 @@ test('should deserialize', () => {
 test('should convert proto to scene', () => {
   const agents = [createAgent(), createAgent(false)];
 
-  const proto = new LoadedScene().setAgentsList(agents);
-  const scene = Scene.fromProto(SCENE, proto);
+  const proto = new LoadedScene().setAgentsList(agents).setSceneName(SCENE);
+  const scene = Scene.fromProto(proto);
 
   expect(scene.characters[0].id).toEqual(agents[0].getAgentId());
   expect(scene.characters[1].id).toEqual(agents[1].getAgentId());
   expect(scene.characters[1].assets.avatarImg).toEqual(undefined);
+});
+
+test('should find character by id', () => {
+  const [character] = scene.getCharactersByIds([characters[0].id]);
+
+  expect(character).toEqual(characters[0]);
+});
+
+test('should return undefined when character not found', () => {
+  const [character] = scene.getCharactersByIds([v4()]);
+
+  expect(character).toBeUndefined();
+});
+
+test('should find character by resource name', () => {
+  const [character] = scene.getCharactersByResourceNames([
+    characters[0].resourceName,
+  ]);
+
+  expect(character).toEqual(characters[0]);
+});
+
+test('should return undefined when character not found by resource name', () => {
+  const [character] = scene.getCharactersByResourceNames([v4()]);
+
+  expect(character).toBeUndefined();
 });

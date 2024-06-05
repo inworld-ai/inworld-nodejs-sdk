@@ -9,14 +9,19 @@ import {
 import {
   ApiKey,
   Awaitable,
+  ChangeSceneProps,
   ConnectionState,
+  ConversationMapItem,
+  ConversationState,
   Extension,
   GenerateSessionTokenFn,
   GetterSetter,
   InternalClientConfiguration,
+  InworldConversationEventType,
   User,
 } from '../common/data_structures';
 import { Logger } from '../common/logger';
+import { Capability } from '../entities/capability.entity';
 import { Character } from '../entities/character.entity';
 import { SessionContinuation } from '../entities/continuation/session_continuation.entity';
 import { InworldPacket } from '../entities/packets/inworld_packet.entity';
@@ -71,11 +76,15 @@ export class ConnectionService<
   private engineService = new WorldEngineClientGrpcService<InworldPacketT>();
   private stateService = new StateSerializationClientGrpcService();
 
-  private onDisconnect: () => Awaitable<void>;
-  private onError: (err: ServiceError) => Awaitable<void>;
-  private onMessage: ((message: ProtoPacket) => Awaitable<void>) | undefined;
-
   private logger = Logger.getInstance();
+  private extension: Extension<InworldPacketT>;
+
+  onDisconnect: () => Awaitable<void>;
+  onError: (err: ServiceError) => Awaitable<void>;
+  onMessage: ((message: ProtoPacket) => Awaitable<void>) | undefined;
+
+  readonly conversations: Map<string, ConversationMapItem<InworldPacketT>> =
+    new Map();
 
   constructor(props: ConnectionProps<InworldPacketT>) {
     this.connectionProps = props;
@@ -83,43 +92,8 @@ export class ConnectionService<
       name: this.connectionProps.name,
     });
 
-    this.onDisconnect = async () => {
-      this.state = ConnectionState.INACTIVE;
-      await this.connectionProps.onDisconnect?.();
-    };
-    this.onError = this.connectionProps.onError;
-
-    this.onMessage = async (packet: ProtoPacket) => {
-      const sessionControlResponse = packet.getSessionControlResponse();
-
-      if (sessionControlResponse?.hasLoadedScene()) {
-        this.setSceneFromProtoEvent(sessionControlResponse.getLoadedScene());
-      } else if (sessionControlResponse?.hasLoadedCharacters()) {
-        this.addCharactersToScene(sessionControlResponse.getLoadedCharacters());
-      }
-
-      const inworldPacket = this.convertPacketFromProto(packet);
-
-      this.connectionProps.onMessage?.(inworldPacket);
-
-      if (inworldPacket.isWarning()) {
-        this.logger.warn({
-          action: 'Receive warning packet',
-          data: {
-            packet: packet.toObject(),
-          },
-          sessionId: this.sessionToken?.sessionId,
-        });
-      } else {
-        this.logger.debug({
-          action: 'Receive packet',
-          data: {
-            packet: packet.toObject(),
-          },
-          sessionId: this.sessionToken?.sessionId,
-        });
-      }
-    };
+    this.initializeHandlers();
+    this.initializeExtension();
   }
 
   isActive() {
@@ -208,8 +182,25 @@ export class ConnectionService<
     return this.getEventFactory().getCurrentCharacter();
   }
 
-  async setCurrentCharacter(character: Character) {
-    return this.getEventFactory().setCurrentCharacter(character);
+  getCharactersByIds(ids: string[]) {
+    return this.scene.getCharactersByIds(ids);
+  }
+
+  getCharactersByResourceNames(names: string[]) {
+    return this.scene.getCharactersByResourceNames(names);
+  }
+
+  setCurrentCharacter(character: Character) {
+    this.getEventFactory().setCurrentCharacter(character);
+  }
+
+  removeCharacters(names: string[]) {
+    this.scene = new Scene({
+      ...this.scene,
+      characters: this.scene.characters.filter(
+        (c) => !names.includes(c.resourceName),
+      ),
+    });
   }
 
   async open() {
@@ -218,9 +209,6 @@ export class ConnectionService<
     try {
       await this.loadToken();
 
-      const { client, sessionContinuation, user } = this.connectionProps;
-
-      const name = this.getSceneName();
       let stream: ClientDuplexStream<ProtoPacket, ProtoPacket>;
       let sessionProto: LoadedScene;
 
@@ -232,13 +220,15 @@ export class ConnectionService<
           onMessage: this.onMessage,
         });
       } else {
+        const { client, sessionContinuation, user } = this.connectionProps;
+
         [stream, sessionProto] = await this.engineService.openSession({
           client,
-          name,
           sessionContinuation,
           user,
+          name: this.getSceneName(),
           config: this.connectionProps.config,
-          extension: this.connectionProps.extension,
+          extension: this.extension,
           sessionToken: this.sessionToken,
           onError: this.onError,
           onDisconnect: this.onDisconnect,
@@ -257,6 +247,50 @@ export class ConnectionService<
       this.onError(err);
       this.clearQueue();
     }
+  }
+
+  async change(name: string, props?: ChangeSceneProps) {
+    if (!this.sceneIsLoaded) {
+      throw Error('Unable to change scene that is not loaded yet');
+    }
+
+    this.connectionProps = {
+      ...this.connectionProps,
+      config: {
+        ...this.connectionProps.config,
+        ...(props?.capabilities && {
+          capabilities: Capability.toProto(props.capabilities),
+        }),
+        ...(props?.gameSessionId && {
+          gameSessionId: props.gameSessionId,
+        }),
+      },
+      sessionContinuation: props?.sessionContinuation
+        ? new SessionContinuation(props.sessionContinuation)
+        : undefined,
+    };
+
+    if (!this.isActive()) {
+      this.stream = this.engineService.reopenSession({
+        sessionToken: this.sessionToken,
+        onError: this.onError,
+        onDisconnect: this.onDisconnect,
+        onMessage: this.onMessage,
+      });
+    }
+
+    const [, sessionProto] = await this.engineService.updateSession({
+      name,
+      sessionToken: this.sessionToken,
+      connection: this.stream,
+      capabilities:
+        props?.capabilities && this.connectionProps.config.capabilities,
+      gameSessionId: props?.gameSessionId,
+      extension: this.extension,
+      sessionContinuation: this.connectionProps.sessionContinuation,
+    });
+
+    this.setSceneFromProtoEvent(sessionProto);
   }
 
   async send(getPacket: () => ProtoPacket) {
@@ -391,6 +425,14 @@ export class ConnectionService<
     return this.sessionToken;
   }
 
+  addInterval(interval: NodeJS.Timeout) {
+    this.intervals.push(interval);
+  }
+
+  removeInterval(interval: NodeJS.Timeout) {
+    this.intervals = this.intervals.filter((i) => i !== interval);
+  }
+
   private scheduleDisconnect() {
     if (this.connectionProps.config?.connection?.disconnectTimeout) {
       this.cancelScheduler();
@@ -441,12 +483,11 @@ export class ConnectionService<
       : undefined;
 
     factory.setCurrentCharacter(sameCharacter ?? this.scene.characters[0]);
+    factory.setCharacters(this.scene.characters);
   }
 
   private setSceneFromProtoEvent(proto: LoadedScene) {
-    const name = this.nextSceneName || this.getSceneName();
-
-    this.scene = Scene.fromProto(name, proto);
+    this.scene = Scene.fromProto(proto);
 
     this.connectionProps.extension?.afterLoadScene?.(proto);
     this.ensureCurrentCharacter();
@@ -461,5 +502,75 @@ export class ConnectionService<
     });
 
     this.ensureCurrentCharacter();
+  }
+
+  private initializeHandlers() {
+    this.onDisconnect = async () => {
+      this.state = ConnectionState.INACTIVE;
+
+      this.conversations.forEach((conversation) => {
+        conversation.state = ConversationState.INACTIVE;
+      });
+
+      await this.connectionProps.onDisconnect?.();
+    };
+
+    this.onError = this.connectionProps.onError;
+
+    this.onMessage = async (packet: ProtoPacket) => {
+      const inworldPacket = this.convertPacketFromProto(packet);
+      const conversationId = inworldPacket.packetId.conversationId;
+      const conversation =
+        conversationId && this.conversations.get(conversationId);
+
+      const sessionControlResponse = packet.getSessionControlResponse();
+
+      if (sessionControlResponse?.hasLoadedScene()) {
+        this.setSceneFromProtoEvent(sessionControlResponse.getLoadedScene());
+      } else if (sessionControlResponse?.hasLoadedCharacters()) {
+        this.addCharactersToScene(sessionControlResponse.getLoadedCharacters());
+      }
+
+      // Update conversation state.
+      if (inworldPacket.control?.conversation && conversation) {
+        this.conversations.set(inworldPacket.packetId.conversationId, {
+          service: conversation.service,
+          state: [
+            InworldConversationEventType.STARTED,
+            InworldConversationEventType.UPDATED,
+          ].includes(inworldPacket.control.conversation.type)
+            ? ConversationState.ACTIVE
+            : ConversationState.INACTIVE,
+        });
+      }
+
+      this.connectionProps.onMessage?.(inworldPacket);
+
+      if (inworldPacket.isWarning()) {
+        this.logger.warn({
+          action: 'Receive warning packet',
+          data: {
+            packet: packet.toObject(),
+          },
+          sessionId: this.sessionToken?.sessionId,
+        });
+      } else {
+        this.logger.debug({
+          action: 'Receive packet',
+          data: {
+            packet: packet.toObject(),
+          },
+          sessionId: this.sessionToken?.sessionId,
+        });
+      }
+    };
+  }
+
+  private initializeExtension() {
+    this.extension = {
+      convertPacketFromProto: (proto: ProtoPacket) =>
+        InworldPacket.fromProto(proto) as InworldPacketT,
+      ...this.connectionProps.extension,
+    };
   }
 }

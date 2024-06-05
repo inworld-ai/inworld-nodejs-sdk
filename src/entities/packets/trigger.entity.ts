@@ -1,9 +1,6 @@
 import { CustomEvent as ProtoTriggerEvent } from '@proto/ai/inworld/packets/packets_pb';
 
-export interface TriggerParameter {
-  name: string;
-  value: string;
-}
+import { TriggerParameter } from '../../common/data_structures';
 
 export class TriggerEvent {
   readonly name: string;
@@ -11,13 +8,16 @@ export class TriggerEvent {
 
   constructor({
     name,
-    parameters = [],
+    parameters,
   }: {
     name: string;
     parameters?: TriggerParameter[];
   }) {
     this.name = name;
-    this.parameters = parameters;
+
+    if (parameters?.length) {
+      this.parameters = parameters;
+    }
   }
 
   static fromProto(proto: ProtoTriggerEvent) {

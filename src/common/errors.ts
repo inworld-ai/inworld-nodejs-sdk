@@ -1,7 +1,9 @@
 export const SCENE_HAS_INVALID_FORMAT = 'Scene name has wrong format';
 export const CHARACTER_HAS_INVALID_FORMAT = 'Character name has wrong format';
-export const SCENE_NAME_THE_SAME =
-  'Scene name is the same as the current scene. Use reloadScene instead.';
+export const CURRENT_CHARACTER_NOT_SET = 'Current character is not set';
+
+export const MULTI_CHAR_NARRATED_ACTIONS =
+  'Narrated actions are not supported for multiple characters';
 
 export const STOP_DURATION_NATURAL_NUMBER =
   'Stop duration for audio playback should be a natural number';
