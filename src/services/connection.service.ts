@@ -288,6 +288,7 @@ export class ConnectionService<
       gameSessionId: props?.gameSessionId,
       extension: this.extension,
       sessionContinuation: this.connectionProps.sessionContinuation,
+      onMessage: this.onMessage,
     });
 
     this.setSceneFromProtoEvent(sessionProto);
