@@ -5,6 +5,7 @@ import {
 import { v4 } from 'uuid';
 
 import {
+  AudioSessionStartPacketParams,
   CancelResponsesProps,
   ConversationState,
   SendPacketParams,
@@ -153,19 +154,20 @@ export class ConversationService<
     );
   }
 
-  async sendAudioSessionStart() {
+  async sendAudioSessionStart(params?: AudioSessionStartPacketParams) {
     return this.ensureConversation(() =>
-      this.connection
-        .getEventFactory()
-        .audioSessionStart({ conversationId: this.getConversationId() }),
+      this.connection.getEventFactory().audioSessionStart({
+        mode: params?.mode,
+        conversationId: this.getConversationId(),
+      }),
     );
   }
 
   async sendAudioSessionEnd() {
     return this.ensureConversation(() => {
-      return this.connection
-        .getEventFactory()
-        .audioSessionEnd({ conversationId: this.getConversationId() });
+      return this.connection.getEventFactory().audioSessionEnd({
+        conversationId: this.getConversationId(),
+      });
     });
   }
 

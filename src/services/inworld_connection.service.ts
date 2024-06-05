@@ -1,6 +1,7 @@
 import { InworldPacket as ProtoPacket } from '@proto/ai/inworld/packets/packets_pb';
 
 import {
+  AudioSessionStartPacketParams,
   CancelResponsesProps,
   ChangeSceneProps,
   ConversationState,
@@ -147,10 +148,10 @@ export class InworldConnectionService<
     }
   }
 
-  async sendAudioSessionStart() {
+  async sendAudioSessionStart(params?: AudioSessionStartPacketParams) {
     await this.ensureOneToOneConversation();
 
-    return this.oneToOneConversation.sendAudioSessionStart();
+    return this.oneToOneConversation.sendAudioSessionStart(params);
   }
 
   async sendAudioSessionEnd() {

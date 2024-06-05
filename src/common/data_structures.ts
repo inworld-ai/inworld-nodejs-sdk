@@ -113,12 +113,6 @@ export interface TriggerParameter {
   value: string;
 }
 
-export interface SendTriggerPacketParams {
-  parameters?: TriggerParameter[];
-  conversationId: string;
-  character?: Character;
-}
-
 export enum InworldPacketType {
   UNKNOWN = 'UNKNOWN',
   TEXT = 'TEXT',
@@ -158,8 +152,26 @@ export enum ConversationState {
   INACTIVE = 'INACTIVE',
 }
 
+export enum MicrophoneMode {
+  OPEN_MIC = 'OPEN_MIC',
+  EXPECT_AUDIO_END = 'EXPECT_AUDIO_END',
+}
+
 export interface SendPacketParams {
   conversationId: string;
+}
+
+export interface SendTriggerPacketParams extends SendPacketParams {
+  parameters?: TriggerParameter[];
+  character?: Character;
+}
+
+export interface SendAudioSessionStartPacketParams extends SendPacketParams {
+  mode?: MicrophoneMode;
+}
+
+export interface AudioSessionStartPacketParams {
+  mode?: MicrophoneMode;
 }
 
 export interface ConversationMapItem<
