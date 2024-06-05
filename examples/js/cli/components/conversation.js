@@ -215,20 +215,35 @@ class Conversation {
   };
 
   renderPacket(packet) {
-    const i = packet.packetId.interactionId;
-    const u = packet.packetId.utteranceId;
-    const c = this.multiCharacters ? packet.packetId.conversationId : '';
-    const parts = [`i=${i}`, `u=${u}`];
+    const { interactionId, utteranceId, correlationId } = packet.packetId;
 
-    if (this.multiCharacters) {
-      parts.push(`c=${c}`);
+    const conversationId = this.multiCharacters
+      ? packet.packetId.conversationId
+      : '';
+    const info = [];
+
+    if (interactionId) {
+      info.push(`i=${interactionId}`);
     }
 
-    const text = packet.text?.text || packet.narratedAction?.text;
+    if (utteranceId) {
+      info.push(`u=${utteranceId}`);
+    }
+
+    if (correlationId) {
+      info.push(`cor=${correlationId}`);
+    }
+
+    if (this.multiCharacters) {
+      info.push(`conv=${conversationId}`);
+    }
+
+    const text = (packet.text?.text || packet.narratedAction?.text)?.trim();
+    const wrapper = packet.narratedAction?.text ? '*' : '';
 
     if (text) {
       console.log(
-        `${this.renderEventRouting(packet)} (${parts.join()}): ${text}`,
+        `${this.renderEventRouting(packet)} (${info.join()}): ${wrapper}${text}${wrapper}`,
       );
     }
   }
