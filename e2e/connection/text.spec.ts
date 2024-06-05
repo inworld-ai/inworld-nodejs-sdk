@@ -1,5 +1,3 @@
-// import 'dotenv/config';
-
 import * as allure from 'allure-js-commons';
 
 import { sendText } from '../e2e_helpers';
@@ -19,6 +17,7 @@ test('[Text] Should return a response', async () => {
   await allure.description(
     'This test confirms that a response is recieved when sending text to an NPC',
   );
+
   const result = await sendText(key, name, scene, 'Hi there!');
   expect(result[0]).not.toBe('');
 }, 10000);

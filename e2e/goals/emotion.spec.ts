@@ -1,3 +1,5 @@
+import * as allure from 'allure-js-commons';
+
 import { sendText } from '../e2e_helpers';
 
 let key: [string, string] = [
@@ -7,7 +9,15 @@ let key: [string, string] = [
 let name: string = 'Tester';
 let scene: string = process.env.INWORLD_E2E_SCENE_CASTLE!;
 
-test('Should change emotion', async () => {
+test('[Emotion] Should change emotion', async () => {
+  await allure.allureId('889');
+  await allure.suite('Node.js SDK');
+  await allure.feature('Goals');
+  await allure.story('Emotion');
+  await allure.description(
+    'This test confirms that emotion changes when triggering a goal with an NPC',
+  );
+
   const emotion = await sendText(key, name, scene, 'Hi');
 
   const emotionChange = await sendText(
