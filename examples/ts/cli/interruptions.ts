@@ -3,7 +3,7 @@ import 'dotenv/config';
 import { Client } from './components/client';
 import { Recorder } from './components/recorder';
 import { DISPLAY_WHEN } from './components/types';
-import { changeCharacter, characterInfo, listAll } from './helpers';
+import { changeCharacter, characterInfo, listCharacters } from './helpers';
 
 const split = require('split');
 
@@ -14,7 +14,7 @@ const recorder = new Recorder({
 
 const client = new Client({
   config: {
-    capabilities: { audio: true, interruptions: true },
+    capabilities: { audio: true, debugInfo: true, interruptions: true },
   },
   text: { displayWhen: DISPLAY_WHEN.AFTER_AUDIO_PLAYING },
   onDisconnect: () => {
@@ -53,7 +53,7 @@ const run = async function () {
         break;
 
       case '/list-all':
-        listAll(connection);
+        listCharacters(connection);
         break;
 
       case '/info':

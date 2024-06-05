@@ -22,6 +22,13 @@ class Client {
       });
     }
 
+    if (props.multiCharacters) {
+      this.conversationProcess.send({
+        action: CONVERSATION_ACTION.SET_MULTI_CHARACTERS,
+        multiCharacters: props.multiCharacters,
+      });
+    }
+
     this.client = new InworldClient()
       .setApiKey({
         key: process.env.INWORLD_KEY,

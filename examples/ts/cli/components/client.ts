@@ -13,6 +13,7 @@ import * as kill from 'tree-kill';
 import { CLIENT_ACTION, CONVERSATION_ACTION, DISPLAY_WHEN } from './types';
 
 export interface ClientProps {
+  multiCharacters?: boolean;
   config?: ClientConfiguration;
   previousState?: string;
   text?: { displayWhen: DISPLAY_WHEN };
@@ -33,6 +34,13 @@ export class Client {
       this.conversationProcess.send({
         action: CONVERSATION_ACTION.SET_TEXT_DISPLAY_ORDER,
         order: props.text.displayWhen,
+      });
+    }
+
+    if (props.multiCharacters) {
+      this.conversationProcess.send({
+        action: CONVERSATION_ACTION.SET_MULTI_CHARACTERS,
+        multiCharacters: props.multiCharacters,
       });
     }
 

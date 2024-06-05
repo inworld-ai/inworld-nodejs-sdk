@@ -5,7 +5,7 @@
     "start": "node index.js"
   },
   "dependencies": {
-    "@inworld/nodejs-sdk": "1.10.1",
+    "@inworld/nodejs-sdk": "1.13.0",
     "dotenv": "^16.0.1"
   }
 }
