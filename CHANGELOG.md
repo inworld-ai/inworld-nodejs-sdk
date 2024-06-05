@@ -1,4 +1,4 @@
-## [Unreleased]
+## [1.13.0] - 2024-06-05
 
 - Multi-character conversation support (2.0)
 
