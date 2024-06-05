@@ -4,7 +4,7 @@ const { CLIENT_ACTION, CONVERSATION_ACTION } = require('./types');
 const conversation = new Conversation();
 
 process.on('message', async (props) => {
-  const { action, packet, order } = props;
+  const { action, packet, order, multiCharacters } = props;
 
   switch (action) {
     case CONVERSATION_ACTION.DISPLAY_TEXT:
@@ -36,6 +36,9 @@ process.on('message', async (props) => {
       if (order) {
         conversation.setDisplayOrder(order);
       }
+      break;
+    case CONVERSATION_ACTION.SET_MULTI_CHARACTERS:
+      conversation.setMultiCharacters(multiCharacters);
       break;
   }
 });

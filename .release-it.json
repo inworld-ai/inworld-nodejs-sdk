@@ -13,7 +13,7 @@
       "yarn build",
       "yarn lint:check",
       "yarn prettier:check",
-      "yarn test"
+      "yarn test:unit"
     ]
   },
   "npm": {

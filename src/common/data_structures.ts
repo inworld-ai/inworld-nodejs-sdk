@@ -9,9 +9,12 @@ import {
   InworldPacket as ProtoPacket,
   LoadedScene,
 } from '@proto/ai/inworld/packets/packets_pb';
+import { Character } from 'entities/character.entity';
 
+import { SessionContinuationProps } from '../entities/continuation/session_continuation.entity';
 import { InworldPacket } from '../entities/packets/inworld_packet.entity';
 import { SessionToken } from '../entities/session_token.entity';
+import { ConversationService } from '../services/conversation.service';
 
 export interface ApiKey {
   key: string;
@@ -20,6 +23,7 @@ export interface ApiKey {
 
 export interface Capabilities {
   audio?: boolean;
+  debugInfo?: boolean;
   emotions?: boolean;
   interruptions?: boolean;
   narratedActions?: boolean;
@@ -104,6 +108,17 @@ export interface Extension<
   afterLoadScene?: (res: LoadedScene) => void;
 }
 
+export interface TriggerParameter {
+  name: string;
+  value: string;
+}
+
+export interface SendTriggerPacketParams {
+  parameters?: TriggerParameter[];
+  conversationId: string;
+  character?: Character;
+}
+
 export enum InworldPacketType {
   UNKNOWN = 'UNKNOWN',
   TEXT = 'TEXT',
@@ -116,12 +131,46 @@ export enum InworldPacketType {
   NARRATED_ACTION = 'NARRATED_ACTION',
   SCENE_MUTATION_REQUEST = 'SCENE_MUTATION_REQUEST',
   SCENE_MUTATION_RESPONSE = 'SCENE_MUTATION_RESPONSE',
+  CONVERSATION_UPDATE = 'CONVERSATION_UPDATE',
+  CONVERSATION_EVENT = 'CONVERSATION_EVENT',
 }
 
-export enum InworlControlType {
+export enum InworlControlAction {
   UNKNOWN = 'UNKNOWN',
   INTERACTION_END = 'INTERACTION_END',
   TTS_PLAYBACK_MUTE = 'TTS_PLAYBACK_MUTE',
   TTS_PLAYBACK_UNMUTE = 'TTS_PLAYBACK_UNMUTE',
   WARNING = 'WARNING',
+  CONVERSATION_UPDATE = 'CONVERSATION_UPDATE',
+  CONVERSATION_EVENT = 'CONVERSATION_EVENT',
+}
+
+export enum InworldConversationEventType {
+  UNKNOWN = 'UNKNOWN',
+  STARTED = 'STARTED',
+  UPDATED = 'UPDATED',
+  EVICTED = 'EVICTED',
+}
+
+export enum ConversationState {
+  ACTIVE = 'ACTIVE',
+  PROCESSING = 'PROCESSING',
+  INACTIVE = 'INACTIVE',
+}
+
+export interface SendPacketParams {
+  conversationId: string;
+}
+
+export interface ConversationMapItem<
+  InworldPacketT extends InworldPacket = InworldPacket,
+> {
+  service: ConversationService<InworldPacketT>;
+  state: ConversationState;
+}
+
+export interface ChangeSceneProps {
+  capabilities?: Capabilities;
+  sessionContinuation?: SessionContinuationProps;
+  gameSessionId?: string;
 }

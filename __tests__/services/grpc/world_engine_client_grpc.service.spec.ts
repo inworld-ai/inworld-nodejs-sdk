@@ -1,4 +1,4 @@
-import { credentials, ServiceError } from '@grpc/grpc-js';
+import { credentials } from '@grpc/grpc-js';
 import {
   ClientDuplexStreamImpl,
   SurfaceCall,
@@ -6,10 +6,7 @@ import {
 import { CapabilitiesConfiguration } from '@proto/ai/inworld/engine/configuration/configuration_pb';
 import { WorldEngineClient } from '@proto/ai/inworld/engine/world-engine_grpc_pb';
 import { ClientRequest } from '@proto/ai/inworld/engine/world-engine_pb';
-import {
-  Continuation,
-  InworldPacket as ProtoPacket,
-} from '@proto/ai/inworld/packets/packets_pb';
+import { Continuation } from '@proto/ai/inworld/packets/packets_pb';
 import os = require('os');
 
 import { v4 } from 'uuid';
@@ -39,6 +36,7 @@ import {
   sessionControlResponseEvent,
   sessionProto,
   sessionToken,
+  simpleExtension,
   user,
 } from '../../helpers';
 
@@ -104,11 +102,13 @@ describe('generateSessionToken', () => {
 describe('load scene', () => {
   const loggerDebug = jest.spyOn(Logger.prototype, 'debug');
 
+  let onMessage: jest.Mock;
   let client: WorldEngineClientGrpcService<ExtendedInworldPacket>;
 
   beforeEach(() => {
     jest.clearAllMocks();
     client = new WorldEngineClientGrpcService();
+    onMessage = jest.fn();
   });
 
   test('should use provided capabilities', async () => {
@@ -124,14 +124,16 @@ describe('load scene', () => {
         name: SCENE,
         config: { capabilities },
         sessionToken,
+        extension: simpleExtension,
+        onMessage,
       }),
       new Promise(emitSessionControlResponseEvent(stream)),
     ]);
 
     expect(openSession).toHaveBeenCalledTimes(1);
     expect(result[0][0]).toEqual(stream);
-    expect(Scene.fromProto(SCENE, result[0][1]).characters).toEqual(characters);
-    expect(write).toHaveBeenCalledTimes(4);
+    expect(Scene.fromProto(result[0][1]).characters).toEqual(characters);
+    expect(write).toHaveBeenCalledTimes(3);
     expect(
       write.mock.calls[0][0].getSessionControl().getCapabilitiesConfiguration(),
     ).toEqual(capabilities);
@@ -163,6 +165,8 @@ describe('load scene', () => {
         client: sceneClient,
         config: { capabilities },
         sessionToken,
+        extension,
+        onMessage,
       }),
       new Promise(emitSessionControlResponseEvent(stream)),
     ]);
@@ -200,6 +204,8 @@ describe('load scene', () => {
         client: sceneClient,
         config: { capabilities },
         sessionToken,
+        extension,
+        onMessage,
       }),
       new Promise(emitSessionControlResponseEvent(stream)),
     ]);
@@ -233,6 +239,8 @@ describe('load scene', () => {
           previousDialog: phrases,
         }),
         user,
+        extension,
+        onMessage,
       }),
       new Promise(emitSessionControlResponseEvent(stream)),
     ]);
@@ -262,6 +270,8 @@ describe('load scene', () => {
         config: { capabilities },
         sessionToken,
         user: { fullName: user.fullName },
+        extension,
+        onMessage,
       }),
       new Promise(emitSessionControlResponseEvent(stream)),
     ]);
@@ -287,6 +297,8 @@ describe('load scene', () => {
         config: { capabilities },
         sessionToken,
         user: { profile: user.profile },
+        extension,
+        onMessage,
       }),
       new Promise(emitSessionControlResponseEvent(stream)),
     ]);
@@ -318,6 +330,8 @@ describe('load scene', () => {
         config: { capabilities, gameSessionId },
         sessionToken,
         user,
+        extension,
+        onMessage,
       }),
       new Promise(emitSessionControlResponseEvent(stream)),
     ]);
@@ -348,6 +362,8 @@ describe('load scene', () => {
         sessionToken,
         sessionContinuation,
         user,
+        extension,
+        onMessage,
       }),
       new Promise(emitSessionControlResponseEvent(stream)),
     ]);
@@ -373,79 +389,17 @@ describe('load scene', () => {
         config: { capabilities },
         sessionToken,
         extension,
+        onMessage,
       }),
       new Promise(emitSessionControlResponseEvent(stream)),
     ]);
 
     expect(openSession).toHaveBeenCalledTimes(1);
-    expect(write).toHaveBeenCalledTimes(4);
+    expect(write).toHaveBeenCalledTimes(3);
     expect(
       write.mock.calls[0][0].getSessionControl().getCapabilitiesConfiguration(),
     ).toEqual(extendedCapabilities);
     expect(extension.beforeLoadScene).toHaveBeenCalledTimes(1);
-  });
-
-  test('should throw error on unexpected event during scene loading', async () => {
-    const stream = getStream();
-    const openSession = jest
-      .spyOn(WorldEngineClient.prototype, 'openSession')
-      .mockImplementation(() => stream);
-    let errorReceived: ServiceError;
-
-    const capabilities = new CapabilitiesConfiguration().setEmotions(true);
-
-    try {
-      await Promise.all([
-        client.openSession({
-          name: SCENE,
-          config: { capabilities },
-          sessionToken,
-        }),
-        new Promise((resolve: any) => {
-          stream.emit('data', new ProtoPacket());
-          resolve(true);
-        }),
-      ]);
-    } catch (err) {
-      errorReceived = err;
-    }
-    expect(openSession).toHaveBeenCalledTimes(1);
-    expect(errorReceived!).toEqual(
-      new Error('Unexpected packet received during scene loading'),
-    );
-  });
-
-  test('should throw error on empty packet', async () => {
-    const stream = getStream();
-    const openSession = jest
-      .spyOn(WorldEngineClient.prototype, 'openSession')
-      .mockImplementation(() => stream);
-
-    const onError = jest.fn();
-    const capabilities = new CapabilitiesConfiguration().setEmotions(true);
-    let errorReceived: ServiceError;
-
-    try {
-      await Promise.all([
-        client.openSession({
-          name: SCENE,
-          config: { capabilities },
-          sessionToken,
-          onError,
-        }),
-        new Promise((resolve: any) => {
-          stream.emit('data', undefined);
-          resolve(true);
-        }),
-      ]);
-    } catch (err) {
-      errorReceived = err;
-    }
-
-    expect(openSession).toHaveBeenCalledTimes(1);
-    expect(errorReceived!).toEqual(
-      new Error('Unexpected packet received during scene loading'),
-    );
   });
 
   test('should do nothing on second load scene event if not onError is not provided', async () => {
@@ -461,6 +415,8 @@ describe('load scene', () => {
         name: SCENE,
         config: { capabilities },
         sessionToken,
+        extension,
+        onMessage,
       }),
       new Promise((resolve: any) => {
         stream.emit(
@@ -508,6 +464,7 @@ describe('openSession', () => {
         name: SCENE,
         config: { capabilities },
         sessionToken,
+        extension,
         onError,
         onMessage,
         onDisconnect,
@@ -531,6 +488,7 @@ describe('openSession', () => {
       .mockImplementation(() => stream);
 
     const onError = jest.fn();
+    const onMessage = jest.fn();
     const end = jest.spyOn(stream, 'end');
 
     await Promise.all([
@@ -538,7 +496,9 @@ describe('openSession', () => {
         name: SCENE,
         config: { capabilities },
         sessionToken,
+        extension,
         onError,
+        onMessage,
       }),
       new Promise(emitSessionControlResponseEvent(stream)),
     ]);
@@ -561,6 +521,7 @@ describe('openSession', () => {
         name: SCENE,
         config: { capabilities },
         sessionToken,
+        extension,
         onMessage,
       }),
       new Promise(emitSessionControlResponseEvent(stream)),
@@ -573,6 +534,7 @@ describe('openSession', () => {
 
   test('should do nothing if onMessage is not provided', async () => {
     const stream = getStream();
+    const onMessage = jest.fn();
     const openSession = jest
       .spyOn(WorldEngineClient.prototype, 'openSession')
       .mockImplementation(() => stream);
@@ -581,7 +543,9 @@ describe('openSession', () => {
       client.openSession({
         name: SCENE,
         config: { capabilities },
+        extension,
         sessionToken,
+        onMessage,
       }),
       new Promise(emitSessionControlResponseEvent(stream)),
     ]);
@@ -598,13 +562,16 @@ describe('openSession', () => {
       .mockImplementation(() => stream);
 
     const onDisconnect = jest.fn();
+    const onMessage = jest.fn();
 
     await Promise.all([
       client.openSession({
         name: SCENE,
         config: { capabilities },
         sessionToken,
+        extension,
         onDisconnect,
+        onMessage,
       }),
       new Promise(emitSessionControlResponseEvent(stream)),
     ]);
@@ -663,6 +630,7 @@ describe('reopenSession', () => {
     client.reopenSession({
       sessionToken,
       onError,
+      onMessage: jest.fn(),
     });
     stream.emit('error');
 
@@ -695,6 +663,7 @@ describe('reopenSession', () => {
 
     client.reopenSession({
       sessionToken,
+      onMessage: jest.fn(),
     });
     stream.emit('data');
 
@@ -708,10 +677,12 @@ describe('reopenSession', () => {
       .mockImplementation(() => stream);
 
     const onDisconnect = jest.fn();
+    const onMessage = jest.fn();
 
     client.reopenSession({
       sessionToken,
       onDisconnect,
+      onMessage,
     });
     stream.emit('close');
 

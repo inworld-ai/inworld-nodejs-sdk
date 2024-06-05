@@ -6,7 +6,7 @@ import {
 } from '@proto/ai/inworld/packets/packets_pb';
 
 import {
-  InworlControlType,
+  InworlControlAction,
   InworldPacketType,
 } from '../../common/data_structures';
 import { Character } from '../character.entity';
@@ -39,9 +39,12 @@ export interface InworldPacketProps {
 
 export interface SceneMutation {
   name?: string;
+  description?: string;
+  displayName?: string;
   characterNames?: string[];
   loadedCharacters?: Character[];
   addedCharacters?: Character[];
+  removedCharacterIds?: string[];
 }
 
 export class InworldPacket {
@@ -128,26 +131,28 @@ export class InworldPacket {
   isInteractionEnd() {
     return (
       this.isControl() &&
-      this.control.type === InworlControlType.INTERACTION_END
+      this.control.action === InworlControlAction.INTERACTION_END
     );
   }
 
   isTTSPlaybackMute() {
     return (
       this.isControl() &&
-      this.control.type === InworlControlType.TTS_PLAYBACK_MUTE
+      this.control.action === InworlControlAction.TTS_PLAYBACK_MUTE
     );
   }
 
   isTTSPlaybackUnmute() {
     return (
       this.isControl() &&
-      this.control.type === InworlControlType.TTS_PLAYBACK_UNMUTE
+      this.control.action === InworlControlAction.TTS_PLAYBACK_UNMUTE
     );
   }
 
   isWarning() {
-    return this.isControl() && this.control.type === InworlControlType.WARNING;
+    return (
+      this.isControl() && this.control.action === InworlControlAction.WARNING
+    );
   }
 
   isSilence() {
@@ -168,6 +173,16 @@ export class InworldPacket {
 
   isSceneMutationResponse() {
     return this.type === InworldPacketType.SCENE_MUTATION_RESPONSE;
+  }
+
+  shouldHaveConversationId() {
+    return (
+      this.isAudio() ||
+      this.isText() ||
+      this.isTrigger() ||
+      this.isNarratedAction() ||
+      this.isSilence()
+    );
   }
 
   static fromProto(proto: ProtoPacket): InworldPacket {
@@ -223,6 +238,18 @@ export class InworldPacket {
               .getLoadedScene()
               .getAgentsList()
               .map((agent: Agent) => Character.fromProto(agent)),
+            name: proto
+              .getSessionControlResponse()
+              .getLoadedScene()
+              .getSceneName(),
+            description: proto
+              .getSessionControlResponse()
+              .getLoadedScene()
+              .getSceneDescription(),
+            displayName: proto
+              .getSessionControlResponse()
+              .getLoadedScene()
+              .getSceneDisplayName(),
           }),
           ...(proto.getSessionControlResponse()?.hasLoadedCharacters() && {
             addedCharacters: proto
@@ -230,6 +257,13 @@ export class InworldPacket {
               .getLoadedCharacters()
               .getAgentsList()
               .map((agent: Agent) => Character.fromProto(agent)),
+          }),
+          ...(proto.getMutation()?.hasUnloadCharacters() && {
+            removedCharacterIds: proto
+              .getMutation()
+              .getUnloadCharacters()
+              .getAgentsList()
+              .map((agent: Agent) => agent.getAgentId()),
           }),
         },
       }),
@@ -261,6 +295,7 @@ export class InworldPacket {
         return InworldPacketType.SCENE_MUTATION_RESPONSE;
       case packet.getMutation()?.hasLoadCharacters():
       case packet.getMutation()?.hasLoadScene():
+      case packet.getMutation()?.hasUnloadCharacters():
         return InworldPacketType.SCENE_MUTATION_REQUEST;
       default:
         return InworldPacketType.UNKNOWN;

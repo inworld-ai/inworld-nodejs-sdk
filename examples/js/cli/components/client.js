@@ -3,6 +3,7 @@ const { fork } = require('child_process');
 const kill = require('tree-kill');
 
 const { CLIENT_ACTION, CONVERSATION_ACTION } = require('./types.js');
+const { characterInfo } = require('../helpers.js');
 
 class Client {
   client;
@@ -19,6 +20,13 @@ class Client {
       this.conversationProcess.send({
         action: CONVERSATION_ACTION.SET_TEXT_DISPLAY_ORDER,
         order: props.text.displayWhen,
+      });
+    }
+
+    if (props.multiCharacters) {
+      this.conversationProcess.send({
+        action: CONVERSATION_ACTION.SET_MULTI_CHARACTERS,
+        multiCharacters: props.multiCharacters,
       });
     }
 
@@ -130,6 +138,25 @@ class Client {
         action: CONVERSATION_ACTION.NARRATED_ACTION,
         packet,
       });
+    }
+
+    // CHANGES IN SCENE
+    if (packet.isSceneMutationResponse()) {
+      const { loadedCharacters, addedCharacters } = packet.sceneMutation;
+
+      if (loadedCharacters?.length) {
+        console.log('Character loaded in scene:');
+        for (const character of loadedCharacters) {
+          console.log(characterInfo(character));
+        }
+      }
+
+      if (addedCharacters?.length) {
+        console.log('Characters added to scene:');
+        for (const character of addedCharacters) {
+          console.log(characterInfo(character));
+        }
+      }
     }
 
     // INTERACTION_END

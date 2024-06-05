@@ -1,3 +1,15 @@
+## [1.13.1] - 2024-06-05
+
+### Fixed
+
+- Fix scene changing error
+
+## [1.13.0] - 2024-06-05
+
+### Added
+
+- Multi-character conversation support (2.0)
+
 ## [1.12.0] - 2024-05-06
 
 ### Added

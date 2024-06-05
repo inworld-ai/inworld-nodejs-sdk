@@ -7,6 +7,8 @@ import { AccessToken } from '@proto/ai/inworld/engine/world-engine_pb';
 import {
   Actor,
   Agent,
+  ControlEvent,
+  ConversationEventPayload,
   InworldPacket as ProtoPacket,
   LoadedScene,
   PacketId,
@@ -24,6 +26,7 @@ import {
 } from '../src/entities/continuation/previous_dialog.entity';
 import { InworldPacket } from '../src/entities/packets/inworld_packet.entity';
 import { SessionToken } from '../src/entities/session_token.entity';
+import { EventFactory } from '../src/factories/event';
 import { ExtendedInworldPacket } from './data_structures';
 
 const today = new Date();
@@ -58,7 +61,10 @@ export const createAgent = (useAssets: boolean = true) => {
         .setRpmImageUriPosture(v4())
     : undefined;
 
-  return agent.setAgentId(v4()).setBrainName(v4()).setCharacterAssets(assets);
+  return agent
+    .setAgentId(v4())
+    .setBrainName(`workspaces/${v4()}/characters/${v4()}`)
+    .setCharacterAssets(assets);
 };
 
 export const convertAgentsToCharacters = (agents: Array<Agent>) => {
@@ -112,6 +118,7 @@ export const capabilitiesProps: Capabilities = {
   narratedActions: true,
   phonemes: true,
   silence: true,
+  debugInfo: true,
 };
 
 export const capabilities = new CapabilitiesConfiguration()
@@ -172,6 +179,10 @@ export const extension: Extension<ExtendedInworldPacket> = {
   }),
 };
 
+export const simpleExtension: Extension<ExtendedInworldPacket> = {
+  convertPacketFromProto,
+};
+
 export const phrases = [
   {
     talker: DialogParticipant.CHARACTER,
@@ -213,3 +224,15 @@ export const emitSessionControlResponseEvent =
     );
     resolve(true);
   };
+
+const eventFactory = new EventFactory();
+export const conversationId = v4();
+export const conversationUpdated = eventFactory
+  .baseProtoPacket({ conversationId })
+  .setControl(
+    new ControlEvent().setConversationEvent(
+      new ConversationEventPayload().setEventType(
+        ConversationEventPayload.ConversationEventType.UPDATED,
+      ),
+    ),
+  );

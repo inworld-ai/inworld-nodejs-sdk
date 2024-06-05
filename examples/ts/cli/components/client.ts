@@ -10,9 +10,11 @@ import {
 import { ChildProcess, fork } from 'child_process';
 import * as kill from 'tree-kill';
 
+import { characterInfo } from '../helpers';
 import { CLIENT_ACTION, CONVERSATION_ACTION, DISPLAY_WHEN } from './types';
 
 export interface ClientProps {
+  multiCharacters?: boolean;
   config?: ClientConfiguration;
   previousState?: string;
   text?: { displayWhen: DISPLAY_WHEN };
@@ -33,6 +35,13 @@ export class Client {
       this.conversationProcess.send({
         action: CONVERSATION_ACTION.SET_TEXT_DISPLAY_ORDER,
         order: props.text.displayWhen,
+      });
+    }
+
+    if (props.multiCharacters) {
+      this.conversationProcess.send({
+        action: CONVERSATION_ACTION.SET_MULTI_CHARACTERS,
+        multiCharacters: props.multiCharacters,
       });
     }
 
@@ -144,6 +153,25 @@ export class Client {
         action: CONVERSATION_ACTION.NARRATED_ACTION,
         packet,
       });
+    }
+
+    // CHANGES IN SCENE
+    if (packet.isSceneMutationResponse()) {
+      const { loadedCharacters, addedCharacters } = packet.sceneMutation;
+
+      if (loadedCharacters?.length) {
+        console.log('Character loaded in scene:');
+        for (const character of loadedCharacters) {
+          console.log(characterInfo(character));
+        }
+      }
+
+      if (addedCharacters?.length) {
+        console.log('Characters added to scene:');
+        for (const character of addedCharacters) {
+          console.log(characterInfo(character));
+        }
+      }
     }
 
     // INTERACTION_END

@@ -15,6 +15,11 @@ export class InworldV2Metadata extends jspb.Message {
     getCustom(): boolean;
     setCustom(value: boolean): InworldV2Metadata;
 
+    hasVoiceAdjectives(): boolean;
+    clearVoiceAdjectives(): void;
+    getVoiceAdjectives(): InworldV2Metadata.VoiceAdjectives | undefined;
+    setVoiceAdjectives(value?: InworldV2Metadata.VoiceAdjectives): InworldV2Metadata;
+
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): InworldV2Metadata.AsObject;
     static toObject(includeInstance: boolean, msg: InworldV2Metadata): InworldV2Metadata.AsObject;
@@ -30,7 +35,32 @@ export namespace InworldV2Metadata {
         voiceId: string,
         accent: Accent,
         custom: boolean,
+        voiceAdjectives?: InworldV2Metadata.VoiceAdjectives.AsObject,
     }
+
+
+    export class VoiceAdjectives extends jspb.Message { 
+        clearAdjectivesList(): void;
+        getAdjectivesList(): Array<string>;
+        setAdjectivesList(value: Array<string>): VoiceAdjectives;
+        addAdjectives(value: string, index?: number): string;
+
+        serializeBinary(): Uint8Array;
+        toObject(includeInstance?: boolean): VoiceAdjectives.AsObject;
+        static toObject(includeInstance: boolean, msg: VoiceAdjectives): VoiceAdjectives.AsObject;
+        static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+        static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+        static serializeBinaryToWriter(message: VoiceAdjectives, writer: jspb.BinaryWriter): void;
+        static deserializeBinary(bytes: Uint8Array): VoiceAdjectives;
+        static deserializeBinaryFromReader(message: VoiceAdjectives, reader: jspb.BinaryReader): VoiceAdjectives;
+    }
+
+    export namespace VoiceAdjectives {
+        export type AsObject = {
+            adjectivesList: Array<string>,
+        }
+    }
+
 }
 
 export class Voice extends jspb.Message { 
@@ -102,6 +132,10 @@ export namespace Voice {
     export class ElevenLabsMetadata extends jspb.Message { 
         getVoiceId(): string;
         setVoiceId(value: string): ElevenLabsMetadata;
+        clearHighQualityBaseModelIdsList(): void;
+        getHighQualityBaseModelIdsList(): Array<string>;
+        setHighQualityBaseModelIdsList(value: Array<string>): ElevenLabsMetadata;
+        addHighQualityBaseModelIds(value: string, index?: number): string;
 
         serializeBinary(): Uint8Array;
         toObject(includeInstance?: boolean): ElevenLabsMetadata.AsObject;
@@ -116,6 +150,7 @@ export namespace Voice {
     export namespace ElevenLabsMetadata {
         export type AsObject = {
             voiceId: string,
+            highQualityBaseModelIdsList: Array<string>,
         }
     }
 

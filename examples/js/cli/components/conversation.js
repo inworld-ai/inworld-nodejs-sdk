@@ -1,4 +1,4 @@
-const { InworlControlType } = require('@inworld/nodejs-sdk');
+const { InworlControlAction } = require('@inworld/nodejs-sdk');
 
 const { Player } = require('./player.js');
 const { DISPLAY_WHEN } = require('./types.js');
@@ -8,6 +8,7 @@ class Conversation {
   order = DISPLAY_WHEN.BEFORE_AUDIO_PLAYING;
   queue = [];
   cancelResponses = {};
+  multiCharacters = false;
 
   constructor() {
     this.player = new Player();
@@ -15,6 +16,10 @@ class Conversation {
 
   setDisplayOrder(order) {
     this.order = order;
+  }
+
+  setMultiCharacters(multiCharacters = false) {
+    this.multiCharacters = multiCharacters;
   }
 
   playAudio(packet) {
@@ -45,7 +50,7 @@ class Conversation {
 
         const interactionEnd = this.queue.find(
           (item) =>
-            item.packet.control?.type === InworlControlType.INTERACTION_END,
+            item.packet.control?.action === InworlControlAction.INTERACTION_END,
         );
 
         if (interactionEnd) {
@@ -210,28 +215,44 @@ class Conversation {
   };
 
   renderPacket(packet) {
-    const i = packet.packetId.interactionId;
-    const u = packet.packetId.utteranceId;
+    const { interactionId, utteranceId, correlationId } = packet.packetId;
 
-    if (packet.text?.text) {
+    const conversationId = this.multiCharacters
+      ? packet.packetId.conversationId
+      : '';
+    const info = [];
+
+    if (interactionId) {
+      info.push(`i=${interactionId}`);
+    }
+
+    if (utteranceId) {
+      info.push(`u=${utteranceId}`);
+    }
+
+    if (correlationId) {
+      info.push(`cor=${correlationId}`);
+    }
+
+    if (this.multiCharacters) {
+      info.push(`conv=${conversationId}`);
+    }
+
+    const text = (packet.text?.text || packet.narratedAction?.text)?.trim();
+    const wrapper = packet.narratedAction?.text ? '*' : '';
+
+    if (text) {
       console.log(
-        `${this.renderEventRouting(packet)} (i=${i}, u=${u}): ${
-          packet.text.text
-        }`,
-      );
-    } else if (packet.narratedAction?.text) {
-      console.log(
-        `${this.renderEventRouting(packet)} (i=${i}, u=${u}): *${
-          packet.narratedAction.text
-        }*`,
+        `${this.renderEventRouting(packet)} (${info.join()}): ${wrapper}${text}${wrapper}`,
       );
     }
   }
 
   renderEventRouting = (packet) => {
-    return `${this.renderActor(packet.routing.source)} to ${this.renderActor(
-      packet.routing.target,
-    )}`;
+    const source = this.renderActor(packet.routing.source);
+    const targets = packet.routing.targets.map(this.renderActor);
+
+    return `${source} to ${targets.join(' and ')}`;
   };
 
   renderActor = (actor) => {
