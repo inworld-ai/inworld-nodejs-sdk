@@ -51,10 +51,26 @@ const listConversations = async (connection) => {
   }
 };
 
+const changeScene = async (connection, scene) => {
+  try {
+    await connection.changeScene(scene);
+    console.log('Scene changed');
+  } catch (e) {
+    console.log('Scene not changed: ', e.message);
+  }
+};
+
+const addCharacters = async (connection, characters) => {
+  const done = await connection.addCharacters(characters);
+  console.log(done ? 'Characters loaded' : 'Characters not loaded.');
+};
+
 module.exports = {
-  listCharacters,
+  addCharacters,
   changeCharacter,
+  changeScene,
   characterInfo,
   conversationInfo,
+  listCharacters,
   listConversations,
 };
