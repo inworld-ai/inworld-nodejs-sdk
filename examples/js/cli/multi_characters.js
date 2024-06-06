@@ -1,6 +1,6 @@
 require('dotenv').config();
 
-const { InworldTriggers } = require('@inworld/nodejs-sdk');
+const { InworldTriggers, MicrophoneMode } = require('@inworld/nodejs-sdk');
 const { Client } = require('./components/client');
 const { Recorder } = require('./components/recorder');
 const {
@@ -53,6 +53,7 @@ const run = async function () {
     |- /conversation %conversation-id% - id of the target conversation (Get full list using /list-conversations command).
     |- /next-turn - sends next turn event to force conversation between characters.
     |- /start - starts audio capturing.
+    |- /start-push-to-talk - starts audio capturing in push-to-talk mode. Send /end to stop.
     |- /end - ends audio capturing.
     |- <any other text> - sends text event to server.
   `);
@@ -145,12 +146,17 @@ const run = async function () {
         break;
 
       case '/start':
+      case '/start-push-to-talk':
         if (!currentConversation) {
           console.log('No conversation selected');
           break;
         }
 
-        await currentConversation.sendAudioSessionStart();
+        const mode =
+          command === '/start-push-to-talk'
+            ? MicrophoneMode.EXPECT_AUDIO_END
+            : undefined;
+        await currentConversation.sendAudioSessionStart({ mode });
         recorder.capture();
         break;
 
