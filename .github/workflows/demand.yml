@@ -1,4 +1,4 @@
-name: On Demand Test Run - PROD
+name: On Demand Test Run
 
 on:
   workflow_dispatch:
@@ -23,7 +23,8 @@ on:
         - 'PROD'
         - 'STAGING'
         - 'DEV'
-        
+
+run-name: On Demand Test Run - ${{ github.event.inputs.environment }} - ${{ github.event.inputs.os }}
   
 jobs:
   run-tests:
