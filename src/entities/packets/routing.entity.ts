@@ -22,11 +22,11 @@ export class Actor {
     this.isCharacter = isCharacter;
   }
 
-  static fromProto(proto: ProtoActor) {
-    const type = proto.getType();
+  static fromProto(proto?: ProtoActor) {
+    const type = proto?.getType();
 
     return new Actor({
-      name: proto.getName(),
+      name: proto?.getName() ?? '',
       isPlayer: type === ProtoActor.Type.PLAYER,
       isCharacter: type === ProtoActor.Type.AGENT,
     });
@@ -35,17 +35,21 @@ export class Actor {
 
 export class Routing {
   readonly source: Actor;
-  readonly target: Actor;
+  readonly targets: Actor[];
 
-  constructor({ source, target }: { source: Actor; target: Actor }) {
+  constructor({ source, targets }: { source: Actor; targets: Actor[] }) {
     this.source = source;
-    this.target = target;
+    this.targets = targets;
   }
 
-  static fromProto(proto: ProtoRouting) {
+  static fromProto(proto?: ProtoRouting) {
+    const targets = proto?.getTarget()?.getType()
+      ? [proto.getTarget()]
+      : proto?.getTargetsList() ?? [];
+
     return new Routing({
-      source: Actor.fromProto(proto.getSource()),
-      target: Actor.fromProto(proto.getTarget()),
+      source: Actor.fromProto(proto?.getSource()),
+      targets: targets.map((target) => Actor.fromProto(target)),
     });
   }
 }

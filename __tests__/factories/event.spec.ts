@@ -2,29 +2,36 @@ import {
   ActionEvent,
   Actor,
   AdditionalPhonemeInfo,
+  Agent,
   ControlEvent,
+  ConversationEventPayload,
+  ConversationUpdatePayload,
   DataChunk,
   EmotionEvent,
   InworldPacket as ProtoPacket,
-  NarratedAction,
-  PacketId,
-  Routing,
-} from '@proto/ai/inworld/packets/packets_pb';
-import { Duration } from 'google-protobuf/google/protobuf/duration_pb';
-import { v4 } from 'uuid';
-
-import {
   LoadCharacters,
   LoadedCharacters,
   LoadedScene,
   LoadScene,
   MutationEvent,
+  NarratedAction,
+  PacketId,
+  Routing,
   SessionControlResponseEvent,
-} from '../../proto/ai/inworld/packets/packets_pb';
+} from '@proto/ai/inworld/packets/packets_pb';
+import { Duration } from 'google-protobuf/google/protobuf/duration_pb';
+import { v4 } from 'uuid';
+
+import { InworldConversationEventType } from '../../src/common/data_structures';
 import { protoTimestamp } from '../../src/common/helpers';
 import { InworldPacket } from '../../src/entities/packets/inworld_packet.entity';
 import { EventFactory } from '../../src/factories/event';
-import { agents, characters, createCharacter } from '../helpers';
+import {
+  agents,
+  characters,
+  conversationId,
+  createCharacter,
+} from '../helpers';
 
 let factory: EventFactory;
 
@@ -43,6 +50,18 @@ test('should set and get character', () => {
   expect(found.id).toEqual(character.id);
 });
 
+test('should set and get characters', () => {
+  const characters = [createCharacter(), createCharacter()];
+
+  factory.setCharacters(characters);
+
+  const found = factory.getCharacters();
+
+  expect(found).toEqual(characters);
+  expect(found[0].id).toEqual(characters[0].id);
+  expect(found[1].id).toEqual(characters[1].id);
+});
+
 describe('event types', () => {
   const character = createCharacter();
 
@@ -54,7 +73,9 @@ describe('event types', () => {
 
   test('should generate audio event', () => {
     const chunk = v4();
-    const event = factory.dataChunk(chunk, DataChunk.DataType.AUDIO);
+    const event = factory.dataChunk(chunk, DataChunk.DataType.AUDIO, {
+      conversationId,
+    });
     const packetId = event.getPacketId();
 
     expect(event.hasDataChunk()).toEqual(true);
@@ -64,13 +85,17 @@ describe('event types', () => {
     expect(packetId.getInteractionId()).toBeFalsy();
     expect(packetId.getUtteranceId()).toBeFalsy();
     expect(packetId.getCorrelationId()).toBeFalsy();
+    expect(packetId.getConversationId()).toEqual(conversationId);
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTarget().getName()).toEqual(character?.id);
+    expect(event.getRouting().getTarget()).toBeFalsy();
+    expect(event.getRouting().getTargetsList()).toEqual([]);
     expect(event.hasTimestamp()).toEqual(true);
   });
 
   test('should generate audio session start', () => {
-    const event = factory.audioSessionStart();
+    const event = factory.audioSessionStart({
+      conversationId,
+    });
     const packetId = event.getPacketId();
 
     expect(event.hasControl()).toEqual(true);
@@ -81,13 +106,17 @@ describe('event types', () => {
     expect(packetId.getInteractionId()).toBeFalsy();
     expect(packetId.getUtteranceId()).toBeFalsy();
     expect(packetId.getCorrelationId()).toBeFalsy();
+    expect(packetId.getConversationId()).toEqual(conversationId);
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTarget().getName()).toEqual(character?.id);
+    expect(event.getRouting().getTarget()).toBeFalsy();
+    expect(event.getRouting().getTargetsList()).toEqual([]);
     expect(event.hasTimestamp()).toEqual(true);
   });
 
   test('should generate audio session end', () => {
-    const event = factory.audioSessionEnd();
+    const event = factory.audioSessionEnd({
+      conversationId,
+    });
     const packetId = event.getPacketId();
 
     expect(event.hasControl()).toEqual(true);
@@ -98,13 +127,17 @@ describe('event types', () => {
     expect(packetId.getInteractionId()).toBeFalsy();
     expect(packetId.getUtteranceId()).toBeFalsy();
     expect(packetId.getCorrelationId()).toBeFalsy();
+    expect(packetId.getConversationId()).toEqual(conversationId);
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTarget().getName()).toEqual(character?.id);
+    expect(event.getRouting().getTarget()).toBeFalsy();
+    expect(event.getRouting().getTargetsList()).toEqual([]);
     expect(event.hasTimestamp()).toEqual(true);
   });
 
   test('should generate mute', () => {
-    const event = factory.mutePlayback(true);
+    const event = factory.mutePlayback(true, {
+      conversationId,
+    });
     const packetId = event.getPacketId();
 
     expect(event.hasControl()).toEqual(true);
@@ -115,13 +148,17 @@ describe('event types', () => {
     expect(packetId.getInteractionId()).toBeFalsy();
     expect(packetId.getUtteranceId()).toBeFalsy();
     expect(packetId.getCorrelationId()).toBeFalsy();
+    expect(packetId.getConversationId()).toEqual(conversationId);
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTarget().getName()).toEqual(character?.id);
+    expect(event.getRouting().getTarget()).toBeFalsy();
+    expect(event.getRouting().getTargetsList()).toEqual([]);
     expect(event.hasTimestamp()).toEqual(true);
   });
 
   test('should generate unmute', () => {
-    const event = factory.mutePlayback(false);
+    const event = factory.mutePlayback(false, {
+      conversationId,
+    });
     const packetId = event.getPacketId();
 
     expect(event.hasControl()).toEqual(true);
@@ -132,14 +169,18 @@ describe('event types', () => {
     expect(packetId.getInteractionId()).toBeFalsy();
     expect(packetId.getUtteranceId()).toBeFalsy();
     expect(packetId.getCorrelationId()).toBeFalsy();
+    expect(packetId.getConversationId()).toEqual(conversationId);
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTarget().getName()).toEqual(character?.id);
+    expect(event.getRouting().getTarget()).toBeFalsy();
+    expect(event.getRouting().getTargetsList()).toEqual([]);
     expect(event.hasTimestamp()).toEqual(true);
   });
 
   test('should generate text event', () => {
     const text = v4();
-    const event = factory.text(text);
+    const event = factory.text(text, {
+      conversationId,
+    });
     const packetId = event.getPacketId();
 
     expect(event.hasText()).toEqual(true);
@@ -148,14 +189,18 @@ describe('event types', () => {
     expect(packetId.getInteractionId()).toBeDefined();
     expect(packetId.getUtteranceId()).toBeDefined();
     expect(packetId.getCorrelationId()).toBeDefined();
+    expect(packetId.getConversationId()).toEqual(conversationId);
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTarget().getName()).toEqual(character?.id);
+    expect(event.getRouting().getTarget()).toBeFalsy();
+    expect(event.getRouting().getTargetsList()).toEqual([]);
     expect(event.hasTimestamp()).toEqual(true);
   });
 
   test('should generate trigger event without parameters', () => {
     const name = v4();
-    const event = factory.trigger(name);
+    const event = factory.trigger(name, {
+      conversationId,
+    });
     const packetId = event.getPacketId();
 
     expect(event.hasCustom()).toEqual(true);
@@ -165,15 +210,20 @@ describe('event types', () => {
     expect(packetId.getInteractionId()).toBeDefined();
     expect(packetId.getUtteranceId()).toBeDefined();
     expect(packetId.getCorrelationId()).toBeDefined();
+    expect(packetId.getConversationId()).toEqual(conversationId);
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTarget().getName()).toEqual(character?.id);
+    expect(event.getRouting().getTarget()).toBeFalsy();
+    expect(event.getRouting().getTargetsList()).toEqual([]);
     expect(event.hasTimestamp()).toEqual(true);
   });
 
   test('should generate trigger event with parameters', () => {
     const name = v4();
     const parameters = [{ name: v4(), value: v4() }];
-    const event = factory.trigger(name, parameters);
+    const event = factory.trigger(name, {
+      parameters,
+      conversationId,
+    });
     const packetId = event.getPacketId();
 
     expect(event.hasCustom()).toEqual(true);
@@ -188,13 +238,17 @@ describe('event types', () => {
     expect(packetId.getInteractionId()).toBeDefined();
     expect(packetId.getUtteranceId()).toBeDefined();
     expect(packetId.getCorrelationId()).toBeDefined();
+    expect(packetId.getConversationId()).toEqual(conversationId);
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTarget().getName()).toEqual(character?.id);
+    expect(event.getRouting().getTarget()).toBeFalsy();
+    expect(event.getRouting().getTargetsList()).toEqual([]);
     expect(event.hasTimestamp()).toEqual(true);
   });
 
   test('should generate cancel response event for all answers', () => {
-    const event = factory.cancelResponse();
+    const event = factory.cancelResponse({
+      character,
+    });
     const packetId = event.getPacketId();
 
     expect(event.getMutation().hasCancelResponses()).toEqual(true);
@@ -211,6 +265,7 @@ describe('event types', () => {
     const props = {
       interactionId: v4(),
       utteranceId: [v4()],
+      character,
     };
     const event = factory.cancelResponse(props);
     const mutation = event.getMutation();
@@ -232,24 +287,37 @@ describe('event types', () => {
     expect(event.hasTimestamp()).toEqual(true);
   });
 
-  test('should not use character id if character is not set', () => {
-    factory.setCurrentCharacter(null);
-    const event = factory.cancelResponse();
+  test('should generate cancel response event for all specific answers', () => {
+    const props = {
+      interactionId: v4(),
+      utteranceId: [v4()],
+      character,
+    };
+    const event = factory.cancelResponse(props);
+    const mutation = event.getMutation();
     const packetId = event.getPacketId();
 
-    expect(event.getMutation().hasCancelResponses()).toEqual(true);
+    expect(mutation.hasCancelResponses()).toEqual(true);
+    expect(mutation.getCancelResponses().getInteractionId()).toEqual(
+      props.interactionId,
+    );
+    expect(mutation.getCancelResponses().getUtteranceIdList()).toEqual(
+      props.utteranceId,
+    );
     expect(packetId.getPacketId()).toBeDefined();
     expect(packetId.getInteractionId()).toBeDefined();
     expect(packetId.getUtteranceId()).toBeDefined();
     expect(packetId.getCorrelationId()).toBeDefined();
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTarget().getName()).toEqual('');
+    expect(event.getRouting().getTarget().getName()).toEqual(character.id);
     expect(event.hasTimestamp()).toEqual(true);
   });
 
   test('should generate narrated action event', () => {
     const text = v4();
-    const event = factory.narratedAction(text);
+    const event = factory.narratedAction(text, {
+      conversationId,
+    });
     const packetId = event.getPacketId();
 
     expect(event.getAction().hasNarratedAction()).toEqual(true);
@@ -258,8 +326,10 @@ describe('event types', () => {
     expect(packetId.getInteractionId()).toBeDefined();
     expect(packetId.getUtteranceId()).toBeDefined();
     expect(packetId.getCorrelationId()).toBeDefined();
+    expect(packetId.getConversationId()).toEqual(conversationId);
     expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTarget().getName()).toEqual(character.id);
+    expect(event.getRouting().getTarget()).toBeFalsy();
+    expect(event.getRouting().getTargetsList()).toEqual([]);
     expect(event.hasTimestamp()).toEqual(true);
   });
 
@@ -283,6 +353,58 @@ describe('event types', () => {
         .map((n: LoadCharacters.CharacterName) => n.getName()),
     ).toEqual(names);
     expect(event.hasTimestamp()).toEqual(true);
+  });
+
+  test('should generate unload characters event', () => {
+    const ids = [v4(), v4()];
+    const event = EventFactory.unloadCharacters(ids);
+    const packetId = event.getPacketId();
+
+    expect(event.getMutation().hasUnloadCharacters()).toEqual(true);
+    expect(packetId.getPacketId()).toBeDefined();
+    expect(packetId.getInteractionId()).toBeFalsy();
+    expect(packetId.getUtteranceId()).toBeFalsy();
+    expect(packetId.getCorrelationId()).toBeFalsy();
+    expect(event.hasRouting()).toEqual(true);
+    expect(event.getRouting().getTarget().getType()).toEqual(Actor.Type.WORLD);
+    expect(
+      event
+        .getMutation()
+        .getUnloadCharacters()
+        .getAgentsList()
+        .map((n: Agent) => n.getAgentId()),
+    ).toEqual(ids);
+    expect(event.hasTimestamp()).toEqual(true);
+  });
+
+  test('should generate conversation start event', () => {
+    const characters = [v4(), v4()];
+    const event = EventFactory.conversation(characters, {
+      conversationId,
+    });
+    expect(event.getControl().getAction()).toEqual(
+      ControlEvent.Action.CONVERSATION_UPDATE,
+    );
+    expect(
+      event.getControl().getConversationUpdate().getParticipantsList(),
+    ).toEqual(
+      characters.map((p) => new Actor().setName(p).setType(Actor.Type.AGENT)),
+    );
+    expect(event.getPacketId().getConversationId()).toEqual(conversationId);
+  });
+
+  test('should generate base packet without conversationId', () => {
+    const event = factory.baseProtoPacket();
+
+    expect(event.getPacketId().getConversationId()).toBeFalsy();
+  });
+
+  test('should generate base packet with conversationId', () => {
+    const event = factory.baseProtoPacket({
+      conversationId,
+    });
+
+    expect(event.getPacketId().getConversationId()).toEqual(conversationId);
   });
 });
 
@@ -311,14 +433,22 @@ describe('convert packet to external one', () => {
   });
 
   test('text', () => {
-    const result = InworldPacket.fromProto(factory.text(v4()));
+    const result = InworldPacket.fromProto(
+      factory.text(v4(), {
+        conversationId,
+      }),
+    );
 
     expect(result).toBeInstanceOf(InworldPacket);
     expect(result.isText()).toEqual(true);
   });
 
   test('trigger without parameters', () => {
-    const result = InworldPacket.fromProto(factory.trigger(v4()));
+    const result = InworldPacket.fromProto(
+      factory.trigger(v4(), {
+        conversationId,
+      }),
+    );
 
     expect(result).toBeInstanceOf(InworldPacket);
     expect(result.isTrigger()).toEqual(true);
@@ -326,7 +456,10 @@ describe('convert packet to external one', () => {
 
   test('trigger with parameters', () => {
     const result = InworldPacket.fromProto(
-      factory.trigger(v4(), [{ name: v4(), value: v4() }]),
+      factory.trigger(v4(), {
+        parameters: [{ name: v4(), value: v4() }],
+        conversationId,
+      }),
     );
 
     expect(result).toBeInstanceOf(InworldPacket);
@@ -523,6 +656,137 @@ describe('convert packet to external one', () => {
       expect(result).toBeInstanceOf(InworldPacket);
       expect(result.isControl()).toEqual(true);
       expect(result.isWarning()).toEqual(true);
+      expect(result.date).toEqual(today.toISOString());
+    });
+
+    test('outgoing conversation', () => {
+      const today = new Date();
+      const actors = [
+        new Actor().setName(v4()).setType(Actor.Type.AGENT),
+        new Actor().setName(v4()).setType(Actor.Type.AGENT),
+      ];
+      const event = new ControlEvent()
+        .setAction(ControlEvent.Action.CONVERSATION_UPDATE)
+        .setConversationUpdate(
+          new ConversationUpdatePayload().setParticipantsList(actors),
+        );
+      const packet = new ProtoPacket()
+        .setControl(event)
+        .setPacketId(new PacketId().setConversationId(conversationId))
+        .setRouting(new Routing().setSource(new Actor()))
+        .setTimestamp(protoTimestamp(today));
+
+      const result = InworldPacket.fromProto(packet);
+
+      expect(result).toBeInstanceOf(InworldPacket);
+      expect(result.isControl()).toEqual(true);
+      expect(result.packetId.conversationId).toEqual(conversationId);
+      expect(result.date).toEqual(today.toISOString());
+    });
+
+    test('incoming conversation started', () => {
+      const today = new Date();
+      const actors = [
+        new Actor().setName(v4()).setType(Actor.Type.AGENT),
+        new Actor().setName(v4()).setType(Actor.Type.AGENT),
+      ];
+      const event = new ControlEvent()
+        .setAction(ControlEvent.Action.CONVERSATION_EVENT)
+        .setConversationEvent(
+          new ConversationEventPayload()
+            .setEventType(
+              ConversationEventPayload.ConversationEventType.STARTED,
+            )
+            .setParticipantsList(actors),
+        );
+      const packet = new ProtoPacket()
+        .setControl(event)
+        .setPacketId(new PacketId().setConversationId(conversationId))
+        .setRouting(new Routing().setSource(new Actor()))
+        .setTimestamp(protoTimestamp(today));
+
+      const result = InworldPacket.fromProto(packet);
+
+      expect(result).toBeInstanceOf(InworldPacket);
+      expect(result.isControl()).toEqual(true);
+      expect(result.packetId.conversationId).toEqual(conversationId);
+      expect(result.control.conversation.type).toEqual(
+        InworldConversationEventType.STARTED,
+      );
+      expect(result.date).toEqual(today.toISOString());
+    });
+
+    test('incoming conversation updated', () => {
+      const today = new Date();
+      const event = new ControlEvent()
+        .setAction(ControlEvent.Action.CONVERSATION_EVENT)
+        .setConversationEvent(
+          new ConversationEventPayload().setEventType(
+            ConversationEventPayload.ConversationEventType.UPDATED,
+          ),
+        );
+      const packet = new ProtoPacket()
+        .setControl(event)
+        .setPacketId(new PacketId().setConversationId(conversationId))
+        .setRouting(new Routing().setSource(new Actor()))
+        .setTimestamp(protoTimestamp(today));
+
+      const result = InworldPacket.fromProto(packet);
+
+      expect(result).toBeInstanceOf(InworldPacket);
+      expect(result.isControl()).toEqual(true);
+      expect(result.packetId.conversationId).toEqual(conversationId);
+      expect(result.control.conversation.type).toEqual(
+        InworldConversationEventType.UPDATED,
+      );
+      expect(result.date).toEqual(today.toISOString());
+    });
+
+    test('incoming conversation evicted', () => {
+      const today = new Date();
+      const event = new ControlEvent()
+        .setAction(ControlEvent.Action.CONVERSATION_EVENT)
+        .setConversationEvent(
+          new ConversationEventPayload().setEventType(
+            ConversationEventPayload.ConversationEventType.EVICTED,
+          ),
+        );
+      const packet = new ProtoPacket()
+        .setControl(event)
+        .setPacketId(new PacketId().setConversationId(conversationId))
+        .setRouting(new Routing().setSource(new Actor()))
+        .setTimestamp(protoTimestamp(today));
+
+      const result = InworldPacket.fromProto(packet);
+
+      expect(result).toBeInstanceOf(InworldPacket);
+      expect(result.isControl()).toEqual(true);
+      expect(result.packetId.conversationId).toEqual(conversationId);
+      expect(result.control.conversation.type).toEqual(
+        InworldConversationEventType.EVICTED,
+      );
+      expect(result.date).toEqual(today.toISOString());
+    });
+
+    test('incoming conversation unknown', () => {
+      const today = new Date();
+      const event = new ControlEvent()
+        .setAction(ControlEvent.Action.CONVERSATION_EVENT)
+        .setConversationEvent(new ConversationEventPayload());
+      const packet = new ProtoPacket()
+        .setControl(event)
+        .setPacketId(new PacketId().setConversationId(conversationId))
+        .setRouting(new Routing().setSource(new Actor()))
+        .setTimestamp(protoTimestamp(today));
+
+      const result = InworldPacket.fromProto(packet);
+
+      expect(result).toBeInstanceOf(InworldPacket);
+      expect(result.isControl()).toEqual(true);
+      expect(result.packetId.conversationId).toEqual(conversationId);
+      expect(result.control.conversation.type).toEqual(
+        InworldConversationEventType.UNKNOWN,
+      );
       expect(result.date).toEqual(today.toISOString());
     });
 

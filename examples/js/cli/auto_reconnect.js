@@ -1,8 +1,16 @@
 require('dotenv').config();
 
+const { DislikeType } = require('@inworld/nodejs-sdk');
+
 const { Client } = require('./components/client');
 const { Recorder } = require('./components/recorder');
-const { changeCharacter, characterInfo, listAll } = require('./helpers');
+const {
+  changeCharacter,
+  characterInfo,
+  changeScene,
+  addCharacters,
+  listCharacters,
+} = require('./helpers');
 
 const split = require('split');
 
@@ -41,6 +49,14 @@ const run = async function () {
     |- /info - shows current character.
     |- /list-all - shows available characters (created within the scene).
     |- /character %character-id% - id of the target character (Get full list using /list-all command).
+    |- /like %interaction-id% %correlation-id% - send feedback for the interaction (%correlation-id% is optional).
+    |- /dislike %interaction-id% %type% %correlation-id% - send feedback for the interaction (%correlation-id% is optional).
+        Type can be one of the following: ${Object.keys(DislikeType).join(
+          ', ',
+        )}.
+    |- /undo-feedback %name% - undo like or dislike.
+    |- /change-scene %scene% - scene resource name to be loaded: workspaces/{workspace}/scenes/{scene}
+    |- /add-characters %characters% - list of characters to be loaded: workspaces/{workspace}/characters/{character}. Use comma to separate characters.
     |- c - cancel current response.
     |- <any other text> - sends text event to server.
   `);
@@ -60,7 +76,7 @@ const run = async function () {
         break;
 
       case '/list-all':
-        listAll(connection);
+        listCharacters(connection);
         break;
 
       case '/info':
@@ -73,16 +89,67 @@ const run = async function () {
         changeCharacter(connection, args[0]);
         break;
 
+      case '/like':
+      case '/dislike':
+        console.log('Sending. Wait...');
+
+        let feedback;
+
+        if (command === '/like') {
+          feedback = connection.feedback.like({
+            interactionId: args[0],
+            correlationId: args[1],
+          });
+        } else {
+          feedback = connection.feedback.dislike({
+            comment: 'Test example',
+            interactionId: args[0],
+            types: [DislikeType[args[1]]],
+            correlationId: args[2],
+          });
+        }
+
+        await feedback
+          .then((sent) =>
+            console.log('Feedback sent successfully with name', sent.name),
+          )
+          .catch((err) =>
+            console.log('Feedback was not sent successfully: ', err.message),
+          );
+        break;
+
+      case '/undo-feedback':
+        console.log('Undoing. Wait...');
+
+        await connection.feedback
+          .undo(args[0])
+          .then(() => console.log('Feedback undone successfully'))
+          .catch((err) =>
+            console.log('Feedback was not undone successfully: ', err.message),
+          );
+        break;
+
+      case '/change-scene':
+        changeScene(connection, args[0]);
+        break;
+
+      case '/add-characters':
+        if (args.length) {
+          await addCharacters(connection, args);
+        } else {
+          console.log('/add-characters requires characters list');
+        }
+        break;
+
       case 'c':
         await connection.sendCancelResponse();
         break;
 
       case '/trigger':
         if (args[0]) {
-          await connection.sendTrigger(
-            args[0],
-            args[1] ? JSON.parse(args[1]) : [],
-          );
+          await connection.sendTrigger(args[0], {
+            parameters: args[1] ? JSON.parse(args[1]) : [],
+          });
         } else {
           console.log('/trigger requires trigger name');
         }

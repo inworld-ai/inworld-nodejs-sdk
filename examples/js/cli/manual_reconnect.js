@@ -2,7 +2,7 @@ require('dotenv').config();
 
 const { Client } = require('./components/client');
 const { Recorder } = require('./components/recorder');
-const { changeCharacter, characterInfo, listAll } = require('./helpers');
+const { changeCharacter, characterInfo, listCharacters } = require('./helpers');
 
 const split = require('split');
 
@@ -99,7 +99,7 @@ const run = async function () {
         break;
 
       case '/list-all':
-        listAll(connection);
+        listCharacters(connection);
         break;
 
       case '/info':

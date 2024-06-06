@@ -33,6 +33,7 @@ jobs:
       ALLURE_RESULTS: 'build/allure-results'
       PROD_AUTH_IDENTITY_PROVIDER: projects/760085515784/locations/global/workloadIdentityPools/github-prod-pool/providers/github-prvdr
       PROD_AUTH_SERVICE_ACCOUNT: inworld-nodejs-sdk@inworld-ai-prod.iam.gserviceaccount.com
+      ENV: 'PROD'
     permissions:
         contents: 'read'
         id-token: 'write'

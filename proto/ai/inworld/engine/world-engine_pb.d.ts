@@ -53,6 +53,8 @@ export class CapabilitiesRequest extends jspb.Message {
     setMultiAgent(value: boolean): CapabilitiesRequest;
     getAudio2Face(): boolean;
     setAudio2Face(value: boolean): CapabilitiesRequest;
+    getInspect(): boolean;
+    setInspect(value: boolean): CapabilitiesRequest;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): CapabilitiesRequest.AsObject;
@@ -86,6 +88,7 @@ export namespace CapabilitiesRequest {
         ttsMp3: boolean,
         multiAgent: boolean,
         audio2Face: boolean,
+        inspect: boolean,
     }
 }
 
@@ -373,8 +376,20 @@ export namespace PreviousDialog {
     export class Phrase extends jspb.Message { 
         getTalker(): PreviousDialog.DialogParticipant;
         setTalker(value: PreviousDialog.DialogParticipant): Phrase;
+        getTalkerDisplayName(): string;
+        setTalkerDisplayName(value: string): Phrase;
+
+        hasPhrase(): boolean;
+        clearPhrase(): void;
         getPhrase(): string;
         setPhrase(value: string): Phrase;
+
+        hasNarrativeAction(): boolean;
+        clearNarrativeAction(): void;
+        getNarrativeAction(): string;
+        setNarrativeAction(value: string): Phrase;
+
+        getPayloadCase(): Phrase.PayloadCase;
 
         serializeBinary(): Uint8Array;
         toObject(includeInstance?: boolean): Phrase.AsObject;
@@ -389,8 +404,17 @@ export namespace PreviousDialog {
     export namespace Phrase {
         export type AsObject = {
             talker: PreviousDialog.DialogParticipant,
+            talkerDisplayName: string,
             phrase: string,
+            narrativeAction: string,
         }
+
+        export enum PayloadCase {
+            PAYLOAD_NOT_SET = 0,
+            PHRASE = 2,
+            NARRATIVE_ACTION = 5,
+        }
+
     }
 
 
@@ -398,6 +422,7 @@ export namespace PreviousDialog {
     UNKNOWN = 0,
     PLAYER = 1,
     CHARACTER = 2,
+    WORLD = 3,
     }
 
 }
@@ -867,6 +892,10 @@ export namespace ConversationState {
         getSpectatorsList(): Array<string>;
         setSpectatorsList(value: Array<string>): ConversationSettings;
         addSpectators(value: string, index?: number): string;
+        clearParticipatingActorsList(): void;
+        getParticipatingActorsList(): Array<ai_inworld_packets_packets_pb.Actor>;
+        setParticipatingActorsList(value: Array<ai_inworld_packets_packets_pb.Actor>): ConversationSettings;
+        addParticipatingActors(value?: ai_inworld_packets_packets_pb.Actor, index?: number): ai_inworld_packets_packets_pb.Actor;
 
         serializeBinary(): Uint8Array;
         toObject(includeInstance?: boolean): ConversationSettings.AsObject;
@@ -883,6 +912,7 @@ export namespace ConversationState {
             conversationId: string,
             participantsList: Array<string>,
             spectatorsList: Array<string>,
+            participatingActorsList: Array<ai_inworld_packets_packets_pb.Actor.AsObject>,
         }
     }
 

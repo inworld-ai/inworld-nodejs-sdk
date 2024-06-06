@@ -216,7 +216,8 @@ proto.configuration.CapabilitiesConfiguration.toObject = function(includeInstanc
     debugInfo: jspb.Message.getBooleanFieldWithDefault(msg, 14, false),
     ttsMp3: jspb.Message.getBooleanFieldWithDefault(msg, 15, false),
     multiAgent: jspb.Message.getBooleanFieldWithDefault(msg, 20, false),
-    audio2face: jspb.Message.getBooleanFieldWithDefault(msg, 21, false)
+    audio2face: jspb.Message.getBooleanFieldWithDefault(msg, 21, false),
+    inspect: jspb.Message.getBooleanFieldWithDefault(msg, 22, false)
   };
 
   if (includeInstance) {
@@ -316,6 +317,10 @@ proto.configuration.CapabilitiesConfiguration.deserializeBinaryFromReader = func
     case 21:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setAudio2face(value);
+      break;
+    case 22:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setInspect(value);
       break;
     default:
       reader.skipField();
@@ -455,6 +460,13 @@ proto.configuration.CapabilitiesConfiguration.serializeBinaryToWriter = function
   if (f) {
     writer.writeBool(
       21,
+      f
+    );
+  }
+  f = message.getInspect();
+  if (f) {
+    writer.writeBool(
+      22,
       f
     );
   }
@@ -746,6 +758,24 @@ proto.configuration.CapabilitiesConfiguration.prototype.getAudio2face = function
  */
 proto.configuration.CapabilitiesConfiguration.prototype.setAudio2face = function(value) {
   return jspb.Message.setProto3BooleanField(this, 21, value);
+};
+
+
+/**
+ * optional bool inspect = 22;
+ * @return {boolean}
+ */
+proto.configuration.CapabilitiesConfiguration.prototype.getInspect = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 22, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.configuration.CapabilitiesConfiguration} returns this
+ */
+proto.configuration.CapabilitiesConfiguration.prototype.setInspect = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 22, value);
 };
 
 

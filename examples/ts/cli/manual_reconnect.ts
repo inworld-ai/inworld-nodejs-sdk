@@ -2,7 +2,7 @@ import 'dotenv/config';
 
 import { Client, ClientProps } from './components/client';
 import { Recorder } from './components/recorder';
-import { changeCharacter, characterInfo, listAll } from './helpers';
+import { changeCharacter, characterInfo, listCharacters } from './helpers';
 
 const split = require('split');
 
@@ -17,6 +17,7 @@ const props: ClientProps = {
   config: {
     capabilities: {
       audio: true,
+      debugInfo: true,
       emotions: true,
       narratedActions: true,
       silence: true,
@@ -100,7 +101,7 @@ const run = async function () {
         break;
 
       case '/list-all':
-        listAll(connection);
+        listCharacters(connection);
         break;
 
       case '/info':
