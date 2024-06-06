@@ -128,8 +128,8 @@ describe('message', () => {
 
     expect(generateSessionToken).toHaveBeenCalledTimes(1);
     expect(openSession).toHaveBeenCalledTimes(1);
-    expect(onMessage).toHaveBeenCalledTimes(1);
-    expect(onMessage).toHaveBeenCalledWith(InworldPacket.fromProto(packet));
+    expect(onMessage).toHaveBeenCalledTimes(2);
+    expect(onMessage.mock.calls[1][0]).toEqual(InworldPacket.fromProto(packet));
   });
 
   test('should receive warn message', async () => {
@@ -169,7 +169,7 @@ describe('message', () => {
     await connection.open();
 
     stream.emit('data', packet);
-    expect(onMessage).toHaveBeenCalledTimes(1);
+    expect(onMessage).toHaveBeenCalledTimes(2);
     expect(onMessage).toHaveBeenCalledWith(InworldPacket.fromProto(packet));
     expect(loggerWarn).toHaveBeenCalledWith({
       action: 'Receive warning packet',
@@ -181,6 +181,7 @@ describe('message', () => {
   });
 
   test('should replace scene characters', async () => {
+    let count = 0;
     let currentCharacters: Character[];
     const newAgents = [createAgent(), createAgent()];
     const stream = getStream();
@@ -194,13 +195,17 @@ describe('message', () => {
       user,
       onError,
       onMessage: async (packet) => {
-        const newCharacters = await connection.getCharactersList();
+        count++;
 
-        expect(packet.isSceneMutationResponse()).toEqual(true);
-        expect(newCharacters[0].id).not.toBe(currentCharacters[0].id);
-        expect(newCharacters[1].id).not.toBe(currentCharacters[1].id);
-        expect(newCharacters[0].id).toEqual(newAgents[0].getAgentId());
-        expect(newCharacters[1].id).toEqual(newAgents[1].getAgentId());
+        if (count === 2) {
+          const newCharacters = await connection.getCharactersList();
+
+          expect(packet.isSceneMutationResponse()).toEqual(true);
+          expect(newCharacters[0].id).not.toBe(currentCharacters[0].id);
+          expect(newCharacters[1].id).not.toBe(currentCharacters[1].id);
+          expect(newCharacters[0].id).toEqual(newAgents[0].getAgentId());
+          expect(newCharacters[1].id).toEqual(newAgents[1].getAgentId());
+        }
       },
       onDisconnect,
     });
@@ -231,6 +236,7 @@ describe('message', () => {
   });
 
   test('should add and remove characters', async () => {
+    let count = 0;
     let currentCharacters: Character[];
     const newAgents = [createAgent(), createAgent()];
     const stream = getStream();
@@ -244,19 +250,23 @@ describe('message', () => {
       user,
       onError,
       onMessage: async (packet) => {
-        const newCharacters = await connection.getCharactersList();
+        count++;
 
-        expect(packet.isSceneMutationResponse()).toEqual(true);
-        expect(newCharacters[0].id).toEqual(currentCharacters[0].id);
-        expect(newCharacters[1].id).toEqual(currentCharacters[1].id);
-        expect(newCharacters[2].id).toEqual(newAgents[0].getAgentId());
-        expect(newCharacters[3].id).toEqual(newAgents[1].getAgentId());
+        if (count === 2) {
+          const newCharacters = await connection.getCharactersList();
 
-        connection.removeCharacters([
-          newCharacters[0].resourceName,
-          newCharacters[1].resourceName,
-        ]);
-        expect((await connection.getCharactersList()).length).toEqual(2);
+          expect(packet.isSceneMutationResponse()).toEqual(true);
+          expect(newCharacters[0].id).toEqual(currentCharacters[0].id);
+          expect(newCharacters[1].id).toEqual(currentCharacters[1].id);
+          expect(newCharacters[2].id).toEqual(newAgents[0].getAgentId());
+          expect(newCharacters[3].id).toEqual(newAgents[1].getAgentId());
+
+          connection.removeCharacters([
+            newCharacters[0].resourceName,
+            newCharacters[1].resourceName,
+          ]);
+          expect((await connection.getCharactersList()).length).toEqual(2);
+        }
       },
       onDisconnect,
     });

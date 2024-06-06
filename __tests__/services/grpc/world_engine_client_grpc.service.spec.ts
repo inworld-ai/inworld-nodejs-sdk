@@ -140,7 +140,11 @@ describe('load scene', () => {
       .getSessionConfiguration();
     expect(configuration.getCapabilitiesConfiguration()).toEqual(capabilities);
     expect(configuration.getClientConfiguration().getId()).toEqual(CLIENT_ID);
-    expect(loggerDebug).toHaveBeenCalledTimes(1);
+    expect(loggerDebug).toHaveBeenCalledTimes(3);
+    expect(loggerDebug.mock.calls[0][0].action).toEqual('Open session');
+    expect(loggerDebug.mock.calls[1][0].action).toEqual('Send packet');
+    expect(loggerDebug.mock.calls[2][0].action).toEqual('Send packet');
+    expect(onMessage).toHaveBeenCalledTimes(1);
   });
 
   test('should use provided custom client id', async () => {
@@ -526,7 +530,7 @@ describe('openSession', () => {
 
     stream.emit('data');
 
-    expect(onMessage).toHaveBeenCalledTimes(1);
+    expect(onMessage).toHaveBeenCalledTimes(2);
   });
 
   test('should do nothing if onMessage is not provided', async () => {
