@@ -1,3 +1,9 @@
+## [Unreleased]
+
+### Changed
+
+- Support new runtime protocol session configuration
+
 ## [1.13.1] - 2024-06-05
 
 ### Fixed
@@ -5,12 +11,6 @@
 - Fix scene changing error
 
 ## [1.13.0] - 2024-06-05
-
-### Added
-
-### Changed
-
-- Support new runtime protocol session configuration
 
 ### Added
 
