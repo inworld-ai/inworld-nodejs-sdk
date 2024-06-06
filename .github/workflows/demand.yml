@@ -51,9 +51,9 @@ jobs:
       - name: Set Environment
         run: |
           if [ "${{ github.event.inputs.environment }}" == "STAGING" ]; then
-            echo "knivesout.stage.inworld.ai:443" >> $NODE_SDK_INWORLD_ENGINE_HOST
+            echo "NODE_SDK_INWORLD_ENGINE_HOST=knivesout.stage.inworld.ai:443" >> $GITHUB_ENV
           elif [ "${{ github.event.inputs.environment }}" == "DEV" ]; then
-            echo "knivesout.dev.inworld.ai:443" >> $NODE_SDK_INWORLD_ENGINE_HOST
+            echo "NODE_SDK_INWORLD_ENGINE_HOST=knivesout.dev.inworld.ai:443" >> $GITHUB_ENV
           fi
       - name: Setup node
         uses: actions/setup-node@v3
