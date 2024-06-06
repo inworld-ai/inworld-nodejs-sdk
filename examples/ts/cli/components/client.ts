@@ -3,8 +3,8 @@ import {
   ClientConfiguration,
   InworldClient,
   InworldConnectionService,
+  InworldError,
   InworldPacket,
-  ServiceError,
   status,
 } from '@inworld/nodejs-sdk';
 import { ChildProcess, fork } from 'child_process';
@@ -195,13 +195,13 @@ export class Client {
     }
   };
 
-  private handleError = (err: ServiceError) => {
+  private handleError = (err: InworldError) => {
     switch (err.code) {
       case status.ABORTED:
       case status.CANCELLED:
         break;
       default:
-        console.error(`Error: ${err.message}`);
+        console.error(`Error: ${JSON.stringify(err, null, 2)}`);
         break;
     }
   };
