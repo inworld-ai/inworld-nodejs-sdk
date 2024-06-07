@@ -1,4 +1,7 @@
-import { Agent, LoadedScene } from '@proto/ai/inworld/packets/packets_pb';
+import {
+  Agent,
+  CurrentSceneStatus,
+} from '@proto/ai/inworld/packets/packets_pb';
 
 import { Character } from './character.entity';
 
@@ -34,7 +37,7 @@ export class Scene {
     } catch (e) {}
   }
 
-  static fromProto(proto: LoadedScene) {
+  static fromProto(proto: CurrentSceneStatus) {
     return new Scene({
       name: proto.getSceneName(),
       characters: proto

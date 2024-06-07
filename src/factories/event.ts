@@ -14,7 +14,7 @@ import {
   NarratedAction,
   PacketId,
   Routing,
-  SessionControlEvent,
+  SessionConfigurationPayload,
   TextEvent,
   UnloadCharacters,
 } from '@proto/ai/inworld/packets/packets_pb';
@@ -203,31 +203,37 @@ export class EventFactory {
   }
 
   static sessionControl(props: SessionControlProps): ProtoPacket {
-    const event = new SessionControlEvent();
+    const event = new SessionConfigurationPayload();
 
-    switch (true) {
-      case !!props.capabilities:
-        event.setCapabilitiesConfiguration(props.capabilities);
-        break;
-      case !!props.sessionConfiguration:
-        event.setSessionConfiguration(props.sessionConfiguration);
-        break;
-      case !!props.clientConfiguration:
-        event.setClientConfiguration(props.clientConfiguration);
-        break;
-      case !!props.userConfiguration:
-        event.setUserConfiguration(props.userConfiguration);
-        break;
-      case !!props.continuation:
-        event.setContinuation(props.continuation);
-        break;
+    if (props.capabilities) {
+      event.setCapabilitiesConfiguration(props.capabilities);
+    }
+
+    if (props.sessionConfiguration) {
+      event.setSessionConfiguration(props.sessionConfiguration);
+    }
+
+    if (props.clientConfiguration) {
+      event.setClientConfiguration(props.clientConfiguration);
+    }
+
+    if (props.userConfiguration) {
+      event.setUserConfiguration(props.userConfiguration);
+    }
+
+    if (props.continuation) {
+      event.setContinuation(props.continuation);
     }
 
     return new ProtoPacket()
       .setPacketId(new PacketId().setPacketId(v4()))
       .setRouting(this.worldRouting())
       .setTimestamp(protoTimestamp())
-      .setSessionControl(event);
+      .setControl(
+        new ControlEvent()
+          .setAction(ControlEvent.Action.SESSION_CONFIGURATION)
+          .setSessionConfiguration(event),
+      );
   }
 
   static loadScene(name: string): ProtoPacket {
