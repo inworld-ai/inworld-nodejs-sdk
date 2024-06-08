@@ -41,6 +41,7 @@ interface ResourceNotFoundDetails {
 
 interface InworldStatus {
   errorType?: ErrorType;
+  reconnectTime?: string;
   reconnectType?: ErrorReconnectionType;
   maxRetries?: number;
   resourceNotFound?: ResourceNotFoundDetails;
@@ -77,6 +78,7 @@ export class InworldError {
 
         return {
           errorType: this.getErrorType(errorType),
+          reconnectTime: d.getReconnectTime()?.toDate().toISOString(),
           reconnectType: this.getErrorReconnectionType(reconnectType),
           maxRetries: maxRetries,
           ...((resourceId || resourceType !== undefined) && {

@@ -5,6 +5,8 @@ import {
   ResourceType,
 } from '@proto/ai/inworld/common/status_pb';
 
+import { protoTimestamp } from '../../src/common/helpers';
+
 export const deserializeGrpcStatusDetails = jest
   .fn()
   .mockImplementation((proto: ServiceError) => {
@@ -17,7 +19,13 @@ export const deserializeGrpcStatusDetails = jest
       return;
     }
 
-    const { errorType, reconnectType, maxRetries, resourceNotFound } = details;
+    const {
+      errorType,
+      reconnectType,
+      maxRetries,
+      resourceNotFound,
+      reconnectTime,
+    } = details;
 
     if (
       errorType === undefined &&
@@ -38,6 +46,10 @@ export const deserializeGrpcStatusDetails = jest
 
     if (maxRetries) {
       status.setMaxRetries(maxRetries);
+    }
+
+    if (reconnectTime) {
+      status.setReconnectTime(protoTimestamp(new Date(reconnectTime)));
     }
 
     if (resourceNotFound) {

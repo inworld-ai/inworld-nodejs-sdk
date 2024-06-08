@@ -152,7 +152,12 @@ test.each(reconnectTypeTestTable)(
     const protoErr = {
       message: v4(),
       code: Status.FAILED_PRECONDITION,
-      details: JSON.stringify({ reconnectType: input }),
+      details: JSON.stringify({
+        reconnectType: input,
+        ...(input !== ProtoErrorReconnectionType.TIMEOUT && {
+          reconnectTime: new Date().toISOString(),
+        }),
+      }),
       metadata: new Metadata(),
     } as unknown as ServiceError;
 
