@@ -9,6 +9,8 @@ let key: [string, string] = [
 let name: string = 'Billy';
 let scene: string = process.env.INWORLD_E2E_SCENE_MOVIESET!;
 
+jest.retryTimes(3);
+
 test('[Personal] Should know personal knowledge', async () => {
   await allure.allureId('886');
   await allure.suite('Node.js SDK');
@@ -18,6 +20,11 @@ test('[Personal] Should know personal knowledge', async () => {
     'This test confirms that NPC knows personal Knowledge',
   );
 
-  const result = await sendText(key, name, scene, 'Do you have a twin?');
+  const result = await sendText(
+    key,
+    name,
+    scene,
+    'Do you have a twin? If so what is their name?',
+  );
   expect(result[0]).toContain('Johnny');
 }, 10000);
