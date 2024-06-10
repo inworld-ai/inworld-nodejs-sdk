@@ -17,7 +17,7 @@ test('[Emotion] Should change emotion', async () => {
   await allure.feature('Goals');
   await allure.story('Emotion');
   await allure.description(
-    'This test confirms that emotion changes when triggering a goal with an NPC',
+    'This test confirms that emotion changes when triggering a training phrase with an NPC',
   );
 
   const emotion = await sendText(key, name, scene, 'Hi');
