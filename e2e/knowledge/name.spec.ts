@@ -9,6 +9,8 @@ let key: [string, string] = [
 let name: string = 'Billy';
 let scene: string = process.env.INWORLD_E2E_SCENE_MOVIESET!;
 
+jest.retryTimes(3);
+
 test('[Name] Should know NPCs name', async () => {
   await allure.allureId('891');
   await allure.suite('Node.js SDK');

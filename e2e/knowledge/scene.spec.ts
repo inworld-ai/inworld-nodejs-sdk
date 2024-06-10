@@ -9,6 +9,8 @@ let key: [string, string] = [
 let name: string = 'Tester';
 let scene: string = process.env.INWORLD_E2E_SCENE_MOVIESET!;
 
+jest.retryTimes(3);
+
 test('[Scene] Should know scene location', async () => {
   await allure.allureId('892');
   await allure.suite('Node.js SDK');

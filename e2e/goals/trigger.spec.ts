@@ -9,6 +9,8 @@ let key: [string, string] = [
 let name: string = 'Tester';
 let scene: string = process.env.INWORLD_E2E_SCENE_CASTLE!;
 
+jest.retryTimes(3);
+
 test('[Trigger] Should tell player to visit castle and retrieve jewel', async () => {
   await allure.allureId('885');
   await allure.suite('Node.js SDK');

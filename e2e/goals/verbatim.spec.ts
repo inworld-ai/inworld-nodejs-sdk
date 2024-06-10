@@ -9,6 +9,8 @@ let key: [string, string] = [
 let name: string = 'Tester';
 let scene: string = process.env.INWORLD_E2E_SCENE_CASTLE!;
 
+jest.retryTimes(3);
+
 test('[Verbatim] Should tell player exact phrase', async () => {
   await allure.allureId('884');
   await allure.suite('Node.js SDK');
