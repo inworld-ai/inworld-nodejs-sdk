@@ -11,7 +11,7 @@ let scene: string = process.env.INWORLD_E2E_SCENE_MOVIESET!;
 
 jest.retryTimes(3);
 
-test('[Audio] Should return a response', async () => {
+test('[Audio] NPC should return a response when sent audio', async () => {
   await allure.allureId('883');
   await allure.suite('Node.js SDK');
   await allure.feature('Connection');

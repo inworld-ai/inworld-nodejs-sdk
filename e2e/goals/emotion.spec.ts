@@ -11,7 +11,7 @@ let scene: string = process.env.INWORLD_E2E_SCENE_CASTLE!;
 
 jest.retryTimes(3);
 
-test('[Emotion] Should change emotion', async () => {
+test('[Emotion] NPC should change emotion upon triggering training phrase', async () => {
   await allure.allureId('889');
   await allure.suite('Node.js SDK');
   await allure.feature('Goals');

@@ -11,7 +11,7 @@ let scene: string = process.env.INWORLD_E2E_SCENE_MOVIESET!;
 
 jest.retryTimes(3);
 
-test('[Common] Should know common knowledge', async () => {
+test('[Common] NPC should know common knowledge', async () => {
   await allure.allureId('888');
   await allure.suite('Node.js SDK');
   await allure.feature('Knowledge');
@@ -24,7 +24,7 @@ test('[Common] Should know common knowledge', async () => {
   expect(result[0]).toContain('magic');
 }, 10000);
 
-test('[Common] Should know multiple lines of common knowledge', async () => {
+test('[Common] NPC should know multiple lines of common knowledge', async () => {
   await allure.allureId('887');
   await allure.suite('Node.js SDK');
   await allure.feature('Knowledge');

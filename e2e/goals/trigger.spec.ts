@@ -11,13 +11,13 @@ let scene: string = process.env.INWORLD_E2E_SCENE_CASTLE!;
 
 jest.retryTimes(3);
 
-test('[Trigger] Should tell player to visit castle and retrieve jewel', async () => {
+test('[Trigger] NPC should give quest when training phrase is triggered', async () => {
   await allure.allureId('885');
   await allure.suite('Node.js SDK');
   await allure.feature('Goals');
   await allure.story('Trigger');
   await allure.description(
-    'This test confirms that NPC says correct keyword when triggering goal',
+    'This test confirms that NPC says correct keyword when triggering a training phrase',
   );
 
   const result = await sendText(key, name, scene, 'Give me a quest');

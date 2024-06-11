@@ -11,7 +11,7 @@ let scene: string = process.env.INWORLD_E2E_SCENE_MOVIESET!;
 
 jest.retryTimes(3);
 
-test('[Name] Should know NPCs name', async () => {
+test('[Name] NPC should know its own name', async () => {
   await allure.allureId('891');
   await allure.suite('Node.js SDK');
   await allure.feature('Knowledge');
@@ -22,7 +22,7 @@ test('[Name] Should know NPCs name', async () => {
   expect(result[0]).toContain('Scene');
 }, 10000);
 
-test('[Name] Should know player name', async () => {
+test('[Name] NPC should know player name', async () => {
   await allure.allureId('890');
   await allure.suite('Node.js SDK');
   await allure.feature('Knowledge');

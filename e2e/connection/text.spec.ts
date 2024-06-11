@@ -11,7 +11,7 @@ let scene: string = process.env.INWORLD_E2E_SCENE_HOUSE!;
 
 jest.retryTimes(3);
 
-test('[Text] Should return a response', async () => {
+test('[Text] NPC should return a response when sent a message', async () => {
   await allure.allureId('925');
   await allure.suite('Node.js SDK');
   await allure.feature('Connection');
