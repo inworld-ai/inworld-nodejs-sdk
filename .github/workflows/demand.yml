@@ -32,12 +32,6 @@ jobs:
     env:
       INWORLD_E2E_KEY: ''
       INWORLD_E2E_SECRET: ''
-      # INWORLD_E2E_KEY_PROD: ${{ secrets.INWORLD_E2E_KEY_PROD }}
-      # INWORLD_E2E_SECRET_PROD: ${{ secrets.INWORLD_E2E_SECRET_PROD }}
-      # INWORLD_E2E_KEY_STAGING: ${{ secrets.INWORLD_E2E_KEY_STAGING}}
-      # INWORLD_E2E_SECRET_STAGING: ${{ secrets.INWORLD_E2E_SECRET_STAGING }}
-      # INWORLD_E2E_KEY_DEV: ${{ secrets.INWORLD_E2E_KEY_DEV }}
-      # INWORLD_E2E_SECRET_DEV: ${{ secrets.INWORLD_E2E_SECRET_DEV }}
       INWORLD_E2E_SCENE_HOUSE: ${{ vars.INWORLD_E2E_SCENE_HOUSE }}
       INWORLD_E2E_SCENE_MOVIESET: ${{ vars.INWORLD_E2E_SCENE_MOVIESET }}
       INWORLD_E2E_SCENE_CASTLE: ${{ vars.INWORLD_E2E_SCENE_CASTLE }}
@@ -58,8 +52,12 @@ jobs:
         run: |
           if [ "${{ github.event.inputs.environment }}" == "STAGING" ]; then
             echo "NODE_SDK_INWORLD_ENGINE_HOST=knivesout.stage.inworld.ai:443" >> $GITHUB_ENV
+            echo "INWORLD_E2E_KEY=${{ secrets.INWORLD_E2E_KEY_STAGING }}" >> $GITHUB_ENV
+            echo "INWORLD_E2E_SECRET=${{ secrets.INWORLD_E2E_SECRET_STAGING }}" >> $GITHUB_ENV
           elif [ "${{ github.event.inputs.environment }}" == "DEV" ]; then
             echo "NODE_SDK_INWORLD_ENGINE_HOST=knivesout.dev.inworld.ai:443" >> $GITHUB_ENV
+            echo "INWORLD_E2E_KEY=${{ secrets.INWORLD_E2E_KEY_DEV }}" >> $GITHUB_ENV
+            echo "INWORLD_E2E_SECRET=${{ secrets.INWORLD_E2E_SECRET_DEV }}" >> $GITHUB_ENV
           elif [ "${{ github.event.inputs.environment }}" == "PROD" ]; then
             echo "INWORLD_E2E_KEY=${{ secrets.INWORLD_E2E_KEY }}" >> $GITHUB_ENV
             echo "INWORLD_E2E_SECRET=${{ secrets.INWORLD_E2E_SECRET }}" >> $GITHUB_ENV
