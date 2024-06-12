@@ -25,7 +25,7 @@ on:
         - 'DEV'
 
 run-name: On Demand Test Run - ${{ github.event.inputs.environment }} - ${{ github.event.inputs.os }}
-  
+
 jobs:
   run-tests:
     runs-on: ${{ github.event.inputs.os }}
@@ -99,4 +99,3 @@ jobs:
           ALLURE_TOKEN: '${{ steps.secrets.outputs.ALLURE_TOKEN }}'
         if: always()
         run: allurectl upload ${{ env.ALLURE_RESULTS }}
-          

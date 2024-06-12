@@ -41,10 +41,9 @@ export interface SceneMutation {
   name?: string;
   description?: string;
   displayName?: string;
-  characterNames?: string[];
-  loadedCharacters?: Character[];
-  addedCharacters?: Character[];
+  addedCharacterNames?: string[];
   removedCharacterIds?: string[];
+  loadedCharacters?: Character[];
 }
 
 export class InworldPacket {
@@ -226,37 +225,11 @@ export class InworldPacket {
             name: proto.getMutation().getLoadScene().getName(),
           }),
           ...(proto.getMutation()?.hasLoadCharacters() && {
-            characterNames: proto
+            addedCharacterNames: proto
               .getMutation()
               .getLoadCharacters()
               .getNameList()
               .map((c: LoadCharacters.CharacterName) => c.getName()),
-          }),
-          ...(proto.getSessionControlResponse()?.hasLoadedScene() && {
-            loadedCharacters: proto
-              .getSessionControlResponse()
-              .getLoadedScene()
-              .getAgentsList()
-              .map((agent: Agent) => Character.fromProto(agent)),
-            name: proto
-              .getSessionControlResponse()
-              .getLoadedScene()
-              .getSceneName(),
-            description: proto
-              .getSessionControlResponse()
-              .getLoadedScene()
-              .getSceneDescription(),
-            displayName: proto
-              .getSessionControlResponse()
-              .getLoadedScene()
-              .getSceneDisplayName(),
-          }),
-          ...(proto.getSessionControlResponse()?.hasLoadedCharacters() && {
-            addedCharacters: proto
-              .getSessionControlResponse()
-              .getLoadedCharacters()
-              .getAgentsList()
-              .map((agent: Agent) => Character.fromProto(agent)),
           }),
           ...(proto.getMutation()?.hasUnloadCharacters() && {
             removedCharacterIds: proto
@@ -265,6 +238,22 @@ export class InworldPacket {
               .getAgentsList()
               .map((agent: Agent) => agent.getAgentId()),
           }),
+          ...(proto.getControl()?.hasCurrentSceneStatus() && {
+            name: proto.getControl().getCurrentSceneStatus().getSceneName(),
+            description: proto
+              .getControl()
+              .getCurrentSceneStatus()
+              .getSceneDescription(),
+            displayName: proto
+              .getControl()
+              .getCurrentSceneStatus()
+              .getSceneDisplayName(),
+            loadedCharacters: proto
+              .getControl()
+              .getCurrentSceneStatus()
+              .getAgentsList()
+              .map((agent: Agent) => Character.fromProto(agent)),
+          }),
         },
       }),
     });
@@ -272,6 +261,14 @@ export class InworldPacket {
 
   private static getType(packet: ProtoPacket) {
     switch (true) {
+      case !!(
+        packet.getMutation()?.getLoadScene() ||
+        packet.getMutation()?.getLoadCharacters() ||
+        packet.getMutation()?.getUnloadCharacters()
+      ):
+        return InworldPacketType.SCENE_MUTATION_REQUEST;
+      case !!packet.getControl()?.getCurrentSceneStatus():
+        return InworldPacketType.SCENE_MUTATION_RESPONSE;
       case packet.hasText():
         return InworldPacketType.TEXT;
       case packet.hasDataChunk() &&
@@ -290,13 +287,6 @@ export class InworldPacket {
         return InworldPacketType.CANCEL_RESPONSE;
       case packet.getAction()?.hasNarratedAction():
         return InworldPacketType.NARRATED_ACTION;
-      case packet.getSessionControlResponse()?.hasLoadedScene():
-      case packet.getSessionControlResponse()?.hasLoadedCharacters():
-        return InworldPacketType.SCENE_MUTATION_RESPONSE;
-      case packet.getMutation()?.hasLoadCharacters():
-      case packet.getMutation()?.hasLoadScene():
-      case packet.getMutation()?.hasUnloadCharacters():
-        return InworldPacketType.SCENE_MUTATION_REQUEST;
       default:
         return InworldPacketType.UNKNOWN;
     }
