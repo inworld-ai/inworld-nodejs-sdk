@@ -40,6 +40,12 @@ import {
   SessionContinuation,
   SessionContinuationProps,
 } from './entities/continuation/session_continuation.entity';
+import {
+  ErrorReconnectionType,
+  ErrorResourceType,
+  ErrorType,
+  InworldError,
+} from './entities/error.entity';
 import { DislikeType, Feedback } from './entities/feedback.entity';
 import { AudioEvent } from './entities/packets/audio.entity';
 import { EmotionEvent } from './entities/packets/emotion/emotion.entity';
@@ -88,6 +94,9 @@ export {
   EmotionEvent,
   EmotionStrength,
   EmotionStrengthCode,
+  ErrorReconnectionType,
+  ErrorResourceType,
+  ErrorType,
   Feedback,
   FeedbackDislikeProps,
   FeedbackLikeProps,
@@ -96,6 +105,7 @@ export {
   InworlControlAction,
   InworldClient,
   InworldConnectionService,
+  InworldError,
   InworldPacket,
   InworldPacketType,
   InworldTriggers,

@@ -181,7 +181,7 @@ class Client {
       case status.CANCELLED:
         break;
       default:
-        console.error(`Error: ${err.message}`);
+        console.error(`Error: ${JSON.stringify(err, null, 2)}`);
         break;
     }
   };

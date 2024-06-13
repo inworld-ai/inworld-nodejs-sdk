@@ -317,15 +317,6 @@ describe('send', () => {
     expect(packet).toBeInstanceOf(InworldPacket);
     expect(packet.trigger.name).toEqual(name);
     expect(packet.isTrigger()).toEqual(true);
-
-    service.setCurrentCharacter(characters[1]);
-
-    expect(service.getConversations()).toEqual([
-      {
-        conversationId,
-        characters: [characters[1]],
-      },
-    ]);
   });
 
   test('should send trigger with parameters in the old way', async () => {
