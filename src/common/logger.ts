@@ -1,10 +1,11 @@
-import { ServiceError } from '@grpc/grpc-js';
 import {
   createLogger,
   format,
   Logger as WinstonLogger,
   transports,
 } from 'winston';
+
+import { InworldError } from '../entities/error.entity';
 const { File: TransportsFile } = transports;
 
 interface LoggerMessage {
@@ -73,7 +74,7 @@ export class Logger {
     this.logger?.warn(message);
   }
 
-  error(err: ServiceError | Error) {
+  error(err: InworldError) {
     this.logger?.error(err);
   }
 

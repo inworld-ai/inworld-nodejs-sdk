@@ -1,4 +1,4 @@
-import { ClientDuplexStream, ServiceError } from '@grpc/grpc-js';
+import { ClientDuplexStream } from '@grpc/grpc-js';
 import { ClientRequest } from '@proto/ai/inworld/engine/world-engine_pb';
 import {
   ControlEvent,
@@ -25,6 +25,7 @@ import { Logger } from '../common/logger';
 import { Capability } from '../entities/capability.entity';
 import { Character } from '../entities/character.entity';
 import { SessionContinuation } from '../entities/continuation/session_continuation.entity';
+import { InworldError } from '../entities/error.entity';
 import { InworldPacket } from '../entities/packets/inworld_packet.entity';
 import { Scene } from '../entities/scene.entity';
 import { Session } from '../entities/session.entity';
@@ -44,7 +45,7 @@ interface ConnectionProps<
   sessionGetterSetter?: GetterSetter<Session>;
   sessionContinuation?: SessionContinuation;
   onDisconnect?: () => Awaitable<void>;
-  onError: (err: ServiceError) => Awaitable<void>;
+  onError: (err: InworldError) => Awaitable<void>;
   onMessage?: (message: InworldPacketT) => Awaitable<void>;
   generateSessionToken?: GenerateSessionTokenFn;
   extension?: Extension<InworldPacketT>;
@@ -80,7 +81,7 @@ export class ConnectionService<
   private extension: Extension<InworldPacketT>;
 
   onDisconnect: () => Awaitable<void>;
-  onError: (err: ServiceError) => Awaitable<void>;
+  onError: (err: InworldError) => Awaitable<void>;
   onMessage: ((message: ProtoPacket) => Awaitable<void>) | undefined;
 
   readonly conversations: Map<string, ConversationMapItem<InworldPacketT>> =

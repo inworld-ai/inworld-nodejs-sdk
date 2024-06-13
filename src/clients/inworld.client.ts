@@ -1,4 +1,3 @@
-import { ServiceError } from '@grpc/grpc-js';
 import { ClientRequest } from '@proto/ai/inworld/engine/world-engine_pb';
 
 import {
@@ -19,6 +18,7 @@ import {
   SessionContinuation,
   SessionContinuationProps,
 } from '../entities/continuation/session_continuation.entity';
+import { InworldError } from '../entities/error.entity';
 import { InworldPacket } from '../entities/packets/inworld_packet.entity';
 import { Session } from '../entities/session.entity';
 import { sceneHasValidFormat } from '../guard/scene';
@@ -39,7 +39,7 @@ export class InworldClient<
   private sessionGetterSetter: GetterSetter<Session>;
 
   private onDisconnect: (() => Awaitable<void>) | undefined;
-  private onError: ((err: ServiceError) => Awaitable<void>) | undefined;
+  private onError: ((err: InworldError) => Awaitable<void>) | undefined;
   private onMessage: ((message: InworldPacketT) => Awaitable<void>) | undefined;
 
   private extension: Extension<InworldPacketT>;
@@ -47,7 +47,7 @@ export class InworldClient<
   private logger = Logger.getInstance();
 
   constructor() {
-    this.onError = (err: ServiceError) => {
+    this.onError = (err: InworldError) => {
       this.logError(err);
       console.error(err);
     };
@@ -89,8 +89,8 @@ export class InworldClient<
     return this;
   }
 
-  setOnError(fn: (err: ServiceError) => Awaitable<void>) {
-    this.onError = async (err: ServiceError) => {
+  setOnError(fn: (err: InworldError) => Awaitable<void>) {
+    this.onError = async (err: InworldError) => {
       this.logError(err);
       await fn(err);
     };
@@ -193,7 +193,7 @@ export class InworldClient<
     this.validateScene();
   }
 
-  private logError = (err: ServiceError) => {
+  private logError = (err: InworldError) => {
     this.logger.error(err);
   };
 }
