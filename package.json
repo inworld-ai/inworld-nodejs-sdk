@@ -64,7 +64,7 @@
     "typescript": "^5.4.2"
   },
   "dependencies": {
-    "@grpc/grpc-js": "^1.10.3",
+    "@grpc/grpc-js": "^1.10.9",
     "crypto-js": "^4.2.0",
     "google-protobuf": "^3.21.2",
     "module-alias": "^2.2.3",
