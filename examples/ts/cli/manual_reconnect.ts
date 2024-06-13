@@ -1,5 +1,7 @@
 import 'dotenv/config';
 
+import { MicrophoneMode } from '@inworld/nodejs-sdk';
+
 import { Client, ClientProps } from './components/client';
 import { Recorder } from './components/recorder';
 import { changeCharacter, characterInfo, listCharacters } from './helpers';
@@ -65,6 +67,7 @@ const run = async function () {
     |- /save-session-state - save session state in app memory.
     |- /restore-session-state - restore session state from app memory.
     |- /start - starts audio capturing.
+    |- /start-push-to-talk - starts audio capturing in push-to-talk mode. Send /end to stop.
     |- /end - ends audio capturing.
     |- /trigger - send trigger.
     |- /narration - send narrated action.
@@ -80,9 +83,14 @@ const run = async function () {
 
     switch (command) {
       case '/start':
+      case '/start-push-to-talk':
         if (connection.isActive()) {
           console.log('Starting. Wait...');
-          await connection.sendAudioSessionStart();
+          const mode =
+            command === '/start-push-to-talk'
+              ? MicrophoneMode.EXPECT_AUDIO_END
+              : undefined;
+          await connection.sendAudioSessionStart({ mode });
           console.log('Ready to listening...');
           recorder.capture();
         } else {

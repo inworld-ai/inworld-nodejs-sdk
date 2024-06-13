@@ -7,6 +7,7 @@
 ### Added
 
 - Expose Inworld error codes
+- Support Push-to-talk feature
 
 ## [1.13.1] - 2024-06-05
 
@@ -96,6 +97,7 @@
 - Allow to propagate user profile fields
 
 ## [1.5.1] - 2023-07-06
+
 - Added JS examples
 - Added Say hello example
 - Add recognized text to upload audio file example
@@ -105,17 +107,20 @@
 - Remove deprecated method support for token, emotions, character and client
 
 ## [1.5.0] - 2023-06-30
+
 - Switch generate token API calls from studio API to world-engine one
 - Add scene name pattern validation
 - Fix connection configuration propagation
 - Support debug and error logs
 
 ## [1.4.0] - 2023-05-17
+
 - Replace CancelResponses by Mutation.CancelResponses on the protocol level
 - Allow to use extended capabilities and scene props
 - Allow to send and receive custom proto packet
 
 ## [1.3.1] - 2023-04-26
+
 - Fix type definition for `onSession` method
 
 ## [1.3.0] - 2023-04-26
