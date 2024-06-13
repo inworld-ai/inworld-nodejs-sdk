@@ -41,8 +41,8 @@ jobs:
       ALLURE_PROJECT_ID: '35'
       ALLURE_JOB_RUN_ID: ''
       ALLURE_RESULTS: 'build/allure-results'
-      PROD_AUTH_IDENTITY_PROVIDER: ${{ vars.AUTH_IDENTITY_PROVIDER }}
-      PROD_AUTH_SERVICE_ACCOUNT: ${{ vars.AUTH_SERVICE_ACCOUNT }}
+      AUTH_IDENTITY_PROVIDER: ${{ vars.AUTH_IDENTITY_PROVIDER }}
+      AUTH_SERVICE_ACCOUNT: ${{ vars.AUTH_SERVICE_ACCOUNT }}
       ENV: ${{ github.event.inputs.environment }}
       NODE_SDK_INWORLD_ENGINE_HOST:  ${{ secrets.NODE_SDK_INWORLD_ENGINE_HOST }}
     permissions:
@@ -60,8 +60,8 @@ jobs:
         uses: "google-github-actions/auth@v2"
         with:
           token_format: "access_token"
-          workload_identity_provider: "${{ env.PROD_AUTH_IDENTITY_PROVIDER }}"
-          service_account: "${{ env.PROD_AUTH_SERVICE_ACCOUNT }}"
+          workload_identity_provider: "${{ env.AUTH_IDENTITY_PROVIDER }}"
+          service_account: "${{ env.AUTH_SERVICE_ACCOUNT }}"
       - id: "secrets"
         uses: 'google-github-actions/get-secretmanager-secrets@v2'
         with:
