@@ -6,8 +6,8 @@ import {
 } from '@proto/ai/inworld/engine/configuration/configuration_pb';
 import {
   Continuation,
+  CurrentSceneStatus,
   InworldPacket as ProtoPacket,
-  LoadedScene,
 } from '@proto/ai/inworld/packets/packets_pb';
 import { Character } from 'entities/character.entity';
 
@@ -105,7 +105,7 @@ export interface Extension<
 > {
   convertPacketFromProto?: (proto: ProtoPacket) => InworldPacketT;
   beforeLoadScene?: (packets: ProtoPacket[]) => ProtoPacket[];
-  afterLoadScene?: (res: LoadedScene) => void;
+  afterLoadScene?: (res: CurrentSceneStatus) => void;
 }
 
 export interface TriggerParameter {

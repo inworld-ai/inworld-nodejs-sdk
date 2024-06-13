@@ -167,20 +167,22 @@ describe('scene mutation', () => {
   });
 
   test('should get character add event request', () => {
-    const characterNames = [v4(), v4()];
+    const addedCharacterNames = [v4(), v4()];
     const packet = new InworldPacket({
       packetId,
       routing,
       date,
       type: InworldPacketType.SCENE_MUTATION_REQUEST,
-      sceneMutation: { characterNames },
+      sceneMutation: { addedCharacterNames },
     });
 
     expect(packet.isSceneMutationRequest()).toEqual(true);
     expect(packet.routing).toEqual(routing);
     expect(packet.date).toEqual(date);
     expect(packet.packetId).toEqual(packetId);
-    expect(packet.sceneMutation.characterNames).toEqual(characterNames);
+    expect(packet.sceneMutation.addedCharacterNames).toEqual(
+      addedCharacterNames,
+    );
   });
 
   test('should get scene change event response', () => {
@@ -200,19 +202,22 @@ describe('scene mutation', () => {
   });
 
   test('should get character add event response', () => {
+    const addedCharacterNames = characters.map((c) => c.displayName);
     const packet = new InworldPacket({
       packetId,
       routing,
       date,
       type: InworldPacketType.SCENE_MUTATION_RESPONSE,
-      sceneMutation: { addedCharacters: characters },
+      sceneMutation: { addedCharacterNames },
     });
 
     expect(packet.isSceneMutationResponse()).toEqual(true);
     expect(packet.routing).toEqual(routing);
     expect(packet.date).toEqual(date);
     expect(packet.packetId).toEqual(packetId);
-    expect(packet.sceneMutation.addedCharacters).toEqual(characters);
+    expect(packet.sceneMutation.addedCharacterNames).toEqual(
+      addedCharacterNames,
+    );
   });
 });
 

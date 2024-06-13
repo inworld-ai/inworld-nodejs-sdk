@@ -157,18 +157,11 @@ export class Client {
 
     // CHANGES IN SCENE
     if (packet.isSceneMutationResponse()) {
-      const { loadedCharacters, addedCharacters } = packet.sceneMutation;
+      const { loadedCharacters } = packet.sceneMutation;
 
       if (loadedCharacters?.length) {
-        console.log('Character loaded in scene:');
+        console.log('List of current scene characters:');
         for (const character of loadedCharacters) {
-          console.log(characterInfo(character));
-        }
-      }
-
-      if (addedCharacters?.length) {
-        console.log('Characters added to scene:');
-        for (const character of addedCharacters) {
           console.log(characterInfo(character));
         }
       }

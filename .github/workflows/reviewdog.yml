@@ -31,3 +31,13 @@ jobs:
           reporter: github-pr-review
           workdir: ./
           eslint_flags: "--cache ./**/*.{js,jsx,ts,tsx}"
+
+  linelint:
+    runs-on: ubuntu-latest
+    name: Check if all files end in newline
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Linelint
+        uses: fernandrone/linelint@master
+        id: linelint
