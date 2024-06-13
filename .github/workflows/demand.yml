@@ -21,7 +21,7 @@ on:
         default: 'PROD'
         options:
         - 'PROD'
-        - 'STAGING'
+        - 'STAGE'
         - 'DEV'
 
 run-name: On Demand Test Run - ${{ github.event.inputs.environment }} - ${{ github.event.inputs.os }}
@@ -29,9 +29,10 @@ run-name: On Demand Test Run - ${{ github.event.inputs.environment }} - ${{ gith
 jobs:
   run-tests:
     runs-on: ${{ github.event.inputs.os }}
+    environment: ${{ github.event.inputs.environment }}
     env:
-      INWORLD_E2E_KEY: ''
-      INWORLD_E2E_SECRET: ''
+      INWORLD_E2E_KEY: ${{ secrets.INWORLD_E2E_KEY }}
+      INWORLD_E2E_SECRET: ${{ secrets.INWORLD_E2E_SECRET }}
       INWORLD_E2E_SCENE_HOUSE: ${{ vars.INWORLD_E2E_SCENE_HOUSE }}
       INWORLD_E2E_SCENE_MOVIESET: ${{ vars.INWORLD_E2E_SCENE_MOVIESET }}
       INWORLD_E2E_SCENE_CASTLE: ${{ vars.INWORLD_E2E_SCENE_CASTLE }}
@@ -40,28 +41,14 @@ jobs:
       ALLURE_PROJECT_ID: '35'
       ALLURE_JOB_RUN_ID: ''
       ALLURE_RESULTS: 'build/allure-results'
-      PROD_AUTH_IDENTITY_PROVIDER: projects/760085515784/locations/global/workloadIdentityPools/github-prod-pool/providers/github-prvdr
-      PROD_AUTH_SERVICE_ACCOUNT: inworld-nodejs-sdk@inworld-ai-prod.iam.gserviceaccount.com
+      PROD_AUTH_IDENTITY_PROVIDER: ${{ vars.AUTH_IDENTITY_PROVIDER }}
+      PROD_AUTH_SERVICE_ACCOUNT: ${{ vars.AUTH_SERVICE_ACCOUNT }}
       ENV: ${{ github.event.inputs.environment }}
-      NODE_SDK_INWORLD_ENGINE_HOST: ''
+      NODE_SDK_INWORLD_ENGINE_HOST:  ${{ secrets.NODE_SDK_INWORLD_ENGINE_HOST }}
     permissions:
         contents: 'read'
         id-token: 'write'
     steps:
-      - name: Set Environment
-        run: |
-          if [ "${{ github.event.inputs.environment }}" == "STAGING" ]; then
-            echo "NODE_SDK_INWORLD_ENGINE_HOST=knivesout.stage.inworld.ai:443" >> $GITHUB_ENV
-            echo "INWORLD_E2E_KEY=${{ secrets.INWORLD_E2E_KEY_STAGING }}" >> $GITHUB_ENV
-            echo "INWORLD_E2E_SECRET=${{ secrets.INWORLD_E2E_SECRET_STAGING }}" >> $GITHUB_ENV
-          elif [ "${{ github.event.inputs.environment }}" == "DEV" ]; then
-            echo "NODE_SDK_INWORLD_ENGINE_HOST=knivesout.dev.inworld.ai:443" >> $GITHUB_ENV
-            echo "INWORLD_E2E_KEY=${{ secrets.INWORLD_E2E_KEY_DEV }}" >> $GITHUB_ENV
-            echo "INWORLD_E2E_SECRET=${{ secrets.INWORLD_E2E_SECRET_DEV }}" >> $GITHUB_ENV
-          elif [ "${{ github.event.inputs.environment }}" == "PROD" ]; then
-            echo "INWORLD_E2E_KEY=${{ secrets.INWORLD_E2E_KEY }}" >> $GITHUB_ENV
-            echo "INWORLD_E2E_SECRET=${{ secrets.INWORLD_E2E_SECRET }}" >> $GITHUB_ENV
-          fi
       - name: Setup node
         uses: actions/setup-node@v3
         with:
