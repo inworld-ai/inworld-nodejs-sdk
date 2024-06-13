@@ -1,6 +1,5 @@
 import * as _path from 'path';
 import { v4 } from 'uuid';
-import * as _winston from 'winston';
 
 import {
   consoleTransport,

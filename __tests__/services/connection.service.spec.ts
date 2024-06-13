@@ -15,6 +15,7 @@ import { ConversationState } from '../../src/common/data_structures';
 import { protoTimestamp } from '../../src/common/helpers';
 import { Logger } from '../../src/common/logger';
 import { Character } from '../../src/entities/character.entity';
+import { InworldError } from '../../src/entities/error.entity';
 import { InworldPacket } from '../../src/entities/packets/inworld_packet.entity';
 import { Scene } from '../../src/entities/scene.entity';
 import { Session } from '../../src/entities/session.entity';
@@ -42,6 +43,8 @@ import {
   user,
 } from '../helpers';
 
+// eslint-disable-next-line no-console
+const onErrorLog = (err: InworldError) => console.log(err.message);
 const onError = jest.fn();
 const onMessage = jest.fn();
 const onDisconnect = jest.fn();
@@ -61,7 +64,7 @@ test('should return event factory', () => {
       key: KEY,
       secret: SECRET,
     },
-    onError,
+    onError: onErrorLog,
   });
 
   expect(connection.getEventFactory()).toBeInstanceOf(EventFactory);
@@ -73,7 +76,7 @@ test('should generate session token', async () => {
       key: KEY,
       secret: SECRET,
     },
-    onError,
+    onError: onErrorLog,
   });
   const generateSessionToken = jest
     .spyOn(connection, 'generateSessionToken')
@@ -98,7 +101,7 @@ describe('message', () => {
       config: { capabilities },
       name: SCENE,
       user,
-      onError,
+      onError: onErrorLog,
       onMessage,
       onDisconnect,
     });
@@ -141,7 +144,7 @@ describe('message', () => {
       config: { capabilities },
       name: SCENE,
       user,
-      onError,
+      onError: onErrorLog,
       onMessage,
       onDisconnect,
     });
@@ -193,7 +196,7 @@ describe('message', () => {
       },
       name: SCENE,
       user,
-      onError,
+      onError: onErrorLog,
       onMessage: async (packet) => {
         count++;
 
@@ -248,7 +251,7 @@ describe('message', () => {
       },
       name: SCENE,
       user,
-      onError,
+      onError: onErrorLog,
       onMessage: async (packet) => {
         count++;
 
@@ -309,7 +312,7 @@ describe('getSessionState', () => {
         secret: SECRET,
       },
       name: SCENE,
-      onError,
+      onError: onErrorLog,
     });
   });
 
@@ -333,6 +336,15 @@ describe('getSessionState', () => {
   });
 
   test('should catch error and pass it to handler', async () => {
+    connection = new ConnectionService({
+      apiKey: {
+        key: KEY,
+        secret: SECRET,
+      },
+      name: SCENE,
+      onError,
+    });
+
     const err = new Error();
     const generateSessionToken = jest
       .spyOn(WorldEngineClientGrpcService.prototype, 'generateSessionToken')
@@ -363,7 +375,7 @@ describe('open', () => {
       name: SCENE,
       config: { capabilities },
       user,
-      onError,
+      onError: onErrorLog,
       onMessage,
       onDisconnect,
     });
@@ -399,7 +411,7 @@ describe('open', () => {
       name: SCENE,
       config: { capabilities },
       user,
-      onError,
+      onError: onErrorLog,
       onMessage,
       onDisconnect,
       generateSessionToken: generateSessionTokenFn,
@@ -437,7 +449,7 @@ describe('open', () => {
       name: SCENE,
       config: { capabilities },
       user,
-      onError,
+      onError: onErrorLog,
       onMessage,
       onDisconnect,
       sessionGetterSetter,
@@ -458,6 +470,16 @@ describe('open', () => {
   });
 
   test('should catch error on load scene and pass it to handler', async () => {
+    connection = new ConnectionService({
+      apiKey: { key: KEY, secret: SECRET },
+      name: SCENE,
+      config: { capabilities },
+      user,
+      onError,
+      onMessage,
+      onDisconnect,
+    });
+
     const err = new Error();
     const generateSessionToken = jest
       .spyOn(connection, 'generateSessionToken')
@@ -471,6 +493,16 @@ describe('open', () => {
   });
 
   test('should catch error on connection establishing and pass it to handler', async () => {
+    connection = new ConnectionService({
+      apiKey: { key: KEY, secret: SECRET },
+      name: SCENE,
+      config: { capabilities },
+      user,
+      onError,
+      onMessage,
+      onDisconnect,
+    });
+
     jest
       .spyOn(connection, 'generateSessionToken')
       .mockImplementationOnce(() => Promise.resolve(sessionToken));
@@ -584,10 +616,9 @@ describe('open', () => {
     const openSession = jest
       .spyOn(WorldEngineClientGrpcService.prototype, 'openSession')
       .mockImplementation(() => Promise.resolve([stream, sceneProto]));
-    const reopenSession = jest.spyOn(
-      WorldEngineClientGrpcService.prototype,
-      'reopenSession',
-    );
+    const reopenSession = jest
+      .spyOn(WorldEngineClientGrpcService.prototype, 'reopenSession')
+      .mockImplementation(() => stream);
 
     await connection.open();
 
@@ -610,7 +641,7 @@ describe('open', () => {
       },
       name: SCENE,
       user,
-      onError,
+      onError: onErrorLog,
       onMessage,
       onDisconnect,
     });
@@ -645,16 +676,6 @@ describe('open manually', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-
-    connection = new ConnectionService({
-      apiKey: { key: KEY, secret: SECRET },
-      name: SCENE,
-      config: { connection: { autoReconnect: false }, capabilities },
-      user,
-      onError,
-      onMessage,
-      onDisconnect,
-    });
   });
 
   test('should throw error in case of openManually call without autoreconnect', async () => {
@@ -676,6 +697,16 @@ describe('open manually', () => {
   });
 
   test('should throw error in case openManually call with active connection', async () => {
+    connection = new ConnectionService({
+      apiKey: { key: KEY, secret: SECRET },
+      name: SCENE,
+      config: { connection: { autoReconnect: false }, capabilities },
+      user,
+      onError,
+      onMessage,
+      onDisconnect,
+    });
+
     const isActive = jest
       .spyOn(connection, 'isActive')
       .mockImplementationOnce(() => true);
@@ -690,6 +721,16 @@ describe('open manually', () => {
   });
 
   test('should open connection', async () => {
+    connection = new ConnectionService({
+      apiKey: { key: KEY, secret: SECRET },
+      name: SCENE,
+      config: { connection: { autoReconnect: false }, capabilities },
+      user,
+      onError: onErrorLog,
+      onMessage,
+      onDisconnect,
+    });
+
     const isActive = jest
       .spyOn(connection, 'isActive')
       .mockImplementationOnce(() => false);
@@ -718,7 +759,7 @@ describe('change scene', () => {
       name: SCENE,
       config: { capabilities },
       user,
-      onError,
+      onError: onErrorLog,
       onMessage,
       onDisconnect,
     });
@@ -788,7 +829,7 @@ describe('close', () => {
   test('should skip for empty stream', () => {
     const connection = new ConnectionService({
       apiKey: { key: KEY, secret: SECRET },
-      onError,
+      onError: onErrorLog,
     });
     const end = jest
       .spyOn(ClientDuplexStreamImpl.prototype, 'end')
@@ -807,7 +848,7 @@ describe('close', () => {
       name: SCENE,
       config: { capabilities },
       user,
-      onError,
+      onError: onErrorLog,
       onMessage,
       onDisconnect,
     });
@@ -840,7 +881,7 @@ describe('send', () => {
   test('should skip for empty stream', async () => {
     const connection = new ConnectionService({
       apiKey: { key: KEY, secret: SECRET },
-      onError,
+      onError: onErrorLog,
     });
     const write = jest
       .spyOn(ClientDuplexStreamImpl.prototype, 'write')
@@ -860,7 +901,7 @@ describe('send', () => {
       name: SCENE,
       config: { capabilities },
       user,
-      onError,
+      onError: onErrorLog,
       onMessage,
       onDisconnect,
     });
@@ -912,7 +953,7 @@ describe('send', () => {
       },
       name: SCENE,
       user,
-      onError,
+      onError: onErrorLog,
       onMessage,
       onDisconnect,
     });
@@ -946,7 +987,7 @@ describe('send', () => {
       },
       name: SCENE,
       user,
-      onError,
+      onError: onErrorLog,
       onMessage,
       onDisconnect,
     });
@@ -988,7 +1029,7 @@ describe('getCharactersList', () => {
       name: SCENE,
       config: { capabilities },
       user,
-      onError,
+      onError: onErrorLog,
       onMessage,
       onDisconnect,
     });
@@ -1035,7 +1076,7 @@ describe('character', () => {
       name: SCENE,
       config: { capabilities },
       user,
-      onError,
+      onError: onErrorLog,
       onMessage,
       onDisconnect,
     });

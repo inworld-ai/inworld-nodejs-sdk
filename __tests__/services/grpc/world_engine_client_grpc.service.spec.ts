@@ -503,7 +503,7 @@ describe('openSession', () => {
       }),
       new Promise(emitSceneStatusEvent(stream)),
     ]);
-    stream.emit('error');
+    stream.emit('error', new Error('error'));
 
     expect(onError).toHaveBeenCalledTimes(1);
     expect(end).toHaveBeenCalledTimes(1);
@@ -633,7 +633,7 @@ describe('reopenSession', () => {
       onError,
       onMessage: jest.fn(),
     });
-    stream.emit('error');
+    stream.emit('error', new Error('error'));
 
     expect(onError).toHaveBeenCalledTimes(1);
     expect(end).toHaveBeenCalledTimes(1);

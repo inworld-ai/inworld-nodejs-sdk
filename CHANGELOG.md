@@ -4,6 +4,10 @@
 
 - Support new runtime protocol session configuration
 
+### Added
+
+- Expose Inworld error codes
+
 ## [1.13.1] - 2024-06-05
 
 ### Fixed

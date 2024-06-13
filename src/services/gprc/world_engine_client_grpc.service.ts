@@ -37,6 +37,7 @@ import {
 import { grpcOptions } from '../../common/helpers';
 import { Logger } from '../../common/logger';
 import { SessionContinuation } from '../../entities/continuation/session_continuation.entity';
+import { InworldError } from '../../entities/error.entity';
 import { InworldPacket } from '../../entities/packets/inworld_packet.entity';
 import { SessionToken } from '../../entities/session_token.entity';
 import { EventFactory } from '../../factories/event';
@@ -54,14 +55,14 @@ export interface OpenSessionProps<
   config: InternalClientConfiguration;
   extension: Extension<InworldPacketT>;
   onDisconnect?: () => Awaitable<void>;
-  onError?: (err: ServiceError) => Awaitable<void>;
+  onError?: (err: InworldError) => Awaitable<void>;
   onMessage: (message: ProtoPacket) => Awaitable<void>;
 }
 
 export interface ReopenSessionProps {
   sessionToken: SessionToken;
   onDisconnect?: () => Awaitable<void>;
-  onError?: (err: ServiceError) => Awaitable<void>;
+  onError?: (err: InworldError) => Awaitable<void>;
   onMessage: (message: ProtoPacket) => Awaitable<void>;
 }
 
@@ -154,7 +155,7 @@ export class WorldEngineClientGrpcService<
 
     if (onError) {
       connection.on('error', (err: ServiceError) => {
-        onError(err);
+        onError(InworldError.fromProto(err));
         connection.end();
       });
     }
@@ -208,7 +209,7 @@ export class WorldEngineClientGrpcService<
 
     if (onError) {
       connection.on('error', (err: ServiceError) => {
-        onError(err);
+        onError(InworldError.fromProto(err));
         connection.end();
       });
     }
