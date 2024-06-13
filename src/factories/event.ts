@@ -2,6 +2,7 @@ import {
   ActionEvent,
   Actor,
   Agent,
+  AudioSessionStartPayload,
   CancelResponsesEvent,
   ControlEvent,
   ConversationUpdatePayload,
@@ -21,6 +22,8 @@ import {
 import { v4 } from 'uuid';
 
 import {
+  MicrophoneMode,
+  SendAudioSessionStartPacketParams,
   SendPacketParams,
   SendTriggerPacketParams,
   SessionControlProps,
@@ -68,28 +71,12 @@ export class EventFactory {
     }).setDataChunk(event);
   }
 
-  audioSessionStart(params: SendPacketParams): ProtoPacket {
-    const event = new ControlEvent().setAction(
-      ControlEvent.Action.AUDIO_SESSION_START,
-    );
-
-    return this.baseProtoPacket({
-      utteranceId: false,
-      interactionId: false,
-      conversationId: params.conversationId,
-    }).setControl(event);
+  audioSessionStart(params: SendAudioSessionStartPacketParams): ProtoPacket {
+    return this.audioSession(ControlEvent.Action.AUDIO_SESSION_START, params);
   }
 
   audioSessionEnd(params: SendPacketParams): ProtoPacket {
-    const event = new ControlEvent().setAction(
-      ControlEvent.Action.AUDIO_SESSION_END,
-    );
-
-    return this.baseProtoPacket({
-      utteranceId: false,
-      interactionId: false,
-      conversationId: params.conversationId,
-    }).setControl(event);
+    return this.audioSession(ControlEvent.Action.AUDIO_SESSION_END, params);
   }
 
   mutePlayback(isMuted: boolean, params: SendPacketParams): ProtoPacket {
@@ -302,6 +289,37 @@ export class EventFactory {
       .setPacketId(packetId)
       .setRouting(this.routing())
       .setTimestamp(protoTimestamp());
+  }
+
+  private audioSession(
+    action:
+      | ControlEvent.Action.AUDIO_SESSION_START
+      | ControlEvent.Action.AUDIO_SESSION_END,
+    params: SendAudioSessionStartPacketParams,
+  ): ProtoPacket {
+    const event = new ControlEvent().setAction(action);
+
+    if (action === ControlEvent.Action.AUDIO_SESSION_START) {
+      let protoMode;
+      switch (params.mode) {
+        case MicrophoneMode.EXPECT_AUDIO_END:
+          protoMode = AudioSessionStartPayload.MicrophoneMode.EXPECT_AUDIO_END;
+          break;
+        default:
+          protoMode = AudioSessionStartPayload.MicrophoneMode.OPEN_MIC;
+          break;
+      }
+
+      event.setAudioSessionStart(
+        new AudioSessionStartPayload().setMode(protoMode),
+      );
+    }
+
+    return this.baseProtoPacket({
+      utteranceId: false,
+      interactionId: false,
+      conversationId: params.conversationId,
+    }).setControl(event);
   }
 
   private routing(props?: { character: Character }): Routing {

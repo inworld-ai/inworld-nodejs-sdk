@@ -3,6 +3,7 @@ import {
   Actor,
   AdditionalPhonemeInfo,
   Agent,
+  AudioSessionStartPayload,
   ControlEvent,
   ConversationEventPayload,
   ConversationUpdatePayload,
@@ -20,7 +21,10 @@ import {
 import { Duration } from 'google-protobuf/google/protobuf/duration_pb';
 import { v4 } from 'uuid';
 
-import { InworldConversationEventType } from '../../src/common/data_structures';
+import {
+  InworldConversationEventType,
+  MicrophoneMode,
+} from '../../src/common/data_structures';
 import { protoTimestamp } from '../../src/common/helpers';
 import { InworldPacket } from '../../src/entities/packets/inworld_packet.entity';
 import { EventFactory } from '../../src/factories/event';
@@ -90,7 +94,7 @@ describe('event types', () => {
     expect(event.hasTimestamp()).toEqual(true);
   });
 
-  test('should generate audio session start', () => {
+  test('should generate audio session start without microphone', () => {
     const event = factory.audioSessionStart({
       conversationId,
     });
@@ -99,6 +103,9 @@ describe('event types', () => {
     expect(event.hasControl()).toEqual(true);
     expect(event.getControl().getAction()).toEqual(
       ControlEvent.Action.AUDIO_SESSION_START,
+    );
+    expect(event.getControl().getAudioSessionStart().getMode()).toEqual(
+      AudioSessionStartPayload.MicrophoneMode.OPEN_MIC,
     );
     expect(packetId.getPacketId()).toBeDefined();
     expect(packetId.getInteractionId()).toBeFalsy();
@@ -110,6 +117,43 @@ describe('event types', () => {
     expect(event.getRouting().getTargetsList()).toEqual([]);
     expect(event.hasTimestamp()).toEqual(true);
   });
+
+  test.each([
+    {
+      input: MicrophoneMode.EXPECT_AUDIO_END,
+      expected: AudioSessionStartPayload.MicrophoneMode.EXPECT_AUDIO_END,
+    },
+    {
+      input: MicrophoneMode.OPEN_MIC,
+      expected: AudioSessionStartPayload.MicrophoneMode.OPEN_MIC,
+    },
+  ])(
+    'should generate audio session start with microphone $input',
+    ({ input, expected }) => {
+      const event = factory.audioSessionStart({
+        conversationId,
+        mode: input,
+      });
+      const packetId = event.getPacketId();
+
+      expect(event.hasControl()).toEqual(true);
+      expect(event.getControl().getAction()).toEqual(
+        ControlEvent.Action.AUDIO_SESSION_START,
+      );
+      expect(event.getControl().getAudioSessionStart().getMode()).toEqual(
+        expected,
+      );
+      expect(packetId.getPacketId()).toBeDefined();
+      expect(packetId.getInteractionId()).toBeFalsy();
+      expect(packetId.getUtteranceId()).toBeFalsy();
+      expect(packetId.getCorrelationId()).toBeFalsy();
+      expect(packetId.getConversationId()).toEqual(conversationId);
+      expect(event.hasRouting()).toEqual(true);
+      expect(event.getRouting().getTarget()).toBeFalsy();
+      expect(event.getRouting().getTargetsList()).toEqual([]);
+      expect(event.hasTimestamp()).toEqual(true);
+    },
+  );
 
   test('should generate audio session end', () => {
     const event = factory.audioSessionEnd({
