@@ -1,7 +1,7 @@
 import {
   InworldClient,
+  InworldError,
   InworldPacket,
-  ServiceError,
   status,
 } from '@inworld/nodejs-sdk';
 
@@ -16,7 +16,7 @@ async function sayHello() {
       capabilities: { emotions: true },
     })
     .setScene(process.env.INWORLD_SCENE!)
-    .setOnError((err: ServiceError) => {
+    .setOnError((err: InworldError) => {
       switch (err.code) {
         case status.ABORTED:
         case status.CANCELLED:
