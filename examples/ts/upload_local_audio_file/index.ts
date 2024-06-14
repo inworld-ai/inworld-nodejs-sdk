@@ -2,8 +2,8 @@ import 'dotenv/config';
 
 import {
   InworldClient,
+  InworldError,
   InworldPacket,
-  ServiceError,
 } from '@inworld/nodejs-sdk';
 import * as fs from 'fs';
 import { exit } from 'process';
@@ -28,7 +28,7 @@ const run = async function () {
       secret: process.env.INWORLD_SECRET!,
     })
     .setScene(process.env.INWORLD_SCENE!)
-    .setOnError((err: ServiceError) => {
+    .setOnError((err: InworldError) => {
       console.error(`Error: ${err.message}`);
       exit(1);
     })
