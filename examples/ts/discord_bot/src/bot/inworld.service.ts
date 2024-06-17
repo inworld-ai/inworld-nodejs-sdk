@@ -1,6 +1,7 @@
 import {
+  ErrorType,
   InworldConnectionService,
-  ServiceError,
+  InworldError,
   status,
 } from '@inworld/nodejs-sdk';
 import { Injectable, Logger } from '@nestjs/common';
@@ -103,7 +104,7 @@ export class InworldService {
   }
 
   private handleError(id: string, message: Message) {
-    return (err: ServiceError) => {
+    return (err: InworldError) => {
       // Skip server and client side close connection events
       if ([status.ABORTED, status.CANCELLED].includes(err.code)) {
         return;
@@ -112,7 +113,7 @@ export class InworldService {
       this.destroyConnection(id);
       this.retrySend(id, message);
 
-      if (!this.sessionExpiredRegExp.test(err.details)) {
+      if (err.details?.[0]?.errorType === ErrorType.SESSION_INVALID) {
         this.logger.error(err);
       }
     };

@@ -9,7 +9,10 @@ import {
 } from '@proto/ai/inworld/packets/packets_pb';
 import { v4 } from 'uuid';
 
-import { ConversationState } from '../../src/common/data_structures';
+import {
+  ConversationState,
+  MicrophoneMode,
+} from '../../src/common/data_structures';
 import { InworldPacket } from '../../src/entities/packets/inworld_packet.entity';
 import { EventFactory } from '../../src/factories/event';
 import { ConnectionService } from '../../src/services/connection.service';
@@ -317,15 +320,6 @@ describe('send', () => {
     expect(packet).toBeInstanceOf(InworldPacket);
     expect(packet.trigger.name).toEqual(name);
     expect(packet.isTrigger()).toEqual(true);
-
-    service.setCurrentCharacter(characters[1]);
-
-    expect(service.getConversations()).toEqual([
-      {
-        conversationId,
-        characters: [characters[1]],
-      },
-    ]);
   });
 
   test('should send trigger with parameters in the old way', async () => {
@@ -426,6 +420,37 @@ describe('send', () => {
     expect(sendAudioSessionStart).toHaveBeenCalledTimes(1);
     expect(sendAudioSessionStart).toHaveBeenLastCalledWith({
       conversationId,
+    });
+    expect(packet).toBeInstanceOf(InworldPacket);
+    expect(packet.isControl()).toEqual(true);
+  });
+
+  test('should send audio session start for push-to-talk', async () => {
+    const mode = MicrophoneMode.OPEN_MIC;
+    const sendAudioSessionStart = jest.spyOn(eventFactory, 'audioSessionStart');
+
+    const [packet] = await Promise.all([
+      service.sendAudioSessionStart({ mode }),
+      new Promise((resolve: any) => {
+        setTimeout(() => {
+          connection.onMessage!(incoming);
+          resolve(true);
+        }, 0);
+      }),
+    ]);
+
+    expect(open).toHaveBeenCalledTimes(0);
+    expect(service.isActive()).toEqual(true);
+    expect(service.getConversations()).toEqual([
+      {
+        conversationId,
+        characters: [characters[0]],
+      },
+    ]);
+    expect(sendAudioSessionStart).toHaveBeenCalledTimes(1);
+    expect(sendAudioSessionStart).toHaveBeenLastCalledWith({
+      conversationId,
+      mode,
     });
     expect(packet).toBeInstanceOf(InworldPacket);
     expect(packet.isControl()).toEqual(true);

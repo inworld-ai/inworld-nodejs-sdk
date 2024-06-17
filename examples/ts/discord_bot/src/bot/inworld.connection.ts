@@ -3,8 +3,8 @@ import {
   DialogPhrase,
   InworldClient,
   InworldConnectionService,
+  InworldError,
   InworldPacket,
-  ServiceError,
 } from '@inworld/nodejs-sdk';
 import { DMChannel, Message, TextChannel, ThreadChannel } from 'discord.js';
 
@@ -27,7 +27,7 @@ interface InworlConnectionProps {
   previousDialog?: DialogPhrase[];
   message: Message;
   onMessage?: (packet: InworldPacket) => void;
-  onError?: (err: ServiceError) => void;
+  onError?: (err: InworldError) => void;
   onDisconnect?: () => void;
   scene: string;
 }

@@ -23,10 +23,10 @@
     enabled "2.0.x"
     kuler "^2.0.0"
 
-"@grpc/grpc-js@^1.10.3":
-  version "1.10.8"
-  resolved "https://registry.yarnpkg.com/@grpc/grpc-js/-/grpc-js-1.10.8.tgz#99787785cd8335be861afd1cd485ae9f058e4484"
-  integrity sha512-vYVqYzHicDqyKB+NQhAc54I1QWCBLCrYG6unqOIcBTHx+7x8C9lcoLj3KVJXs2VB4lUbpWY+Kk9NipcbXYWmvg==
+"@grpc/grpc-js@^1.10.9":
+  version "1.10.9"
+  resolved "https://registry.yarnpkg.com/@grpc/grpc-js/-/grpc-js-1.10.9.tgz#468cc1549a3fe37b760a16745fb7685d91f4f10c"
+  integrity sha512-5tcgUctCG0qoNyfChZifz2tJqbRbXVO9J7X6duFcOjY3HUNCxg5D0ZCK7EP9vIcZ0zRpLU9bWkyCqVCLZ46IbQ==
   dependencies:
     "@grpc/proto-loader" "^0.7.13"
     "@js-sdsl/ordered-map" "^4.4.2"
@@ -41,12 +41,12 @@
     protobufjs "^7.2.5"
     yargs "^17.7.2"
 
-"@inworld/nodejs-sdk@1.13.1":
-  version "1.13.1"
-  resolved "https://registry.yarnpkg.com/@inworld/nodejs-sdk/-/nodejs-sdk-1.13.1.tgz#19644078c1531b00905e2d13e4bb99196a218d3f"
-  integrity sha512-jYdgCnvwKvK2XrG1UdF/Ag8V6dxi7zVFAD2yjtnKcp5OX920vj9VQZ//RJu70NFOAn1AaXLUjn+ZRquKGj9maw==
+"@inworld/nodejs-sdk@1.14.0":
+  version "1.14.0"
+  resolved "https://registry.yarnpkg.com/@inworld/nodejs-sdk/-/nodejs-sdk-1.14.0.tgz#aef80735bb6778c9d12ceb2b5263ce0f43efce61"
+  integrity sha512-VmwrNZ4NOIC2UqaOAwlC1nNyQUxyh7jvQhk2P73re/v89vhRbHI0YFY8XNqptFDtL+5JiL6hUU8wXdB2jNhCNg==
   dependencies:
-    "@grpc/grpc-js" "^1.10.3"
+    "@grpc/grpc-js" "^1.10.9"
     crypto-js "^4.2.0"
     google-protobuf "^3.21.2"
     module-alias "^2.2.3"
