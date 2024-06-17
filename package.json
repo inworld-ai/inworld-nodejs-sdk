@@ -43,7 +43,6 @@
   },
   "devDependencies": {
     "@release-it/keep-a-changelog": "^5.0.0",
-    "@stackpath/node-grpc-error-details": "^1.1.3",
     "@types/crypto-js": "^4.2.2",
     "@types/google-protobuf": "^3.15.12",
     "@types/jest": "^29.5.12",
@@ -66,6 +65,7 @@
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.10.9",
+    "@stackpath/node-grpc-error-details": "^1.1.3",
     "crypto-js": "^4.2.0",
     "google-protobuf": "^3.21.2",
     "module-alias": "^2.2.3",
