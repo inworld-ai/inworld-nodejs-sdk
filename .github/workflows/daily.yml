@@ -3,9 +3,6 @@ name: Daily Tests Run - PROD
 on:
   schedule:
     - cron: '0 1 * * *' 
-  push:
-    branches:
-      - TEST-59-node-js-e-2-e-environment-swap-feature
 
 jobs:
   run-tests:
