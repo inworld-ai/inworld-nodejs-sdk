@@ -1,3 +1,9 @@
+## [Unreleased]
+
+### Fixed
+
+- Fix dependencies
+
 ## [1.14.0] - 2024-06-14
 
 ### Changed
