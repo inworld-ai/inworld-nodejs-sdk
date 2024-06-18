@@ -1,7 +1,7 @@
 import {
   InworldClient,
+  InworldError,
   InworldPacket,
-  ServiceError,
   status,
 } from '@inworld/nodejs-sdk';
 import * as fs from 'fs';
@@ -25,7 +25,7 @@ export async function sendText(
         capabilities: { emotions: true },
       })
       .setScene(scene)
-      .setOnError((err: any) => {
+      .setOnError((err: InworldError) => {
         switch (err.code) {
           case status.ABORTED:
           case status.CANCELLED:
@@ -89,7 +89,7 @@ export async function sendAudio(
       })
       .setScene(scene)
       .setUser({ fullName: username })
-      .setOnError((err: ServiceError) => {
+      .setOnError((err: InworldError) => {
         reject(err);
       })
       .setOnMessage((packet: InworldPacket) => {

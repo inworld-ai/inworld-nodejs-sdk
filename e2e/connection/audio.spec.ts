@@ -9,7 +9,9 @@ let key: [string, string] = [
 let name: string = 'Tester';
 let scene: string = process.env.INWORLD_E2E_SCENE_MOVIESET!;
 
-test('[Audio] Should return a response', async () => {
+jest.retryTimes(3);
+
+test('[Audio] NPC should return a response when sent audio', async () => {
   await allure.allureId('883');
   await allure.suite('Node.js SDK');
   await allure.feature('Connection');

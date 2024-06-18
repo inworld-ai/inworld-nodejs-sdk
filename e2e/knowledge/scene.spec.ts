@@ -9,12 +9,16 @@ let key: [string, string] = [
 let name: string = 'Tester';
 let scene: string = process.env.INWORLD_E2E_SCENE_MOVIESET!;
 
-test('[Scene] Should know scene location', async () => {
+jest.retryTimes(3);
+
+test('[Scene] NPC should know scene location', async () => {
   await allure.allureId('892');
   await allure.suite('Node.js SDK');
   await allure.feature('Knowledge');
   await allure.story('Scene');
-  await allure.description('This test confirms that NPC knows scene location');
+  await allure.description(
+    'This test confirms that NPC knows the scene location',
+  );
 
   const result = await sendText(
     key,

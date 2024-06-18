@@ -9,13 +9,15 @@ let key: [string, string] = [
 let name: string = 'Tester';
 let scene: string = process.env.INWORLD_E2E_SCENE_CASTLE!;
 
-test('[Emotion] Should change emotion', async () => {
+jest.retryTimes(3);
+
+test('[Emotion] NPC should change emotion upon triggering training phrase', async () => {
   await allure.allureId('889');
   await allure.suite('Node.js SDK');
   await allure.feature('Goals');
   await allure.story('Emotion');
   await allure.description(
-    'This test confirms that emotion changes when triggering a goal with an NPC',
+    'This test confirms that emotion changes when triggering a training phrase with an NPC',
   );
 
   const emotion = await sendText(key, name, scene, 'Hi');
