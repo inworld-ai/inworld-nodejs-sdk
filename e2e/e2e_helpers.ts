@@ -125,3 +125,50 @@ export async function sendAudio(
     });
   });
 }
+
+export async function getPackets(
+  apikey: [string, string],
+  username: string,
+  scene: string,
+): Promise<InworldPacket[]> {
+  let packets: InworldPacket[] = [];
+
+  return new Promise<InworldPacket[]>(async (resolve, reject) => {
+    const client = new InworldClient()
+      .setApiKey({
+        key: apikey[0],
+        secret: apikey[1],
+      })
+      .setUser({ fullName: username })
+      .setConfiguration({
+        capabilities: { emotions: true },
+        connection: {
+          autoReconnect: false,
+          disconnectTimeout: 30000,
+        },
+      })
+      .setScene(scene)
+      .setOnError((err: InworldError) => {
+        switch (err.code) {
+          case status.ABORTED:
+          case status.CANCELLED:
+            break;
+          default:
+            connection.close();
+            reject(err);
+            break;
+        }
+      })
+      .setOnMessage((packet: InworldPacket) => {
+        packets.push(packet);
+
+        if (packet.isInteractionEnd()) {
+          connection.close();
+          resolve(packets);
+        }
+      });
+
+    const connection = client.build();
+    await connection.open();
+  });
+}
