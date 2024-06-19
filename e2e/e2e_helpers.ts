@@ -126,7 +126,7 @@ export async function sendAudio(
   });
 }
 
-export async function getPackets(
+export async function getPacketsNewChat(
   apikey: [string, string],
   username: string,
   scene: string,
@@ -158,20 +158,13 @@ export async function getPackets(
             break;
         }
       })
-      .setOnDisconnect(() => {
-        resolve(packets);
-      })
       .setOnMessage((packet: InworldPacket) => {
         packets.push(packet);
-
-        if (packet.isInteractionEnd()) {
-          connection.close();
-          resolve(packets);
-        }
       });
 
     const connection = client.build();
     await connection.open();
     await connection.close();
+    resolve(packets);
   });
 }
