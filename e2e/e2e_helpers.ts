@@ -144,7 +144,6 @@ export async function getPackets(
         capabilities: { emotions: true },
         connection: {
           autoReconnect: false,
-          disconnectTimeout: 30000,
         },
       })
       .setScene(scene)
@@ -159,6 +158,9 @@ export async function getPackets(
             break;
         }
       })
+      .setOnDisconnect(() => {
+        resolve(packets);
+      })
       .setOnMessage((packet: InworldPacket) => {
         packets.push(packet);
 
@@ -170,5 +172,6 @@ export async function getPackets(
 
     const connection = client.build();
     await connection.open();
+    await connection.close();
   });
 }
