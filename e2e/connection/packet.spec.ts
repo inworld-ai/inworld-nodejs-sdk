@@ -22,6 +22,8 @@ test('[Packet] Packet properties are correct for new connection with no text sen
 
   result.forEach((packet) => {
     if (packet.isSceneMutationResponse()) {
+      // control
+      expect(packet.isSceneMutationResponse).toBeTruthy();
       // packetId
       expect(packet.packetId.packetId).not.toBeNull();
       expect(packet.packetId.packetId).not.toBeUndefined();
@@ -40,9 +42,15 @@ test('[Packet] Packet properties are correct for new connection with no text sen
       expect(packet.date).not.toBeNull();
       expect(packet.date).not.toBeUndefined();
       // sceneMutation
-      // expect(packet.sceneMutation.name).toMatch(scene); FIX
+      // expect(packet.sceneMutation.name).toMatch(scene); FIX IN NEXT TICKET
       // expect(packet.sceneMutation.description).toMatch('Bookstore');
       // expect(packet.sceneMutation.displayName).toMatch("Text's House");
+      expect(packet.sceneMutation.name).not.toBeNull();
+      expect(packet.sceneMutation.name).not.toBeUndefined();
+      expect(packet.sceneMutation.description).not.toBeNull();
+      expect(packet.sceneMutation.description).not.toBeUndefined();
+      expect(packet.sceneMutation.displayName).not.toBeNull();
+      expect(packet.sceneMutation.displayName).not.toBeUndefined();
       expect(packet.sceneMutation.loadedCharacters).not.toBeNull();
       expect(packet.sceneMutation.loadedCharacters).not.toBeUndefined();
     }
