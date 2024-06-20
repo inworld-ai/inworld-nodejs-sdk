@@ -20,11 +20,6 @@ test('[Scene] NPC should know scene location', async () => {
     'This test confirms that NPC knows the scene location',
   );
 
-  const result = await sendText(
-    key,
-    name,
-    scene,
-    'Do you know where our physical location is?',
-  );
+  const result = await sendText(key, name, scene, 'What city are we in?');
   expect(result[0]).toContain('Hollywood');
 }, 10000);
