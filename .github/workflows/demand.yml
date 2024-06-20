@@ -44,6 +44,8 @@ jobs:
       AUTH_IDENTITY_PROVIDER: ${{ vars.AUTH_IDENTITY_PROVIDER }}
       AUTH_SERVICE_ACCOUNT: ${{ vars.AUTH_SERVICE_ACCOUNT }}
       ENV: ${{ github.event.inputs.environment }}
+      OS: ${{ github.event.inputs.os }}
+      PROJECT_ID: ${{ vars.PROJECT_ID }}
       NODE_SDK_INWORLD_ENGINE_HOST:  ${{ secrets.NODE_SDK_INWORLD_ENGINE_HOST }}
     permissions:
         contents: 'read'
@@ -66,7 +68,7 @@ jobs:
         uses: 'google-github-actions/get-secretmanager-secrets@v2'
         with:
           secrets: |-
-            ALLURE_TOKEN:inworld-ai-prod/allure-token
+            ALLURE_TOKEN:${{env.PROJECT_ID}}/allure-token
       - name: Install Packages
         run: yarn install
       - name: Install inworld/nodejs-sdk
