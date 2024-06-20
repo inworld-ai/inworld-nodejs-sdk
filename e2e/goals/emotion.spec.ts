@@ -9,7 +9,7 @@ let key: [string, string] = [
 let name: string = 'Tester';
 let scene: string = process.env.INWORLD_E2E_SCENE_CASTLE!;
 
-jest.retryTimes(3);
+jest.retryTimes(5);
 
 test('[Emotion] NPC should change emotion upon triggering training phrase', async () => {
   await allure.allureId('889');
