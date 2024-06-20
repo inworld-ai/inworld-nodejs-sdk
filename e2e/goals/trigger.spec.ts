@@ -9,7 +9,7 @@ let key: [string, string] = [
 let name: string = 'Tester';
 let scene: string = process.env.INWORLD_E2E_SCENE_CASTLE!;
 
-jest.retryTimes(5);
+jest.retryTimes(3);
 
 test('[Trigger] NPC should give quest when training phrase is triggered', async () => {
   await allure.allureId('885');

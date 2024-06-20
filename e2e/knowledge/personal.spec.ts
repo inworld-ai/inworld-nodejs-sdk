@@ -9,7 +9,7 @@ let key: [string, string] = [
 let name: string = 'Billy';
 let scene: string = process.env.INWORLD_E2E_SCENE_MOVIESET!;
 
-jest.retryTimes(5);
+jest.retryTimes(3);
 
 test('[Personal] NPC should know personal knowledge', async () => {
   await allure.allureId('886');
