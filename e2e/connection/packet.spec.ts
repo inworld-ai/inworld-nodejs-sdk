@@ -10,7 +10,7 @@ let name: string = 'Tester';
 let scene: string = process.env.INWORLD_E2E_SCENE_HOUSE!;
 
 test('[Packet] Packet properties exist for new connection with no text sent', async () => {
-  // await allure.allureId('');
+  await allure.allureId('1255');
   await allure.suite('Node.js SDK');
   await allure.feature('Connection');
   await allure.story('Packet');
