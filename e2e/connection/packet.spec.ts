@@ -9,13 +9,13 @@ let key: [string, string] = [
 let name: string = 'Tester';
 let scene: string = process.env.INWORLD_E2E_SCENE_HOUSE!;
 
-test('[Packet] Packet properties exist for new connection with no text sent', async () => {
+test('[Packet] Packet properties are correct for new connection with no text sent', async () => {
   await allure.allureId('1255');
   await allure.suite('Node.js SDK');
   await allure.feature('Connection');
   await allure.story('Packet');
   await allure.description(
-    'This test confirms that all packet properties for a new connection with no text sent exist and are not Null',
+    'This test confirms that all packet properties for a new connection with no text sent are correct',
   );
 
   const result = await getPacketsNewChat(key, name, scene);
@@ -47,4 +47,4 @@ test('[Packet] Packet properties exist for new connection with no text sent', as
       expect(packet.sceneMutation.loadedCharacters).not.toBeUndefined();
     }
   });
-}, 40000);
+}, 10000);
