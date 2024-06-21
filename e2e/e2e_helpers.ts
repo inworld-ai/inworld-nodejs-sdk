@@ -9,7 +9,7 @@ import * as fs from 'fs';
 export async function sendText(
   apikey: [string, string],
   username: string,
-  scene: string,
+  npc: string,
   message: string,
 ): Promise<[string, string]> {
   let output: [string, string] = ['', ''];
@@ -24,7 +24,7 @@ export async function sendText(
       .setConfiguration({
         capabilities: { emotions: true },
       })
-      .setScene(scene)
+      .setScene(npc)
       .setOnError((err: InworldError) => {
         switch (err.code) {
           case status.ABORTED:
@@ -64,7 +64,7 @@ export async function sendText(
 export async function sendAudio(
   apikey: [string, string],
   username: string,
-  scene: string,
+  npc: string,
   audio: string,
 ): Promise<string> {
   let output: string = '';
@@ -87,7 +87,7 @@ export async function sendAudio(
         key: apikey[0],
         secret: apikey[1],
       })
-      .setScene(scene)
+      .setScene(npc)
       .setUser({ fullName: username })
       .setOnError((err: InworldError) => {
         reject(err);
@@ -123,5 +123,48 @@ export async function sendAudio(
         .on('data', sendChunk)
         .on('end', () => silenceStream.close());
     });
+  });
+}
+
+export async function getPacketsNewChat(
+  apikey: [string, string],
+  username: string,
+  npc: string,
+): Promise<InworldPacket[]> {
+  let packets: InworldPacket[] = [];
+
+  return new Promise<InworldPacket[]>(async (resolve, reject) => {
+    const client = new InworldClient()
+      .setApiKey({
+        key: apikey[0],
+        secret: apikey[1],
+      })
+      .setUser({ fullName: username })
+      .setConfiguration({
+        capabilities: { emotions: true },
+        connection: {
+          autoReconnect: false,
+        },
+      })
+      .setScene(npc)
+      .setOnError((err: InworldError) => {
+        switch (err.code) {
+          case status.ABORTED:
+          case status.CANCELLED:
+            break;
+          default:
+            connection.close();
+            reject(err);
+            break;
+        }
+      })
+      .setOnMessage((packet: InworldPacket) => {
+        packets.push(packet);
+      });
+
+    const connection = client.build();
+    await connection.open();
+    await connection.close();
+    resolve(packets);
   });
 }
