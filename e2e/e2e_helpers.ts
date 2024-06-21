@@ -204,6 +204,7 @@ export async function changeSceneSendText(
         // TEXT
         if (packet.isText()) {
           output[0] += packet.text.text + '\n';
+          // console.log(packet.text.text + '\n');
         }
 
         // EMOTION
@@ -215,13 +216,15 @@ export async function changeSceneSendText(
         // INTERACTION_END
         if (packet.isInteractionEnd()) {
           connection.close();
-          resolve(output);
+          // resolve(output);
         }
       });
 
     const connection = client.build();
 
+    await connection.sendText('Hi'); //Opens connection
     await connection.changeScene(scene);
     await connection.sendText(message);
+    resolve(output);
   });
 }
