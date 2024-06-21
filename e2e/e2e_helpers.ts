@@ -5,6 +5,7 @@ import {
   status,
 } from '@inworld/nodejs-sdk';
 import * as fs from 'fs';
+import Deferred from './utils/promise/Deferred';
 
 export async function sendText(
   apikey: [string, string],
@@ -177,6 +178,9 @@ export async function changeSceneSendText(
   scene: string,
 ): Promise<[string, string]> {
   let output: [string, string] = ['', ''];
+  const hiResponseDeferred = new Deferred<string>();
+  const changeSceneResponseDeferred = new Deferred<string>();
+  let hiPacketRequestId: string | undefined;
 
   return new Promise<[string, string]>(async (resolve, reject) => {
     const client = new InworldClient()
@@ -218,13 +222,24 @@ export async function changeSceneSendText(
           connection.close();
           // resolve(output);
         }
+
+        if (packet.isText() && packet.text.text === 'Hi' && packet.packetId.utteranceId === hiPacketRequestId) {
+          hiResponseDeferred.resolve('done');
+        }
+
+        changeSceneResponseDeferred.resolve('done');
       });
 
     const connection = client.build();
 
-    await connection.sendText('Hi'); //Opens connection
+    const hiPacketRequest = await connection.sendText('Hi'); //Opens connection
+    hiPacketRequestId = hiPacketRequest.packetId.utteranceId;
     await connection.changeScene(scene);
     await connection.sendText(message);
-    resolve(output);
+
+    Promise.all([hiResponseDeferred.promise, changeSceneResponseDeferred.promise]).then((results) => {
+      // combine results
+      resolve(results);
+    });
   });
 }
