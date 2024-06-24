@@ -1,5 +1,6 @@
 import {
   InworldClient,
+  InworldConnectionService,
   InworldError,
   InworldPacket,
   status,
@@ -126,14 +127,45 @@ export async function sendAudio(
   });
 }
 
-export async function getPacketsNewChat(
+function testBasePacket(packet: InworldPacket) {
+  if (packet.isSceneMutationResponse()) {
+    // control
+    expect(packet.isSceneMutationResponse).toBeTruthy();
+    // packetId
+    expect(packet.packetId.packetId).toBeDefined();
+    expect(packet.packetId.utteranceId).toBeDefined();
+    expect(packet.packetId.correlationId).toBeDefined();
+    // routing
+    expect(packet.routing.source).toBeDefined();
+    expect(packet.routing.targets).toBeDefined();
+    expect(packet.routing.source.isCharacter).toBeFalsy();
+    expect(packet.routing.source.isPlayer).toBeFalsy();
+    // date
+    expect(packet.date).toBeDefined();
+    expect(packet.sceneMutation.name).toBeDefined();
+    expect(packet.sceneMutation.description).toBeDefined();
+    expect(packet.sceneMutation.displayName).toBeDefined();
+    expect(packet.sceneMutation.loadedCharacters).toBeDefined();
+  }
+}
+
+function testInitialPackets(packets: InworldPacket[]) {
+  expect(packets.length).toBeGreaterThan(0);
+
+  for (let packet of packets) {
+    testBasePacket(packet);
+    // Test custom packet properties
+  }
+}
+
+export async function openConnectionManually(
   apikey: [string, string],
   username: string,
   scene: string,
-): Promise<InworldPacket[]> {
+): Promise<InworldConnectionService> {
   let packets: InworldPacket[] = [];
 
-  return new Promise<InworldPacket[]>(async (resolve, reject) => {
+  return new Promise<InworldConnectionService>(async (resolve, reject) => {
     const client = new InworldClient()
       .setApiKey({
         key: apikey[0],
@@ -164,7 +196,8 @@ export async function getPacketsNewChat(
 
     const connection = client.build();
     await connection.open();
-    await connection.close();
-    resolve(packets);
+    expect(packets.length).toBeGreaterThan(0);
+    testInitialPackets(packets);
+    resolve(connection);
   });
 }
