@@ -25,34 +25,20 @@ test('[Packet] Packet properties are correct for new connection with no text sen
       // control
       expect(packet.isSceneMutationResponse).toBeTruthy();
       // packetId
-      expect(packet.packetId.packetId).not.toBeNull();
-      expect(packet.packetId.packetId).not.toBeUndefined();
-      expect(packet.packetId.utteranceId).not.toBeNull();
-      expect(packet.packetId.utteranceId).not.toBeUndefined();
-      expect(packet.packetId.correlationId).not.toBeNull();
-      expect(packet.packetId.correlationId).not.toBeUndefined();
+      expect(packet.packetId.packetId).toBeDefined();
+      expect(packet.packetId.utteranceId).toBeDefined();
+      expect(packet.packetId.correlationId).toBeDefined();
       // routing
-      expect(packet.routing.source).not.toBeNull();
-      expect(packet.routing.source).not.toBeUndefined();
-      expect(packet.routing.targets).not.toBeNull();
-      expect(packet.routing.targets).not.toBeUndefined();
+      expect(packet.routing.source).toBeDefined();
+      expect(packet.routing.targets).toBeDefined();
       expect(packet.routing.source.isCharacter).toBeFalsy();
       expect(packet.routing.source.isPlayer).toBeFalsy();
       // date
-      expect(packet.date).not.toBeNull();
-      expect(packet.date).not.toBeUndefined();
-      // sceneMutation
-      // expect(packet.sceneMutation.name).toMatch(scene); FIX IN NEXT TICKET
-      // expect(packet.sceneMutation.description).toMatch('Bookstore');
-      // expect(packet.sceneMutation.displayName).toMatch("Text's House");
-      expect(packet.sceneMutation.name).not.toBeNull();
-      expect(packet.sceneMutation.name).not.toBeUndefined();
-      expect(packet.sceneMutation.description).not.toBeNull();
-      expect(packet.sceneMutation.description).not.toBeUndefined();
-      expect(packet.sceneMutation.displayName).not.toBeNull();
-      expect(packet.sceneMutation.displayName).not.toBeUndefined();
-      expect(packet.sceneMutation.loadedCharacters).not.toBeNull();
-      expect(packet.sceneMutation.loadedCharacters).not.toBeUndefined();
+      expect(packet.date).toBeDefined();
+      expect(packet.sceneMutation.name).toBeDefined();
+      expect(packet.sceneMutation.description).toBeDefined();
+      expect(packet.sceneMutation.displayName).toBeDefined();
+      expect(packet.sceneMutation.loadedCharacters).toBeDefined();
     }
   });
 }, 10000);
