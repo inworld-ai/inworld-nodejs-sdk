@@ -7,7 +7,7 @@ let key: [string, string] = [
   process.env.INWORLD_E2E_SECRET!,
 ];
 let name: string = 'Tester';
-let scene: string = process.env.INWORLD_E2E_SCENE_MOVIESET!;
+let npc: string = process.env.INWORLD_E2E_CHARACTER_SCENE!;
 
 jest.retryTimes(3);
 
@@ -20,7 +20,7 @@ test('[Common] NPC should know common knowledge', async () => {
     'This test confirms that NPC knows common knowledge',
   );
 
-  const result = await sendText(key, name, scene, 'Tell me about dogs');
+  const result = await sendText(key, name, npc, 'Tell me about dogs');
   expect(result[0]).toContain('magic');
 }, 10000);
 
@@ -33,6 +33,6 @@ test('[Common] NPC should know multiple lines of common knowledge', async () => 
     'This test confirms that NPC can know multiple lines of common knowledge',
   );
 
-  const result = await sendText(key, name, scene, 'Can dogs fly?');
+  const result = await sendText(key, name, npc, 'Can dogs fly?');
   expect(result[0]).toContain('cheeseburger');
 }, 10000);
