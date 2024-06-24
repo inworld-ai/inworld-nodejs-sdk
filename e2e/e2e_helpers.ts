@@ -154,7 +154,6 @@ function testInitialPackets(packets: InworldPacket[]) {
 
   for (let packet of packets) {
     testBasePacket(packet);
-    // Test custom packet properties
   }
 }
 

@@ -1,5 +1,3 @@
-import 'dotenv/config';
-
 import * as allure from 'allure-js-commons';
 
 import { openConnectionManually } from '../e2e_helpers';
