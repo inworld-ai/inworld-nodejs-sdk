@@ -7,7 +7,7 @@ let key: [string, string] = [
   process.env.INWORLD_E2E_SECRET!,
 ];
 let name: string = 'Tester';
-let scene: string = process.env.INWORLD_E2E_SCENE_HOUSE!;
+let npc: string = process.env.INWORLD_E2E_CHARACTER_TEXT!;
 
 jest.retryTimes(3);
 
@@ -20,6 +20,6 @@ test('[Text] NPC should return a response when sent a message', async () => {
     'This test confirms that a response is recieved when sending text to an NPC',
   );
 
-  const result = await sendText(key, name, scene, 'Hi there!');
+  const result = await sendText(key, name, npc, 'Hi there!');
   expect(result[0]).not.toBe('');
 }, 10000);

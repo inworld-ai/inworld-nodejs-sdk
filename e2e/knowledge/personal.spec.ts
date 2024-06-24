@@ -7,7 +7,7 @@ let key: [string, string] = [
   process.env.INWORLD_E2E_SECRET!,
 ];
 let name: string = 'Billy';
-let scene: string = process.env.INWORLD_E2E_SCENE_MOVIESET!;
+let npc: string = process.env.INWORLD_E2E_CHARACTER_SCENE!;
 
 jest.retryTimes(3);
 
@@ -23,7 +23,7 @@ test('[Personal] NPC should know personal knowledge', async () => {
   const result = await sendText(
     key,
     name,
-    scene,
+    npc,
     'Do you have a twin? If so what is their name?',
   );
   expect(result[0]).toContain('Johnny');
