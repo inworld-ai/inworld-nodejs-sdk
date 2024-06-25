@@ -152,8 +152,8 @@ function testBasePacket(packet: InworldPacket) {
 async function testTextPacket(
   packet: InworldPacket,
   connection: InworldConnectionService,
+  idCheck: (id: string) => boolean,
 ) {
-  const idCheck = interactionIDCheck();
   if (packet.isControl()) {
     // control
     expect(packet.isControl).toBeTruthy();
@@ -245,7 +245,7 @@ async function testTextPacket(
   }
 }
 
-function interactionIDCheck() {
+export function interactionIDCheck() {
   let initialValue: string | undefined = undefined;
   let isFirstCall = true;
 
@@ -267,8 +267,9 @@ function testPackets(
   expect(packets.length).toBeGreaterThan(0);
 
   for (let packet of packets) {
+    const idCheck = interactionIDCheck();
     testBasePacket(packet);
-    testTextPacket(packet, connection);
+    testTextPacket(packet, connection, idCheck);
     // console.log(packet);
   }
 }
