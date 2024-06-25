@@ -26,7 +26,7 @@ test('[Packet] Packet properties are correct for new connection with no text sen
 }, 10000);
 
 test('[Packet] Packet properties are correct for new connection with text sent', async () => {
-  // await allure.allureId('1255');
+  await allure.allureId('1354');
   await allure.suite('Node.js SDK');
   await allure.feature('Connection');
   await allure.story('Packet');
