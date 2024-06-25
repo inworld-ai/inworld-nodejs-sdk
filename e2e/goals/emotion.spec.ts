@@ -7,23 +7,25 @@ let key: [string, string] = [
   process.env.INWORLD_E2E_SECRET!,
 ];
 let name: string = 'Tester';
-let scene: string = process.env.INWORLD_E2E_SCENE_CASTLE!;
+let npc: string = process.env.INWORLD_E2E_CHARACTER_VERB!;
 
-test('[Emotion] Should change emotion', async () => {
+jest.retryTimes(3);
+
+test('[Emotion] NPC should change emotion upon triggering training phrase', async () => {
   await allure.allureId('889');
   await allure.suite('Node.js SDK');
   await allure.feature('Goals');
   await allure.story('Emotion');
   await allure.description(
-    'This test confirms that emotion changes when triggering a goal with an NPC',
+    'This test confirms that emotion changes when triggering a training phrase with an NPC',
   );
 
-  const emotion = await sendText(key, name, scene, 'Hi');
+  const emotion = await sendText(key, name, npc, 'Hi');
 
   const emotionChange = await sendText(
     key,
     name,
-    scene,
+    npc,
     'How can I get stronger?',
   );
 
