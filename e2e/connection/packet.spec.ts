@@ -7,7 +7,7 @@ let key: [string, string] = [
   process.env.INWORLD_E2E_SECRET!,
 ];
 let name: string = 'Tester';
-let scene: string = process.env.INWORLD_E2E_SCENE_HOUSE!;
+let npc: string = process.env.INWORLD_E2E_CHARACTER_TEXT!;
 
 test('[Packet] Packet properties are correct for new connection with no text sent', async () => {
   await allure.allureId('1255');
@@ -18,6 +18,6 @@ test('[Packet] Packet properties are correct for new connection with no text sen
     'This test confirms that all packet properties for a new connection with no text sent are correct',
   );
 
-  const connection = await openConnectionManually(key, name, scene);
+  const connection = await openConnectionManually(key, name, npc);
   connection.close();
 }, 10000);
