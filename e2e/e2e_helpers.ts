@@ -269,7 +269,6 @@ function testPackets(
   for (let packet of packets) {
     testBasePacket(packet);
     testTextPacket(packet, connection, idCheck);
-    // console.log(packet);
   }
 }
 
@@ -352,13 +351,8 @@ export async function openConnectionManuallySendText(
       })
       .setOnMessage((packet: InworldPacket) => {
         packets.push(packet);
-        // console.log(packet);
         if (packet.isInteractionEnd()) {
           testPackets(packets, connection);
-          // const idCheck = interactionIDCheck();
-          // console.log(idCheck('1'));
-          // console.log(idCheck('1'));
-          // console.log(idCheck('2'));
           resolve(connection);
         }
       });
