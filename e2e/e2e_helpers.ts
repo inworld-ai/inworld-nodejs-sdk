@@ -265,9 +265,8 @@ function testPackets(
   connection: InworldConnectionService,
 ) {
   expect(packets.length).toBeGreaterThan(0);
-
+  const idCheck = interactionIDCheck();
   for (let packet of packets) {
-    const idCheck = interactionIDCheck();
     testBasePacket(packet);
     testTextPacket(packet, connection, idCheck);
     // console.log(packet);
