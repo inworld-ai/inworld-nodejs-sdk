@@ -149,7 +149,10 @@ function testBasePacket(packet: InworldPacket) {
   }
 }
 
-function testTextPacket(packet: InworldPacket) {
+async function testTextPacket(
+  packet: InworldPacket,
+  connection: InworldConnectionService,
+) {
   if (packet.isControl()) {
     // control
     expect(packet.isControl).toBeTruthy();
@@ -185,7 +188,9 @@ function testTextPacket(packet: InworldPacket) {
     expect(packet.packetId.correlationId).toBeDefined();
     expect(packet.packetId.conversationId).toBeDefined();
     // routing
-    expect(packet.routing.source.name).toBeDefined();
+    let characters = await connection.getCharacters();
+    let characterName = characters[0].id;
+    expect(packet.routing.source.name).toBe(characterName);
     expect(packet.routing.source.isCharacter).toBeTruthy();
     expect(packet.routing.source.isPlayer).toBeFalsy();
     expect(packet.routing.targets).toBeDefined();
@@ -203,7 +208,9 @@ function testTextPacket(packet: InworldPacket) {
     expect(packet.packetId.correlationId).toBeDefined();
     expect(packet.packetId.conversationId).toBeDefined();
     // routing
-    expect(packet.routing.source.name).toBeDefined();
+    let characters = await connection.getCharacters();
+    let characterName = characters[0].id;
+    expect(packet.routing.source.name).toBe(characterName);
     expect(packet.routing.source.isCharacter).toBeTruthy();
     expect(packet.routing.source.isPlayer).toBeFalsy();
     expect(packet.routing.targets).toBeDefined();
@@ -221,7 +228,9 @@ function testTextPacket(packet: InworldPacket) {
     expect(packet.packetId.correlationId).toBeDefined();
     expect(packet.packetId.conversationId).toBeDefined();
     // routing
-    expect(packet.routing.source.name).toBeDefined();
+    let characters = await connection.getCharacters();
+    let characterName = characters[0].id;
+    expect(packet.routing.source.name).toBe(characterName);
     expect(packet.routing.source.isCharacter).toBeTruthy();
     expect(packet.routing.source.isPlayer).toBeFalsy();
     expect(packet.routing.targets).toBeDefined();
@@ -232,12 +241,15 @@ function testTextPacket(packet: InworldPacket) {
   }
 }
 
-function testPackets(packets: InworldPacket[]) {
+function testPackets(
+  packets: InworldPacket[],
+  connection: InworldConnectionService,
+) {
   expect(packets.length).toBeGreaterThan(0);
 
   for (let packet of packets) {
     testBasePacket(packet);
-    testTextPacket(packet);
+    testTextPacket(packet, connection);
     // console.log(packet);
   }
 }
@@ -281,7 +293,7 @@ export async function openConnectionManually(
     const connection = client.build();
     await connection.open();
     expect(packets.length).toBeGreaterThan(0);
-    testPackets(packets);
+    testPackets(packets, connection);
     resolve(connection);
   });
 }
@@ -323,7 +335,7 @@ export async function openConnectionManuallySendText(
         packets.push(packet);
         // console.log(packet);
         if (packet.isInteractionEnd()) {
-          testPackets(packets);
+          testPackets(packets, connection);
           resolve(connection);
         }
       });
