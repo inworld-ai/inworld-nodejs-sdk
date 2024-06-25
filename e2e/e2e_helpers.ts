@@ -153,6 +153,7 @@ async function testTextPacket(
   packet: InworldPacket,
   connection: InworldConnectionService,
 ) {
+  const idCheck = interactionIDCheck();
   if (packet.isControl()) {
     // control
     expect(packet.isControl).toBeTruthy();
@@ -185,6 +186,7 @@ async function testTextPacket(
     expect(packet.packetId.packetId).toBeDefined();
     expect(packet.packetId.utteranceId).toBeDefined();
     expect(packet.packetId.interactionId).toBeDefined();
+    expect(idCheck(packet.packetId.interactionId!)).toBeTruthy();
     expect(packet.packetId.correlationId).toBeDefined();
     expect(packet.packetId.conversationId).toBeDefined();
     // routing
@@ -205,6 +207,7 @@ async function testTextPacket(
     expect(packet.packetId.packetId).toBeDefined();
     expect(packet.packetId.utteranceId).toBeDefined();
     expect(packet.packetId.interactionId).toBeDefined();
+    expect(idCheck(packet.packetId.interactionId!)).toBeTruthy();
     expect(packet.packetId.correlationId).toBeDefined();
     expect(packet.packetId.conversationId).toBeDefined();
     // routing
@@ -225,6 +228,7 @@ async function testTextPacket(
     expect(packet.packetId.packetId).toBeDefined();
     expect(packet.packetId.utteranceId).toBeDefined();
     expect(packet.packetId.interactionId).toBeDefined();
+    expect(idCheck(packet.packetId.interactionId!)).toBeTruthy();
     expect(packet.packetId.correlationId).toBeDefined();
     expect(packet.packetId.conversationId).toBeDefined();
     // routing
@@ -239,6 +243,21 @@ async function testTextPacket(
     // audio
     expect(packet.audio.chunk).toBeDefined();
   }
+}
+
+function interactionIDCheck() {
+  let initialValue: string | undefined = undefined;
+  let isFirstCall = true;
+
+  return function (value: string): boolean {
+    if (isFirstCall) {
+      initialValue = value;
+      isFirstCall = false;
+      return true;
+    } else {
+      return value === initialValue;
+    }
+  };
 }
 
 function testPackets(
@@ -336,6 +355,10 @@ export async function openConnectionManuallySendText(
         // console.log(packet);
         if (packet.isInteractionEnd()) {
           testPackets(packets, connection);
+          // const idCheck = interactionIDCheck();
+          // console.log(idCheck('1'));
+          // console.log(idCheck('1'));
+          // console.log(idCheck('2'));
           resolve(connection);
         }
       });
