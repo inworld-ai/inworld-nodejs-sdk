@@ -150,28 +150,89 @@ function testBasePacket(packet: InworldPacket) {
 }
 
 function testTextPacket(packet: InworldPacket) {
-  if (packet.isSceneMutationResponse()) {
+  if (packet.isControl()) {
     // control
-    expect(packet.isSceneMutationResponse).toBeTruthy();
+    expect(packet.isControl).toBeTruthy();
+    expect(packet.control.action).toBeDefined();
+    if (!packet.isInteractionEnd()) {
+      expect(packet.control.conversation?.participants).toBeDefined();
+      expect(packet.control.conversation?.type).toBeDefined();
+    } else {
+      expect(packet.control.action).toBe('INTERACTION_END');
+    }
     // packetId
     expect(packet.packetId.packetId).toBeDefined();
     expect(packet.packetId.utteranceId).toBeDefined();
     expect(packet.packetId.correlationId).toBeDefined();
+    expect(packet.packetId.conversationId).toBeDefined();
     // routing
     expect(packet.routing.source).toBeDefined();
     expect(packet.routing.targets).toBeDefined();
-    expect(packet.routing.source.isCharacter).toBeFalsy();
-    expect(packet.routing.source.isPlayer).toBeFalsy();
+    if (!packet.isInteractionEnd()) {
+      expect(packet.routing.source.isCharacter).toBeFalsy();
+      expect(packet.routing.source.isPlayer).toBeFalsy();
+    } else {
+      expect(packet.routing.source.isCharacter).toBeTruthy();
+    }
     // date
     expect(packet.date).toBeDefined();
-    expect(packet.sceneMutation.name).toBeDefined();
-    expect(packet.sceneMutation.description).toBeDefined();
-    expect(packet.sceneMutation.displayName).toBeDefined();
-    expect(packet.sceneMutation.loadedCharacters).toBeDefined();
+  }
+  if (packet.isText()) {
+    // packetId
+    expect(packet.packetId.packetId).toBeDefined();
+    expect(packet.packetId.utteranceId).toBeDefined();
+    expect(packet.packetId.interactionId).toBeDefined();
+    expect(packet.packetId.correlationId).toBeDefined();
+    expect(packet.packetId.conversationId).toBeDefined();
+    // routing
+    expect(packet.routing.source.name).toBeDefined();
+    expect(packet.routing.source.isCharacter).toBeTruthy();
+    expect(packet.routing.source.isPlayer).toBeFalsy();
+    expect(packet.routing.targets).toBeDefined();
+    // date
+    expect(packet.date).toBeDefined();
+    // text
+    expect(packet.text.text).toBeDefined();
+    expect(packet.text.final).toBeDefined();
+  }
+  if (packet.isEmotion()) {
+    // packetId
+    expect(packet.packetId.packetId).toBeDefined();
+    expect(packet.packetId.utteranceId).toBeDefined();
+    expect(packet.packetId.interactionId).toBeDefined();
+    expect(packet.packetId.correlationId).toBeDefined();
+    expect(packet.packetId.conversationId).toBeDefined();
+    // routing
+    expect(packet.routing.source.name).toBeDefined();
+    expect(packet.routing.source.isCharacter).toBeTruthy();
+    expect(packet.routing.source.isPlayer).toBeFalsy();
+    expect(packet.routing.targets).toBeDefined();
+    // date
+    expect(packet.date).toBeDefined();
+    // emotion
+    expect(packet.emotions.behavior).toBeDefined();
+    expect(packet.emotions.strength).toBeDefined();
+  }
+  if (packet.isAudio()) {
+    // packetId
+    expect(packet.packetId.packetId).toBeDefined();
+    expect(packet.packetId.utteranceId).toBeDefined();
+    expect(packet.packetId.interactionId).toBeDefined();
+    expect(packet.packetId.correlationId).toBeDefined();
+    expect(packet.packetId.conversationId).toBeDefined();
+    // routing
+    expect(packet.routing.source.name).toBeDefined();
+    expect(packet.routing.source.isCharacter).toBeTruthy();
+    expect(packet.routing.source.isPlayer).toBeFalsy();
+    expect(packet.routing.targets).toBeDefined();
+    // date
+    expect(packet.date).toBeDefined();
+    // audio
+    expect(packet.audio.chunk).toBeDefined();
   }
 }
 
-function testInitialPackets(packets: InworldPacket[]) {
+function testPackets(packets: InworldPacket[]) {
   expect(packets.length).toBeGreaterThan(0);
 
   for (let packet of packets) {
@@ -215,13 +276,12 @@ export async function openConnectionManually(
       })
       .setOnMessage((packet: InworldPacket) => {
         packets.push(packet);
-        // console.log(packet);
       });
 
     const connection = client.build();
     await connection.open();
     expect(packets.length).toBeGreaterThan(0);
-    testInitialPackets(packets);
+    testPackets(packets);
     resolve(connection);
   });
 }
@@ -263,7 +323,7 @@ export async function openConnectionManuallySendText(
         packets.push(packet);
         // console.log(packet);
         if (packet.isInteractionEnd()) {
-          testInitialPackets(packets);
+          testPackets(packets);
           resolve(connection);
         }
       });
