@@ -10,7 +10,7 @@ import * as fs from 'fs';
 export async function sendText(
   apikey: [string, string],
   username: string,
-  scene: string,
+  npc: string,
   message: string,
 ): Promise<[string, string]> {
   let output: [string, string] = ['', ''];
@@ -25,7 +25,7 @@ export async function sendText(
       .setConfiguration({
         capabilities: { emotions: true },
       })
-      .setScene(scene)
+      .setScene(npc)
       .setOnError((err: InworldError) => {
         switch (err.code) {
           case status.ABORTED:
@@ -65,7 +65,7 @@ export async function sendText(
 export async function sendAudio(
   apikey: [string, string],
   username: string,
-  scene: string,
+  npc: string,
   audio: string,
 ): Promise<string> {
   let output: string = '';
@@ -88,7 +88,7 @@ export async function sendAudio(
         key: apikey[0],
         secret: apikey[1],
       })
-      .setScene(scene)
+      .setScene(npc)
       .setUser({ fullName: username })
       .setOnError((err: InworldError) => {
         reject(err);
@@ -275,7 +275,7 @@ function testPackets(
 export async function openConnectionManually(
   apikey: [string, string],
   username: string,
-  scene: string,
+  npc: string,
 ): Promise<InworldConnectionService> {
   let packets: InworldPacket[] = [];
 
@@ -292,7 +292,7 @@ export async function openConnectionManually(
           autoReconnect: false,
         },
       })
-      .setScene(scene)
+      .setScene(npc)
       .setOnError((err: InworldError) => {
         switch (err.code) {
           case status.ABORTED:
@@ -319,7 +319,7 @@ export async function openConnectionManually(
 export async function openConnectionManuallySendText(
   apikey: [string, string],
   username: string,
-  scene: string,
+  npc: string,
   message: string,
 ): Promise<InworldConnectionService> {
   let packets: InworldPacket[] = [];
@@ -337,7 +337,7 @@ export async function openConnectionManuallySendText(
           autoReconnect: false,
         },
       })
-      .setScene(scene)
+      .setScene(npc)
       .setOnError((err: InworldError) => {
         switch (err.code) {
           case status.ABORTED:
