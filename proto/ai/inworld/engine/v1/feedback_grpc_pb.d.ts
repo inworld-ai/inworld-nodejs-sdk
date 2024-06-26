@@ -4,11 +4,11 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import * as grpc from "@grpc/grpc-js";
+import * as grpc from "grpc";
 import * as ai_inworld_engine_v1_feedback_pb from "../../../../ai/inworld/engine/v1/feedback_pb";
-
-
-
+import * as google_api_client_pb from "../../../../google/api/client_pb";
+import * as google_api_field_behavior_pb from "../../../../google/api/field_behavior_pb";
+import * as google_api_resource_pb from "../../../../google/api/resource_pb";
 import * as google_protobuf_empty_pb from "google-protobuf/google/protobuf/empty_pb";
 
 interface IFeedbackService extends grpc.ServiceDefinition<grpc.UntypedServiceImplementation> {
