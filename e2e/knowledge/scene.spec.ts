@@ -7,19 +7,23 @@ let key: [string, string] = [
   process.env.INWORLD_E2E_SECRET!,
 ];
 let name: string = 'Tester';
-let scene: string = process.env.INWORLD_E2E_SCENE_MOVIESET!;
+let npc: string = process.env.INWORLD_E2E_CHARACTER_SCENE!;
 
-test('[Scene] Should know scene location', async () => {
+jest.retryTimes(3);
+
+test('[Scene] NPC should know scene location', async () => {
   await allure.allureId('892');
   await allure.suite('Node.js SDK');
   await allure.feature('Knowledge');
   await allure.story('Scene');
-  await allure.description('This test confirms that NPC knows scene location');
+  await allure.description(
+    'This test confirms that NPC knows the scene location',
+  );
 
   const result = await sendText(
     key,
     name,
-    scene,
+    npc,
     'Do you know where our physical location is?',
   );
   expect(result[0]).toContain('Hollywood');
