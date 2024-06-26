@@ -6,9 +6,9 @@
 
 import * as grpc from "@grpc/grpc-js";
 import * as ai_inworld_engine_v1_state_serialization_pb from "../../../../ai/inworld/engine/v1/state_serialization_pb";
-
-
-
+ 
+ 
+ 
 import * as google_protobuf_timestamp_pb from "google-protobuf/google/protobuf/timestamp_pb";
 
 interface IStateSerializationService extends grpc.ServiceDefinition<grpc.UntypedServiceImplementation> {

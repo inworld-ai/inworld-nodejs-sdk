@@ -6,9 +6,9 @@
 
 import * as grpc from "@grpc/grpc-js";
 import * as ai_inworld_engine_v1_feedback_pb from "../../../../ai/inworld/engine/v1/feedback_pb";
-
-
-
+ 
+ 
+ 
 import * as google_protobuf_empty_pb from "google-protobuf/google/protobuf/empty_pb";
 
 interface IFeedbackService extends grpc.ServiceDefinition<grpc.UntypedServiceImplementation> {
