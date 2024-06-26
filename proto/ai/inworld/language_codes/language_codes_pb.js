@@ -28,7 +28,8 @@ proto.ai.inworld.language_codes.LanguageCode = {
   EN_US: 1,
   ZH_CN: 2,
   KO_KR: 3,
-  JA_JP: 4
+  JA_JP: 4,
+  RU_RU: 5
 };
 
 
