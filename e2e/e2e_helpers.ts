@@ -1,5 +1,6 @@
 import {
   InworldClient,
+  InworldConnectionService,
   InworldError,
   InworldPacket,
   status,
@@ -123,5 +124,83 @@ export async function sendAudio(
         .on('data', sendChunk)
         .on('end', () => silenceStream.close());
     });
+  });
+}
+
+function testBasePacketStructure(packet: InworldPacket) {
+  // packetId
+  expect(packet.packetId.packetId).toBeDefined();
+  expect(packet.packetId.utteranceId).toBeDefined();
+  expect(packet.packetId.correlationId).toBeDefined();
+  // routing
+  expect(packet.routing.source).toBeDefined();
+  expect(packet.routing.targets).toBeDefined();
+  // date
+  expect(packet.date).toBeDefined();
+}
+
+function testSceneMutationPacket(packet: InworldPacket) {
+  if (packet.isSceneMutationResponse()) {
+    expect(packet.isSceneMutationResponse()).toBeTruthy();
+    // routing
+    expect(packet.routing.source.isCharacter).toBeFalsy();
+    expect(packet.routing.source.isPlayer).toBeFalsy();
+    // sceneMutation
+    expect(packet.sceneMutation.name).toBeDefined();
+    expect(packet.sceneMutation.description).toBeDefined();
+    expect(packet.sceneMutation.displayName).toBeDefined();
+    expect(packet.sceneMutation.loadedCharacters).toBeDefined();
+  }
+}
+
+function testInitialPackets(packets: InworldPacket[]) {
+  expect(packets.length).toBeGreaterThan(0);
+
+  for (let packet of packets) {
+    testBasePacketStructure(packet);
+    testSceneMutationPacket(packet);
+  }
+}
+
+export async function openConnectionManually(
+  apikey: [string, string],
+  username: string,
+  scene: string,
+): Promise<InworldConnectionService> {
+  let packets: InworldPacket[] = [];
+
+  return new Promise<InworldConnectionService>(async (resolve, reject) => {
+    const client = new InworldClient()
+      .setApiKey({
+        key: apikey[0],
+        secret: apikey[1],
+      })
+      .setUser({ fullName: username })
+      .setConfiguration({
+        capabilities: { emotions: true },
+        connection: {
+          autoReconnect: false,
+        },
+      })
+      .setScene(scene)
+      .setOnError((err: InworldError) => {
+        switch (err.code) {
+          case status.ABORTED:
+          case status.CANCELLED:
+            break;
+          default:
+            connection.close();
+            reject(err);
+            break;
+        }
+      })
+      .setOnMessage((packet: InworldPacket) => {
+        packets.push(packet);
+      });
+
+    const connection = client.build();
+    await connection.open();
+    testInitialPackets(packets);
+    resolve(connection);
   });
 }
