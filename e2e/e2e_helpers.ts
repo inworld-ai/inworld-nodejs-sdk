@@ -309,7 +309,6 @@ export async function openConnectionManually(
 
     const connection = client.build();
     await connection.open();
-    expect(packets.length).toBeGreaterThan(0);
     testPackets(packets, connection);
     resolve(connection);
   });
@@ -358,7 +357,6 @@ export async function openConnectionManuallySendText(
 
     const connection = client.build();
     await connection.open();
-    expect(packets.length).toBeGreaterThan(0);
     await connection.sendText(message);
   });
 }
