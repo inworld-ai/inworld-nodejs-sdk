@@ -127,21 +127,25 @@ export async function sendAudio(
   });
 }
 
-function testBasePacket(packet: InworldPacket) {
+function testBasePacketStructure(packet: InworldPacket) {
+  // packetId
+  expect(packet.packetId.packetId).toBeDefined();
+  expect(packet.packetId.utteranceId).toBeDefined();
+  expect(packet.packetId.correlationId).toBeDefined();
+  // routing
+  expect(packet.routing.source).toBeDefined();
+  expect(packet.routing.targets).toBeDefined();
+  // date
+  expect(packet.date).toBeDefined();
+}
+
+function testSceneMutationPacket(packet: InworldPacket) {
   if (packet.isSceneMutationResponse()) {
-    // control
-    expect(packet.isSceneMutationResponse).toBeTruthy();
-    // packetId
-    expect(packet.packetId.packetId).toBeDefined();
-    expect(packet.packetId.utteranceId).toBeDefined();
-    expect(packet.packetId.correlationId).toBeDefined();
+    expect(packet.isSceneMutationResponse()).toBeTruthy();
     // routing
-    expect(packet.routing.source).toBeDefined();
-    expect(packet.routing.targets).toBeDefined();
     expect(packet.routing.source.isCharacter).toBeFalsy();
     expect(packet.routing.source.isPlayer).toBeFalsy();
-    // date
-    expect(packet.date).toBeDefined();
+    // sceneMutation
     expect(packet.sceneMutation.name).toBeDefined();
     expect(packet.sceneMutation.description).toBeDefined();
     expect(packet.sceneMutation.displayName).toBeDefined();
@@ -153,7 +157,8 @@ function testInitialPackets(packets: InworldPacket[]) {
   expect(packets.length).toBeGreaterThan(0);
 
   for (let packet of packets) {
-    testBasePacket(packet);
+    testBasePacketStructure(packet);
+    testSceneMutationPacket(packet);
   }
 }
 
@@ -195,7 +200,6 @@ export async function openConnectionManually(
 
     const connection = client.build();
     await connection.open();
-    expect(packets.length).toBeGreaterThan(0);
     testInitialPackets(packets);
     resolve(connection);
   });
