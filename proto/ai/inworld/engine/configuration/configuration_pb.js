@@ -217,7 +217,9 @@ proto.configuration.CapabilitiesConfiguration.toObject = function(includeInstanc
     ttsMp3: jspb.Message.getBooleanFieldWithDefault(msg, 15, false),
     multiAgent: jspb.Message.getBooleanFieldWithDefault(msg, 20, false),
     audio2face: jspb.Message.getBooleanFieldWithDefault(msg, 21, false),
-    inspect: jspb.Message.getBooleanFieldWithDefault(msg, 22, false)
+    inspect: jspb.Message.getBooleanFieldWithDefault(msg, 22, false),
+    pingPongReport: jspb.Message.getBooleanFieldWithDefault(msg, 23, false),
+    percievedLatencyReport: jspb.Message.getBooleanFieldWithDefault(msg, 24, false)
   };
 
   if (includeInstance) {
@@ -321,6 +323,14 @@ proto.configuration.CapabilitiesConfiguration.deserializeBinaryFromReader = func
     case 22:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setInspect(value);
+      break;
+    case 23:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setPingPongReport(value);
+      break;
+    case 24:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setPercievedLatencyReport(value);
       break;
     default:
       reader.skipField();
@@ -467,6 +477,20 @@ proto.configuration.CapabilitiesConfiguration.serializeBinaryToWriter = function
   if (f) {
     writer.writeBool(
       22,
+      f
+    );
+  }
+  f = message.getPingPongReport();
+  if (f) {
+    writer.writeBool(
+      23,
+      f
+    );
+  }
+  f = message.getPercievedLatencyReport();
+  if (f) {
+    writer.writeBool(
+      24,
       f
     );
   }
@@ -776,6 +800,42 @@ proto.configuration.CapabilitiesConfiguration.prototype.getInspect = function() 
  */
 proto.configuration.CapabilitiesConfiguration.prototype.setInspect = function(value) {
   return jspb.Message.setProto3BooleanField(this, 22, value);
+};
+
+
+/**
+ * optional bool ping_pong_report = 23;
+ * @return {boolean}
+ */
+proto.configuration.CapabilitiesConfiguration.prototype.getPingPongReport = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 23, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.configuration.CapabilitiesConfiguration} returns this
+ */
+proto.configuration.CapabilitiesConfiguration.prototype.setPingPongReport = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 23, value);
+};
+
+
+/**
+ * optional bool percieved_latency_report = 24;
+ * @return {boolean}
+ */
+proto.configuration.CapabilitiesConfiguration.prototype.getPercievedLatencyReport = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 24, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.configuration.CapabilitiesConfiguration} returns this
+ */
+proto.configuration.CapabilitiesConfiguration.prototype.setPercievedLatencyReport = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 24, value);
 };
 
 
