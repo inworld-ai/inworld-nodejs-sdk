@@ -127,21 +127,25 @@ export async function sendAudio(
   });
 }
 
-function testBasePacket(packet: InworldPacket) {
+function testBasePacketStructure(packet: InworldPacket) {
+  // packetId
+  expect(packet.packetId.packetId).toBeDefined();
+  expect(packet.packetId.utteranceId).toBeDefined();
+  expect(packet.packetId.correlationId).toBeDefined();
+  // routing
+  expect(packet.routing.source).toBeDefined();
+  expect(packet.routing.targets).toBeDefined();
+  // date
+  expect(packet.date).toBeDefined();
+}
+
+function testSceneMutationPacket(packet: InworldPacket) {
   if (packet.isSceneMutationResponse()) {
-    // control
-    expect(packet.isSceneMutationResponse).toBeTruthy();
-    // packetId
-    expect(packet.packetId.packetId).toBeDefined();
-    expect(packet.packetId.utteranceId).toBeDefined();
-    expect(packet.packetId.correlationId).toBeDefined();
+    expect(packet.isSceneMutationResponse()).toBeTruthy();
     // routing
-    expect(packet.routing.source).toBeDefined();
-    expect(packet.routing.targets).toBeDefined();
     expect(packet.routing.source.isCharacter).toBeFalsy();
     expect(packet.routing.source.isPlayer).toBeFalsy();
-    // date
-    expect(packet.date).toBeDefined();
+    // sceneMutation
     expect(packet.sceneMutation.name).toBeDefined();
     expect(packet.sceneMutation.description).toBeDefined();
     expect(packet.sceneMutation.displayName).toBeDefined();
@@ -149,11 +153,50 @@ function testBasePacket(packet: InworldPacket) {
   }
 }
 
-async function testTextPacket(
+async function testEmotionPacket(
   packet: InworldPacket,
   connection: InworldConnectionService,
   idCheck: (id: string) => boolean,
 ) {
+  if (packet.isEmotion()) {
+    // packetId
+    expect(packet.packetId.interactionId).toBeDefined();
+    expect(idCheck(packet.packetId.interactionId!)).toBeTruthy();
+    expect(packet.packetId.conversationId).toBeDefined();
+    // routing
+    let characters = await connection.getCharacters();
+    let characterName = characters[0].id;
+    expect(packet.routing.source.name).toBe(characterName);
+    expect(packet.routing.source.isCharacter).toBeTruthy();
+    expect(packet.routing.source.isPlayer).toBeFalsy();
+    // emotion
+    expect(packet.emotions.behavior).toBeDefined();
+    expect(packet.emotions.strength).toBeDefined();
+  }
+}
+
+async function testAudioPacket(
+  packet: InworldPacket,
+  connection: InworldConnectionService,
+  idCheck: (id: string) => boolean,
+) {
+  if (packet.isAudio()) {
+    // packetId
+    expect(packet.packetId.interactionId).toBeDefined();
+    expect(idCheck(packet.packetId.interactionId!)).toBeTruthy();
+    expect(packet.packetId.conversationId).toBeDefined();
+    // routing
+    let characters = await connection.getCharacters();
+    let characterName = characters[0].id;
+    expect(packet.routing.source.name).toBe(characterName);
+    expect(packet.routing.source.isCharacter).toBeTruthy();
+    expect(packet.routing.source.isPlayer).toBeFalsy();
+    // audio
+    expect(packet.audio.chunk).toBeDefined();
+  }
+}
+
+async function testControlPacket(packet: InworldPacket) {
   if (packet.isControl()) {
     // control
     expect(packet.isControl).toBeTruthy();
@@ -165,29 +208,25 @@ async function testTextPacket(
       expect(packet.control.action).toBe('INTERACTION_END');
     }
     // packetId
-    expect(packet.packetId.packetId).toBeDefined();
-    expect(packet.packetId.utteranceId).toBeDefined();
-    expect(packet.packetId.correlationId).toBeDefined();
     expect(packet.packetId.conversationId).toBeDefined();
-    // routing
-    expect(packet.routing.source).toBeDefined();
-    expect(packet.routing.targets).toBeDefined();
     if (!packet.isInteractionEnd()) {
       expect(packet.routing.source.isCharacter).toBeFalsy();
       expect(packet.routing.source.isPlayer).toBeFalsy();
     } else {
       expect(packet.routing.source.isCharacter).toBeTruthy();
     }
-    // date
-    expect(packet.date).toBeDefined();
   }
+}
+
+async function testTextPacket(
+  packet: InworldPacket,
+  connection: InworldConnectionService,
+  idCheck: (id: string) => boolean,
+) {
   if (packet.isText()) {
     // packetId
-    expect(packet.packetId.packetId).toBeDefined();
-    expect(packet.packetId.utteranceId).toBeDefined();
     expect(packet.packetId.interactionId).toBeDefined();
     expect(idCheck(packet.packetId.interactionId!)).toBeTruthy();
-    expect(packet.packetId.correlationId).toBeDefined();
     expect(packet.packetId.conversationId).toBeDefined();
     // routing
     let characters = await connection.getCharacters();
@@ -195,53 +234,9 @@ async function testTextPacket(
     expect(packet.routing.source.name).toBe(characterName);
     expect(packet.routing.source.isCharacter).toBeTruthy();
     expect(packet.routing.source.isPlayer).toBeFalsy();
-    expect(packet.routing.targets).toBeDefined();
-    // date
-    expect(packet.date).toBeDefined();
     // text
     expect(packet.text.text).toBeDefined();
     expect(packet.text.final).toBeDefined();
-  }
-  if (packet.isEmotion()) {
-    // packetId
-    expect(packet.packetId.packetId).toBeDefined();
-    expect(packet.packetId.utteranceId).toBeDefined();
-    expect(packet.packetId.interactionId).toBeDefined();
-    expect(idCheck(packet.packetId.interactionId!)).toBeTruthy();
-    expect(packet.packetId.correlationId).toBeDefined();
-    expect(packet.packetId.conversationId).toBeDefined();
-    // routing
-    let characters = await connection.getCharacters();
-    let characterName = characters[0].id;
-    expect(packet.routing.source.name).toBe(characterName);
-    expect(packet.routing.source.isCharacter).toBeTruthy();
-    expect(packet.routing.source.isPlayer).toBeFalsy();
-    expect(packet.routing.targets).toBeDefined();
-    // date
-    expect(packet.date).toBeDefined();
-    // emotion
-    expect(packet.emotions.behavior).toBeDefined();
-    expect(packet.emotions.strength).toBeDefined();
-  }
-  if (packet.isAudio()) {
-    // packetId
-    expect(packet.packetId.packetId).toBeDefined();
-    expect(packet.packetId.utteranceId).toBeDefined();
-    expect(packet.packetId.interactionId).toBeDefined();
-    expect(idCheck(packet.packetId.interactionId!)).toBeTruthy();
-    expect(packet.packetId.correlationId).toBeDefined();
-    expect(packet.packetId.conversationId).toBeDefined();
-    // routing
-    let characters = await connection.getCharacters();
-    let characterName = characters[0].id;
-    expect(packet.routing.source.name).toBe(characterName);
-    expect(packet.routing.source.isCharacter).toBeTruthy();
-    expect(packet.routing.source.isPlayer).toBeFalsy();
-    expect(packet.routing.targets).toBeDefined();
-    // date
-    expect(packet.date).toBeDefined();
-    // audio
-    expect(packet.audio.chunk).toBeDefined();
   }
 }
 
@@ -267,8 +262,12 @@ function testPackets(
   expect(packets.length).toBeGreaterThan(0);
   const idCheck = interactionIDCheck();
   for (let packet of packets) {
-    testBasePacket(packet);
+    testBasePacketStructure(packet);
+    testSceneMutationPacket(packet);
     testTextPacket(packet, connection, idCheck);
+    testAudioPacket(packet, connection, idCheck);
+    testEmotionPacket(packet, connection, idCheck);
+    testControlPacket(packet);
   }
 }
 
