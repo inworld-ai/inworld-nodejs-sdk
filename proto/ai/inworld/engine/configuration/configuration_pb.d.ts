@@ -41,6 +41,10 @@ export class CapabilitiesConfiguration extends jspb.Message {
     setAudio2face(value: boolean): CapabilitiesConfiguration;
     getInspect(): boolean;
     setInspect(value: boolean): CapabilitiesConfiguration;
+    getPingPongReport(): boolean;
+    setPingPongReport(value: boolean): CapabilitiesConfiguration;
+    getPercievedLatencyReport(): boolean;
+    setPercievedLatencyReport(value: boolean): CapabilitiesConfiguration;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): CapabilitiesConfiguration.AsObject;
@@ -71,6 +75,8 @@ export namespace CapabilitiesConfiguration {
         multiAgent: boolean,
         audio2face: boolean,
         inspect: boolean,
+        pingPongReport: boolean,
+        percievedLatencyReport: boolean,
     }
 }
 
