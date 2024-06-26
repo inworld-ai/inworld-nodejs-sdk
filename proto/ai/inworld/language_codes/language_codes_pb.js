@@ -13,7 +13,13 @@
 
 var jspb = require('google-protobuf');
 var goog = jspb;
-var global = Function('return this')();
+var global = (function() {
+  if (this) { return this; }
+  if (typeof window !== 'undefined') { return window; }
+  if (typeof global !== 'undefined') { return global; }
+  if (typeof self !== 'undefined') { return self; }
+  return Function('return this')();
+}.call(null));
 
 var google_protobuf_descriptor_pb = require('google-protobuf/google/protobuf/descriptor_pb.js');
 goog.object.extend(proto, google_protobuf_descriptor_pb);
@@ -28,7 +34,8 @@ proto.ai.inworld.language_codes.LanguageCode = {
   EN_US: 1,
   ZH_CN: 2,
   KO_KR: 3,
-  JA_JP: 4
+  JA_JP: 4,
+  RU_RU: 5
 };
 
 

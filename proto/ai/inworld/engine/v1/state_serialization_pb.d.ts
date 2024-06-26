@@ -5,9 +5,9 @@
 /* eslint-disable */
 
 import * as jspb from "google-protobuf";
-
-
-
+import * as google_api_client_pb from "../../../../google/api/client_pb";
+import * as google_api_field_behavior_pb from "../../../../google/api/field_behavior_pb";
+import * as google_api_resource_pb from "../../../../google/api/resource_pb";
 import * as google_protobuf_timestamp_pb from "google-protobuf/google/protobuf/timestamp_pb";
 
 export class GetSessionStateRequest extends jspb.Message { 
