@@ -13,10 +13,16 @@
 
 var jspb = require('google-protobuf');
 var goog = jspb;
-var global = Function('return this')();
+var global = (function() {
+  if (this) { return this; }
+  if (typeof window !== 'undefined') { return window; }
+  if (typeof global !== 'undefined') { return global; }
+  if (typeof self !== 'undefined') { return self; }
+  return Function('return this')();
+}.call(null));
 
-
-
+var google_api_annotations_pb = require('../../../google/api/annotations_pb.js');
+goog.object.extend(proto, google_api_annotations_pb);
 var google_protobuf_empty_pb = require('google-protobuf/google/protobuf/empty_pb.js');
 goog.object.extend(proto, google_protobuf_empty_pb);
 var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/timestamp_pb.js');
@@ -29,38 +35,38 @@ var ai_inworld_voices_base_voice_pb = require('../../../ai/inworld/voices/base_v
 goog.object.extend(proto, ai_inworld_voices_base_voice_pb);
 var ai_inworld_language_codes_language_codes_pb = require('../../../ai/inworld/language_codes/language_codes_pb.js');
 goog.object.extend(proto, ai_inworld_language_codes_language_codes_pb);
-goog.exportSymbol('proto.AccessToken', null, global);
-goog.exportSymbol('proto.ActorRelations', null, global);
-goog.exportSymbol('proto.ActorRelations.Relation', null, global);
-goog.exportSymbol('proto.AudioSettings', null, global);
-goog.exportSymbol('proto.CapabilitiesRequest', null, global);
-goog.exportSymbol('proto.ClientRequest', null, global);
-goog.exportSymbol('proto.ConversationState', null, global);
-goog.exportSymbol('proto.ConversationState.ConversationSettings', null, global);
-goog.exportSymbol('proto.GenerateTokenRequest', null, global);
-goog.exportSymbol('proto.ListBaseVoicesRequest', null, global);
-goog.exportSymbol('proto.ListBaseVoicesResponce', null, global);
-goog.exportSymbol('proto.LoadSceneRequest', null, global);
-goog.exportSymbol('proto.LoadSceneResponse', null, global);
-goog.exportSymbol('proto.LoadSceneResponse.Agent', null, global);
-goog.exportSymbol('proto.LoadSceneResponse.Agent.CharacterAssets', null, global);
-goog.exportSymbol('proto.LogErrorRequest', null, global);
-goog.exportSymbol('proto.PreviousDialog', null, global);
-goog.exportSymbol('proto.PreviousDialog.DialogParticipant', null, global);
-goog.exportSymbol('proto.PreviousDialog.Phrase', null, global);
-goog.exportSymbol('proto.PreviousDialog.Phrase.PayloadCase', null, global);
-goog.exportSymbol('proto.PreviousState', null, global);
-goog.exportSymbol('proto.PreviousState.StateHolder', null, global);
-goog.exportSymbol('proto.PreviousState.StateHolder.StateFormat', null, global);
-goog.exportSymbol('proto.SessionContinuation', null, global);
-goog.exportSymbol('proto.SessionContinuation.ContinuationInfo', null, global);
-goog.exportSymbol('proto.UserRequest', null, global);
-goog.exportSymbol('proto.UserSettings', null, global);
-goog.exportSymbol('proto.UserSettings.PlayerProfile', null, global);
-goog.exportSymbol('proto.UserSettings.PlayerProfile.PlayerField', null, global);
-goog.exportSymbol('proto.VoicePreset', null, global);
-goog.exportSymbol('proto.VoicePreviewRequest', null, global);
-goog.exportSymbol('proto.VoicePreviewResponse', null, global);
+goog.exportSymbol('proto.ai.inworld.engine.AccessToken', null, global);
+goog.exportSymbol('proto.ai.inworld.engine.ActorRelations', null, global);
+goog.exportSymbol('proto.ai.inworld.engine.ActorRelations.Relation', null, global);
+goog.exportSymbol('proto.ai.inworld.engine.AudioSettings', null, global);
+goog.exportSymbol('proto.ai.inworld.engine.CapabilitiesRequest', null, global);
+goog.exportSymbol('proto.ai.inworld.engine.ClientRequest', null, global);
+goog.exportSymbol('proto.ai.inworld.engine.ConversationState', null, global);
+goog.exportSymbol('proto.ai.inworld.engine.ConversationState.ConversationSettings', null, global);
+goog.exportSymbol('proto.ai.inworld.engine.GenerateTokenRequest', null, global);
+goog.exportSymbol('proto.ai.inworld.engine.ListBaseVoicesRequest', null, global);
+goog.exportSymbol('proto.ai.inworld.engine.ListBaseVoicesResponce', null, global);
+goog.exportSymbol('proto.ai.inworld.engine.LoadSceneRequest', null, global);
+goog.exportSymbol('proto.ai.inworld.engine.LoadSceneResponse', null, global);
+goog.exportSymbol('proto.ai.inworld.engine.LoadSceneResponse.Agent', null, global);
+goog.exportSymbol('proto.ai.inworld.engine.LoadSceneResponse.Agent.CharacterAssets', null, global);
+goog.exportSymbol('proto.ai.inworld.engine.LogErrorRequest', null, global);
+goog.exportSymbol('proto.ai.inworld.engine.PreviousDialog', null, global);
+goog.exportSymbol('proto.ai.inworld.engine.PreviousDialog.DialogParticipant', null, global);
+goog.exportSymbol('proto.ai.inworld.engine.PreviousDialog.Phrase', null, global);
+goog.exportSymbol('proto.ai.inworld.engine.PreviousDialog.Phrase.PayloadCase', null, global);
+goog.exportSymbol('proto.ai.inworld.engine.PreviousState', null, global);
+goog.exportSymbol('proto.ai.inworld.engine.PreviousState.StateHolder', null, global);
+goog.exportSymbol('proto.ai.inworld.engine.PreviousState.StateHolder.StateFormat', null, global);
+goog.exportSymbol('proto.ai.inworld.engine.SessionContinuation', null, global);
+goog.exportSymbol('proto.ai.inworld.engine.SessionContinuation.ContinuationInfo', null, global);
+goog.exportSymbol('proto.ai.inworld.engine.UserRequest', null, global);
+goog.exportSymbol('proto.ai.inworld.engine.UserSettings', null, global);
+goog.exportSymbol('proto.ai.inworld.engine.UserSettings.PlayerProfile', null, global);
+goog.exportSymbol('proto.ai.inworld.engine.UserSettings.PlayerProfile.PlayerField', null, global);
+goog.exportSymbol('proto.ai.inworld.engine.VoicePreset', null, global);
+goog.exportSymbol('proto.ai.inworld.engine.VoicePreviewRequest', null, global);
+goog.exportSymbol('proto.ai.inworld.engine.VoicePreviewResponse', null, global);
 /**
  * Generated by JsPbCodeGenerator.
  * @param {Array=} opt_data Optional initial data array, typically from a
@@ -71,16 +77,16 @@ goog.exportSymbol('proto.VoicePreviewResponse', null, global);
  * @extends {jspb.Message}
  * @constructor
  */
-proto.CapabilitiesRequest = function(opt_data) {
+proto.ai.inworld.engine.CapabilitiesRequest = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.CapabilitiesRequest, jspb.Message);
+goog.inherits(proto.ai.inworld.engine.CapabilitiesRequest, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.CapabilitiesRequest.displayName = 'proto.CapabilitiesRequest';
+  proto.ai.inworld.engine.CapabilitiesRequest.displayName = 'proto.ai.inworld.engine.CapabilitiesRequest';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -92,16 +98,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.UserRequest = function(opt_data) {
+proto.ai.inworld.engine.UserRequest = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.UserRequest, jspb.Message);
+goog.inherits(proto.ai.inworld.engine.UserRequest, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.UserRequest.displayName = 'proto.UserRequest';
+  proto.ai.inworld.engine.UserRequest.displayName = 'proto.ai.inworld.engine.UserRequest';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -113,16 +119,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.ClientRequest = function(opt_data) {
+proto.ai.inworld.engine.ClientRequest = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.ClientRequest, jspb.Message);
+goog.inherits(proto.ai.inworld.engine.ClientRequest, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.ClientRequest.displayName = 'proto.ClientRequest';
+  proto.ai.inworld.engine.ClientRequest.displayName = 'proto.ai.inworld.engine.ClientRequest';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -134,16 +140,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.LoadSceneRequest = function(opt_data) {
+proto.ai.inworld.engine.LoadSceneRequest = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.LoadSceneRequest, jspb.Message);
+goog.inherits(proto.ai.inworld.engine.LoadSceneRequest, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.LoadSceneRequest.displayName = 'proto.LoadSceneRequest';
+  proto.ai.inworld.engine.LoadSceneRequest.displayName = 'proto.ai.inworld.engine.LoadSceneRequest';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -155,16 +161,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.AudioSettings = function(opt_data) {
+proto.ai.inworld.engine.AudioSettings = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.AudioSettings, jspb.Message);
+goog.inherits(proto.ai.inworld.engine.AudioSettings, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.AudioSettings.displayName = 'proto.AudioSettings';
+  proto.ai.inworld.engine.AudioSettings.displayName = 'proto.ai.inworld.engine.AudioSettings';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -176,16 +182,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.UserSettings = function(opt_data) {
+proto.ai.inworld.engine.UserSettings = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.UserSettings, jspb.Message);
+goog.inherits(proto.ai.inworld.engine.UserSettings, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.UserSettings.displayName = 'proto.UserSettings';
+  proto.ai.inworld.engine.UserSettings.displayName = 'proto.ai.inworld.engine.UserSettings';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -197,16 +203,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.UserSettings.PlayerProfile = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.UserSettings.PlayerProfile.repeatedFields_, null);
+proto.ai.inworld.engine.UserSettings.PlayerProfile = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.ai.inworld.engine.UserSettings.PlayerProfile.repeatedFields_, null);
 };
-goog.inherits(proto.UserSettings.PlayerProfile, jspb.Message);
+goog.inherits(proto.ai.inworld.engine.UserSettings.PlayerProfile, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.UserSettings.PlayerProfile.displayName = 'proto.UserSettings.PlayerProfile';
+  proto.ai.inworld.engine.UserSettings.PlayerProfile.displayName = 'proto.ai.inworld.engine.UserSettings.PlayerProfile';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -218,16 +224,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.UserSettings.PlayerProfile.PlayerField = function(opt_data) {
+proto.ai.inworld.engine.UserSettings.PlayerProfile.PlayerField = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.UserSettings.PlayerProfile.PlayerField, jspb.Message);
+goog.inherits(proto.ai.inworld.engine.UserSettings.PlayerProfile.PlayerField, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.UserSettings.PlayerProfile.PlayerField.displayName = 'proto.UserSettings.PlayerProfile.PlayerField';
+  proto.ai.inworld.engine.UserSettings.PlayerProfile.PlayerField.displayName = 'proto.ai.inworld.engine.UserSettings.PlayerProfile.PlayerField';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -239,16 +245,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.SessionContinuation = function(opt_data) {
+proto.ai.inworld.engine.SessionContinuation = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.SessionContinuation, jspb.Message);
+goog.inherits(proto.ai.inworld.engine.SessionContinuation, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.SessionContinuation.displayName = 'proto.SessionContinuation';
+  proto.ai.inworld.engine.SessionContinuation.displayName = 'proto.ai.inworld.engine.SessionContinuation';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -260,16 +266,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.SessionContinuation.ContinuationInfo = function(opt_data) {
+proto.ai.inworld.engine.SessionContinuation.ContinuationInfo = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.SessionContinuation.ContinuationInfo, jspb.Message);
+goog.inherits(proto.ai.inworld.engine.SessionContinuation.ContinuationInfo, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.SessionContinuation.ContinuationInfo.displayName = 'proto.SessionContinuation.ContinuationInfo';
+  proto.ai.inworld.engine.SessionContinuation.ContinuationInfo.displayName = 'proto.ai.inworld.engine.SessionContinuation.ContinuationInfo';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -281,16 +287,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.PreviousDialog = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.PreviousDialog.repeatedFields_, null);
+proto.ai.inworld.engine.PreviousDialog = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.ai.inworld.engine.PreviousDialog.repeatedFields_, null);
 };
-goog.inherits(proto.PreviousDialog, jspb.Message);
+goog.inherits(proto.ai.inworld.engine.PreviousDialog, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.PreviousDialog.displayName = 'proto.PreviousDialog';
+  proto.ai.inworld.engine.PreviousDialog.displayName = 'proto.ai.inworld.engine.PreviousDialog';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -302,16 +308,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.PreviousDialog.Phrase = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, proto.PreviousDialog.Phrase.oneofGroups_);
+proto.ai.inworld.engine.PreviousDialog.Phrase = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, proto.ai.inworld.engine.PreviousDialog.Phrase.oneofGroups_);
 };
-goog.inherits(proto.PreviousDialog.Phrase, jspb.Message);
+goog.inherits(proto.ai.inworld.engine.PreviousDialog.Phrase, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.PreviousDialog.Phrase.displayName = 'proto.PreviousDialog.Phrase';
+  proto.ai.inworld.engine.PreviousDialog.Phrase.displayName = 'proto.ai.inworld.engine.PreviousDialog.Phrase';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -323,16 +329,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.PreviousState = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.PreviousState.repeatedFields_, null);
+proto.ai.inworld.engine.PreviousState = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.ai.inworld.engine.PreviousState.repeatedFields_, null);
 };
-goog.inherits(proto.PreviousState, jspb.Message);
+goog.inherits(proto.ai.inworld.engine.PreviousState, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.PreviousState.displayName = 'proto.PreviousState';
+  proto.ai.inworld.engine.PreviousState.displayName = 'proto.ai.inworld.engine.PreviousState';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -344,16 +350,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.PreviousState.StateHolder = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.PreviousState.StateHolder.repeatedFields_, null);
+proto.ai.inworld.engine.PreviousState.StateHolder = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.ai.inworld.engine.PreviousState.StateHolder.repeatedFields_, null);
 };
-goog.inherits(proto.PreviousState.StateHolder, jspb.Message);
+goog.inherits(proto.ai.inworld.engine.PreviousState.StateHolder, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.PreviousState.StateHolder.displayName = 'proto.PreviousState.StateHolder';
+  proto.ai.inworld.engine.PreviousState.StateHolder.displayName = 'proto.ai.inworld.engine.PreviousState.StateHolder';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -365,16 +371,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.LoadSceneResponse = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.LoadSceneResponse.repeatedFields_, null);
+proto.ai.inworld.engine.LoadSceneResponse = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.ai.inworld.engine.LoadSceneResponse.repeatedFields_, null);
 };
-goog.inherits(proto.LoadSceneResponse, jspb.Message);
+goog.inherits(proto.ai.inworld.engine.LoadSceneResponse, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.LoadSceneResponse.displayName = 'proto.LoadSceneResponse';
+  proto.ai.inworld.engine.LoadSceneResponse.displayName = 'proto.ai.inworld.engine.LoadSceneResponse';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -386,16 +392,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.LoadSceneResponse.Agent = function(opt_data) {
+proto.ai.inworld.engine.LoadSceneResponse.Agent = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.LoadSceneResponse.Agent, jspb.Message);
+goog.inherits(proto.ai.inworld.engine.LoadSceneResponse.Agent, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.LoadSceneResponse.Agent.displayName = 'proto.LoadSceneResponse.Agent';
+  proto.ai.inworld.engine.LoadSceneResponse.Agent.displayName = 'proto.ai.inworld.engine.LoadSceneResponse.Agent';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -407,16 +413,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.LoadSceneResponse.Agent.CharacterAssets = function(opt_data) {
+proto.ai.inworld.engine.LoadSceneResponse.Agent.CharacterAssets = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.LoadSceneResponse.Agent.CharacterAssets, jspb.Message);
+goog.inherits(proto.ai.inworld.engine.LoadSceneResponse.Agent.CharacterAssets, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.LoadSceneResponse.Agent.CharacterAssets.displayName = 'proto.LoadSceneResponse.Agent.CharacterAssets';
+  proto.ai.inworld.engine.LoadSceneResponse.Agent.CharacterAssets.displayName = 'proto.ai.inworld.engine.LoadSceneResponse.Agent.CharacterAssets';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -428,16 +434,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.LogErrorRequest = function(opt_data) {
+proto.ai.inworld.engine.LogErrorRequest = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.LogErrorRequest, jspb.Message);
+goog.inherits(proto.ai.inworld.engine.LogErrorRequest, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.LogErrorRequest.displayName = 'proto.LogErrorRequest';
+  proto.ai.inworld.engine.LogErrorRequest.displayName = 'proto.ai.inworld.engine.LogErrorRequest';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -449,16 +455,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.VoicePreviewRequest = function(opt_data) {
+proto.ai.inworld.engine.VoicePreviewRequest = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.VoicePreviewRequest, jspb.Message);
+goog.inherits(proto.ai.inworld.engine.VoicePreviewRequest, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.VoicePreviewRequest.displayName = 'proto.VoicePreviewRequest';
+  proto.ai.inworld.engine.VoicePreviewRequest.displayName = 'proto.ai.inworld.engine.VoicePreviewRequest';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -470,16 +476,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.VoicePreviewResponse = function(opt_data) {
+proto.ai.inworld.engine.VoicePreviewResponse = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.VoicePreviewResponse, jspb.Message);
+goog.inherits(proto.ai.inworld.engine.VoicePreviewResponse, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.VoicePreviewResponse.displayName = 'proto.VoicePreviewResponse';
+  proto.ai.inworld.engine.VoicePreviewResponse.displayName = 'proto.ai.inworld.engine.VoicePreviewResponse';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -491,16 +497,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.ListBaseVoicesRequest = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.ListBaseVoicesRequest.repeatedFields_, null);
+proto.ai.inworld.engine.ListBaseVoicesRequest = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.ai.inworld.engine.ListBaseVoicesRequest.repeatedFields_, null);
 };
-goog.inherits(proto.ListBaseVoicesRequest, jspb.Message);
+goog.inherits(proto.ai.inworld.engine.ListBaseVoicesRequest, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.ListBaseVoicesRequest.displayName = 'proto.ListBaseVoicesRequest';
+  proto.ai.inworld.engine.ListBaseVoicesRequest.displayName = 'proto.ai.inworld.engine.ListBaseVoicesRequest';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -512,16 +518,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.ListBaseVoicesResponce = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.ListBaseVoicesResponce.repeatedFields_, null);
+proto.ai.inworld.engine.ListBaseVoicesResponce = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.ai.inworld.engine.ListBaseVoicesResponce.repeatedFields_, null);
 };
-goog.inherits(proto.ListBaseVoicesResponce, jspb.Message);
+goog.inherits(proto.ai.inworld.engine.ListBaseVoicesResponce, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.ListBaseVoicesResponce.displayName = 'proto.ListBaseVoicesResponce';
+  proto.ai.inworld.engine.ListBaseVoicesResponce.displayName = 'proto.ai.inworld.engine.ListBaseVoicesResponce';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -533,16 +539,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.AccessToken = function(opt_data) {
+proto.ai.inworld.engine.AccessToken = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.AccessToken, jspb.Message);
+goog.inherits(proto.ai.inworld.engine.AccessToken, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.AccessToken.displayName = 'proto.AccessToken';
+  proto.ai.inworld.engine.AccessToken.displayName = 'proto.ai.inworld.engine.AccessToken';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -554,16 +560,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.GenerateTokenRequest = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.GenerateTokenRequest.repeatedFields_, null);
+proto.ai.inworld.engine.GenerateTokenRequest = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.ai.inworld.engine.GenerateTokenRequest.repeatedFields_, null);
 };
-goog.inherits(proto.GenerateTokenRequest, jspb.Message);
+goog.inherits(proto.ai.inworld.engine.GenerateTokenRequest, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.GenerateTokenRequest.displayName = 'proto.GenerateTokenRequest';
+  proto.ai.inworld.engine.GenerateTokenRequest.displayName = 'proto.ai.inworld.engine.GenerateTokenRequest';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -575,16 +581,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.ActorRelations = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.ActorRelations.repeatedFields_, null);
+proto.ai.inworld.engine.ActorRelations = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.ai.inworld.engine.ActorRelations.repeatedFields_, null);
 };
-goog.inherits(proto.ActorRelations, jspb.Message);
+goog.inherits(proto.ai.inworld.engine.ActorRelations, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.ActorRelations.displayName = 'proto.ActorRelations';
+  proto.ai.inworld.engine.ActorRelations.displayName = 'proto.ai.inworld.engine.ActorRelations';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -596,16 +602,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.ActorRelations.Relation = function(opt_data) {
+proto.ai.inworld.engine.ActorRelations.Relation = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.ActorRelations.Relation, jspb.Message);
+goog.inherits(proto.ai.inworld.engine.ActorRelations.Relation, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.ActorRelations.Relation.displayName = 'proto.ActorRelations.Relation';
+  proto.ai.inworld.engine.ActorRelations.Relation.displayName = 'proto.ai.inworld.engine.ActorRelations.Relation';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -617,16 +623,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.ConversationState = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.ConversationState.repeatedFields_, null);
+proto.ai.inworld.engine.ConversationState = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.ai.inworld.engine.ConversationState.repeatedFields_, null);
 };
-goog.inherits(proto.ConversationState, jspb.Message);
+goog.inherits(proto.ai.inworld.engine.ConversationState, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.ConversationState.displayName = 'proto.ConversationState';
+  proto.ai.inworld.engine.ConversationState.displayName = 'proto.ai.inworld.engine.ConversationState';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -638,16 +644,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.ConversationState.ConversationSettings = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.ConversationState.ConversationSettings.repeatedFields_, null);
+proto.ai.inworld.engine.ConversationState.ConversationSettings = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.ai.inworld.engine.ConversationState.ConversationSettings.repeatedFields_, null);
 };
-goog.inherits(proto.ConversationState.ConversationSettings, jspb.Message);
+goog.inherits(proto.ai.inworld.engine.ConversationState.ConversationSettings, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.ConversationState.ConversationSettings.displayName = 'proto.ConversationState.ConversationSettings';
+  proto.ai.inworld.engine.ConversationState.ConversationSettings.displayName = 'proto.ai.inworld.engine.ConversationState.ConversationSettings';
 }
 
 
@@ -665,8 +671,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.CapabilitiesRequest.prototype.toObject = function(opt_includeInstance) {
-  return proto.CapabilitiesRequest.toObject(opt_includeInstance, this);
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.toObject = function(opt_includeInstance) {
+  return proto.ai.inworld.engine.CapabilitiesRequest.toObject(opt_includeInstance, this);
 };
 
 
@@ -675,11 +681,11 @@ proto.CapabilitiesRequest.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.CapabilitiesRequest} msg The msg instance to transform.
+ * @param {!proto.ai.inworld.engine.CapabilitiesRequest} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.CapabilitiesRequest.toObject = function(includeInstance, msg) {
+proto.ai.inworld.engine.CapabilitiesRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
     audio: jspb.Message.getBooleanFieldWithDefault(msg, 1, false),
     text: jspb.Message.getBooleanFieldWithDefault(msg, 2, false),
@@ -715,23 +721,23 @@ proto.CapabilitiesRequest.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.CapabilitiesRequest}
+ * @return {!proto.ai.inworld.engine.CapabilitiesRequest}
  */
-proto.CapabilitiesRequest.deserializeBinary = function(bytes) {
+proto.ai.inworld.engine.CapabilitiesRequest.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.CapabilitiesRequest;
-  return proto.CapabilitiesRequest.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.ai.inworld.engine.CapabilitiesRequest;
+  return proto.ai.inworld.engine.CapabilitiesRequest.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.CapabilitiesRequest} msg The message object to deserialize into.
+ * @param {!proto.ai.inworld.engine.CapabilitiesRequest} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.CapabilitiesRequest}
+ * @return {!proto.ai.inworld.engine.CapabilitiesRequest}
  */
-proto.CapabilitiesRequest.deserializeBinaryFromReader = function(msg, reader) {
+proto.ai.inworld.engine.CapabilitiesRequest.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -835,9 +841,9 @@ proto.CapabilitiesRequest.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.CapabilitiesRequest.prototype.serializeBinary = function() {
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.CapabilitiesRequest.serializeBinaryToWriter(this, writer);
+  proto.ai.inworld.engine.CapabilitiesRequest.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -845,11 +851,11 @@ proto.CapabilitiesRequest.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.CapabilitiesRequest} message
+ * @param {!proto.ai.inworld.engine.CapabilitiesRequest} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.CapabilitiesRequest.serializeBinaryToWriter = function(message, writer) {
+proto.ai.inworld.engine.CapabilitiesRequest.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getAudio();
   if (f) {
@@ -1005,16 +1011,16 @@ proto.CapabilitiesRequest.serializeBinaryToWriter = function(message, writer) {
  * optional bool audio = 1;
  * @return {boolean}
  */
-proto.CapabilitiesRequest.prototype.getAudio = function() {
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.getAudio = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 1, false));
 };
 
 
 /**
  * @param {boolean} value
- * @return {!proto.CapabilitiesRequest} returns this
+ * @return {!proto.ai.inworld.engine.CapabilitiesRequest} returns this
  */
-proto.CapabilitiesRequest.prototype.setAudio = function(value) {
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.setAudio = function(value) {
   return jspb.Message.setProto3BooleanField(this, 1, value);
 };
 
@@ -1023,16 +1029,16 @@ proto.CapabilitiesRequest.prototype.setAudio = function(value) {
  * optional bool text = 2;
  * @return {boolean}
  */
-proto.CapabilitiesRequest.prototype.getText = function() {
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.getText = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 2, false));
 };
 
 
 /**
  * @param {boolean} value
- * @return {!proto.CapabilitiesRequest} returns this
+ * @return {!proto.ai.inworld.engine.CapabilitiesRequest} returns this
  */
-proto.CapabilitiesRequest.prototype.setText = function(value) {
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.setText = function(value) {
   return jspb.Message.setProto3BooleanField(this, 2, value);
 };
 
@@ -1041,16 +1047,16 @@ proto.CapabilitiesRequest.prototype.setText = function(value) {
  * optional bool gestures = 3;
  * @return {boolean}
  */
-proto.CapabilitiesRequest.prototype.getGestures = function() {
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.getGestures = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 3, false));
 };
 
 
 /**
  * @param {boolean} value
- * @return {!proto.CapabilitiesRequest} returns this
+ * @return {!proto.ai.inworld.engine.CapabilitiesRequest} returns this
  */
-proto.CapabilitiesRequest.prototype.setGestures = function(value) {
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.setGestures = function(value) {
   return jspb.Message.setProto3BooleanField(this, 3, value);
 };
 
@@ -1059,16 +1065,16 @@ proto.CapabilitiesRequest.prototype.setGestures = function(value) {
  * optional bool interruptions = 4;
  * @return {boolean}
  */
-proto.CapabilitiesRequest.prototype.getInterruptions = function() {
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.getInterruptions = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 4, false));
 };
 
 
 /**
  * @param {boolean} value
- * @return {!proto.CapabilitiesRequest} returns this
+ * @return {!proto.ai.inworld.engine.CapabilitiesRequest} returns this
  */
-proto.CapabilitiesRequest.prototype.setInterruptions = function(value) {
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.setInterruptions = function(value) {
   return jspb.Message.setProto3BooleanField(this, 4, value);
 };
 
@@ -1077,16 +1083,16 @@ proto.CapabilitiesRequest.prototype.setInterruptions = function(value) {
  * optional bool triggers = 5;
  * @return {boolean}
  */
-proto.CapabilitiesRequest.prototype.getTriggers = function() {
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.getTriggers = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 5, false));
 };
 
 
 /**
  * @param {boolean} value
- * @return {!proto.CapabilitiesRequest} returns this
+ * @return {!proto.ai.inworld.engine.CapabilitiesRequest} returns this
  */
-proto.CapabilitiesRequest.prototype.setTriggers = function(value) {
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.setTriggers = function(value) {
   return jspb.Message.setProto3BooleanField(this, 5, value);
 };
 
@@ -1095,16 +1101,16 @@ proto.CapabilitiesRequest.prototype.setTriggers = function(value) {
  * optional bool emotions = 6;
  * @return {boolean}
  */
-proto.CapabilitiesRequest.prototype.getEmotions = function() {
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.getEmotions = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 6, false));
 };
 
 
 /**
  * @param {boolean} value
- * @return {!proto.CapabilitiesRequest} returns this
+ * @return {!proto.ai.inworld.engine.CapabilitiesRequest} returns this
  */
-proto.CapabilitiesRequest.prototype.setEmotions = function(value) {
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.setEmotions = function(value) {
   return jspb.Message.setProto3BooleanField(this, 6, value);
 };
 
@@ -1113,16 +1119,16 @@ proto.CapabilitiesRequest.prototype.setEmotions = function(value) {
  * optional bool turn_based_stt = 8;
  * @return {boolean}
  */
-proto.CapabilitiesRequest.prototype.getTurnBasedStt = function() {
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.getTurnBasedStt = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 8, false));
 };
 
 
 /**
  * @param {boolean} value
- * @return {!proto.CapabilitiesRequest} returns this
+ * @return {!proto.ai.inworld.engine.CapabilitiesRequest} returns this
  */
-proto.CapabilitiesRequest.prototype.setTurnBasedStt = function(value) {
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.setTurnBasedStt = function(value) {
   return jspb.Message.setProto3BooleanField(this, 8, value);
 };
 
@@ -1131,16 +1137,16 @@ proto.CapabilitiesRequest.prototype.setTurnBasedStt = function(value) {
  * optional bool emotion_streaming = 9;
  * @return {boolean}
  */
-proto.CapabilitiesRequest.prototype.getEmotionStreaming = function() {
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.getEmotionStreaming = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 9, false));
 };
 
 
 /**
  * @param {boolean} value
- * @return {!proto.CapabilitiesRequest} returns this
+ * @return {!proto.ai.inworld.engine.CapabilitiesRequest} returns this
  */
-proto.CapabilitiesRequest.prototype.setEmotionStreaming = function(value) {
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.setEmotionStreaming = function(value) {
   return jspb.Message.setProto3BooleanField(this, 9, value);
 };
 
@@ -1149,16 +1155,16 @@ proto.CapabilitiesRequest.prototype.setEmotionStreaming = function(value) {
  * optional bool silence_events = 10;
  * @return {boolean}
  */
-proto.CapabilitiesRequest.prototype.getSilenceEvents = function() {
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.getSilenceEvents = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 10, false));
 };
 
 
 /**
  * @param {boolean} value
- * @return {!proto.CapabilitiesRequest} returns this
+ * @return {!proto.ai.inworld.engine.CapabilitiesRequest} returns this
  */
-proto.CapabilitiesRequest.prototype.setSilenceEvents = function(value) {
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.setSilenceEvents = function(value) {
   return jspb.Message.setProto3BooleanField(this, 10, value);
 };
 
@@ -1167,16 +1173,16 @@ proto.CapabilitiesRequest.prototype.setSilenceEvents = function(value) {
  * optional bool phoneme_info = 11;
  * @return {boolean}
  */
-proto.CapabilitiesRequest.prototype.getPhonemeInfo = function() {
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.getPhonemeInfo = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 11, false));
 };
 
 
 /**
  * @param {boolean} value
- * @return {!proto.CapabilitiesRequest} returns this
+ * @return {!proto.ai.inworld.engine.CapabilitiesRequest} returns this
  */
-proto.CapabilitiesRequest.prototype.setPhonemeInfo = function(value) {
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.setPhonemeInfo = function(value) {
   return jspb.Message.setProto3BooleanField(this, 11, value);
 };
 
@@ -1185,16 +1191,16 @@ proto.CapabilitiesRequest.prototype.setPhonemeInfo = function(value) {
  * optional bool continuation = 12;
  * @return {boolean}
  */
-proto.CapabilitiesRequest.prototype.getContinuation = function() {
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.getContinuation = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 12, false));
 };
 
 
 /**
  * @param {boolean} value
- * @return {!proto.CapabilitiesRequest} returns this
+ * @return {!proto.ai.inworld.engine.CapabilitiesRequest} returns this
  */
-proto.CapabilitiesRequest.prototype.setContinuation = function(value) {
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.setContinuation = function(value) {
   return jspb.Message.setProto3BooleanField(this, 12, value);
 };
 
@@ -1203,16 +1209,16 @@ proto.CapabilitiesRequest.prototype.setContinuation = function(value) {
  * optional bool session_cancellation = 13;
  * @return {boolean}
  */
-proto.CapabilitiesRequest.prototype.getSessionCancellation = function() {
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.getSessionCancellation = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 13, false));
 };
 
 
 /**
  * @param {boolean} value
- * @return {!proto.CapabilitiesRequest} returns this
+ * @return {!proto.ai.inworld.engine.CapabilitiesRequest} returns this
  */
-proto.CapabilitiesRequest.prototype.setSessionCancellation = function(value) {
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.setSessionCancellation = function(value) {
   return jspb.Message.setProto3BooleanField(this, 13, value);
 };
 
@@ -1221,16 +1227,16 @@ proto.CapabilitiesRequest.prototype.setSessionCancellation = function(value) {
  * optional bool narrated_actions = 14;
  * @return {boolean}
  */
-proto.CapabilitiesRequest.prototype.getNarratedActions = function() {
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.getNarratedActions = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 14, false));
 };
 
 
 /**
  * @param {boolean} value
- * @return {!proto.CapabilitiesRequest} returns this
+ * @return {!proto.ai.inworld.engine.CapabilitiesRequest} returns this
  */
-proto.CapabilitiesRequest.prototype.setNarratedActions = function(value) {
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.setNarratedActions = function(value) {
   return jspb.Message.setProto3BooleanField(this, 14, value);
 };
 
@@ -1239,16 +1245,16 @@ proto.CapabilitiesRequest.prototype.setNarratedActions = function(value) {
  * optional bool regenerate_response = 15;
  * @return {boolean}
  */
-proto.CapabilitiesRequest.prototype.getRegenerateResponse = function() {
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.getRegenerateResponse = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 15, false));
 };
 
 
 /**
  * @param {boolean} value
- * @return {!proto.CapabilitiesRequest} returns this
+ * @return {!proto.ai.inworld.engine.CapabilitiesRequest} returns this
  */
-proto.CapabilitiesRequest.prototype.setRegenerateResponse = function(value) {
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.setRegenerateResponse = function(value) {
   return jspb.Message.setProto3BooleanField(this, 15, value);
 };
 
@@ -1257,16 +1263,16 @@ proto.CapabilitiesRequest.prototype.setRegenerateResponse = function(value) {
  * optional bool load_scene_in_session = 16;
  * @return {boolean}
  */
-proto.CapabilitiesRequest.prototype.getLoadSceneInSession = function() {
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.getLoadSceneInSession = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 16, false));
 };
 
 
 /**
  * @param {boolean} value
- * @return {!proto.CapabilitiesRequest} returns this
+ * @return {!proto.ai.inworld.engine.CapabilitiesRequest} returns this
  */
-proto.CapabilitiesRequest.prototype.setLoadSceneInSession = function(value) {
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.setLoadSceneInSession = function(value) {
   return jspb.Message.setProto3BooleanField(this, 16, value);
 };
 
@@ -1275,16 +1281,16 @@ proto.CapabilitiesRequest.prototype.setLoadSceneInSession = function(value) {
  * optional bool relations = 17;
  * @return {boolean}
  */
-proto.CapabilitiesRequest.prototype.getRelations = function() {
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.getRelations = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 17, false));
 };
 
 
 /**
  * @param {boolean} value
- * @return {!proto.CapabilitiesRequest} returns this
+ * @return {!proto.ai.inworld.engine.CapabilitiesRequest} returns this
  */
-proto.CapabilitiesRequest.prototype.setRelations = function(value) {
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.setRelations = function(value) {
   return jspb.Message.setProto3BooleanField(this, 17, value);
 };
 
@@ -1293,16 +1299,16 @@ proto.CapabilitiesRequest.prototype.setRelations = function(value) {
  * optional bool debug_info = 18;
  * @return {boolean}
  */
-proto.CapabilitiesRequest.prototype.getDebugInfo = function() {
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.getDebugInfo = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 18, false));
 };
 
 
 /**
  * @param {boolean} value
- * @return {!proto.CapabilitiesRequest} returns this
+ * @return {!proto.ai.inworld.engine.CapabilitiesRequest} returns this
  */
-proto.CapabilitiesRequest.prototype.setDebugInfo = function(value) {
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.setDebugInfo = function(value) {
   return jspb.Message.setProto3BooleanField(this, 18, value);
 };
 
@@ -1311,16 +1317,16 @@ proto.CapabilitiesRequest.prototype.setDebugInfo = function(value) {
  * optional bool tts_mp3 = 19;
  * @return {boolean}
  */
-proto.CapabilitiesRequest.prototype.getTtsMp3 = function() {
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.getTtsMp3 = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 19, false));
 };
 
 
 /**
  * @param {boolean} value
- * @return {!proto.CapabilitiesRequest} returns this
+ * @return {!proto.ai.inworld.engine.CapabilitiesRequest} returns this
  */
-proto.CapabilitiesRequest.prototype.setTtsMp3 = function(value) {
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.setTtsMp3 = function(value) {
   return jspb.Message.setProto3BooleanField(this, 19, value);
 };
 
@@ -1329,16 +1335,16 @@ proto.CapabilitiesRequest.prototype.setTtsMp3 = function(value) {
  * optional bool multi_agent = 20;
  * @return {boolean}
  */
-proto.CapabilitiesRequest.prototype.getMultiAgent = function() {
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.getMultiAgent = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 20, false));
 };
 
 
 /**
  * @param {boolean} value
- * @return {!proto.CapabilitiesRequest} returns this
+ * @return {!proto.ai.inworld.engine.CapabilitiesRequest} returns this
  */
-proto.CapabilitiesRequest.prototype.setMultiAgent = function(value) {
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.setMultiAgent = function(value) {
   return jspb.Message.setProto3BooleanField(this, 20, value);
 };
 
@@ -1347,16 +1353,16 @@ proto.CapabilitiesRequest.prototype.setMultiAgent = function(value) {
  * optional bool audio_2_face = 21;
  * @return {boolean}
  */
-proto.CapabilitiesRequest.prototype.getAudio2Face = function() {
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.getAudio2Face = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 21, false));
 };
 
 
 /**
  * @param {boolean} value
- * @return {!proto.CapabilitiesRequest} returns this
+ * @return {!proto.ai.inworld.engine.CapabilitiesRequest} returns this
  */
-proto.CapabilitiesRequest.prototype.setAudio2Face = function(value) {
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.setAudio2Face = function(value) {
   return jspb.Message.setProto3BooleanField(this, 21, value);
 };
 
@@ -1365,16 +1371,16 @@ proto.CapabilitiesRequest.prototype.setAudio2Face = function(value) {
  * optional bool inspect = 22;
  * @return {boolean}
  */
-proto.CapabilitiesRequest.prototype.getInspect = function() {
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.getInspect = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 22, false));
 };
 
 
 /**
  * @param {boolean} value
- * @return {!proto.CapabilitiesRequest} returns this
+ * @return {!proto.ai.inworld.engine.CapabilitiesRequest} returns this
  */
-proto.CapabilitiesRequest.prototype.setInspect = function(value) {
+proto.ai.inworld.engine.CapabilitiesRequest.prototype.setInspect = function(value) {
   return jspb.Message.setProto3BooleanField(this, 22, value);
 };
 
@@ -1395,8 +1401,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.UserRequest.prototype.toObject = function(opt_includeInstance) {
-  return proto.UserRequest.toObject(opt_includeInstance, this);
+proto.ai.inworld.engine.UserRequest.prototype.toObject = function(opt_includeInstance) {
+  return proto.ai.inworld.engine.UserRequest.toObject(opt_includeInstance, this);
 };
 
 
@@ -1405,11 +1411,11 @@ proto.UserRequest.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.UserRequest} msg The msg instance to transform.
+ * @param {!proto.ai.inworld.engine.UserRequest} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.UserRequest.toObject = function(includeInstance, msg) {
+proto.ai.inworld.engine.UserRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
     name: jspb.Message.getFieldWithDefault(msg, 1, ""),
     id: jspb.Message.getFieldWithDefault(msg, 2, "")
@@ -1426,23 +1432,23 @@ proto.UserRequest.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.UserRequest}
+ * @return {!proto.ai.inworld.engine.UserRequest}
  */
-proto.UserRequest.deserializeBinary = function(bytes) {
+proto.ai.inworld.engine.UserRequest.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.UserRequest;
-  return proto.UserRequest.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.ai.inworld.engine.UserRequest;
+  return proto.ai.inworld.engine.UserRequest.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.UserRequest} msg The message object to deserialize into.
+ * @param {!proto.ai.inworld.engine.UserRequest} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.UserRequest}
+ * @return {!proto.ai.inworld.engine.UserRequest}
  */
-proto.UserRequest.deserializeBinaryFromReader = function(msg, reader) {
+proto.ai.inworld.engine.UserRequest.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -1470,9 +1476,9 @@ proto.UserRequest.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.UserRequest.prototype.serializeBinary = function() {
+proto.ai.inworld.engine.UserRequest.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.UserRequest.serializeBinaryToWriter(this, writer);
+  proto.ai.inworld.engine.UserRequest.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -1480,11 +1486,11 @@ proto.UserRequest.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.UserRequest} message
+ * @param {!proto.ai.inworld.engine.UserRequest} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.UserRequest.serializeBinaryToWriter = function(message, writer) {
+proto.ai.inworld.engine.UserRequest.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getName();
   if (f.length > 0) {
@@ -1507,16 +1513,16 @@ proto.UserRequest.serializeBinaryToWriter = function(message, writer) {
  * optional string name = 1;
  * @return {string}
  */
-proto.UserRequest.prototype.getName = function() {
+proto.ai.inworld.engine.UserRequest.prototype.getName = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.UserRequest} returns this
+ * @return {!proto.ai.inworld.engine.UserRequest} returns this
  */
-proto.UserRequest.prototype.setName = function(value) {
+proto.ai.inworld.engine.UserRequest.prototype.setName = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
@@ -1525,16 +1531,16 @@ proto.UserRequest.prototype.setName = function(value) {
  * optional string id = 2;
  * @return {string}
  */
-proto.UserRequest.prototype.getId = function() {
+proto.ai.inworld.engine.UserRequest.prototype.getId = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.UserRequest} returns this
+ * @return {!proto.ai.inworld.engine.UserRequest} returns this
  */
-proto.UserRequest.prototype.setId = function(value) {
+proto.ai.inworld.engine.UserRequest.prototype.setId = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
 };
 
@@ -1555,8 +1561,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.ClientRequest.prototype.toObject = function(opt_includeInstance) {
-  return proto.ClientRequest.toObject(opt_includeInstance, this);
+proto.ai.inworld.engine.ClientRequest.prototype.toObject = function(opt_includeInstance) {
+  return proto.ai.inworld.engine.ClientRequest.toObject(opt_includeInstance, this);
 };
 
 
@@ -1565,11 +1571,11 @@ proto.ClientRequest.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.ClientRequest} msg The msg instance to transform.
+ * @param {!proto.ai.inworld.engine.ClientRequest} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.ClientRequest.toObject = function(includeInstance, msg) {
+proto.ai.inworld.engine.ClientRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
     id: jspb.Message.getFieldWithDefault(msg, 1, ""),
     version: jspb.Message.getFieldWithDefault(msg, 2, ""),
@@ -1587,23 +1593,23 @@ proto.ClientRequest.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.ClientRequest}
+ * @return {!proto.ai.inworld.engine.ClientRequest}
  */
-proto.ClientRequest.deserializeBinary = function(bytes) {
+proto.ai.inworld.engine.ClientRequest.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.ClientRequest;
-  return proto.ClientRequest.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.ai.inworld.engine.ClientRequest;
+  return proto.ai.inworld.engine.ClientRequest.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.ClientRequest} msg The message object to deserialize into.
+ * @param {!proto.ai.inworld.engine.ClientRequest} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.ClientRequest}
+ * @return {!proto.ai.inworld.engine.ClientRequest}
  */
-proto.ClientRequest.deserializeBinaryFromReader = function(msg, reader) {
+proto.ai.inworld.engine.ClientRequest.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -1635,9 +1641,9 @@ proto.ClientRequest.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.ClientRequest.prototype.serializeBinary = function() {
+proto.ai.inworld.engine.ClientRequest.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.ClientRequest.serializeBinaryToWriter(this, writer);
+  proto.ai.inworld.engine.ClientRequest.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -1645,11 +1651,11 @@ proto.ClientRequest.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.ClientRequest} message
+ * @param {!proto.ai.inworld.engine.ClientRequest} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.ClientRequest.serializeBinaryToWriter = function(message, writer) {
+proto.ai.inworld.engine.ClientRequest.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getId();
   if (f.length > 0) {
@@ -1679,16 +1685,16 @@ proto.ClientRequest.serializeBinaryToWriter = function(message, writer) {
  * optional string id = 1;
  * @return {string}
  */
-proto.ClientRequest.prototype.getId = function() {
+proto.ai.inworld.engine.ClientRequest.prototype.getId = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.ClientRequest} returns this
+ * @return {!proto.ai.inworld.engine.ClientRequest} returns this
  */
-proto.ClientRequest.prototype.setId = function(value) {
+proto.ai.inworld.engine.ClientRequest.prototype.setId = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
@@ -1697,16 +1703,16 @@ proto.ClientRequest.prototype.setId = function(value) {
  * optional string version = 2;
  * @return {string}
  */
-proto.ClientRequest.prototype.getVersion = function() {
+proto.ai.inworld.engine.ClientRequest.prototype.getVersion = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.ClientRequest} returns this
+ * @return {!proto.ai.inworld.engine.ClientRequest} returns this
  */
-proto.ClientRequest.prototype.setVersion = function(value) {
+proto.ai.inworld.engine.ClientRequest.prototype.setVersion = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
 };
 
@@ -1715,16 +1721,16 @@ proto.ClientRequest.prototype.setVersion = function(value) {
  * optional string description = 3;
  * @return {string}
  */
-proto.ClientRequest.prototype.getDescription = function() {
+proto.ai.inworld.engine.ClientRequest.prototype.getDescription = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.ClientRequest} returns this
+ * @return {!proto.ai.inworld.engine.ClientRequest} returns this
  */
-proto.ClientRequest.prototype.setDescription = function(value) {
+proto.ai.inworld.engine.ClientRequest.prototype.setDescription = function(value) {
   return jspb.Message.setProto3StringField(this, 3, value);
 };
 
@@ -1745,8 +1751,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.LoadSceneRequest.prototype.toObject = function(opt_includeInstance) {
-  return proto.LoadSceneRequest.toObject(opt_includeInstance, this);
+proto.ai.inworld.engine.LoadSceneRequest.prototype.toObject = function(opt_includeInstance) {
+  return proto.ai.inworld.engine.LoadSceneRequest.toObject(opt_includeInstance, this);
 };
 
 
@@ -1755,19 +1761,19 @@ proto.LoadSceneRequest.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.LoadSceneRequest} msg The msg instance to transform.
+ * @param {!proto.ai.inworld.engine.LoadSceneRequest} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.LoadSceneRequest.toObject = function(includeInstance, msg) {
+proto.ai.inworld.engine.LoadSceneRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
     name: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    capabilities: (f = msg.getCapabilities()) && proto.CapabilitiesRequest.toObject(includeInstance, f),
-    user: (f = msg.getUser()) && proto.UserRequest.toObject(includeInstance, f),
-    client: (f = msg.getClient()) && proto.ClientRequest.toObject(includeInstance, f),
-    audioSettings: (f = msg.getAudioSettings()) && proto.AudioSettings.toObject(includeInstance, f),
-    userSettings: (f = msg.getUserSettings()) && proto.UserSettings.toObject(includeInstance, f),
-    sessionContinuation: (f = msg.getSessionContinuation()) && proto.SessionContinuation.toObject(includeInstance, f)
+    capabilities: (f = msg.getCapabilities()) && proto.ai.inworld.engine.CapabilitiesRequest.toObject(includeInstance, f),
+    user: (f = msg.getUser()) && proto.ai.inworld.engine.UserRequest.toObject(includeInstance, f),
+    client: (f = msg.getClient()) && proto.ai.inworld.engine.ClientRequest.toObject(includeInstance, f),
+    audioSettings: (f = msg.getAudioSettings()) && proto.ai.inworld.engine.AudioSettings.toObject(includeInstance, f),
+    userSettings: (f = msg.getUserSettings()) && proto.ai.inworld.engine.UserSettings.toObject(includeInstance, f),
+    sessionContinuation: (f = msg.getSessionContinuation()) && proto.ai.inworld.engine.SessionContinuation.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -1781,23 +1787,23 @@ proto.LoadSceneRequest.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.LoadSceneRequest}
+ * @return {!proto.ai.inworld.engine.LoadSceneRequest}
  */
-proto.LoadSceneRequest.deserializeBinary = function(bytes) {
+proto.ai.inworld.engine.LoadSceneRequest.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.LoadSceneRequest;
-  return proto.LoadSceneRequest.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.ai.inworld.engine.LoadSceneRequest;
+  return proto.ai.inworld.engine.LoadSceneRequest.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.LoadSceneRequest} msg The message object to deserialize into.
+ * @param {!proto.ai.inworld.engine.LoadSceneRequest} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.LoadSceneRequest}
+ * @return {!proto.ai.inworld.engine.LoadSceneRequest}
  */
-proto.LoadSceneRequest.deserializeBinaryFromReader = function(msg, reader) {
+proto.ai.inworld.engine.LoadSceneRequest.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -1809,33 +1815,33 @@ proto.LoadSceneRequest.deserializeBinaryFromReader = function(msg, reader) {
       msg.setName(value);
       break;
     case 2:
-      var value = new proto.CapabilitiesRequest;
-      reader.readMessage(value,proto.CapabilitiesRequest.deserializeBinaryFromReader);
+      var value = new proto.ai.inworld.engine.CapabilitiesRequest;
+      reader.readMessage(value,proto.ai.inworld.engine.CapabilitiesRequest.deserializeBinaryFromReader);
       msg.setCapabilities(value);
       break;
     case 3:
-      var value = new proto.UserRequest;
-      reader.readMessage(value,proto.UserRequest.deserializeBinaryFromReader);
+      var value = new proto.ai.inworld.engine.UserRequest;
+      reader.readMessage(value,proto.ai.inworld.engine.UserRequest.deserializeBinaryFromReader);
       msg.setUser(value);
       break;
     case 4:
-      var value = new proto.ClientRequest;
-      reader.readMessage(value,proto.ClientRequest.deserializeBinaryFromReader);
+      var value = new proto.ai.inworld.engine.ClientRequest;
+      reader.readMessage(value,proto.ai.inworld.engine.ClientRequest.deserializeBinaryFromReader);
       msg.setClient(value);
       break;
     case 5:
-      var value = new proto.AudioSettings;
-      reader.readMessage(value,proto.AudioSettings.deserializeBinaryFromReader);
+      var value = new proto.ai.inworld.engine.AudioSettings;
+      reader.readMessage(value,proto.ai.inworld.engine.AudioSettings.deserializeBinaryFromReader);
       msg.setAudioSettings(value);
       break;
     case 6:
-      var value = new proto.UserSettings;
-      reader.readMessage(value,proto.UserSettings.deserializeBinaryFromReader);
+      var value = new proto.ai.inworld.engine.UserSettings;
+      reader.readMessage(value,proto.ai.inworld.engine.UserSettings.deserializeBinaryFromReader);
       msg.setUserSettings(value);
       break;
     case 7:
-      var value = new proto.SessionContinuation;
-      reader.readMessage(value,proto.SessionContinuation.deserializeBinaryFromReader);
+      var value = new proto.ai.inworld.engine.SessionContinuation;
+      reader.readMessage(value,proto.ai.inworld.engine.SessionContinuation.deserializeBinaryFromReader);
       msg.setSessionContinuation(value);
       break;
     default:
@@ -1851,9 +1857,9 @@ proto.LoadSceneRequest.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.LoadSceneRequest.prototype.serializeBinary = function() {
+proto.ai.inworld.engine.LoadSceneRequest.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.LoadSceneRequest.serializeBinaryToWriter(this, writer);
+  proto.ai.inworld.engine.LoadSceneRequest.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -1861,11 +1867,11 @@ proto.LoadSceneRequest.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.LoadSceneRequest} message
+ * @param {!proto.ai.inworld.engine.LoadSceneRequest} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.LoadSceneRequest.serializeBinaryToWriter = function(message, writer) {
+proto.ai.inworld.engine.LoadSceneRequest.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getName();
   if (f.length > 0) {
@@ -1879,7 +1885,7 @@ proto.LoadSceneRequest.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       2,
       f,
-      proto.CapabilitiesRequest.serializeBinaryToWriter
+      proto.ai.inworld.engine.CapabilitiesRequest.serializeBinaryToWriter
     );
   }
   f = message.getUser();
@@ -1887,7 +1893,7 @@ proto.LoadSceneRequest.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       3,
       f,
-      proto.UserRequest.serializeBinaryToWriter
+      proto.ai.inworld.engine.UserRequest.serializeBinaryToWriter
     );
   }
   f = message.getClient();
@@ -1895,7 +1901,7 @@ proto.LoadSceneRequest.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       4,
       f,
-      proto.ClientRequest.serializeBinaryToWriter
+      proto.ai.inworld.engine.ClientRequest.serializeBinaryToWriter
     );
   }
   f = message.getAudioSettings();
@@ -1903,7 +1909,7 @@ proto.LoadSceneRequest.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       5,
       f,
-      proto.AudioSettings.serializeBinaryToWriter
+      proto.ai.inworld.engine.AudioSettings.serializeBinaryToWriter
     );
   }
   f = message.getUserSettings();
@@ -1911,7 +1917,7 @@ proto.LoadSceneRequest.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       6,
       f,
-      proto.UserSettings.serializeBinaryToWriter
+      proto.ai.inworld.engine.UserSettings.serializeBinaryToWriter
     );
   }
   f = message.getSessionContinuation();
@@ -1919,7 +1925,7 @@ proto.LoadSceneRequest.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       7,
       f,
-      proto.SessionContinuation.serializeBinaryToWriter
+      proto.ai.inworld.engine.SessionContinuation.serializeBinaryToWriter
     );
   }
 };
@@ -1929,44 +1935,44 @@ proto.LoadSceneRequest.serializeBinaryToWriter = function(message, writer) {
  * optional string name = 1;
  * @return {string}
  */
-proto.LoadSceneRequest.prototype.getName = function() {
+proto.ai.inworld.engine.LoadSceneRequest.prototype.getName = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.LoadSceneRequest} returns this
+ * @return {!proto.ai.inworld.engine.LoadSceneRequest} returns this
  */
-proto.LoadSceneRequest.prototype.setName = function(value) {
+proto.ai.inworld.engine.LoadSceneRequest.prototype.setName = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
  * optional CapabilitiesRequest capabilities = 2;
- * @return {?proto.CapabilitiesRequest}
+ * @return {?proto.ai.inworld.engine.CapabilitiesRequest}
  */
-proto.LoadSceneRequest.prototype.getCapabilities = function() {
-  return /** @type{?proto.CapabilitiesRequest} */ (
-    jspb.Message.getWrapperField(this, proto.CapabilitiesRequest, 2));
+proto.ai.inworld.engine.LoadSceneRequest.prototype.getCapabilities = function() {
+  return /** @type{?proto.ai.inworld.engine.CapabilitiesRequest} */ (
+    jspb.Message.getWrapperField(this, proto.ai.inworld.engine.CapabilitiesRequest, 2));
 };
 
 
 /**
- * @param {?proto.CapabilitiesRequest|undefined} value
- * @return {!proto.LoadSceneRequest} returns this
+ * @param {?proto.ai.inworld.engine.CapabilitiesRequest|undefined} value
+ * @return {!proto.ai.inworld.engine.LoadSceneRequest} returns this
 */
-proto.LoadSceneRequest.prototype.setCapabilities = function(value) {
+proto.ai.inworld.engine.LoadSceneRequest.prototype.setCapabilities = function(value) {
   return jspb.Message.setWrapperField(this, 2, value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.LoadSceneRequest} returns this
+ * @return {!proto.ai.inworld.engine.LoadSceneRequest} returns this
  */
-proto.LoadSceneRequest.prototype.clearCapabilities = function() {
+proto.ai.inworld.engine.LoadSceneRequest.prototype.clearCapabilities = function() {
   return this.setCapabilities(undefined);
 };
 
@@ -1975,35 +1981,35 @@ proto.LoadSceneRequest.prototype.clearCapabilities = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.LoadSceneRequest.prototype.hasCapabilities = function() {
+proto.ai.inworld.engine.LoadSceneRequest.prototype.hasCapabilities = function() {
   return jspb.Message.getField(this, 2) != null;
 };
 
 
 /**
  * optional UserRequest user = 3;
- * @return {?proto.UserRequest}
+ * @return {?proto.ai.inworld.engine.UserRequest}
  */
-proto.LoadSceneRequest.prototype.getUser = function() {
-  return /** @type{?proto.UserRequest} */ (
-    jspb.Message.getWrapperField(this, proto.UserRequest, 3));
+proto.ai.inworld.engine.LoadSceneRequest.prototype.getUser = function() {
+  return /** @type{?proto.ai.inworld.engine.UserRequest} */ (
+    jspb.Message.getWrapperField(this, proto.ai.inworld.engine.UserRequest, 3));
 };
 
 
 /**
- * @param {?proto.UserRequest|undefined} value
- * @return {!proto.LoadSceneRequest} returns this
+ * @param {?proto.ai.inworld.engine.UserRequest|undefined} value
+ * @return {!proto.ai.inworld.engine.LoadSceneRequest} returns this
 */
-proto.LoadSceneRequest.prototype.setUser = function(value) {
+proto.ai.inworld.engine.LoadSceneRequest.prototype.setUser = function(value) {
   return jspb.Message.setWrapperField(this, 3, value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.LoadSceneRequest} returns this
+ * @return {!proto.ai.inworld.engine.LoadSceneRequest} returns this
  */
-proto.LoadSceneRequest.prototype.clearUser = function() {
+proto.ai.inworld.engine.LoadSceneRequest.prototype.clearUser = function() {
   return this.setUser(undefined);
 };
 
@@ -2012,35 +2018,35 @@ proto.LoadSceneRequest.prototype.clearUser = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.LoadSceneRequest.prototype.hasUser = function() {
+proto.ai.inworld.engine.LoadSceneRequest.prototype.hasUser = function() {
   return jspb.Message.getField(this, 3) != null;
 };
 
 
 /**
  * optional ClientRequest client = 4;
- * @return {?proto.ClientRequest}
+ * @return {?proto.ai.inworld.engine.ClientRequest}
  */
-proto.LoadSceneRequest.prototype.getClient = function() {
-  return /** @type{?proto.ClientRequest} */ (
-    jspb.Message.getWrapperField(this, proto.ClientRequest, 4));
+proto.ai.inworld.engine.LoadSceneRequest.prototype.getClient = function() {
+  return /** @type{?proto.ai.inworld.engine.ClientRequest} */ (
+    jspb.Message.getWrapperField(this, proto.ai.inworld.engine.ClientRequest, 4));
 };
 
 
 /**
- * @param {?proto.ClientRequest|undefined} value
- * @return {!proto.LoadSceneRequest} returns this
+ * @param {?proto.ai.inworld.engine.ClientRequest|undefined} value
+ * @return {!proto.ai.inworld.engine.LoadSceneRequest} returns this
 */
-proto.LoadSceneRequest.prototype.setClient = function(value) {
+proto.ai.inworld.engine.LoadSceneRequest.prototype.setClient = function(value) {
   return jspb.Message.setWrapperField(this, 4, value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.LoadSceneRequest} returns this
+ * @return {!proto.ai.inworld.engine.LoadSceneRequest} returns this
  */
-proto.LoadSceneRequest.prototype.clearClient = function() {
+proto.ai.inworld.engine.LoadSceneRequest.prototype.clearClient = function() {
   return this.setClient(undefined);
 };
 
@@ -2049,35 +2055,35 @@ proto.LoadSceneRequest.prototype.clearClient = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.LoadSceneRequest.prototype.hasClient = function() {
+proto.ai.inworld.engine.LoadSceneRequest.prototype.hasClient = function() {
   return jspb.Message.getField(this, 4) != null;
 };
 
 
 /**
  * optional AudioSettings audio_settings = 5;
- * @return {?proto.AudioSettings}
+ * @return {?proto.ai.inworld.engine.AudioSettings}
  */
-proto.LoadSceneRequest.prototype.getAudioSettings = function() {
-  return /** @type{?proto.AudioSettings} */ (
-    jspb.Message.getWrapperField(this, proto.AudioSettings, 5));
+proto.ai.inworld.engine.LoadSceneRequest.prototype.getAudioSettings = function() {
+  return /** @type{?proto.ai.inworld.engine.AudioSettings} */ (
+    jspb.Message.getWrapperField(this, proto.ai.inworld.engine.AudioSettings, 5));
 };
 
 
 /**
- * @param {?proto.AudioSettings|undefined} value
- * @return {!proto.LoadSceneRequest} returns this
+ * @param {?proto.ai.inworld.engine.AudioSettings|undefined} value
+ * @return {!proto.ai.inworld.engine.LoadSceneRequest} returns this
 */
-proto.LoadSceneRequest.prototype.setAudioSettings = function(value) {
+proto.ai.inworld.engine.LoadSceneRequest.prototype.setAudioSettings = function(value) {
   return jspb.Message.setWrapperField(this, 5, value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.LoadSceneRequest} returns this
+ * @return {!proto.ai.inworld.engine.LoadSceneRequest} returns this
  */
-proto.LoadSceneRequest.prototype.clearAudioSettings = function() {
+proto.ai.inworld.engine.LoadSceneRequest.prototype.clearAudioSettings = function() {
   return this.setAudioSettings(undefined);
 };
 
@@ -2086,35 +2092,35 @@ proto.LoadSceneRequest.prototype.clearAudioSettings = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.LoadSceneRequest.prototype.hasAudioSettings = function() {
+proto.ai.inworld.engine.LoadSceneRequest.prototype.hasAudioSettings = function() {
   return jspb.Message.getField(this, 5) != null;
 };
 
 
 /**
  * optional UserSettings user_settings = 6;
- * @return {?proto.UserSettings}
+ * @return {?proto.ai.inworld.engine.UserSettings}
  */
-proto.LoadSceneRequest.prototype.getUserSettings = function() {
-  return /** @type{?proto.UserSettings} */ (
-    jspb.Message.getWrapperField(this, proto.UserSettings, 6));
+proto.ai.inworld.engine.LoadSceneRequest.prototype.getUserSettings = function() {
+  return /** @type{?proto.ai.inworld.engine.UserSettings} */ (
+    jspb.Message.getWrapperField(this, proto.ai.inworld.engine.UserSettings, 6));
 };
 
 
 /**
- * @param {?proto.UserSettings|undefined} value
- * @return {!proto.LoadSceneRequest} returns this
+ * @param {?proto.ai.inworld.engine.UserSettings|undefined} value
+ * @return {!proto.ai.inworld.engine.LoadSceneRequest} returns this
 */
-proto.LoadSceneRequest.prototype.setUserSettings = function(value) {
+proto.ai.inworld.engine.LoadSceneRequest.prototype.setUserSettings = function(value) {
   return jspb.Message.setWrapperField(this, 6, value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.LoadSceneRequest} returns this
+ * @return {!proto.ai.inworld.engine.LoadSceneRequest} returns this
  */
-proto.LoadSceneRequest.prototype.clearUserSettings = function() {
+proto.ai.inworld.engine.LoadSceneRequest.prototype.clearUserSettings = function() {
   return this.setUserSettings(undefined);
 };
 
@@ -2123,35 +2129,35 @@ proto.LoadSceneRequest.prototype.clearUserSettings = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.LoadSceneRequest.prototype.hasUserSettings = function() {
+proto.ai.inworld.engine.LoadSceneRequest.prototype.hasUserSettings = function() {
   return jspb.Message.getField(this, 6) != null;
 };
 
 
 /**
  * optional SessionContinuation session_continuation = 7;
- * @return {?proto.SessionContinuation}
+ * @return {?proto.ai.inworld.engine.SessionContinuation}
  */
-proto.LoadSceneRequest.prototype.getSessionContinuation = function() {
-  return /** @type{?proto.SessionContinuation} */ (
-    jspb.Message.getWrapperField(this, proto.SessionContinuation, 7));
+proto.ai.inworld.engine.LoadSceneRequest.prototype.getSessionContinuation = function() {
+  return /** @type{?proto.ai.inworld.engine.SessionContinuation} */ (
+    jspb.Message.getWrapperField(this, proto.ai.inworld.engine.SessionContinuation, 7));
 };
 
 
 /**
- * @param {?proto.SessionContinuation|undefined} value
- * @return {!proto.LoadSceneRequest} returns this
+ * @param {?proto.ai.inworld.engine.SessionContinuation|undefined} value
+ * @return {!proto.ai.inworld.engine.LoadSceneRequest} returns this
 */
-proto.LoadSceneRequest.prototype.setSessionContinuation = function(value) {
+proto.ai.inworld.engine.LoadSceneRequest.prototype.setSessionContinuation = function(value) {
   return jspb.Message.setWrapperField(this, 7, value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.LoadSceneRequest} returns this
+ * @return {!proto.ai.inworld.engine.LoadSceneRequest} returns this
  */
-proto.LoadSceneRequest.prototype.clearSessionContinuation = function() {
+proto.ai.inworld.engine.LoadSceneRequest.prototype.clearSessionContinuation = function() {
   return this.setSessionContinuation(undefined);
 };
 
@@ -2160,7 +2166,7 @@ proto.LoadSceneRequest.prototype.clearSessionContinuation = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.LoadSceneRequest.prototype.hasSessionContinuation = function() {
+proto.ai.inworld.engine.LoadSceneRequest.prototype.hasSessionContinuation = function() {
   return jspb.Message.getField(this, 7) != null;
 };
 
@@ -2181,8 +2187,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.AudioSettings.prototype.toObject = function(opt_includeInstance) {
-  return proto.AudioSettings.toObject(opt_includeInstance, this);
+proto.ai.inworld.engine.AudioSettings.prototype.toObject = function(opt_includeInstance) {
+  return proto.ai.inworld.engine.AudioSettings.toObject(opt_includeInstance, this);
 };
 
 
@@ -2191,11 +2197,11 @@ proto.AudioSettings.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.AudioSettings} msg The msg instance to transform.
+ * @param {!proto.ai.inworld.engine.AudioSettings} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.AudioSettings.toObject = function(includeInstance, msg) {
+proto.ai.inworld.engine.AudioSettings.toObject = function(includeInstance, msg) {
   var f, obj = {
     sttSampleRateHertz: jspb.Message.getFieldWithDefault(msg, 1, 0),
     ttsSampleRateHertz: jspb.Message.getFieldWithDefault(msg, 2, 0)
@@ -2212,23 +2218,23 @@ proto.AudioSettings.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.AudioSettings}
+ * @return {!proto.ai.inworld.engine.AudioSettings}
  */
-proto.AudioSettings.deserializeBinary = function(bytes) {
+proto.ai.inworld.engine.AudioSettings.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.AudioSettings;
-  return proto.AudioSettings.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.ai.inworld.engine.AudioSettings;
+  return proto.ai.inworld.engine.AudioSettings.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.AudioSettings} msg The message object to deserialize into.
+ * @param {!proto.ai.inworld.engine.AudioSettings} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.AudioSettings}
+ * @return {!proto.ai.inworld.engine.AudioSettings}
  */
-proto.AudioSettings.deserializeBinaryFromReader = function(msg, reader) {
+proto.ai.inworld.engine.AudioSettings.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -2256,9 +2262,9 @@ proto.AudioSettings.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.AudioSettings.prototype.serializeBinary = function() {
+proto.ai.inworld.engine.AudioSettings.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.AudioSettings.serializeBinaryToWriter(this, writer);
+  proto.ai.inworld.engine.AudioSettings.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -2266,11 +2272,11 @@ proto.AudioSettings.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.AudioSettings} message
+ * @param {!proto.ai.inworld.engine.AudioSettings} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.AudioSettings.serializeBinaryToWriter = function(message, writer) {
+proto.ai.inworld.engine.AudioSettings.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getSttSampleRateHertz();
   if (f !== 0) {
@@ -2293,16 +2299,16 @@ proto.AudioSettings.serializeBinaryToWriter = function(message, writer) {
  * optional uint32 stt_sample_rate_hertz = 1;
  * @return {number}
  */
-proto.AudioSettings.prototype.getSttSampleRateHertz = function() {
+proto.ai.inworld.engine.AudioSettings.prototype.getSttSampleRateHertz = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.AudioSettings} returns this
+ * @return {!proto.ai.inworld.engine.AudioSettings} returns this
  */
-proto.AudioSettings.prototype.setSttSampleRateHertz = function(value) {
+proto.ai.inworld.engine.AudioSettings.prototype.setSttSampleRateHertz = function(value) {
   return jspb.Message.setProto3IntField(this, 1, value);
 };
 
@@ -2311,16 +2317,16 @@ proto.AudioSettings.prototype.setSttSampleRateHertz = function(value) {
  * optional uint32 tts_sample_rate_hertz = 2;
  * @return {number}
  */
-proto.AudioSettings.prototype.getTtsSampleRateHertz = function() {
+proto.ai.inworld.engine.AudioSettings.prototype.getTtsSampleRateHertz = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.AudioSettings} returns this
+ * @return {!proto.ai.inworld.engine.AudioSettings} returns this
  */
-proto.AudioSettings.prototype.setTtsSampleRateHertz = function(value) {
+proto.ai.inworld.engine.AudioSettings.prototype.setTtsSampleRateHertz = function(value) {
   return jspb.Message.setProto3IntField(this, 2, value);
 };
 
@@ -2341,8 +2347,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.UserSettings.prototype.toObject = function(opt_includeInstance) {
-  return proto.UserSettings.toObject(opt_includeInstance, this);
+proto.ai.inworld.engine.UserSettings.prototype.toObject = function(opt_includeInstance) {
+  return proto.ai.inworld.engine.UserSettings.toObject(opt_includeInstance, this);
 };
 
 
@@ -2351,14 +2357,14 @@ proto.UserSettings.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.UserSettings} msg The msg instance to transform.
+ * @param {!proto.ai.inworld.engine.UserSettings} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.UserSettings.toObject = function(includeInstance, msg) {
+proto.ai.inworld.engine.UserSettings.toObject = function(includeInstance, msg) {
   var f, obj = {
     viewTranscriptConsent: jspb.Message.getBooleanFieldWithDefault(msg, 1, false),
-    playerProfile: (f = msg.getPlayerProfile()) && proto.UserSettings.PlayerProfile.toObject(includeInstance, f)
+    playerProfile: (f = msg.getPlayerProfile()) && proto.ai.inworld.engine.UserSettings.PlayerProfile.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -2372,23 +2378,23 @@ proto.UserSettings.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.UserSettings}
+ * @return {!proto.ai.inworld.engine.UserSettings}
  */
-proto.UserSettings.deserializeBinary = function(bytes) {
+proto.ai.inworld.engine.UserSettings.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.UserSettings;
-  return proto.UserSettings.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.ai.inworld.engine.UserSettings;
+  return proto.ai.inworld.engine.UserSettings.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.UserSettings} msg The message object to deserialize into.
+ * @param {!proto.ai.inworld.engine.UserSettings} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.UserSettings}
+ * @return {!proto.ai.inworld.engine.UserSettings}
  */
-proto.UserSettings.deserializeBinaryFromReader = function(msg, reader) {
+proto.ai.inworld.engine.UserSettings.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -2400,8 +2406,8 @@ proto.UserSettings.deserializeBinaryFromReader = function(msg, reader) {
       msg.setViewTranscriptConsent(value);
       break;
     case 2:
-      var value = new proto.UserSettings.PlayerProfile;
-      reader.readMessage(value,proto.UserSettings.PlayerProfile.deserializeBinaryFromReader);
+      var value = new proto.ai.inworld.engine.UserSettings.PlayerProfile;
+      reader.readMessage(value,proto.ai.inworld.engine.UserSettings.PlayerProfile.deserializeBinaryFromReader);
       msg.setPlayerProfile(value);
       break;
     default:
@@ -2417,9 +2423,9 @@ proto.UserSettings.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.UserSettings.prototype.serializeBinary = function() {
+proto.ai.inworld.engine.UserSettings.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.UserSettings.serializeBinaryToWriter(this, writer);
+  proto.ai.inworld.engine.UserSettings.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -2427,11 +2433,11 @@ proto.UserSettings.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.UserSettings} message
+ * @param {!proto.ai.inworld.engine.UserSettings} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.UserSettings.serializeBinaryToWriter = function(message, writer) {
+proto.ai.inworld.engine.UserSettings.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getViewTranscriptConsent();
   if (f) {
@@ -2445,7 +2451,7 @@ proto.UserSettings.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       2,
       f,
-      proto.UserSettings.PlayerProfile.serializeBinaryToWriter
+      proto.ai.inworld.engine.UserSettings.PlayerProfile.serializeBinaryToWriter
     );
   }
 };
@@ -2457,7 +2463,7 @@ proto.UserSettings.serializeBinaryToWriter = function(message, writer) {
  * @private {!Array<number>}
  * @const
  */
-proto.UserSettings.PlayerProfile.repeatedFields_ = [3];
+proto.ai.inworld.engine.UserSettings.PlayerProfile.repeatedFields_ = [3];
 
 
 
@@ -2474,8 +2480,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.UserSettings.PlayerProfile.prototype.toObject = function(opt_includeInstance) {
-  return proto.UserSettings.PlayerProfile.toObject(opt_includeInstance, this);
+proto.ai.inworld.engine.UserSettings.PlayerProfile.prototype.toObject = function(opt_includeInstance) {
+  return proto.ai.inworld.engine.UserSettings.PlayerProfile.toObject(opt_includeInstance, this);
 };
 
 
@@ -2484,14 +2490,14 @@ proto.UserSettings.PlayerProfile.prototype.toObject = function(opt_includeInstan
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.UserSettings.PlayerProfile} msg The msg instance to transform.
+ * @param {!proto.ai.inworld.engine.UserSettings.PlayerProfile} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.UserSettings.PlayerProfile.toObject = function(includeInstance, msg) {
+proto.ai.inworld.engine.UserSettings.PlayerProfile.toObject = function(includeInstance, msg) {
   var f, obj = {
     fieldsList: jspb.Message.toObjectList(msg.getFieldsList(),
-    proto.UserSettings.PlayerProfile.PlayerField.toObject, includeInstance)
+    proto.ai.inworld.engine.UserSettings.PlayerProfile.PlayerField.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -2505,23 +2511,23 @@ proto.UserSettings.PlayerProfile.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.UserSettings.PlayerProfile}
+ * @return {!proto.ai.inworld.engine.UserSettings.PlayerProfile}
  */
-proto.UserSettings.PlayerProfile.deserializeBinary = function(bytes) {
+proto.ai.inworld.engine.UserSettings.PlayerProfile.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.UserSettings.PlayerProfile;
-  return proto.UserSettings.PlayerProfile.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.ai.inworld.engine.UserSettings.PlayerProfile;
+  return proto.ai.inworld.engine.UserSettings.PlayerProfile.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.UserSettings.PlayerProfile} msg The message object to deserialize into.
+ * @param {!proto.ai.inworld.engine.UserSettings.PlayerProfile} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.UserSettings.PlayerProfile}
+ * @return {!proto.ai.inworld.engine.UserSettings.PlayerProfile}
  */
-proto.UserSettings.PlayerProfile.deserializeBinaryFromReader = function(msg, reader) {
+proto.ai.inworld.engine.UserSettings.PlayerProfile.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -2529,8 +2535,8 @@ proto.UserSettings.PlayerProfile.deserializeBinaryFromReader = function(msg, rea
     var field = reader.getFieldNumber();
     switch (field) {
     case 3:
-      var value = new proto.UserSettings.PlayerProfile.PlayerField;
-      reader.readMessage(value,proto.UserSettings.PlayerProfile.PlayerField.deserializeBinaryFromReader);
+      var value = new proto.ai.inworld.engine.UserSettings.PlayerProfile.PlayerField;
+      reader.readMessage(value,proto.ai.inworld.engine.UserSettings.PlayerProfile.PlayerField.deserializeBinaryFromReader);
       msg.addFields(value);
       break;
     default:
@@ -2546,9 +2552,9 @@ proto.UserSettings.PlayerProfile.deserializeBinaryFromReader = function(msg, rea
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.UserSettings.PlayerProfile.prototype.serializeBinary = function() {
+proto.ai.inworld.engine.UserSettings.PlayerProfile.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.UserSettings.PlayerProfile.serializeBinaryToWriter(this, writer);
+  proto.ai.inworld.engine.UserSettings.PlayerProfile.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -2556,18 +2562,18 @@ proto.UserSettings.PlayerProfile.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.UserSettings.PlayerProfile} message
+ * @param {!proto.ai.inworld.engine.UserSettings.PlayerProfile} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.UserSettings.PlayerProfile.serializeBinaryToWriter = function(message, writer) {
+proto.ai.inworld.engine.UserSettings.PlayerProfile.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getFieldsList();
   if (f.length > 0) {
     writer.writeRepeatedMessage(
       3,
       f,
-      proto.UserSettings.PlayerProfile.PlayerField.serializeBinaryToWriter
+      proto.ai.inworld.engine.UserSettings.PlayerProfile.PlayerField.serializeBinaryToWriter
     );
   }
 };
@@ -2589,8 +2595,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.UserSettings.PlayerProfile.PlayerField.prototype.toObject = function(opt_includeInstance) {
-  return proto.UserSettings.PlayerProfile.PlayerField.toObject(opt_includeInstance, this);
+proto.ai.inworld.engine.UserSettings.PlayerProfile.PlayerField.prototype.toObject = function(opt_includeInstance) {
+  return proto.ai.inworld.engine.UserSettings.PlayerProfile.PlayerField.toObject(opt_includeInstance, this);
 };
 
 
@@ -2599,11 +2605,11 @@ proto.UserSettings.PlayerProfile.PlayerField.prototype.toObject = function(opt_i
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.UserSettings.PlayerProfile.PlayerField} msg The msg instance to transform.
+ * @param {!proto.ai.inworld.engine.UserSettings.PlayerProfile.PlayerField} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.UserSettings.PlayerProfile.PlayerField.toObject = function(includeInstance, msg) {
+proto.ai.inworld.engine.UserSettings.PlayerProfile.PlayerField.toObject = function(includeInstance, msg) {
   var f, obj = {
     fieldId: jspb.Message.getFieldWithDefault(msg, 1, ""),
     fieldValue: jspb.Message.getFieldWithDefault(msg, 2, "")
@@ -2620,23 +2626,23 @@ proto.UserSettings.PlayerProfile.PlayerField.toObject = function(includeInstance
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.UserSettings.PlayerProfile.PlayerField}
+ * @return {!proto.ai.inworld.engine.UserSettings.PlayerProfile.PlayerField}
  */
-proto.UserSettings.PlayerProfile.PlayerField.deserializeBinary = function(bytes) {
+proto.ai.inworld.engine.UserSettings.PlayerProfile.PlayerField.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.UserSettings.PlayerProfile.PlayerField;
-  return proto.UserSettings.PlayerProfile.PlayerField.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.ai.inworld.engine.UserSettings.PlayerProfile.PlayerField;
+  return proto.ai.inworld.engine.UserSettings.PlayerProfile.PlayerField.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.UserSettings.PlayerProfile.PlayerField} msg The message object to deserialize into.
+ * @param {!proto.ai.inworld.engine.UserSettings.PlayerProfile.PlayerField} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.UserSettings.PlayerProfile.PlayerField}
+ * @return {!proto.ai.inworld.engine.UserSettings.PlayerProfile.PlayerField}
  */
-proto.UserSettings.PlayerProfile.PlayerField.deserializeBinaryFromReader = function(msg, reader) {
+proto.ai.inworld.engine.UserSettings.PlayerProfile.PlayerField.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -2664,9 +2670,9 @@ proto.UserSettings.PlayerProfile.PlayerField.deserializeBinaryFromReader = funct
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.UserSettings.PlayerProfile.PlayerField.prototype.serializeBinary = function() {
+proto.ai.inworld.engine.UserSettings.PlayerProfile.PlayerField.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.UserSettings.PlayerProfile.PlayerField.serializeBinaryToWriter(this, writer);
+  proto.ai.inworld.engine.UserSettings.PlayerProfile.PlayerField.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -2674,11 +2680,11 @@ proto.UserSettings.PlayerProfile.PlayerField.prototype.serializeBinary = functio
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.UserSettings.PlayerProfile.PlayerField} message
+ * @param {!proto.ai.inworld.engine.UserSettings.PlayerProfile.PlayerField} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.UserSettings.PlayerProfile.PlayerField.serializeBinaryToWriter = function(message, writer) {
+proto.ai.inworld.engine.UserSettings.PlayerProfile.PlayerField.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getFieldId();
   if (f.length > 0) {
@@ -2701,16 +2707,16 @@ proto.UserSettings.PlayerProfile.PlayerField.serializeBinaryToWriter = function(
  * optional string field_id = 1;
  * @return {string}
  */
-proto.UserSettings.PlayerProfile.PlayerField.prototype.getFieldId = function() {
+proto.ai.inworld.engine.UserSettings.PlayerProfile.PlayerField.prototype.getFieldId = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.UserSettings.PlayerProfile.PlayerField} returns this
+ * @return {!proto.ai.inworld.engine.UserSettings.PlayerProfile.PlayerField} returns this
  */
-proto.UserSettings.PlayerProfile.PlayerField.prototype.setFieldId = function(value) {
+proto.ai.inworld.engine.UserSettings.PlayerProfile.PlayerField.prototype.setFieldId = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
@@ -2719,54 +2725,54 @@ proto.UserSettings.PlayerProfile.PlayerField.prototype.setFieldId = function(val
  * optional string field_value = 2;
  * @return {string}
  */
-proto.UserSettings.PlayerProfile.PlayerField.prototype.getFieldValue = function() {
+proto.ai.inworld.engine.UserSettings.PlayerProfile.PlayerField.prototype.getFieldValue = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.UserSettings.PlayerProfile.PlayerField} returns this
+ * @return {!proto.ai.inworld.engine.UserSettings.PlayerProfile.PlayerField} returns this
  */
-proto.UserSettings.PlayerProfile.PlayerField.prototype.setFieldValue = function(value) {
+proto.ai.inworld.engine.UserSettings.PlayerProfile.PlayerField.prototype.setFieldValue = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
 /**
  * repeated PlayerField fields = 3;
- * @return {!Array<!proto.UserSettings.PlayerProfile.PlayerField>}
+ * @return {!Array<!proto.ai.inworld.engine.UserSettings.PlayerProfile.PlayerField>}
  */
-proto.UserSettings.PlayerProfile.prototype.getFieldsList = function() {
-  return /** @type{!Array<!proto.UserSettings.PlayerProfile.PlayerField>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.UserSettings.PlayerProfile.PlayerField, 3));
+proto.ai.inworld.engine.UserSettings.PlayerProfile.prototype.getFieldsList = function() {
+  return /** @type{!Array<!proto.ai.inworld.engine.UserSettings.PlayerProfile.PlayerField>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.ai.inworld.engine.UserSettings.PlayerProfile.PlayerField, 3));
 };
 
 
 /**
- * @param {!Array<!proto.UserSettings.PlayerProfile.PlayerField>} value
- * @return {!proto.UserSettings.PlayerProfile} returns this
+ * @param {!Array<!proto.ai.inworld.engine.UserSettings.PlayerProfile.PlayerField>} value
+ * @return {!proto.ai.inworld.engine.UserSettings.PlayerProfile} returns this
 */
-proto.UserSettings.PlayerProfile.prototype.setFieldsList = function(value) {
+proto.ai.inworld.engine.UserSettings.PlayerProfile.prototype.setFieldsList = function(value) {
   return jspb.Message.setRepeatedWrapperField(this, 3, value);
 };
 
 
 /**
- * @param {!proto.UserSettings.PlayerProfile.PlayerField=} opt_value
+ * @param {!proto.ai.inworld.engine.UserSettings.PlayerProfile.PlayerField=} opt_value
  * @param {number=} opt_index
- * @return {!proto.UserSettings.PlayerProfile.PlayerField}
+ * @return {!proto.ai.inworld.engine.UserSettings.PlayerProfile.PlayerField}
  */
-proto.UserSettings.PlayerProfile.prototype.addFields = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 3, opt_value, proto.UserSettings.PlayerProfile.PlayerField, opt_index);
+proto.ai.inworld.engine.UserSettings.PlayerProfile.prototype.addFields = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 3, opt_value, proto.ai.inworld.engine.UserSettings.PlayerProfile.PlayerField, opt_index);
 };
 
 
 /**
  * Clears the list making it empty but non-null.
- * @return {!proto.UserSettings.PlayerProfile} returns this
+ * @return {!proto.ai.inworld.engine.UserSettings.PlayerProfile} returns this
  */
-proto.UserSettings.PlayerProfile.prototype.clearFieldsList = function() {
+proto.ai.inworld.engine.UserSettings.PlayerProfile.prototype.clearFieldsList = function() {
   return this.setFieldsList([]);
 };
 
@@ -2775,44 +2781,44 @@ proto.UserSettings.PlayerProfile.prototype.clearFieldsList = function() {
  * optional bool view_transcript_consent = 1;
  * @return {boolean}
  */
-proto.UserSettings.prototype.getViewTranscriptConsent = function() {
+proto.ai.inworld.engine.UserSettings.prototype.getViewTranscriptConsent = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 1, false));
 };
 
 
 /**
  * @param {boolean} value
- * @return {!proto.UserSettings} returns this
+ * @return {!proto.ai.inworld.engine.UserSettings} returns this
  */
-proto.UserSettings.prototype.setViewTranscriptConsent = function(value) {
+proto.ai.inworld.engine.UserSettings.prototype.setViewTranscriptConsent = function(value) {
   return jspb.Message.setProto3BooleanField(this, 1, value);
 };
 
 
 /**
  * optional PlayerProfile player_profile = 2;
- * @return {?proto.UserSettings.PlayerProfile}
+ * @return {?proto.ai.inworld.engine.UserSettings.PlayerProfile}
  */
-proto.UserSettings.prototype.getPlayerProfile = function() {
-  return /** @type{?proto.UserSettings.PlayerProfile} */ (
-    jspb.Message.getWrapperField(this, proto.UserSettings.PlayerProfile, 2));
+proto.ai.inworld.engine.UserSettings.prototype.getPlayerProfile = function() {
+  return /** @type{?proto.ai.inworld.engine.UserSettings.PlayerProfile} */ (
+    jspb.Message.getWrapperField(this, proto.ai.inworld.engine.UserSettings.PlayerProfile, 2));
 };
 
 
 /**
- * @param {?proto.UserSettings.PlayerProfile|undefined} value
- * @return {!proto.UserSettings} returns this
+ * @param {?proto.ai.inworld.engine.UserSettings.PlayerProfile|undefined} value
+ * @return {!proto.ai.inworld.engine.UserSettings} returns this
 */
-proto.UserSettings.prototype.setPlayerProfile = function(value) {
+proto.ai.inworld.engine.UserSettings.prototype.setPlayerProfile = function(value) {
   return jspb.Message.setWrapperField(this, 2, value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.UserSettings} returns this
+ * @return {!proto.ai.inworld.engine.UserSettings} returns this
  */
-proto.UserSettings.prototype.clearPlayerProfile = function() {
+proto.ai.inworld.engine.UserSettings.prototype.clearPlayerProfile = function() {
   return this.setPlayerProfile(undefined);
 };
 
@@ -2821,7 +2827,7 @@ proto.UserSettings.prototype.clearPlayerProfile = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.UserSettings.prototype.hasPlayerProfile = function() {
+proto.ai.inworld.engine.UserSettings.prototype.hasPlayerProfile = function() {
   return jspb.Message.getField(this, 2) != null;
 };
 
@@ -2842,8 +2848,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.SessionContinuation.prototype.toObject = function(opt_includeInstance) {
-  return proto.SessionContinuation.toObject(opt_includeInstance, this);
+proto.ai.inworld.engine.SessionContinuation.prototype.toObject = function(opt_includeInstance) {
+  return proto.ai.inworld.engine.SessionContinuation.toObject(opt_includeInstance, this);
 };
 
 
@@ -2852,14 +2858,14 @@ proto.SessionContinuation.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.SessionContinuation} msg The msg instance to transform.
+ * @param {!proto.ai.inworld.engine.SessionContinuation} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.SessionContinuation.toObject = function(includeInstance, msg) {
+proto.ai.inworld.engine.SessionContinuation.toObject = function(includeInstance, msg) {
   var f, obj = {
-    continuationInfo: (f = msg.getContinuationInfo()) && proto.SessionContinuation.ContinuationInfo.toObject(includeInstance, f),
-    previousDialog: (f = msg.getPreviousDialog()) && proto.PreviousDialog.toObject(includeInstance, f),
+    continuationInfo: (f = msg.getContinuationInfo()) && proto.ai.inworld.engine.SessionContinuation.ContinuationInfo.toObject(includeInstance, f),
+    previousDialog: (f = msg.getPreviousDialog()) && proto.ai.inworld.engine.PreviousDialog.toObject(includeInstance, f),
     previousState: msg.getPreviousState_asB64()
   };
 
@@ -2874,23 +2880,23 @@ proto.SessionContinuation.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.SessionContinuation}
+ * @return {!proto.ai.inworld.engine.SessionContinuation}
  */
-proto.SessionContinuation.deserializeBinary = function(bytes) {
+proto.ai.inworld.engine.SessionContinuation.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.SessionContinuation;
-  return proto.SessionContinuation.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.ai.inworld.engine.SessionContinuation;
+  return proto.ai.inworld.engine.SessionContinuation.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.SessionContinuation} msg The message object to deserialize into.
+ * @param {!proto.ai.inworld.engine.SessionContinuation} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.SessionContinuation}
+ * @return {!proto.ai.inworld.engine.SessionContinuation}
  */
-proto.SessionContinuation.deserializeBinaryFromReader = function(msg, reader) {
+proto.ai.inworld.engine.SessionContinuation.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -2898,13 +2904,13 @@ proto.SessionContinuation.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = new proto.SessionContinuation.ContinuationInfo;
-      reader.readMessage(value,proto.SessionContinuation.ContinuationInfo.deserializeBinaryFromReader);
+      var value = new proto.ai.inworld.engine.SessionContinuation.ContinuationInfo;
+      reader.readMessage(value,proto.ai.inworld.engine.SessionContinuation.ContinuationInfo.deserializeBinaryFromReader);
       msg.setContinuationInfo(value);
       break;
     case 2:
-      var value = new proto.PreviousDialog;
-      reader.readMessage(value,proto.PreviousDialog.deserializeBinaryFromReader);
+      var value = new proto.ai.inworld.engine.PreviousDialog;
+      reader.readMessage(value,proto.ai.inworld.engine.PreviousDialog.deserializeBinaryFromReader);
       msg.setPreviousDialog(value);
       break;
     case 3:
@@ -2924,9 +2930,9 @@ proto.SessionContinuation.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.SessionContinuation.prototype.serializeBinary = function() {
+proto.ai.inworld.engine.SessionContinuation.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.SessionContinuation.serializeBinaryToWriter(this, writer);
+  proto.ai.inworld.engine.SessionContinuation.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -2934,18 +2940,18 @@ proto.SessionContinuation.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.SessionContinuation} message
+ * @param {!proto.ai.inworld.engine.SessionContinuation} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.SessionContinuation.serializeBinaryToWriter = function(message, writer) {
+proto.ai.inworld.engine.SessionContinuation.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getContinuationInfo();
   if (f != null) {
     writer.writeMessage(
       1,
       f,
-      proto.SessionContinuation.ContinuationInfo.serializeBinaryToWriter
+      proto.ai.inworld.engine.SessionContinuation.ContinuationInfo.serializeBinaryToWriter
     );
   }
   f = message.getPreviousDialog();
@@ -2953,7 +2959,7 @@ proto.SessionContinuation.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       2,
       f,
-      proto.PreviousDialog.serializeBinaryToWriter
+      proto.ai.inworld.engine.PreviousDialog.serializeBinaryToWriter
     );
   }
   f = message.getPreviousState_asU8();
@@ -2982,8 +2988,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.SessionContinuation.ContinuationInfo.prototype.toObject = function(opt_includeInstance) {
-  return proto.SessionContinuation.ContinuationInfo.toObject(opt_includeInstance, this);
+proto.ai.inworld.engine.SessionContinuation.ContinuationInfo.prototype.toObject = function(opt_includeInstance) {
+  return proto.ai.inworld.engine.SessionContinuation.ContinuationInfo.toObject(opt_includeInstance, this);
 };
 
 
@@ -2992,11 +2998,11 @@ proto.SessionContinuation.ContinuationInfo.prototype.toObject = function(opt_inc
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.SessionContinuation.ContinuationInfo} msg The msg instance to transform.
+ * @param {!proto.ai.inworld.engine.SessionContinuation.ContinuationInfo} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.SessionContinuation.ContinuationInfo.toObject = function(includeInstance, msg) {
+proto.ai.inworld.engine.SessionContinuation.ContinuationInfo.toObject = function(includeInstance, msg) {
   var f, obj = {
     millisPassed: jspb.Message.getFieldWithDefault(msg, 1, 0)
   };
@@ -3012,23 +3018,23 @@ proto.SessionContinuation.ContinuationInfo.toObject = function(includeInstance, 
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.SessionContinuation.ContinuationInfo}
+ * @return {!proto.ai.inworld.engine.SessionContinuation.ContinuationInfo}
  */
-proto.SessionContinuation.ContinuationInfo.deserializeBinary = function(bytes) {
+proto.ai.inworld.engine.SessionContinuation.ContinuationInfo.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.SessionContinuation.ContinuationInfo;
-  return proto.SessionContinuation.ContinuationInfo.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.ai.inworld.engine.SessionContinuation.ContinuationInfo;
+  return proto.ai.inworld.engine.SessionContinuation.ContinuationInfo.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.SessionContinuation.ContinuationInfo} msg The message object to deserialize into.
+ * @param {!proto.ai.inworld.engine.SessionContinuation.ContinuationInfo} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.SessionContinuation.ContinuationInfo}
+ * @return {!proto.ai.inworld.engine.SessionContinuation.ContinuationInfo}
  */
-proto.SessionContinuation.ContinuationInfo.deserializeBinaryFromReader = function(msg, reader) {
+proto.ai.inworld.engine.SessionContinuation.ContinuationInfo.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -3052,9 +3058,9 @@ proto.SessionContinuation.ContinuationInfo.deserializeBinaryFromReader = functio
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.SessionContinuation.ContinuationInfo.prototype.serializeBinary = function() {
+proto.ai.inworld.engine.SessionContinuation.ContinuationInfo.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.SessionContinuation.ContinuationInfo.serializeBinaryToWriter(this, writer);
+  proto.ai.inworld.engine.SessionContinuation.ContinuationInfo.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -3062,11 +3068,11 @@ proto.SessionContinuation.ContinuationInfo.prototype.serializeBinary = function(
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.SessionContinuation.ContinuationInfo} message
+ * @param {!proto.ai.inworld.engine.SessionContinuation.ContinuationInfo} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.SessionContinuation.ContinuationInfo.serializeBinaryToWriter = function(message, writer) {
+proto.ai.inworld.engine.SessionContinuation.ContinuationInfo.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getMillisPassed();
   if (f !== 0) {
@@ -3082,44 +3088,44 @@ proto.SessionContinuation.ContinuationInfo.serializeBinaryToWriter = function(me
  * optional int64 millis_passed = 1;
  * @return {number}
  */
-proto.SessionContinuation.ContinuationInfo.prototype.getMillisPassed = function() {
+proto.ai.inworld.engine.SessionContinuation.ContinuationInfo.prototype.getMillisPassed = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.SessionContinuation.ContinuationInfo} returns this
+ * @return {!proto.ai.inworld.engine.SessionContinuation.ContinuationInfo} returns this
  */
-proto.SessionContinuation.ContinuationInfo.prototype.setMillisPassed = function(value) {
+proto.ai.inworld.engine.SessionContinuation.ContinuationInfo.prototype.setMillisPassed = function(value) {
   return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
 /**
  * optional ContinuationInfo continuation_info = 1;
- * @return {?proto.SessionContinuation.ContinuationInfo}
+ * @return {?proto.ai.inworld.engine.SessionContinuation.ContinuationInfo}
  */
-proto.SessionContinuation.prototype.getContinuationInfo = function() {
-  return /** @type{?proto.SessionContinuation.ContinuationInfo} */ (
-    jspb.Message.getWrapperField(this, proto.SessionContinuation.ContinuationInfo, 1));
+proto.ai.inworld.engine.SessionContinuation.prototype.getContinuationInfo = function() {
+  return /** @type{?proto.ai.inworld.engine.SessionContinuation.ContinuationInfo} */ (
+    jspb.Message.getWrapperField(this, proto.ai.inworld.engine.SessionContinuation.ContinuationInfo, 1));
 };
 
 
 /**
- * @param {?proto.SessionContinuation.ContinuationInfo|undefined} value
- * @return {!proto.SessionContinuation} returns this
+ * @param {?proto.ai.inworld.engine.SessionContinuation.ContinuationInfo|undefined} value
+ * @return {!proto.ai.inworld.engine.SessionContinuation} returns this
 */
-proto.SessionContinuation.prototype.setContinuationInfo = function(value) {
+proto.ai.inworld.engine.SessionContinuation.prototype.setContinuationInfo = function(value) {
   return jspb.Message.setWrapperField(this, 1, value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.SessionContinuation} returns this
+ * @return {!proto.ai.inworld.engine.SessionContinuation} returns this
  */
-proto.SessionContinuation.prototype.clearContinuationInfo = function() {
+proto.ai.inworld.engine.SessionContinuation.prototype.clearContinuationInfo = function() {
   return this.setContinuationInfo(undefined);
 };
 
@@ -3128,35 +3134,35 @@ proto.SessionContinuation.prototype.clearContinuationInfo = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.SessionContinuation.prototype.hasContinuationInfo = function() {
+proto.ai.inworld.engine.SessionContinuation.prototype.hasContinuationInfo = function() {
   return jspb.Message.getField(this, 1) != null;
 };
 
 
 /**
  * optional PreviousDialog previous_dialog = 2;
- * @return {?proto.PreviousDialog}
+ * @return {?proto.ai.inworld.engine.PreviousDialog}
  */
-proto.SessionContinuation.prototype.getPreviousDialog = function() {
-  return /** @type{?proto.PreviousDialog} */ (
-    jspb.Message.getWrapperField(this, proto.PreviousDialog, 2));
+proto.ai.inworld.engine.SessionContinuation.prototype.getPreviousDialog = function() {
+  return /** @type{?proto.ai.inworld.engine.PreviousDialog} */ (
+    jspb.Message.getWrapperField(this, proto.ai.inworld.engine.PreviousDialog, 2));
 };
 
 
 /**
- * @param {?proto.PreviousDialog|undefined} value
- * @return {!proto.SessionContinuation} returns this
+ * @param {?proto.ai.inworld.engine.PreviousDialog|undefined} value
+ * @return {!proto.ai.inworld.engine.SessionContinuation} returns this
 */
-proto.SessionContinuation.prototype.setPreviousDialog = function(value) {
+proto.ai.inworld.engine.SessionContinuation.prototype.setPreviousDialog = function(value) {
   return jspb.Message.setWrapperField(this, 2, value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.SessionContinuation} returns this
+ * @return {!proto.ai.inworld.engine.SessionContinuation} returns this
  */
-proto.SessionContinuation.prototype.clearPreviousDialog = function() {
+proto.ai.inworld.engine.SessionContinuation.prototype.clearPreviousDialog = function() {
   return this.setPreviousDialog(undefined);
 };
 
@@ -3165,7 +3171,7 @@ proto.SessionContinuation.prototype.clearPreviousDialog = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.SessionContinuation.prototype.hasPreviousDialog = function() {
+proto.ai.inworld.engine.SessionContinuation.prototype.hasPreviousDialog = function() {
   return jspb.Message.getField(this, 2) != null;
 };
 
@@ -3174,7 +3180,7 @@ proto.SessionContinuation.prototype.hasPreviousDialog = function() {
  * optional bytes previous_state = 3;
  * @return {!(string|Uint8Array)}
  */
-proto.SessionContinuation.prototype.getPreviousState = function() {
+proto.ai.inworld.engine.SessionContinuation.prototype.getPreviousState = function() {
   return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
@@ -3184,7 +3190,7 @@ proto.SessionContinuation.prototype.getPreviousState = function() {
  * This is a type-conversion wrapper around `getPreviousState()`
  * @return {string}
  */
-proto.SessionContinuation.prototype.getPreviousState_asB64 = function() {
+proto.ai.inworld.engine.SessionContinuation.prototype.getPreviousState_asB64 = function() {
   return /** @type {string} */ (jspb.Message.bytesAsB64(
       this.getPreviousState()));
 };
@@ -3197,7 +3203,7 @@ proto.SessionContinuation.prototype.getPreviousState_asB64 = function() {
  * This is a type-conversion wrapper around `getPreviousState()`
  * @return {!Uint8Array}
  */
-proto.SessionContinuation.prototype.getPreviousState_asU8 = function() {
+proto.ai.inworld.engine.SessionContinuation.prototype.getPreviousState_asU8 = function() {
   return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
       this.getPreviousState()));
 };
@@ -3205,9 +3211,9 @@ proto.SessionContinuation.prototype.getPreviousState_asU8 = function() {
 
 /**
  * @param {!(string|Uint8Array)} value
- * @return {!proto.SessionContinuation} returns this
+ * @return {!proto.ai.inworld.engine.SessionContinuation} returns this
  */
-proto.SessionContinuation.prototype.setPreviousState = function(value) {
+proto.ai.inworld.engine.SessionContinuation.prototype.setPreviousState = function(value) {
   return jspb.Message.setProto3BytesField(this, 3, value);
 };
 
@@ -3218,7 +3224,7 @@ proto.SessionContinuation.prototype.setPreviousState = function(value) {
  * @private {!Array<number>}
  * @const
  */
-proto.PreviousDialog.repeatedFields_ = [1];
+proto.ai.inworld.engine.PreviousDialog.repeatedFields_ = [1];
 
 
 
@@ -3235,8 +3241,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.PreviousDialog.prototype.toObject = function(opt_includeInstance) {
-  return proto.PreviousDialog.toObject(opt_includeInstance, this);
+proto.ai.inworld.engine.PreviousDialog.prototype.toObject = function(opt_includeInstance) {
+  return proto.ai.inworld.engine.PreviousDialog.toObject(opt_includeInstance, this);
 };
 
 
@@ -3245,14 +3251,14 @@ proto.PreviousDialog.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.PreviousDialog} msg The msg instance to transform.
+ * @param {!proto.ai.inworld.engine.PreviousDialog} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.PreviousDialog.toObject = function(includeInstance, msg) {
+proto.ai.inworld.engine.PreviousDialog.toObject = function(includeInstance, msg) {
   var f, obj = {
     phrasesList: jspb.Message.toObjectList(msg.getPhrasesList(),
-    proto.PreviousDialog.Phrase.toObject, includeInstance)
+    proto.ai.inworld.engine.PreviousDialog.Phrase.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -3266,23 +3272,23 @@ proto.PreviousDialog.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.PreviousDialog}
+ * @return {!proto.ai.inworld.engine.PreviousDialog}
  */
-proto.PreviousDialog.deserializeBinary = function(bytes) {
+proto.ai.inworld.engine.PreviousDialog.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.PreviousDialog;
-  return proto.PreviousDialog.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.ai.inworld.engine.PreviousDialog;
+  return proto.ai.inworld.engine.PreviousDialog.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.PreviousDialog} msg The message object to deserialize into.
+ * @param {!proto.ai.inworld.engine.PreviousDialog} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.PreviousDialog}
+ * @return {!proto.ai.inworld.engine.PreviousDialog}
  */
-proto.PreviousDialog.deserializeBinaryFromReader = function(msg, reader) {
+proto.ai.inworld.engine.PreviousDialog.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -3290,8 +3296,8 @@ proto.PreviousDialog.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = new proto.PreviousDialog.Phrase;
-      reader.readMessage(value,proto.PreviousDialog.Phrase.deserializeBinaryFromReader);
+      var value = new proto.ai.inworld.engine.PreviousDialog.Phrase;
+      reader.readMessage(value,proto.ai.inworld.engine.PreviousDialog.Phrase.deserializeBinaryFromReader);
       msg.addPhrases(value);
       break;
     default:
@@ -3307,9 +3313,9 @@ proto.PreviousDialog.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.PreviousDialog.prototype.serializeBinary = function() {
+proto.ai.inworld.engine.PreviousDialog.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.PreviousDialog.serializeBinaryToWriter(this, writer);
+  proto.ai.inworld.engine.PreviousDialog.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -3317,18 +3323,18 @@ proto.PreviousDialog.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.PreviousDialog} message
+ * @param {!proto.ai.inworld.engine.PreviousDialog} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.PreviousDialog.serializeBinaryToWriter = function(message, writer) {
+proto.ai.inworld.engine.PreviousDialog.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getPhrasesList();
   if (f.length > 0) {
     writer.writeRepeatedMessage(
       1,
       f,
-      proto.PreviousDialog.Phrase.serializeBinaryToWriter
+      proto.ai.inworld.engine.PreviousDialog.Phrase.serializeBinaryToWriter
     );
   }
 };
@@ -3337,7 +3343,7 @@ proto.PreviousDialog.serializeBinaryToWriter = function(message, writer) {
 /**
  * @enum {number}
  */
-proto.PreviousDialog.DialogParticipant = {
+proto.ai.inworld.engine.PreviousDialog.DialogParticipant = {
   UNKNOWN: 0,
   PLAYER: 1,
   CHARACTER: 2,
@@ -3353,22 +3359,22 @@ proto.PreviousDialog.DialogParticipant = {
  * @private {!Array<!Array<number>>}
  * @const
  */
-proto.PreviousDialog.Phrase.oneofGroups_ = [[2,5]];
+proto.ai.inworld.engine.PreviousDialog.Phrase.oneofGroups_ = [[2,5]];
 
 /**
  * @enum {number}
  */
-proto.PreviousDialog.Phrase.PayloadCase = {
+proto.ai.inworld.engine.PreviousDialog.Phrase.PayloadCase = {
   PAYLOAD_NOT_SET: 0,
   PHRASE: 2,
   NARRATIVE_ACTION: 5
 };
 
 /**
- * @return {proto.PreviousDialog.Phrase.PayloadCase}
+ * @return {proto.ai.inworld.engine.PreviousDialog.Phrase.PayloadCase}
  */
-proto.PreviousDialog.Phrase.prototype.getPayloadCase = function() {
-  return /** @type {proto.PreviousDialog.Phrase.PayloadCase} */(jspb.Message.computeOneofCase(this, proto.PreviousDialog.Phrase.oneofGroups_[0]));
+proto.ai.inworld.engine.PreviousDialog.Phrase.prototype.getPayloadCase = function() {
+  return /** @type {proto.ai.inworld.engine.PreviousDialog.Phrase.PayloadCase} */(jspb.Message.computeOneofCase(this, proto.ai.inworld.engine.PreviousDialog.Phrase.oneofGroups_[0]));
 };
 
 
@@ -3386,8 +3392,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.PreviousDialog.Phrase.prototype.toObject = function(opt_includeInstance) {
-  return proto.PreviousDialog.Phrase.toObject(opt_includeInstance, this);
+proto.ai.inworld.engine.PreviousDialog.Phrase.prototype.toObject = function(opt_includeInstance) {
+  return proto.ai.inworld.engine.PreviousDialog.Phrase.toObject(opt_includeInstance, this);
 };
 
 
@@ -3396,11 +3402,11 @@ proto.PreviousDialog.Phrase.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.PreviousDialog.Phrase} msg The msg instance to transform.
+ * @param {!proto.ai.inworld.engine.PreviousDialog.Phrase} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.PreviousDialog.Phrase.toObject = function(includeInstance, msg) {
+proto.ai.inworld.engine.PreviousDialog.Phrase.toObject = function(includeInstance, msg) {
   var f, obj = {
     talker: jspb.Message.getFieldWithDefault(msg, 1, 0),
     talkerDisplayName: jspb.Message.getFieldWithDefault(msg, 4, ""),
@@ -3419,23 +3425,23 @@ proto.PreviousDialog.Phrase.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.PreviousDialog.Phrase}
+ * @return {!proto.ai.inworld.engine.PreviousDialog.Phrase}
  */
-proto.PreviousDialog.Phrase.deserializeBinary = function(bytes) {
+proto.ai.inworld.engine.PreviousDialog.Phrase.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.PreviousDialog.Phrase;
-  return proto.PreviousDialog.Phrase.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.ai.inworld.engine.PreviousDialog.Phrase;
+  return proto.ai.inworld.engine.PreviousDialog.Phrase.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.PreviousDialog.Phrase} msg The message object to deserialize into.
+ * @param {!proto.ai.inworld.engine.PreviousDialog.Phrase} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.PreviousDialog.Phrase}
+ * @return {!proto.ai.inworld.engine.PreviousDialog.Phrase}
  */
-proto.PreviousDialog.Phrase.deserializeBinaryFromReader = function(msg, reader) {
+proto.ai.inworld.engine.PreviousDialog.Phrase.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -3443,7 +3449,7 @@ proto.PreviousDialog.Phrase.deserializeBinaryFromReader = function(msg, reader) 
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {!proto.PreviousDialog.DialogParticipant} */ (reader.readEnum());
+      var value = /** @type {!proto.ai.inworld.engine.PreviousDialog.DialogParticipant} */ (reader.readEnum());
       msg.setTalker(value);
       break;
     case 4:
@@ -3471,9 +3477,9 @@ proto.PreviousDialog.Phrase.deserializeBinaryFromReader = function(msg, reader) 
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.PreviousDialog.Phrase.prototype.serializeBinary = function() {
+proto.ai.inworld.engine.PreviousDialog.Phrase.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.PreviousDialog.Phrase.serializeBinaryToWriter(this, writer);
+  proto.ai.inworld.engine.PreviousDialog.Phrase.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -3481,11 +3487,11 @@ proto.PreviousDialog.Phrase.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.PreviousDialog.Phrase} message
+ * @param {!proto.ai.inworld.engine.PreviousDialog.Phrase} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.PreviousDialog.Phrase.serializeBinaryToWriter = function(message, writer) {
+proto.ai.inworld.engine.PreviousDialog.Phrase.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getTalker();
   if (f !== 0.0) {
@@ -3520,18 +3526,18 @@ proto.PreviousDialog.Phrase.serializeBinaryToWriter = function(message, writer) 
 
 /**
  * optional DialogParticipant talker = 1;
- * @return {!proto.PreviousDialog.DialogParticipant}
+ * @return {!proto.ai.inworld.engine.PreviousDialog.DialogParticipant}
  */
-proto.PreviousDialog.Phrase.prototype.getTalker = function() {
-  return /** @type {!proto.PreviousDialog.DialogParticipant} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+proto.ai.inworld.engine.PreviousDialog.Phrase.prototype.getTalker = function() {
+  return /** @type {!proto.ai.inworld.engine.PreviousDialog.DialogParticipant} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /**
- * @param {!proto.PreviousDialog.DialogParticipant} value
- * @return {!proto.PreviousDialog.Phrase} returns this
+ * @param {!proto.ai.inworld.engine.PreviousDialog.DialogParticipant} value
+ * @return {!proto.ai.inworld.engine.PreviousDialog.Phrase} returns this
  */
-proto.PreviousDialog.Phrase.prototype.setTalker = function(value) {
+proto.ai.inworld.engine.PreviousDialog.Phrase.prototype.setTalker = function(value) {
   return jspb.Message.setProto3EnumField(this, 1, value);
 };
 
@@ -3540,16 +3546,16 @@ proto.PreviousDialog.Phrase.prototype.setTalker = function(value) {
  * optional string talker_display_name = 4;
  * @return {string}
  */
-proto.PreviousDialog.Phrase.prototype.getTalkerDisplayName = function() {
+proto.ai.inworld.engine.PreviousDialog.Phrase.prototype.getTalkerDisplayName = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.PreviousDialog.Phrase} returns this
+ * @return {!proto.ai.inworld.engine.PreviousDialog.Phrase} returns this
  */
-proto.PreviousDialog.Phrase.prototype.setTalkerDisplayName = function(value) {
+proto.ai.inworld.engine.PreviousDialog.Phrase.prototype.setTalkerDisplayName = function(value) {
   return jspb.Message.setProto3StringField(this, 4, value);
 };
 
@@ -3558,26 +3564,26 @@ proto.PreviousDialog.Phrase.prototype.setTalkerDisplayName = function(value) {
  * optional string phrase = 2;
  * @return {string}
  */
-proto.PreviousDialog.Phrase.prototype.getPhrase = function() {
+proto.ai.inworld.engine.PreviousDialog.Phrase.prototype.getPhrase = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.PreviousDialog.Phrase} returns this
+ * @return {!proto.ai.inworld.engine.PreviousDialog.Phrase} returns this
  */
-proto.PreviousDialog.Phrase.prototype.setPhrase = function(value) {
-  return jspb.Message.setOneofField(this, 2, proto.PreviousDialog.Phrase.oneofGroups_[0], value);
+proto.ai.inworld.engine.PreviousDialog.Phrase.prototype.setPhrase = function(value) {
+  return jspb.Message.setOneofField(this, 2, proto.ai.inworld.engine.PreviousDialog.Phrase.oneofGroups_[0], value);
 };
 
 
 /**
  * Clears the field making it undefined.
- * @return {!proto.PreviousDialog.Phrase} returns this
+ * @return {!proto.ai.inworld.engine.PreviousDialog.Phrase} returns this
  */
-proto.PreviousDialog.Phrase.prototype.clearPhrase = function() {
-  return jspb.Message.setOneofField(this, 2, proto.PreviousDialog.Phrase.oneofGroups_[0], undefined);
+proto.ai.inworld.engine.PreviousDialog.Phrase.prototype.clearPhrase = function() {
+  return jspb.Message.setOneofField(this, 2, proto.ai.inworld.engine.PreviousDialog.Phrase.oneofGroups_[0], undefined);
 };
 
 
@@ -3585,7 +3591,7 @@ proto.PreviousDialog.Phrase.prototype.clearPhrase = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.PreviousDialog.Phrase.prototype.hasPhrase = function() {
+proto.ai.inworld.engine.PreviousDialog.Phrase.prototype.hasPhrase = function() {
   return jspb.Message.getField(this, 2) != null;
 };
 
@@ -3594,26 +3600,26 @@ proto.PreviousDialog.Phrase.prototype.hasPhrase = function() {
  * optional string narrative_action = 5;
  * @return {string}
  */
-proto.PreviousDialog.Phrase.prototype.getNarrativeAction = function() {
+proto.ai.inworld.engine.PreviousDialog.Phrase.prototype.getNarrativeAction = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.PreviousDialog.Phrase} returns this
+ * @return {!proto.ai.inworld.engine.PreviousDialog.Phrase} returns this
  */
-proto.PreviousDialog.Phrase.prototype.setNarrativeAction = function(value) {
-  return jspb.Message.setOneofField(this, 5, proto.PreviousDialog.Phrase.oneofGroups_[0], value);
+proto.ai.inworld.engine.PreviousDialog.Phrase.prototype.setNarrativeAction = function(value) {
+  return jspb.Message.setOneofField(this, 5, proto.ai.inworld.engine.PreviousDialog.Phrase.oneofGroups_[0], value);
 };
 
 
 /**
  * Clears the field making it undefined.
- * @return {!proto.PreviousDialog.Phrase} returns this
+ * @return {!proto.ai.inworld.engine.PreviousDialog.Phrase} returns this
  */
-proto.PreviousDialog.Phrase.prototype.clearNarrativeAction = function() {
-  return jspb.Message.setOneofField(this, 5, proto.PreviousDialog.Phrase.oneofGroups_[0], undefined);
+proto.ai.inworld.engine.PreviousDialog.Phrase.prototype.clearNarrativeAction = function() {
+  return jspb.Message.setOneofField(this, 5, proto.ai.inworld.engine.PreviousDialog.Phrase.oneofGroups_[0], undefined);
 };
 
 
@@ -3621,45 +3627,45 @@ proto.PreviousDialog.Phrase.prototype.clearNarrativeAction = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.PreviousDialog.Phrase.prototype.hasNarrativeAction = function() {
+proto.ai.inworld.engine.PreviousDialog.Phrase.prototype.hasNarrativeAction = function() {
   return jspb.Message.getField(this, 5) != null;
 };
 
 
 /**
  * repeated Phrase phrases = 1;
- * @return {!Array<!proto.PreviousDialog.Phrase>}
+ * @return {!Array<!proto.ai.inworld.engine.PreviousDialog.Phrase>}
  */
-proto.PreviousDialog.prototype.getPhrasesList = function() {
-  return /** @type{!Array<!proto.PreviousDialog.Phrase>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.PreviousDialog.Phrase, 1));
+proto.ai.inworld.engine.PreviousDialog.prototype.getPhrasesList = function() {
+  return /** @type{!Array<!proto.ai.inworld.engine.PreviousDialog.Phrase>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.ai.inworld.engine.PreviousDialog.Phrase, 1));
 };
 
 
 /**
- * @param {!Array<!proto.PreviousDialog.Phrase>} value
- * @return {!proto.PreviousDialog} returns this
+ * @param {!Array<!proto.ai.inworld.engine.PreviousDialog.Phrase>} value
+ * @return {!proto.ai.inworld.engine.PreviousDialog} returns this
 */
-proto.PreviousDialog.prototype.setPhrasesList = function(value) {
+proto.ai.inworld.engine.PreviousDialog.prototype.setPhrasesList = function(value) {
   return jspb.Message.setRepeatedWrapperField(this, 1, value);
 };
 
 
 /**
- * @param {!proto.PreviousDialog.Phrase=} opt_value
+ * @param {!proto.ai.inworld.engine.PreviousDialog.Phrase=} opt_value
  * @param {number=} opt_index
- * @return {!proto.PreviousDialog.Phrase}
+ * @return {!proto.ai.inworld.engine.PreviousDialog.Phrase}
  */
-proto.PreviousDialog.prototype.addPhrases = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.PreviousDialog.Phrase, opt_index);
+proto.ai.inworld.engine.PreviousDialog.prototype.addPhrases = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.ai.inworld.engine.PreviousDialog.Phrase, opt_index);
 };
 
 
 /**
  * Clears the list making it empty but non-null.
- * @return {!proto.PreviousDialog} returns this
+ * @return {!proto.ai.inworld.engine.PreviousDialog} returns this
  */
-proto.PreviousDialog.prototype.clearPhrasesList = function() {
+proto.ai.inworld.engine.PreviousDialog.prototype.clearPhrasesList = function() {
   return this.setPhrasesList([]);
 };
 
@@ -3670,7 +3676,7 @@ proto.PreviousDialog.prototype.clearPhrasesList = function() {
  * @private {!Array<number>}
  * @const
  */
-proto.PreviousState.repeatedFields_ = [1];
+proto.ai.inworld.engine.PreviousState.repeatedFields_ = [1];
 
 
 
@@ -3687,8 +3693,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.PreviousState.prototype.toObject = function(opt_includeInstance) {
-  return proto.PreviousState.toObject(opt_includeInstance, this);
+proto.ai.inworld.engine.PreviousState.prototype.toObject = function(opt_includeInstance) {
+  return proto.ai.inworld.engine.PreviousState.toObject(opt_includeInstance, this);
 };
 
 
@@ -3697,16 +3703,16 @@ proto.PreviousState.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.PreviousState} msg The msg instance to transform.
+ * @param {!proto.ai.inworld.engine.PreviousState} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.PreviousState.toObject = function(includeInstance, msg) {
+proto.ai.inworld.engine.PreviousState.toObject = function(includeInstance, msg) {
   var f, obj = {
     stateHoldersList: jspb.Message.toObjectList(msg.getStateHoldersList(),
-    proto.PreviousState.StateHolder.toObject, includeInstance),
+    proto.ai.inworld.engine.PreviousState.StateHolder.toObject, includeInstance),
     gameSessionId: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    conversationState: (f = msg.getConversationState()) && proto.ConversationState.toObject(includeInstance, f)
+    conversationState: (f = msg.getConversationState()) && proto.ai.inworld.engine.ConversationState.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -3720,23 +3726,23 @@ proto.PreviousState.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.PreviousState}
+ * @return {!proto.ai.inworld.engine.PreviousState}
  */
-proto.PreviousState.deserializeBinary = function(bytes) {
+proto.ai.inworld.engine.PreviousState.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.PreviousState;
-  return proto.PreviousState.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.ai.inworld.engine.PreviousState;
+  return proto.ai.inworld.engine.PreviousState.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.PreviousState} msg The message object to deserialize into.
+ * @param {!proto.ai.inworld.engine.PreviousState} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.PreviousState}
+ * @return {!proto.ai.inworld.engine.PreviousState}
  */
-proto.PreviousState.deserializeBinaryFromReader = function(msg, reader) {
+proto.ai.inworld.engine.PreviousState.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -3744,8 +3750,8 @@ proto.PreviousState.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = new proto.PreviousState.StateHolder;
-      reader.readMessage(value,proto.PreviousState.StateHolder.deserializeBinaryFromReader);
+      var value = new proto.ai.inworld.engine.PreviousState.StateHolder;
+      reader.readMessage(value,proto.ai.inworld.engine.PreviousState.StateHolder.deserializeBinaryFromReader);
       msg.addStateHolders(value);
       break;
     case 2:
@@ -3753,8 +3759,8 @@ proto.PreviousState.deserializeBinaryFromReader = function(msg, reader) {
       msg.setGameSessionId(value);
       break;
     case 3:
-      var value = new proto.ConversationState;
-      reader.readMessage(value,proto.ConversationState.deserializeBinaryFromReader);
+      var value = new proto.ai.inworld.engine.ConversationState;
+      reader.readMessage(value,proto.ai.inworld.engine.ConversationState.deserializeBinaryFromReader);
       msg.setConversationState(value);
       break;
     default:
@@ -3770,9 +3776,9 @@ proto.PreviousState.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.PreviousState.prototype.serializeBinary = function() {
+proto.ai.inworld.engine.PreviousState.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.PreviousState.serializeBinaryToWriter(this, writer);
+  proto.ai.inworld.engine.PreviousState.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -3780,18 +3786,18 @@ proto.PreviousState.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.PreviousState} message
+ * @param {!proto.ai.inworld.engine.PreviousState} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.PreviousState.serializeBinaryToWriter = function(message, writer) {
+proto.ai.inworld.engine.PreviousState.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getStateHoldersList();
   if (f.length > 0) {
     writer.writeRepeatedMessage(
       1,
       f,
-      proto.PreviousState.StateHolder.serializeBinaryToWriter
+      proto.ai.inworld.engine.PreviousState.StateHolder.serializeBinaryToWriter
     );
   }
   f = message.getGameSessionId();
@@ -3806,7 +3812,7 @@ proto.PreviousState.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       3,
       f,
-      proto.ConversationState.serializeBinaryToWriter
+      proto.ai.inworld.engine.ConversationState.serializeBinaryToWriter
     );
   }
 };
@@ -3818,7 +3824,7 @@ proto.PreviousState.serializeBinaryToWriter = function(message, writer) {
  * @private {!Array<number>}
  * @const
  */
-proto.PreviousState.StateHolder.repeatedFields_ = [4,5];
+proto.ai.inworld.engine.PreviousState.StateHolder.repeatedFields_ = [4,5];
 
 
 
@@ -3835,8 +3841,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.PreviousState.StateHolder.prototype.toObject = function(opt_includeInstance) {
-  return proto.PreviousState.StateHolder.toObject(opt_includeInstance, this);
+proto.ai.inworld.engine.PreviousState.StateHolder.prototype.toObject = function(opt_includeInstance) {
+  return proto.ai.inworld.engine.PreviousState.StateHolder.toObject(opt_includeInstance, this);
 };
 
 
@@ -3845,19 +3851,19 @@ proto.PreviousState.StateHolder.prototype.toObject = function(opt_includeInstanc
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.PreviousState.StateHolder} msg The msg instance to transform.
+ * @param {!proto.ai.inworld.engine.PreviousState.StateHolder} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.PreviousState.StateHolder.toObject = function(includeInstance, msg) {
+proto.ai.inworld.engine.PreviousState.StateHolder.toObject = function(includeInstance, msg) {
   var f, obj = {
     brainName: jspb.Message.getFieldWithDefault(msg, 1, ""),
     state: msg.getState_asB64(),
-    previousDialog: (f = msg.getPreviousDialog()) && proto.PreviousDialog.toObject(includeInstance, f),
+    previousDialog: (f = msg.getPreviousDialog()) && proto.ai.inworld.engine.PreviousDialog.toObject(includeInstance, f),
     packetsList: jspb.Message.toObjectList(msg.getPacketsList(),
     ai_inworld_packets_packets_pb.InworldPacket.toObject, includeInstance),
     relationsToActorsList: jspb.Message.toObjectList(msg.getRelationsToActorsList(),
-    proto.ActorRelations.toObject, includeInstance),
+    proto.ai.inworld.engine.ActorRelations.toObject, includeInstance),
     stateFormat: jspb.Message.getFieldWithDefault(msg, 6, 0)
   };
 
@@ -3872,23 +3878,23 @@ proto.PreviousState.StateHolder.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.PreviousState.StateHolder}
+ * @return {!proto.ai.inworld.engine.PreviousState.StateHolder}
  */
-proto.PreviousState.StateHolder.deserializeBinary = function(bytes) {
+proto.ai.inworld.engine.PreviousState.StateHolder.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.PreviousState.StateHolder;
-  return proto.PreviousState.StateHolder.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.ai.inworld.engine.PreviousState.StateHolder;
+  return proto.ai.inworld.engine.PreviousState.StateHolder.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.PreviousState.StateHolder} msg The message object to deserialize into.
+ * @param {!proto.ai.inworld.engine.PreviousState.StateHolder} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.PreviousState.StateHolder}
+ * @return {!proto.ai.inworld.engine.PreviousState.StateHolder}
  */
-proto.PreviousState.StateHolder.deserializeBinaryFromReader = function(msg, reader) {
+proto.ai.inworld.engine.PreviousState.StateHolder.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -3904,8 +3910,8 @@ proto.PreviousState.StateHolder.deserializeBinaryFromReader = function(msg, read
       msg.setState(value);
       break;
     case 3:
-      var value = new proto.PreviousDialog;
-      reader.readMessage(value,proto.PreviousDialog.deserializeBinaryFromReader);
+      var value = new proto.ai.inworld.engine.PreviousDialog;
+      reader.readMessage(value,proto.ai.inworld.engine.PreviousDialog.deserializeBinaryFromReader);
       msg.setPreviousDialog(value);
       break;
     case 4:
@@ -3914,12 +3920,12 @@ proto.PreviousState.StateHolder.deserializeBinaryFromReader = function(msg, read
       msg.addPackets(value);
       break;
     case 5:
-      var value = new proto.ActorRelations;
-      reader.readMessage(value,proto.ActorRelations.deserializeBinaryFromReader);
+      var value = new proto.ai.inworld.engine.ActorRelations;
+      reader.readMessage(value,proto.ai.inworld.engine.ActorRelations.deserializeBinaryFromReader);
       msg.addRelationsToActors(value);
       break;
     case 6:
-      var value = /** @type {!proto.PreviousState.StateHolder.StateFormat} */ (reader.readEnum());
+      var value = /** @type {!proto.ai.inworld.engine.PreviousState.StateHolder.StateFormat} */ (reader.readEnum());
       msg.setStateFormat(value);
       break;
     default:
@@ -3935,9 +3941,9 @@ proto.PreviousState.StateHolder.deserializeBinaryFromReader = function(msg, read
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.PreviousState.StateHolder.prototype.serializeBinary = function() {
+proto.ai.inworld.engine.PreviousState.StateHolder.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.PreviousState.StateHolder.serializeBinaryToWriter(this, writer);
+  proto.ai.inworld.engine.PreviousState.StateHolder.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -3945,11 +3951,11 @@ proto.PreviousState.StateHolder.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.PreviousState.StateHolder} message
+ * @param {!proto.ai.inworld.engine.PreviousState.StateHolder} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.PreviousState.StateHolder.serializeBinaryToWriter = function(message, writer) {
+proto.ai.inworld.engine.PreviousState.StateHolder.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getBrainName();
   if (f.length > 0) {
@@ -3970,7 +3976,7 @@ proto.PreviousState.StateHolder.serializeBinaryToWriter = function(message, writ
     writer.writeMessage(
       3,
       f,
-      proto.PreviousDialog.serializeBinaryToWriter
+      proto.ai.inworld.engine.PreviousDialog.serializeBinaryToWriter
     );
   }
   f = message.getPacketsList();
@@ -3986,7 +3992,7 @@ proto.PreviousState.StateHolder.serializeBinaryToWriter = function(message, writ
     writer.writeRepeatedMessage(
       5,
       f,
-      proto.ActorRelations.serializeBinaryToWriter
+      proto.ai.inworld.engine.ActorRelations.serializeBinaryToWriter
     );
   }
   f = message.getStateFormat();
@@ -4002,7 +4008,7 @@ proto.PreviousState.StateHolder.serializeBinaryToWriter = function(message, writ
 /**
  * @enum {number}
  */
-proto.PreviousState.StateHolder.StateFormat = {
+proto.ai.inworld.engine.PreviousState.StateHolder.StateFormat = {
   STATE_FORMAT_UNKNOWN: 0,
   STATE_FORMAT_SESSION_BRAIN_STATE: 1,
   STATE_FORMAT_EXTERNAL_BRAIN_STATE: 2
@@ -4012,16 +4018,16 @@ proto.PreviousState.StateHolder.StateFormat = {
  * optional string brain_name = 1;
  * @return {string}
  */
-proto.PreviousState.StateHolder.prototype.getBrainName = function() {
+proto.ai.inworld.engine.PreviousState.StateHolder.prototype.getBrainName = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.PreviousState.StateHolder} returns this
+ * @return {!proto.ai.inworld.engine.PreviousState.StateHolder} returns this
  */
-proto.PreviousState.StateHolder.prototype.setBrainName = function(value) {
+proto.ai.inworld.engine.PreviousState.StateHolder.prototype.setBrainName = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
@@ -4030,7 +4036,7 @@ proto.PreviousState.StateHolder.prototype.setBrainName = function(value) {
  * optional bytes state = 2;
  * @return {!(string|Uint8Array)}
  */
-proto.PreviousState.StateHolder.prototype.getState = function() {
+proto.ai.inworld.engine.PreviousState.StateHolder.prototype.getState = function() {
   return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
@@ -4040,7 +4046,7 @@ proto.PreviousState.StateHolder.prototype.getState = function() {
  * This is a type-conversion wrapper around `getState()`
  * @return {string}
  */
-proto.PreviousState.StateHolder.prototype.getState_asB64 = function() {
+proto.ai.inworld.engine.PreviousState.StateHolder.prototype.getState_asB64 = function() {
   return /** @type {string} */ (jspb.Message.bytesAsB64(
       this.getState()));
 };
@@ -4053,7 +4059,7 @@ proto.PreviousState.StateHolder.prototype.getState_asB64 = function() {
  * This is a type-conversion wrapper around `getState()`
  * @return {!Uint8Array}
  */
-proto.PreviousState.StateHolder.prototype.getState_asU8 = function() {
+proto.ai.inworld.engine.PreviousState.StateHolder.prototype.getState_asU8 = function() {
   return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
       this.getState()));
 };
@@ -4061,37 +4067,37 @@ proto.PreviousState.StateHolder.prototype.getState_asU8 = function() {
 
 /**
  * @param {!(string|Uint8Array)} value
- * @return {!proto.PreviousState.StateHolder} returns this
+ * @return {!proto.ai.inworld.engine.PreviousState.StateHolder} returns this
  */
-proto.PreviousState.StateHolder.prototype.setState = function(value) {
+proto.ai.inworld.engine.PreviousState.StateHolder.prototype.setState = function(value) {
   return jspb.Message.setProto3BytesField(this, 2, value);
 };
 
 
 /**
  * optional PreviousDialog previous_dialog = 3;
- * @return {?proto.PreviousDialog}
+ * @return {?proto.ai.inworld.engine.PreviousDialog}
  */
-proto.PreviousState.StateHolder.prototype.getPreviousDialog = function() {
-  return /** @type{?proto.PreviousDialog} */ (
-    jspb.Message.getWrapperField(this, proto.PreviousDialog, 3));
+proto.ai.inworld.engine.PreviousState.StateHolder.prototype.getPreviousDialog = function() {
+  return /** @type{?proto.ai.inworld.engine.PreviousDialog} */ (
+    jspb.Message.getWrapperField(this, proto.ai.inworld.engine.PreviousDialog, 3));
 };
 
 
 /**
- * @param {?proto.PreviousDialog|undefined} value
- * @return {!proto.PreviousState.StateHolder} returns this
+ * @param {?proto.ai.inworld.engine.PreviousDialog|undefined} value
+ * @return {!proto.ai.inworld.engine.PreviousState.StateHolder} returns this
 */
-proto.PreviousState.StateHolder.prototype.setPreviousDialog = function(value) {
+proto.ai.inworld.engine.PreviousState.StateHolder.prototype.setPreviousDialog = function(value) {
   return jspb.Message.setWrapperField(this, 3, value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.PreviousState.StateHolder} returns this
+ * @return {!proto.ai.inworld.engine.PreviousState.StateHolder} returns this
  */
-proto.PreviousState.StateHolder.prototype.clearPreviousDialog = function() {
+proto.ai.inworld.engine.PreviousState.StateHolder.prototype.clearPreviousDialog = function() {
   return this.setPreviousDialog(undefined);
 };
 
@@ -4100,139 +4106,139 @@ proto.PreviousState.StateHolder.prototype.clearPreviousDialog = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.PreviousState.StateHolder.prototype.hasPreviousDialog = function() {
+proto.ai.inworld.engine.PreviousState.StateHolder.prototype.hasPreviousDialog = function() {
   return jspb.Message.getField(this, 3) != null;
 };
 
 
 /**
  * repeated ai.inworld.packets.InworldPacket packets = 4;
- * @return {!Array<!proto.InworldPacket>}
+ * @return {!Array<!proto.ai.inworld.packets.InworldPacket>}
  */
-proto.PreviousState.StateHolder.prototype.getPacketsList = function() {
-  return /** @type{!Array<!proto.InworldPacket>} */ (
+proto.ai.inworld.engine.PreviousState.StateHolder.prototype.getPacketsList = function() {
+  return /** @type{!Array<!proto.ai.inworld.packets.InworldPacket>} */ (
     jspb.Message.getRepeatedWrapperField(this, ai_inworld_packets_packets_pb.InworldPacket, 4));
 };
 
 
 /**
- * @param {!Array<!proto.InworldPacket>} value
- * @return {!proto.PreviousState.StateHolder} returns this
+ * @param {!Array<!proto.ai.inworld.packets.InworldPacket>} value
+ * @return {!proto.ai.inworld.engine.PreviousState.StateHolder} returns this
 */
-proto.PreviousState.StateHolder.prototype.setPacketsList = function(value) {
+proto.ai.inworld.engine.PreviousState.StateHolder.prototype.setPacketsList = function(value) {
   return jspb.Message.setRepeatedWrapperField(this, 4, value);
 };
 
 
 /**
- * @param {!proto.InworldPacket=} opt_value
+ * @param {!proto.ai.inworld.packets.InworldPacket=} opt_value
  * @param {number=} opt_index
- * @return {!proto.InworldPacket}
+ * @return {!proto.ai.inworld.packets.InworldPacket}
  */
-proto.PreviousState.StateHolder.prototype.addPackets = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 4, opt_value, proto.InworldPacket, opt_index);
+proto.ai.inworld.engine.PreviousState.StateHolder.prototype.addPackets = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 4, opt_value, proto.ai.inworld.packets.InworldPacket, opt_index);
 };
 
 
 /**
  * Clears the list making it empty but non-null.
- * @return {!proto.PreviousState.StateHolder} returns this
+ * @return {!proto.ai.inworld.engine.PreviousState.StateHolder} returns this
  */
-proto.PreviousState.StateHolder.prototype.clearPacketsList = function() {
+proto.ai.inworld.engine.PreviousState.StateHolder.prototype.clearPacketsList = function() {
   return this.setPacketsList([]);
 };
 
 
 /**
  * repeated ActorRelations relations_to_actors = 5;
- * @return {!Array<!proto.ActorRelations>}
+ * @return {!Array<!proto.ai.inworld.engine.ActorRelations>}
  */
-proto.PreviousState.StateHolder.prototype.getRelationsToActorsList = function() {
-  return /** @type{!Array<!proto.ActorRelations>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.ActorRelations, 5));
+proto.ai.inworld.engine.PreviousState.StateHolder.prototype.getRelationsToActorsList = function() {
+  return /** @type{!Array<!proto.ai.inworld.engine.ActorRelations>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.ai.inworld.engine.ActorRelations, 5));
 };
 
 
 /**
- * @param {!Array<!proto.ActorRelations>} value
- * @return {!proto.PreviousState.StateHolder} returns this
+ * @param {!Array<!proto.ai.inworld.engine.ActorRelations>} value
+ * @return {!proto.ai.inworld.engine.PreviousState.StateHolder} returns this
 */
-proto.PreviousState.StateHolder.prototype.setRelationsToActorsList = function(value) {
+proto.ai.inworld.engine.PreviousState.StateHolder.prototype.setRelationsToActorsList = function(value) {
   return jspb.Message.setRepeatedWrapperField(this, 5, value);
 };
 
 
 /**
- * @param {!proto.ActorRelations=} opt_value
+ * @param {!proto.ai.inworld.engine.ActorRelations=} opt_value
  * @param {number=} opt_index
- * @return {!proto.ActorRelations}
+ * @return {!proto.ai.inworld.engine.ActorRelations}
  */
-proto.PreviousState.StateHolder.prototype.addRelationsToActors = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 5, opt_value, proto.ActorRelations, opt_index);
+proto.ai.inworld.engine.PreviousState.StateHolder.prototype.addRelationsToActors = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 5, opt_value, proto.ai.inworld.engine.ActorRelations, opt_index);
 };
 
 
 /**
  * Clears the list making it empty but non-null.
- * @return {!proto.PreviousState.StateHolder} returns this
+ * @return {!proto.ai.inworld.engine.PreviousState.StateHolder} returns this
  */
-proto.PreviousState.StateHolder.prototype.clearRelationsToActorsList = function() {
+proto.ai.inworld.engine.PreviousState.StateHolder.prototype.clearRelationsToActorsList = function() {
   return this.setRelationsToActorsList([]);
 };
 
 
 /**
  * optional StateFormat state_format = 6;
- * @return {!proto.PreviousState.StateHolder.StateFormat}
+ * @return {!proto.ai.inworld.engine.PreviousState.StateHolder.StateFormat}
  */
-proto.PreviousState.StateHolder.prototype.getStateFormat = function() {
-  return /** @type {!proto.PreviousState.StateHolder.StateFormat} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+proto.ai.inworld.engine.PreviousState.StateHolder.prototype.getStateFormat = function() {
+  return /** @type {!proto.ai.inworld.engine.PreviousState.StateHolder.StateFormat} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
 };
 
 
 /**
- * @param {!proto.PreviousState.StateHolder.StateFormat} value
- * @return {!proto.PreviousState.StateHolder} returns this
+ * @param {!proto.ai.inworld.engine.PreviousState.StateHolder.StateFormat} value
+ * @return {!proto.ai.inworld.engine.PreviousState.StateHolder} returns this
  */
-proto.PreviousState.StateHolder.prototype.setStateFormat = function(value) {
+proto.ai.inworld.engine.PreviousState.StateHolder.prototype.setStateFormat = function(value) {
   return jspb.Message.setProto3EnumField(this, 6, value);
 };
 
 
 /**
  * repeated StateHolder state_holders = 1;
- * @return {!Array<!proto.PreviousState.StateHolder>}
+ * @return {!Array<!proto.ai.inworld.engine.PreviousState.StateHolder>}
  */
-proto.PreviousState.prototype.getStateHoldersList = function() {
-  return /** @type{!Array<!proto.PreviousState.StateHolder>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.PreviousState.StateHolder, 1));
+proto.ai.inworld.engine.PreviousState.prototype.getStateHoldersList = function() {
+  return /** @type{!Array<!proto.ai.inworld.engine.PreviousState.StateHolder>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.ai.inworld.engine.PreviousState.StateHolder, 1));
 };
 
 
 /**
- * @param {!Array<!proto.PreviousState.StateHolder>} value
- * @return {!proto.PreviousState} returns this
+ * @param {!Array<!proto.ai.inworld.engine.PreviousState.StateHolder>} value
+ * @return {!proto.ai.inworld.engine.PreviousState} returns this
 */
-proto.PreviousState.prototype.setStateHoldersList = function(value) {
+proto.ai.inworld.engine.PreviousState.prototype.setStateHoldersList = function(value) {
   return jspb.Message.setRepeatedWrapperField(this, 1, value);
 };
 
 
 /**
- * @param {!proto.PreviousState.StateHolder=} opt_value
+ * @param {!proto.ai.inworld.engine.PreviousState.StateHolder=} opt_value
  * @param {number=} opt_index
- * @return {!proto.PreviousState.StateHolder}
+ * @return {!proto.ai.inworld.engine.PreviousState.StateHolder}
  */
-proto.PreviousState.prototype.addStateHolders = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.PreviousState.StateHolder, opt_index);
+proto.ai.inworld.engine.PreviousState.prototype.addStateHolders = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.ai.inworld.engine.PreviousState.StateHolder, opt_index);
 };
 
 
 /**
  * Clears the list making it empty but non-null.
- * @return {!proto.PreviousState} returns this
+ * @return {!proto.ai.inworld.engine.PreviousState} returns this
  */
-proto.PreviousState.prototype.clearStateHoldersList = function() {
+proto.ai.inworld.engine.PreviousState.prototype.clearStateHoldersList = function() {
   return this.setStateHoldersList([]);
 };
 
@@ -4241,44 +4247,44 @@ proto.PreviousState.prototype.clearStateHoldersList = function() {
  * optional string game_session_id = 2;
  * @return {string}
  */
-proto.PreviousState.prototype.getGameSessionId = function() {
+proto.ai.inworld.engine.PreviousState.prototype.getGameSessionId = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.PreviousState} returns this
+ * @return {!proto.ai.inworld.engine.PreviousState} returns this
  */
-proto.PreviousState.prototype.setGameSessionId = function(value) {
+proto.ai.inworld.engine.PreviousState.prototype.setGameSessionId = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
 /**
  * optional ConversationState conversation_state = 3;
- * @return {?proto.ConversationState}
+ * @return {?proto.ai.inworld.engine.ConversationState}
  */
-proto.PreviousState.prototype.getConversationState = function() {
-  return /** @type{?proto.ConversationState} */ (
-    jspb.Message.getWrapperField(this, proto.ConversationState, 3));
+proto.ai.inworld.engine.PreviousState.prototype.getConversationState = function() {
+  return /** @type{?proto.ai.inworld.engine.ConversationState} */ (
+    jspb.Message.getWrapperField(this, proto.ai.inworld.engine.ConversationState, 3));
 };
 
 
 /**
- * @param {?proto.ConversationState|undefined} value
- * @return {!proto.PreviousState} returns this
+ * @param {?proto.ai.inworld.engine.ConversationState|undefined} value
+ * @return {!proto.ai.inworld.engine.PreviousState} returns this
 */
-proto.PreviousState.prototype.setConversationState = function(value) {
+proto.ai.inworld.engine.PreviousState.prototype.setConversationState = function(value) {
   return jspb.Message.setWrapperField(this, 3, value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.PreviousState} returns this
+ * @return {!proto.ai.inworld.engine.PreviousState} returns this
  */
-proto.PreviousState.prototype.clearConversationState = function() {
+proto.ai.inworld.engine.PreviousState.prototype.clearConversationState = function() {
   return this.setConversationState(undefined);
 };
 
@@ -4287,7 +4293,7 @@ proto.PreviousState.prototype.clearConversationState = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.PreviousState.prototype.hasConversationState = function() {
+proto.ai.inworld.engine.PreviousState.prototype.hasConversationState = function() {
   return jspb.Message.getField(this, 3) != null;
 };
 
@@ -4298,7 +4304,7 @@ proto.PreviousState.prototype.hasConversationState = function() {
  * @private {!Array<number>}
  * @const
  */
-proto.LoadSceneResponse.repeatedFields_ = [1];
+proto.ai.inworld.engine.LoadSceneResponse.repeatedFields_ = [1];
 
 
 
@@ -4315,8 +4321,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.LoadSceneResponse.prototype.toObject = function(opt_includeInstance) {
-  return proto.LoadSceneResponse.toObject(opt_includeInstance, this);
+proto.ai.inworld.engine.LoadSceneResponse.prototype.toObject = function(opt_includeInstance) {
+  return proto.ai.inworld.engine.LoadSceneResponse.toObject(opt_includeInstance, this);
 };
 
 
@@ -4325,16 +4331,16 @@ proto.LoadSceneResponse.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.LoadSceneResponse} msg The msg instance to transform.
+ * @param {!proto.ai.inworld.engine.LoadSceneResponse} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.LoadSceneResponse.toObject = function(includeInstance, msg) {
+proto.ai.inworld.engine.LoadSceneResponse.toObject = function(includeInstance, msg) {
   var f, obj = {
     agentsList: jspb.Message.toObjectList(msg.getAgentsList(),
-    proto.LoadSceneResponse.Agent.toObject, includeInstance),
+    proto.ai.inworld.engine.LoadSceneResponse.Agent.toObject, includeInstance),
     key: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    previousState: (f = msg.getPreviousState()) && proto.PreviousState.toObject(includeInstance, f)
+    previousState: (f = msg.getPreviousState()) && proto.ai.inworld.engine.PreviousState.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -4348,23 +4354,23 @@ proto.LoadSceneResponse.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.LoadSceneResponse}
+ * @return {!proto.ai.inworld.engine.LoadSceneResponse}
  */
-proto.LoadSceneResponse.deserializeBinary = function(bytes) {
+proto.ai.inworld.engine.LoadSceneResponse.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.LoadSceneResponse;
-  return proto.LoadSceneResponse.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.ai.inworld.engine.LoadSceneResponse;
+  return proto.ai.inworld.engine.LoadSceneResponse.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.LoadSceneResponse} msg The message object to deserialize into.
+ * @param {!proto.ai.inworld.engine.LoadSceneResponse} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.LoadSceneResponse}
+ * @return {!proto.ai.inworld.engine.LoadSceneResponse}
  */
-proto.LoadSceneResponse.deserializeBinaryFromReader = function(msg, reader) {
+proto.ai.inworld.engine.LoadSceneResponse.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -4372,8 +4378,8 @@ proto.LoadSceneResponse.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = new proto.LoadSceneResponse.Agent;
-      reader.readMessage(value,proto.LoadSceneResponse.Agent.deserializeBinaryFromReader);
+      var value = new proto.ai.inworld.engine.LoadSceneResponse.Agent;
+      reader.readMessage(value,proto.ai.inworld.engine.LoadSceneResponse.Agent.deserializeBinaryFromReader);
       msg.addAgents(value);
       break;
     case 2:
@@ -4381,8 +4387,8 @@ proto.LoadSceneResponse.deserializeBinaryFromReader = function(msg, reader) {
       msg.setKey(value);
       break;
     case 3:
-      var value = new proto.PreviousState;
-      reader.readMessage(value,proto.PreviousState.deserializeBinaryFromReader);
+      var value = new proto.ai.inworld.engine.PreviousState;
+      reader.readMessage(value,proto.ai.inworld.engine.PreviousState.deserializeBinaryFromReader);
       msg.setPreviousState(value);
       break;
     default:
@@ -4398,9 +4404,9 @@ proto.LoadSceneResponse.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.LoadSceneResponse.prototype.serializeBinary = function() {
+proto.ai.inworld.engine.LoadSceneResponse.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.LoadSceneResponse.serializeBinaryToWriter(this, writer);
+  proto.ai.inworld.engine.LoadSceneResponse.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -4408,18 +4414,18 @@ proto.LoadSceneResponse.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.LoadSceneResponse} message
+ * @param {!proto.ai.inworld.engine.LoadSceneResponse} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.LoadSceneResponse.serializeBinaryToWriter = function(message, writer) {
+proto.ai.inworld.engine.LoadSceneResponse.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getAgentsList();
   if (f.length > 0) {
     writer.writeRepeatedMessage(
       1,
       f,
-      proto.LoadSceneResponse.Agent.serializeBinaryToWriter
+      proto.ai.inworld.engine.LoadSceneResponse.Agent.serializeBinaryToWriter
     );
   }
   f = message.getKey();
@@ -4434,7 +4440,7 @@ proto.LoadSceneResponse.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       3,
       f,
-      proto.PreviousState.serializeBinaryToWriter
+      proto.ai.inworld.engine.PreviousState.serializeBinaryToWriter
     );
   }
 };
@@ -4456,8 +4462,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.LoadSceneResponse.Agent.prototype.toObject = function(opt_includeInstance) {
-  return proto.LoadSceneResponse.Agent.toObject(opt_includeInstance, this);
+proto.ai.inworld.engine.LoadSceneResponse.Agent.prototype.toObject = function(opt_includeInstance) {
+  return proto.ai.inworld.engine.LoadSceneResponse.Agent.toObject(opt_includeInstance, this);
 };
 
 
@@ -4466,16 +4472,16 @@ proto.LoadSceneResponse.Agent.prototype.toObject = function(opt_includeInstance)
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.LoadSceneResponse.Agent} msg The msg instance to transform.
+ * @param {!proto.ai.inworld.engine.LoadSceneResponse.Agent} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.LoadSceneResponse.Agent.toObject = function(includeInstance, msg) {
+proto.ai.inworld.engine.LoadSceneResponse.Agent.toObject = function(includeInstance, msg) {
   var f, obj = {
     agentId: jspb.Message.getFieldWithDefault(msg, 1, ""),
     brainName: jspb.Message.getFieldWithDefault(msg, 2, ""),
     givenName: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    characterAssets: (f = msg.getCharacterAssets()) && proto.LoadSceneResponse.Agent.CharacterAssets.toObject(includeInstance, f)
+    characterAssets: (f = msg.getCharacterAssets()) && proto.ai.inworld.engine.LoadSceneResponse.Agent.CharacterAssets.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -4489,23 +4495,23 @@ proto.LoadSceneResponse.Agent.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.LoadSceneResponse.Agent}
+ * @return {!proto.ai.inworld.engine.LoadSceneResponse.Agent}
  */
-proto.LoadSceneResponse.Agent.deserializeBinary = function(bytes) {
+proto.ai.inworld.engine.LoadSceneResponse.Agent.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.LoadSceneResponse.Agent;
-  return proto.LoadSceneResponse.Agent.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.ai.inworld.engine.LoadSceneResponse.Agent;
+  return proto.ai.inworld.engine.LoadSceneResponse.Agent.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.LoadSceneResponse.Agent} msg The message object to deserialize into.
+ * @param {!proto.ai.inworld.engine.LoadSceneResponse.Agent} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.LoadSceneResponse.Agent}
+ * @return {!proto.ai.inworld.engine.LoadSceneResponse.Agent}
  */
-proto.LoadSceneResponse.Agent.deserializeBinaryFromReader = function(msg, reader) {
+proto.ai.inworld.engine.LoadSceneResponse.Agent.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -4525,8 +4531,8 @@ proto.LoadSceneResponse.Agent.deserializeBinaryFromReader = function(msg, reader
       msg.setGivenName(value);
       break;
     case 4:
-      var value = new proto.LoadSceneResponse.Agent.CharacterAssets;
-      reader.readMessage(value,proto.LoadSceneResponse.Agent.CharacterAssets.deserializeBinaryFromReader);
+      var value = new proto.ai.inworld.engine.LoadSceneResponse.Agent.CharacterAssets;
+      reader.readMessage(value,proto.ai.inworld.engine.LoadSceneResponse.Agent.CharacterAssets.deserializeBinaryFromReader);
       msg.setCharacterAssets(value);
       break;
     default:
@@ -4542,9 +4548,9 @@ proto.LoadSceneResponse.Agent.deserializeBinaryFromReader = function(msg, reader
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.LoadSceneResponse.Agent.prototype.serializeBinary = function() {
+proto.ai.inworld.engine.LoadSceneResponse.Agent.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.LoadSceneResponse.Agent.serializeBinaryToWriter(this, writer);
+  proto.ai.inworld.engine.LoadSceneResponse.Agent.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -4552,11 +4558,11 @@ proto.LoadSceneResponse.Agent.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.LoadSceneResponse.Agent} message
+ * @param {!proto.ai.inworld.engine.LoadSceneResponse.Agent} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.LoadSceneResponse.Agent.serializeBinaryToWriter = function(message, writer) {
+proto.ai.inworld.engine.LoadSceneResponse.Agent.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getAgentId();
   if (f.length > 0) {
@@ -4584,7 +4590,7 @@ proto.LoadSceneResponse.Agent.serializeBinaryToWriter = function(message, writer
     writer.writeMessage(
       4,
       f,
-      proto.LoadSceneResponse.Agent.CharacterAssets.serializeBinaryToWriter
+      proto.ai.inworld.engine.LoadSceneResponse.Agent.CharacterAssets.serializeBinaryToWriter
     );
   }
 };
@@ -4606,8 +4612,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.LoadSceneResponse.Agent.CharacterAssets.prototype.toObject = function(opt_includeInstance) {
-  return proto.LoadSceneResponse.Agent.CharacterAssets.toObject(opt_includeInstance, this);
+proto.ai.inworld.engine.LoadSceneResponse.Agent.CharacterAssets.prototype.toObject = function(opt_includeInstance) {
+  return proto.ai.inworld.engine.LoadSceneResponse.Agent.CharacterAssets.toObject(opt_includeInstance, this);
 };
 
 
@@ -4616,11 +4622,11 @@ proto.LoadSceneResponse.Agent.CharacterAssets.prototype.toObject = function(opt_
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.LoadSceneResponse.Agent.CharacterAssets} msg The msg instance to transform.
+ * @param {!proto.ai.inworld.engine.LoadSceneResponse.Agent.CharacterAssets} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.LoadSceneResponse.Agent.CharacterAssets.toObject = function(includeInstance, msg) {
+proto.ai.inworld.engine.LoadSceneResponse.Agent.CharacterAssets.toObject = function(includeInstance, msg) {
   var f, obj = {
     rpmModelUri: jspb.Message.getFieldWithDefault(msg, 1, ""),
     rpmImageUriPortrait: jspb.Message.getFieldWithDefault(msg, 2, ""),
@@ -4640,23 +4646,23 @@ proto.LoadSceneResponse.Agent.CharacterAssets.toObject = function(includeInstanc
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.LoadSceneResponse.Agent.CharacterAssets}
+ * @return {!proto.ai.inworld.engine.LoadSceneResponse.Agent.CharacterAssets}
  */
-proto.LoadSceneResponse.Agent.CharacterAssets.deserializeBinary = function(bytes) {
+proto.ai.inworld.engine.LoadSceneResponse.Agent.CharacterAssets.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.LoadSceneResponse.Agent.CharacterAssets;
-  return proto.LoadSceneResponse.Agent.CharacterAssets.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.ai.inworld.engine.LoadSceneResponse.Agent.CharacterAssets;
+  return proto.ai.inworld.engine.LoadSceneResponse.Agent.CharacterAssets.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.LoadSceneResponse.Agent.CharacterAssets} msg The message object to deserialize into.
+ * @param {!proto.ai.inworld.engine.LoadSceneResponse.Agent.CharacterAssets} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.LoadSceneResponse.Agent.CharacterAssets}
+ * @return {!proto.ai.inworld.engine.LoadSceneResponse.Agent.CharacterAssets}
  */
-proto.LoadSceneResponse.Agent.CharacterAssets.deserializeBinaryFromReader = function(msg, reader) {
+proto.ai.inworld.engine.LoadSceneResponse.Agent.CharacterAssets.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -4696,9 +4702,9 @@ proto.LoadSceneResponse.Agent.CharacterAssets.deserializeBinaryFromReader = func
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.LoadSceneResponse.Agent.CharacterAssets.prototype.serializeBinary = function() {
+proto.ai.inworld.engine.LoadSceneResponse.Agent.CharacterAssets.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.LoadSceneResponse.Agent.CharacterAssets.serializeBinaryToWriter(this, writer);
+  proto.ai.inworld.engine.LoadSceneResponse.Agent.CharacterAssets.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -4706,11 +4712,11 @@ proto.LoadSceneResponse.Agent.CharacterAssets.prototype.serializeBinary = functi
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.LoadSceneResponse.Agent.CharacterAssets} message
+ * @param {!proto.ai.inworld.engine.LoadSceneResponse.Agent.CharacterAssets} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.LoadSceneResponse.Agent.CharacterAssets.serializeBinaryToWriter = function(message, writer) {
+proto.ai.inworld.engine.LoadSceneResponse.Agent.CharacterAssets.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getRpmModelUri();
   if (f.length > 0) {
@@ -4754,16 +4760,16 @@ proto.LoadSceneResponse.Agent.CharacterAssets.serializeBinaryToWriter = function
  * optional string rpm_model_uri = 1;
  * @return {string}
  */
-proto.LoadSceneResponse.Agent.CharacterAssets.prototype.getRpmModelUri = function() {
+proto.ai.inworld.engine.LoadSceneResponse.Agent.CharacterAssets.prototype.getRpmModelUri = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.LoadSceneResponse.Agent.CharacterAssets} returns this
+ * @return {!proto.ai.inworld.engine.LoadSceneResponse.Agent.CharacterAssets} returns this
  */
-proto.LoadSceneResponse.Agent.CharacterAssets.prototype.setRpmModelUri = function(value) {
+proto.ai.inworld.engine.LoadSceneResponse.Agent.CharacterAssets.prototype.setRpmModelUri = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
@@ -4772,16 +4778,16 @@ proto.LoadSceneResponse.Agent.CharacterAssets.prototype.setRpmModelUri = functio
  * optional string rpm_image_uri_portrait = 2;
  * @return {string}
  */
-proto.LoadSceneResponse.Agent.CharacterAssets.prototype.getRpmImageUriPortrait = function() {
+proto.ai.inworld.engine.LoadSceneResponse.Agent.CharacterAssets.prototype.getRpmImageUriPortrait = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.LoadSceneResponse.Agent.CharacterAssets} returns this
+ * @return {!proto.ai.inworld.engine.LoadSceneResponse.Agent.CharacterAssets} returns this
  */
-proto.LoadSceneResponse.Agent.CharacterAssets.prototype.setRpmImageUriPortrait = function(value) {
+proto.ai.inworld.engine.LoadSceneResponse.Agent.CharacterAssets.prototype.setRpmImageUriPortrait = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
 };
 
@@ -4790,16 +4796,16 @@ proto.LoadSceneResponse.Agent.CharacterAssets.prototype.setRpmImageUriPortrait =
  * optional string rpm_image_uri_posture = 3;
  * @return {string}
  */
-proto.LoadSceneResponse.Agent.CharacterAssets.prototype.getRpmImageUriPosture = function() {
+proto.ai.inworld.engine.LoadSceneResponse.Agent.CharacterAssets.prototype.getRpmImageUriPosture = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.LoadSceneResponse.Agent.CharacterAssets} returns this
+ * @return {!proto.ai.inworld.engine.LoadSceneResponse.Agent.CharacterAssets} returns this
  */
-proto.LoadSceneResponse.Agent.CharacterAssets.prototype.setRpmImageUriPosture = function(value) {
+proto.ai.inworld.engine.LoadSceneResponse.Agent.CharacterAssets.prototype.setRpmImageUriPosture = function(value) {
   return jspb.Message.setProto3StringField(this, 3, value);
 };
 
@@ -4808,16 +4814,16 @@ proto.LoadSceneResponse.Agent.CharacterAssets.prototype.setRpmImageUriPosture = 
  * optional string avatar_img = 4;
  * @return {string}
  */
-proto.LoadSceneResponse.Agent.CharacterAssets.prototype.getAvatarImg = function() {
+proto.ai.inworld.engine.LoadSceneResponse.Agent.CharacterAssets.prototype.getAvatarImg = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.LoadSceneResponse.Agent.CharacterAssets} returns this
+ * @return {!proto.ai.inworld.engine.LoadSceneResponse.Agent.CharacterAssets} returns this
  */
-proto.LoadSceneResponse.Agent.CharacterAssets.prototype.setAvatarImg = function(value) {
+proto.ai.inworld.engine.LoadSceneResponse.Agent.CharacterAssets.prototype.setAvatarImg = function(value) {
   return jspb.Message.setProto3StringField(this, 4, value);
 };
 
@@ -4826,16 +4832,16 @@ proto.LoadSceneResponse.Agent.CharacterAssets.prototype.setAvatarImg = function(
  * optional string avatar_img_original = 5;
  * @return {string}
  */
-proto.LoadSceneResponse.Agent.CharacterAssets.prototype.getAvatarImgOriginal = function() {
+proto.ai.inworld.engine.LoadSceneResponse.Agent.CharacterAssets.prototype.getAvatarImgOriginal = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.LoadSceneResponse.Agent.CharacterAssets} returns this
+ * @return {!proto.ai.inworld.engine.LoadSceneResponse.Agent.CharacterAssets} returns this
  */
-proto.LoadSceneResponse.Agent.CharacterAssets.prototype.setAvatarImgOriginal = function(value) {
+proto.ai.inworld.engine.LoadSceneResponse.Agent.CharacterAssets.prototype.setAvatarImgOriginal = function(value) {
   return jspb.Message.setProto3StringField(this, 5, value);
 };
 
@@ -4844,16 +4850,16 @@ proto.LoadSceneResponse.Agent.CharacterAssets.prototype.setAvatarImgOriginal = f
  * optional string agent_id = 1;
  * @return {string}
  */
-proto.LoadSceneResponse.Agent.prototype.getAgentId = function() {
+proto.ai.inworld.engine.LoadSceneResponse.Agent.prototype.getAgentId = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.LoadSceneResponse.Agent} returns this
+ * @return {!proto.ai.inworld.engine.LoadSceneResponse.Agent} returns this
  */
-proto.LoadSceneResponse.Agent.prototype.setAgentId = function(value) {
+proto.ai.inworld.engine.LoadSceneResponse.Agent.prototype.setAgentId = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
@@ -4862,16 +4868,16 @@ proto.LoadSceneResponse.Agent.prototype.setAgentId = function(value) {
  * optional string brain_name = 2;
  * @return {string}
  */
-proto.LoadSceneResponse.Agent.prototype.getBrainName = function() {
+proto.ai.inworld.engine.LoadSceneResponse.Agent.prototype.getBrainName = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.LoadSceneResponse.Agent} returns this
+ * @return {!proto.ai.inworld.engine.LoadSceneResponse.Agent} returns this
  */
-proto.LoadSceneResponse.Agent.prototype.setBrainName = function(value) {
+proto.ai.inworld.engine.LoadSceneResponse.Agent.prototype.setBrainName = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
 };
 
@@ -4880,44 +4886,44 @@ proto.LoadSceneResponse.Agent.prototype.setBrainName = function(value) {
  * optional string given_name = 3;
  * @return {string}
  */
-proto.LoadSceneResponse.Agent.prototype.getGivenName = function() {
+proto.ai.inworld.engine.LoadSceneResponse.Agent.prototype.getGivenName = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.LoadSceneResponse.Agent} returns this
+ * @return {!proto.ai.inworld.engine.LoadSceneResponse.Agent} returns this
  */
-proto.LoadSceneResponse.Agent.prototype.setGivenName = function(value) {
+proto.ai.inworld.engine.LoadSceneResponse.Agent.prototype.setGivenName = function(value) {
   return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
 /**
  * optional CharacterAssets character_assets = 4;
- * @return {?proto.LoadSceneResponse.Agent.CharacterAssets}
+ * @return {?proto.ai.inworld.engine.LoadSceneResponse.Agent.CharacterAssets}
  */
-proto.LoadSceneResponse.Agent.prototype.getCharacterAssets = function() {
-  return /** @type{?proto.LoadSceneResponse.Agent.CharacterAssets} */ (
-    jspb.Message.getWrapperField(this, proto.LoadSceneResponse.Agent.CharacterAssets, 4));
+proto.ai.inworld.engine.LoadSceneResponse.Agent.prototype.getCharacterAssets = function() {
+  return /** @type{?proto.ai.inworld.engine.LoadSceneResponse.Agent.CharacterAssets} */ (
+    jspb.Message.getWrapperField(this, proto.ai.inworld.engine.LoadSceneResponse.Agent.CharacterAssets, 4));
 };
 
 
 /**
- * @param {?proto.LoadSceneResponse.Agent.CharacterAssets|undefined} value
- * @return {!proto.LoadSceneResponse.Agent} returns this
+ * @param {?proto.ai.inworld.engine.LoadSceneResponse.Agent.CharacterAssets|undefined} value
+ * @return {!proto.ai.inworld.engine.LoadSceneResponse.Agent} returns this
 */
-proto.LoadSceneResponse.Agent.prototype.setCharacterAssets = function(value) {
+proto.ai.inworld.engine.LoadSceneResponse.Agent.prototype.setCharacterAssets = function(value) {
   return jspb.Message.setWrapperField(this, 4, value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.LoadSceneResponse.Agent} returns this
+ * @return {!proto.ai.inworld.engine.LoadSceneResponse.Agent} returns this
  */
-proto.LoadSceneResponse.Agent.prototype.clearCharacterAssets = function() {
+proto.ai.inworld.engine.LoadSceneResponse.Agent.prototype.clearCharacterAssets = function() {
   return this.setCharacterAssets(undefined);
 };
 
@@ -4926,45 +4932,45 @@ proto.LoadSceneResponse.Agent.prototype.clearCharacterAssets = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.LoadSceneResponse.Agent.prototype.hasCharacterAssets = function() {
+proto.ai.inworld.engine.LoadSceneResponse.Agent.prototype.hasCharacterAssets = function() {
   return jspb.Message.getField(this, 4) != null;
 };
 
 
 /**
  * repeated Agent agents = 1;
- * @return {!Array<!proto.LoadSceneResponse.Agent>}
+ * @return {!Array<!proto.ai.inworld.engine.LoadSceneResponse.Agent>}
  */
-proto.LoadSceneResponse.prototype.getAgentsList = function() {
-  return /** @type{!Array<!proto.LoadSceneResponse.Agent>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.LoadSceneResponse.Agent, 1));
+proto.ai.inworld.engine.LoadSceneResponse.prototype.getAgentsList = function() {
+  return /** @type{!Array<!proto.ai.inworld.engine.LoadSceneResponse.Agent>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.ai.inworld.engine.LoadSceneResponse.Agent, 1));
 };
 
 
 /**
- * @param {!Array<!proto.LoadSceneResponse.Agent>} value
- * @return {!proto.LoadSceneResponse} returns this
+ * @param {!Array<!proto.ai.inworld.engine.LoadSceneResponse.Agent>} value
+ * @return {!proto.ai.inworld.engine.LoadSceneResponse} returns this
 */
-proto.LoadSceneResponse.prototype.setAgentsList = function(value) {
+proto.ai.inworld.engine.LoadSceneResponse.prototype.setAgentsList = function(value) {
   return jspb.Message.setRepeatedWrapperField(this, 1, value);
 };
 
 
 /**
- * @param {!proto.LoadSceneResponse.Agent=} opt_value
+ * @param {!proto.ai.inworld.engine.LoadSceneResponse.Agent=} opt_value
  * @param {number=} opt_index
- * @return {!proto.LoadSceneResponse.Agent}
+ * @return {!proto.ai.inworld.engine.LoadSceneResponse.Agent}
  */
-proto.LoadSceneResponse.prototype.addAgents = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.LoadSceneResponse.Agent, opt_index);
+proto.ai.inworld.engine.LoadSceneResponse.prototype.addAgents = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.ai.inworld.engine.LoadSceneResponse.Agent, opt_index);
 };
 
 
 /**
  * Clears the list making it empty but non-null.
- * @return {!proto.LoadSceneResponse} returns this
+ * @return {!proto.ai.inworld.engine.LoadSceneResponse} returns this
  */
-proto.LoadSceneResponse.prototype.clearAgentsList = function() {
+proto.ai.inworld.engine.LoadSceneResponse.prototype.clearAgentsList = function() {
   return this.setAgentsList([]);
 };
 
@@ -4973,44 +4979,44 @@ proto.LoadSceneResponse.prototype.clearAgentsList = function() {
  * optional string key = 2;
  * @return {string}
  */
-proto.LoadSceneResponse.prototype.getKey = function() {
+proto.ai.inworld.engine.LoadSceneResponse.prototype.getKey = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.LoadSceneResponse} returns this
+ * @return {!proto.ai.inworld.engine.LoadSceneResponse} returns this
  */
-proto.LoadSceneResponse.prototype.setKey = function(value) {
+proto.ai.inworld.engine.LoadSceneResponse.prototype.setKey = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
 /**
  * optional PreviousState previous_state = 3;
- * @return {?proto.PreviousState}
+ * @return {?proto.ai.inworld.engine.PreviousState}
  */
-proto.LoadSceneResponse.prototype.getPreviousState = function() {
-  return /** @type{?proto.PreviousState} */ (
-    jspb.Message.getWrapperField(this, proto.PreviousState, 3));
+proto.ai.inworld.engine.LoadSceneResponse.prototype.getPreviousState = function() {
+  return /** @type{?proto.ai.inworld.engine.PreviousState} */ (
+    jspb.Message.getWrapperField(this, proto.ai.inworld.engine.PreviousState, 3));
 };
 
 
 /**
- * @param {?proto.PreviousState|undefined} value
- * @return {!proto.LoadSceneResponse} returns this
+ * @param {?proto.ai.inworld.engine.PreviousState|undefined} value
+ * @return {!proto.ai.inworld.engine.LoadSceneResponse} returns this
 */
-proto.LoadSceneResponse.prototype.setPreviousState = function(value) {
+proto.ai.inworld.engine.LoadSceneResponse.prototype.setPreviousState = function(value) {
   return jspb.Message.setWrapperField(this, 3, value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.LoadSceneResponse} returns this
+ * @return {!proto.ai.inworld.engine.LoadSceneResponse} returns this
  */
-proto.LoadSceneResponse.prototype.clearPreviousState = function() {
+proto.ai.inworld.engine.LoadSceneResponse.prototype.clearPreviousState = function() {
   return this.setPreviousState(undefined);
 };
 
@@ -5019,7 +5025,7 @@ proto.LoadSceneResponse.prototype.clearPreviousState = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.LoadSceneResponse.prototype.hasPreviousState = function() {
+proto.ai.inworld.engine.LoadSceneResponse.prototype.hasPreviousState = function() {
   return jspb.Message.getField(this, 3) != null;
 };
 
@@ -5040,8 +5046,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.LogErrorRequest.prototype.toObject = function(opt_includeInstance) {
-  return proto.LogErrorRequest.toObject(opt_includeInstance, this);
+proto.ai.inworld.engine.LogErrorRequest.prototype.toObject = function(opt_includeInstance) {
+  return proto.ai.inworld.engine.LogErrorRequest.toObject(opt_includeInstance, this);
 };
 
 
@@ -5050,11 +5056,11 @@ proto.LogErrorRequest.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.LogErrorRequest} msg The msg instance to transform.
+ * @param {!proto.ai.inworld.engine.LogErrorRequest} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.LogErrorRequest.toObject = function(includeInstance, msg) {
+proto.ai.inworld.engine.LogErrorRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
     key: jspb.Message.getFieldWithDefault(msg, 1, ""),
     message: jspb.Message.getFieldWithDefault(msg, 2, "")
@@ -5071,23 +5077,23 @@ proto.LogErrorRequest.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.LogErrorRequest}
+ * @return {!proto.ai.inworld.engine.LogErrorRequest}
  */
-proto.LogErrorRequest.deserializeBinary = function(bytes) {
+proto.ai.inworld.engine.LogErrorRequest.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.LogErrorRequest;
-  return proto.LogErrorRequest.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.ai.inworld.engine.LogErrorRequest;
+  return proto.ai.inworld.engine.LogErrorRequest.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.LogErrorRequest} msg The message object to deserialize into.
+ * @param {!proto.ai.inworld.engine.LogErrorRequest} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.LogErrorRequest}
+ * @return {!proto.ai.inworld.engine.LogErrorRequest}
  */
-proto.LogErrorRequest.deserializeBinaryFromReader = function(msg, reader) {
+proto.ai.inworld.engine.LogErrorRequest.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -5115,9 +5121,9 @@ proto.LogErrorRequest.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.LogErrorRequest.prototype.serializeBinary = function() {
+proto.ai.inworld.engine.LogErrorRequest.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.LogErrorRequest.serializeBinaryToWriter(this, writer);
+  proto.ai.inworld.engine.LogErrorRequest.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -5125,11 +5131,11 @@ proto.LogErrorRequest.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.LogErrorRequest} message
+ * @param {!proto.ai.inworld.engine.LogErrorRequest} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.LogErrorRequest.serializeBinaryToWriter = function(message, writer) {
+proto.ai.inworld.engine.LogErrorRequest.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getKey();
   if (f.length > 0) {
@@ -5152,16 +5158,16 @@ proto.LogErrorRequest.serializeBinaryToWriter = function(message, writer) {
  * optional string key = 1;
  * @return {string}
  */
-proto.LogErrorRequest.prototype.getKey = function() {
+proto.ai.inworld.engine.LogErrorRequest.prototype.getKey = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.LogErrorRequest} returns this
+ * @return {!proto.ai.inworld.engine.LogErrorRequest} returns this
  */
-proto.LogErrorRequest.prototype.setKey = function(value) {
+proto.ai.inworld.engine.LogErrorRequest.prototype.setKey = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
@@ -5170,16 +5176,16 @@ proto.LogErrorRequest.prototype.setKey = function(value) {
  * optional string message = 2;
  * @return {string}
  */
-proto.LogErrorRequest.prototype.getMessage = function() {
+proto.ai.inworld.engine.LogErrorRequest.prototype.getMessage = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.LogErrorRequest} returns this
+ * @return {!proto.ai.inworld.engine.LogErrorRequest} returns this
  */
-proto.LogErrorRequest.prototype.setMessage = function(value) {
+proto.ai.inworld.engine.LogErrorRequest.prototype.setMessage = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
 };
 
@@ -5200,8 +5206,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.VoicePreviewRequest.prototype.toObject = function(opt_includeInstance) {
-  return proto.VoicePreviewRequest.toObject(opt_includeInstance, this);
+proto.ai.inworld.engine.VoicePreviewRequest.prototype.toObject = function(opt_includeInstance) {
+  return proto.ai.inworld.engine.VoicePreviewRequest.toObject(opt_includeInstance, this);
 };
 
 
@@ -5210,11 +5216,11 @@ proto.VoicePreviewRequest.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.VoicePreviewRequest} msg The msg instance to transform.
+ * @param {!proto.ai.inworld.engine.VoicePreviewRequest} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.VoicePreviewRequest.toObject = function(includeInstance, msg) {
+proto.ai.inworld.engine.VoicePreviewRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
     text: jspb.Message.getFieldWithDefault(msg, 1, ""),
     emotions: (f = msg.getEmotions()) && ai_inworld_packets_packets_pb.EmotionEvent.toObject(includeInstance, f),
@@ -5232,23 +5238,23 @@ proto.VoicePreviewRequest.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.VoicePreviewRequest}
+ * @return {!proto.ai.inworld.engine.VoicePreviewRequest}
  */
-proto.VoicePreviewRequest.deserializeBinary = function(bytes) {
+proto.ai.inworld.engine.VoicePreviewRequest.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.VoicePreviewRequest;
-  return proto.VoicePreviewRequest.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.ai.inworld.engine.VoicePreviewRequest;
+  return proto.ai.inworld.engine.VoicePreviewRequest.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.VoicePreviewRequest} msg The message object to deserialize into.
+ * @param {!proto.ai.inworld.engine.VoicePreviewRequest} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.VoicePreviewRequest}
+ * @return {!proto.ai.inworld.engine.VoicePreviewRequest}
  */
-proto.VoicePreviewRequest.deserializeBinaryFromReader = function(msg, reader) {
+proto.ai.inworld.engine.VoicePreviewRequest.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -5282,9 +5288,9 @@ proto.VoicePreviewRequest.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.VoicePreviewRequest.prototype.serializeBinary = function() {
+proto.ai.inworld.engine.VoicePreviewRequest.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.VoicePreviewRequest.serializeBinaryToWriter(this, writer);
+  proto.ai.inworld.engine.VoicePreviewRequest.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -5292,11 +5298,11 @@ proto.VoicePreviewRequest.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.VoicePreviewRequest} message
+ * @param {!proto.ai.inworld.engine.VoicePreviewRequest} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.VoicePreviewRequest.serializeBinaryToWriter = function(message, writer) {
+proto.ai.inworld.engine.VoicePreviewRequest.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getText();
   if (f.length > 0) {
@@ -5328,44 +5334,44 @@ proto.VoicePreviewRequest.serializeBinaryToWriter = function(message, writer) {
  * optional string text = 1;
  * @return {string}
  */
-proto.VoicePreviewRequest.prototype.getText = function() {
+proto.ai.inworld.engine.VoicePreviewRequest.prototype.getText = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.VoicePreviewRequest} returns this
+ * @return {!proto.ai.inworld.engine.VoicePreviewRequest} returns this
  */
-proto.VoicePreviewRequest.prototype.setText = function(value) {
+proto.ai.inworld.engine.VoicePreviewRequest.prototype.setText = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
  * optional ai.inworld.packets.EmotionEvent emotions = 2;
- * @return {?proto.EmotionEvent}
+ * @return {?proto.ai.inworld.packets.EmotionEvent}
  */
-proto.VoicePreviewRequest.prototype.getEmotions = function() {
-  return /** @type{?proto.EmotionEvent} */ (
+proto.ai.inworld.engine.VoicePreviewRequest.prototype.getEmotions = function() {
+  return /** @type{?proto.ai.inworld.packets.EmotionEvent} */ (
     jspb.Message.getWrapperField(this, ai_inworld_packets_packets_pb.EmotionEvent, 2));
 };
 
 
 /**
- * @param {?proto.EmotionEvent|undefined} value
- * @return {!proto.VoicePreviewRequest} returns this
+ * @param {?proto.ai.inworld.packets.EmotionEvent|undefined} value
+ * @return {!proto.ai.inworld.engine.VoicePreviewRequest} returns this
 */
-proto.VoicePreviewRequest.prototype.setEmotions = function(value) {
+proto.ai.inworld.engine.VoicePreviewRequest.prototype.setEmotions = function(value) {
   return jspb.Message.setWrapperField(this, 2, value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.VoicePreviewRequest} returns this
+ * @return {!proto.ai.inworld.engine.VoicePreviewRequest} returns this
  */
-proto.VoicePreviewRequest.prototype.clearEmotions = function() {
+proto.ai.inworld.engine.VoicePreviewRequest.prototype.clearEmotions = function() {
   return this.setEmotions(undefined);
 };
 
@@ -5374,7 +5380,7 @@ proto.VoicePreviewRequest.prototype.clearEmotions = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.VoicePreviewRequest.prototype.hasEmotions = function() {
+proto.ai.inworld.engine.VoicePreviewRequest.prototype.hasEmotions = function() {
   return jspb.Message.getField(this, 2) != null;
 };
 
@@ -5383,7 +5389,7 @@ proto.VoicePreviewRequest.prototype.hasEmotions = function() {
  * optional ai.inworld.voices.Voice voice = 3;
  * @return {?proto.ai.inworld.voices.Voice}
  */
-proto.VoicePreviewRequest.prototype.getVoice = function() {
+proto.ai.inworld.engine.VoicePreviewRequest.prototype.getVoice = function() {
   return /** @type{?proto.ai.inworld.voices.Voice} */ (
     jspb.Message.getWrapperField(this, ai_inworld_voices_voices_pb.Voice, 3));
 };
@@ -5391,18 +5397,18 @@ proto.VoicePreviewRequest.prototype.getVoice = function() {
 
 /**
  * @param {?proto.ai.inworld.voices.Voice|undefined} value
- * @return {!proto.VoicePreviewRequest} returns this
+ * @return {!proto.ai.inworld.engine.VoicePreviewRequest} returns this
 */
-proto.VoicePreviewRequest.prototype.setVoice = function(value) {
+proto.ai.inworld.engine.VoicePreviewRequest.prototype.setVoice = function(value) {
   return jspb.Message.setWrapperField(this, 3, value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.VoicePreviewRequest} returns this
+ * @return {!proto.ai.inworld.engine.VoicePreviewRequest} returns this
  */
-proto.VoicePreviewRequest.prototype.clearVoice = function() {
+proto.ai.inworld.engine.VoicePreviewRequest.prototype.clearVoice = function() {
   return this.setVoice(undefined);
 };
 
@@ -5411,7 +5417,7 @@ proto.VoicePreviewRequest.prototype.clearVoice = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.VoicePreviewRequest.prototype.hasVoice = function() {
+proto.ai.inworld.engine.VoicePreviewRequest.prototype.hasVoice = function() {
   return jspb.Message.getField(this, 3) != null;
 };
 
@@ -5432,8 +5438,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.VoicePreviewResponse.prototype.toObject = function(opt_includeInstance) {
-  return proto.VoicePreviewResponse.toObject(opt_includeInstance, this);
+proto.ai.inworld.engine.VoicePreviewResponse.prototype.toObject = function(opt_includeInstance) {
+  return proto.ai.inworld.engine.VoicePreviewResponse.toObject(opt_includeInstance, this);
 };
 
 
@@ -5442,11 +5448,11 @@ proto.VoicePreviewResponse.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.VoicePreviewResponse} msg The msg instance to transform.
+ * @param {!proto.ai.inworld.engine.VoicePreviewResponse} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.VoicePreviewResponse.toObject = function(includeInstance, msg) {
+proto.ai.inworld.engine.VoicePreviewResponse.toObject = function(includeInstance, msg) {
   var f, obj = {
     audio: msg.getAudio_asB64()
   };
@@ -5462,23 +5468,23 @@ proto.VoicePreviewResponse.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.VoicePreviewResponse}
+ * @return {!proto.ai.inworld.engine.VoicePreviewResponse}
  */
-proto.VoicePreviewResponse.deserializeBinary = function(bytes) {
+proto.ai.inworld.engine.VoicePreviewResponse.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.VoicePreviewResponse;
-  return proto.VoicePreviewResponse.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.ai.inworld.engine.VoicePreviewResponse;
+  return proto.ai.inworld.engine.VoicePreviewResponse.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.VoicePreviewResponse} msg The message object to deserialize into.
+ * @param {!proto.ai.inworld.engine.VoicePreviewResponse} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.VoicePreviewResponse}
+ * @return {!proto.ai.inworld.engine.VoicePreviewResponse}
  */
-proto.VoicePreviewResponse.deserializeBinaryFromReader = function(msg, reader) {
+proto.ai.inworld.engine.VoicePreviewResponse.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -5502,9 +5508,9 @@ proto.VoicePreviewResponse.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.VoicePreviewResponse.prototype.serializeBinary = function() {
+proto.ai.inworld.engine.VoicePreviewResponse.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.VoicePreviewResponse.serializeBinaryToWriter(this, writer);
+  proto.ai.inworld.engine.VoicePreviewResponse.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -5512,11 +5518,11 @@ proto.VoicePreviewResponse.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.VoicePreviewResponse} message
+ * @param {!proto.ai.inworld.engine.VoicePreviewResponse} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.VoicePreviewResponse.serializeBinaryToWriter = function(message, writer) {
+proto.ai.inworld.engine.VoicePreviewResponse.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getAudio_asU8();
   if (f.length > 0) {
@@ -5532,7 +5538,7 @@ proto.VoicePreviewResponse.serializeBinaryToWriter = function(message, writer) {
  * optional bytes audio = 1;
  * @return {!(string|Uint8Array)}
  */
-proto.VoicePreviewResponse.prototype.getAudio = function() {
+proto.ai.inworld.engine.VoicePreviewResponse.prototype.getAudio = function() {
   return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
@@ -5542,7 +5548,7 @@ proto.VoicePreviewResponse.prototype.getAudio = function() {
  * This is a type-conversion wrapper around `getAudio()`
  * @return {string}
  */
-proto.VoicePreviewResponse.prototype.getAudio_asB64 = function() {
+proto.ai.inworld.engine.VoicePreviewResponse.prototype.getAudio_asB64 = function() {
   return /** @type {string} */ (jspb.Message.bytesAsB64(
       this.getAudio()));
 };
@@ -5555,7 +5561,7 @@ proto.VoicePreviewResponse.prototype.getAudio_asB64 = function() {
  * This is a type-conversion wrapper around `getAudio()`
  * @return {!Uint8Array}
  */
-proto.VoicePreviewResponse.prototype.getAudio_asU8 = function() {
+proto.ai.inworld.engine.VoicePreviewResponse.prototype.getAudio_asU8 = function() {
   return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
       this.getAudio()));
 };
@@ -5563,9 +5569,9 @@ proto.VoicePreviewResponse.prototype.getAudio_asU8 = function() {
 
 /**
  * @param {!(string|Uint8Array)} value
- * @return {!proto.VoicePreviewResponse} returns this
+ * @return {!proto.ai.inworld.engine.VoicePreviewResponse} returns this
  */
-proto.VoicePreviewResponse.prototype.setAudio = function(value) {
+proto.ai.inworld.engine.VoicePreviewResponse.prototype.setAudio = function(value) {
   return jspb.Message.setProto3BytesField(this, 1, value);
 };
 
@@ -5576,7 +5582,7 @@ proto.VoicePreviewResponse.prototype.setAudio = function(value) {
  * @private {!Array<number>}
  * @const
  */
-proto.ListBaseVoicesRequest.repeatedFields_ = [2];
+proto.ai.inworld.engine.ListBaseVoicesRequest.repeatedFields_ = [2];
 
 
 
@@ -5593,8 +5599,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.ListBaseVoicesRequest.prototype.toObject = function(opt_includeInstance) {
-  return proto.ListBaseVoicesRequest.toObject(opt_includeInstance, this);
+proto.ai.inworld.engine.ListBaseVoicesRequest.prototype.toObject = function(opt_includeInstance) {
+  return proto.ai.inworld.engine.ListBaseVoicesRequest.toObject(opt_includeInstance, this);
 };
 
 
@@ -5603,11 +5609,11 @@ proto.ListBaseVoicesRequest.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.ListBaseVoicesRequest} msg The msg instance to transform.
+ * @param {!proto.ai.inworld.engine.ListBaseVoicesRequest} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.ListBaseVoicesRequest.toObject = function(includeInstance, msg) {
+proto.ai.inworld.engine.ListBaseVoicesRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
     languageCode: jspb.Message.getFieldWithDefault(msg, 1, ""),
     ttsTypesList: (f = jspb.Message.getRepeatedField(msg, 2)) == null ? undefined : f,
@@ -5625,23 +5631,23 @@ proto.ListBaseVoicesRequest.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.ListBaseVoicesRequest}
+ * @return {!proto.ai.inworld.engine.ListBaseVoicesRequest}
  */
-proto.ListBaseVoicesRequest.deserializeBinary = function(bytes) {
+proto.ai.inworld.engine.ListBaseVoicesRequest.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.ListBaseVoicesRequest;
-  return proto.ListBaseVoicesRequest.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.ai.inworld.engine.ListBaseVoicesRequest;
+  return proto.ai.inworld.engine.ListBaseVoicesRequest.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.ListBaseVoicesRequest} msg The message object to deserialize into.
+ * @param {!proto.ai.inworld.engine.ListBaseVoicesRequest} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.ListBaseVoicesRequest}
+ * @return {!proto.ai.inworld.engine.ListBaseVoicesRequest}
  */
-proto.ListBaseVoicesRequest.deserializeBinaryFromReader = function(msg, reader) {
+proto.ai.inworld.engine.ListBaseVoicesRequest.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -5675,9 +5681,9 @@ proto.ListBaseVoicesRequest.deserializeBinaryFromReader = function(msg, reader) 
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.ListBaseVoicesRequest.prototype.serializeBinary = function() {
+proto.ai.inworld.engine.ListBaseVoicesRequest.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.ListBaseVoicesRequest.serializeBinaryToWriter(this, writer);
+  proto.ai.inworld.engine.ListBaseVoicesRequest.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -5685,11 +5691,11 @@ proto.ListBaseVoicesRequest.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.ListBaseVoicesRequest} message
+ * @param {!proto.ai.inworld.engine.ListBaseVoicesRequest} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.ListBaseVoicesRequest.serializeBinaryToWriter = function(message, writer) {
+proto.ai.inworld.engine.ListBaseVoicesRequest.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getLanguageCode();
   if (f.length > 0) {
@@ -5719,16 +5725,16 @@ proto.ListBaseVoicesRequest.serializeBinaryToWriter = function(message, writer) 
  * optional string language_code = 1;
  * @return {string}
  */
-proto.ListBaseVoicesRequest.prototype.getLanguageCode = function() {
+proto.ai.inworld.engine.ListBaseVoicesRequest.prototype.getLanguageCode = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.ListBaseVoicesRequest} returns this
+ * @return {!proto.ai.inworld.engine.ListBaseVoicesRequest} returns this
  */
-proto.ListBaseVoicesRequest.prototype.setLanguageCode = function(value) {
+proto.ai.inworld.engine.ListBaseVoicesRequest.prototype.setLanguageCode = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
@@ -5737,16 +5743,16 @@ proto.ListBaseVoicesRequest.prototype.setLanguageCode = function(value) {
  * repeated ai.inworld.voices.TTSType tts_types = 2;
  * @return {!Array<!proto.ai.inworld.voices.TTSType>}
  */
-proto.ListBaseVoicesRequest.prototype.getTtsTypesList = function() {
+proto.ai.inworld.engine.ListBaseVoicesRequest.prototype.getTtsTypesList = function() {
   return /** @type {!Array<!proto.ai.inworld.voices.TTSType>} */ (jspb.Message.getRepeatedField(this, 2));
 };
 
 
 /**
  * @param {!Array<!proto.ai.inworld.voices.TTSType>} value
- * @return {!proto.ListBaseVoicesRequest} returns this
+ * @return {!proto.ai.inworld.engine.ListBaseVoicesRequest} returns this
  */
-proto.ListBaseVoicesRequest.prototype.setTtsTypesList = function(value) {
+proto.ai.inworld.engine.ListBaseVoicesRequest.prototype.setTtsTypesList = function(value) {
   return jspb.Message.setField(this, 2, value || []);
 };
 
@@ -5754,18 +5760,18 @@ proto.ListBaseVoicesRequest.prototype.setTtsTypesList = function(value) {
 /**
  * @param {!proto.ai.inworld.voices.TTSType} value
  * @param {number=} opt_index
- * @return {!proto.ListBaseVoicesRequest} returns this
+ * @return {!proto.ai.inworld.engine.ListBaseVoicesRequest} returns this
  */
-proto.ListBaseVoicesRequest.prototype.addTtsTypes = function(value, opt_index) {
+proto.ai.inworld.engine.ListBaseVoicesRequest.prototype.addTtsTypes = function(value, opt_index) {
   return jspb.Message.addToRepeatedField(this, 2, value, opt_index);
 };
 
 
 /**
  * Clears the list making it empty but non-null.
- * @return {!proto.ListBaseVoicesRequest} returns this
+ * @return {!proto.ai.inworld.engine.ListBaseVoicesRequest} returns this
  */
-proto.ListBaseVoicesRequest.prototype.clearTtsTypesList = function() {
+proto.ai.inworld.engine.ListBaseVoicesRequest.prototype.clearTtsTypesList = function() {
   return this.setTtsTypesList([]);
 };
 
@@ -5774,16 +5780,16 @@ proto.ListBaseVoicesRequest.prototype.clearTtsTypesList = function() {
  * optional ai.inworld.language_codes.LanguageCode language = 3;
  * @return {!proto.ai.inworld.language_codes.LanguageCode}
  */
-proto.ListBaseVoicesRequest.prototype.getLanguage = function() {
+proto.ai.inworld.engine.ListBaseVoicesRequest.prototype.getLanguage = function() {
   return /** @type {!proto.ai.inworld.language_codes.LanguageCode} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
 /**
  * @param {!proto.ai.inworld.language_codes.LanguageCode} value
- * @return {!proto.ListBaseVoicesRequest} returns this
+ * @return {!proto.ai.inworld.engine.ListBaseVoicesRequest} returns this
  */
-proto.ListBaseVoicesRequest.prototype.setLanguage = function(value) {
+proto.ai.inworld.engine.ListBaseVoicesRequest.prototype.setLanguage = function(value) {
   return jspb.Message.setProto3EnumField(this, 3, value);
 };
 
@@ -5794,7 +5800,7 @@ proto.ListBaseVoicesRequest.prototype.setLanguage = function(value) {
  * @private {!Array<number>}
  * @const
  */
-proto.ListBaseVoicesResponce.repeatedFields_ = [1,2,3,4];
+proto.ai.inworld.engine.ListBaseVoicesResponce.repeatedFields_ = [1,2,3,4];
 
 
 
@@ -5811,8 +5817,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.ListBaseVoicesResponce.prototype.toObject = function(opt_includeInstance) {
-  return proto.ListBaseVoicesResponce.toObject(opt_includeInstance, this);
+proto.ai.inworld.engine.ListBaseVoicesResponce.prototype.toObject = function(opt_includeInstance) {
+  return proto.ai.inworld.engine.ListBaseVoicesResponce.toObject(opt_includeInstance, this);
 };
 
 
@@ -5821,11 +5827,11 @@ proto.ListBaseVoicesResponce.prototype.toObject = function(opt_includeInstance) 
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.ListBaseVoicesResponce} msg The msg instance to transform.
+ * @param {!proto.ai.inworld.engine.ListBaseVoicesResponce} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.ListBaseVoicesResponce.toObject = function(includeInstance, msg) {
+proto.ai.inworld.engine.ListBaseVoicesResponce.toObject = function(includeInstance, msg) {
   var f, obj = {
     googleVoicesList: jspb.Message.toObjectList(msg.getGoogleVoicesList(),
     ai_inworld_voices_base_voice_pb.BaseVoice.toObject, includeInstance),
@@ -5848,23 +5854,23 @@ proto.ListBaseVoicesResponce.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.ListBaseVoicesResponce}
+ * @return {!proto.ai.inworld.engine.ListBaseVoicesResponce}
  */
-proto.ListBaseVoicesResponce.deserializeBinary = function(bytes) {
+proto.ai.inworld.engine.ListBaseVoicesResponce.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.ListBaseVoicesResponce;
-  return proto.ListBaseVoicesResponce.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.ai.inworld.engine.ListBaseVoicesResponce;
+  return proto.ai.inworld.engine.ListBaseVoicesResponce.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.ListBaseVoicesResponce} msg The message object to deserialize into.
+ * @param {!proto.ai.inworld.engine.ListBaseVoicesResponce} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.ListBaseVoicesResponce}
+ * @return {!proto.ai.inworld.engine.ListBaseVoicesResponce}
  */
-proto.ListBaseVoicesResponce.deserializeBinaryFromReader = function(msg, reader) {
+proto.ai.inworld.engine.ListBaseVoicesResponce.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -5904,9 +5910,9 @@ proto.ListBaseVoicesResponce.deserializeBinaryFromReader = function(msg, reader)
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.ListBaseVoicesResponce.prototype.serializeBinary = function() {
+proto.ai.inworld.engine.ListBaseVoicesResponce.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.ListBaseVoicesResponce.serializeBinaryToWriter(this, writer);
+  proto.ai.inworld.engine.ListBaseVoicesResponce.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -5914,11 +5920,11 @@ proto.ListBaseVoicesResponce.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.ListBaseVoicesResponce} message
+ * @param {!proto.ai.inworld.engine.ListBaseVoicesResponce} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.ListBaseVoicesResponce.serializeBinaryToWriter = function(message, writer) {
+proto.ai.inworld.engine.ListBaseVoicesResponce.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getGoogleVoicesList();
   if (f.length > 0) {
@@ -5959,7 +5965,7 @@ proto.ListBaseVoicesResponce.serializeBinaryToWriter = function(message, writer)
  * repeated ai.inworld.voices.BaseVoice google_voices = 1;
  * @return {!Array<!proto.ai.inworld.voices.BaseVoice>}
  */
-proto.ListBaseVoicesResponce.prototype.getGoogleVoicesList = function() {
+proto.ai.inworld.engine.ListBaseVoicesResponce.prototype.getGoogleVoicesList = function() {
   return /** @type{!Array<!proto.ai.inworld.voices.BaseVoice>} */ (
     jspb.Message.getRepeatedWrapperField(this, ai_inworld_voices_base_voice_pb.BaseVoice, 1));
 };
@@ -5967,9 +5973,9 @@ proto.ListBaseVoicesResponce.prototype.getGoogleVoicesList = function() {
 
 /**
  * @param {!Array<!proto.ai.inworld.voices.BaseVoice>} value
- * @return {!proto.ListBaseVoicesResponce} returns this
+ * @return {!proto.ai.inworld.engine.ListBaseVoicesResponce} returns this
 */
-proto.ListBaseVoicesResponce.prototype.setGoogleVoicesList = function(value) {
+proto.ai.inworld.engine.ListBaseVoicesResponce.prototype.setGoogleVoicesList = function(value) {
   return jspb.Message.setRepeatedWrapperField(this, 1, value);
 };
 
@@ -5979,16 +5985,16 @@ proto.ListBaseVoicesResponce.prototype.setGoogleVoicesList = function(value) {
  * @param {number=} opt_index
  * @return {!proto.ai.inworld.voices.BaseVoice}
  */
-proto.ListBaseVoicesResponce.prototype.addGoogleVoices = function(opt_value, opt_index) {
+proto.ai.inworld.engine.ListBaseVoicesResponce.prototype.addGoogleVoices = function(opt_value, opt_index) {
   return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.ai.inworld.voices.BaseVoice, opt_index);
 };
 
 
 /**
  * Clears the list making it empty but non-null.
- * @return {!proto.ListBaseVoicesResponce} returns this
+ * @return {!proto.ai.inworld.engine.ListBaseVoicesResponce} returns this
  */
-proto.ListBaseVoicesResponce.prototype.clearGoogleVoicesList = function() {
+proto.ai.inworld.engine.ListBaseVoicesResponce.prototype.clearGoogleVoicesList = function() {
   return this.setGoogleVoicesList([]);
 };
 
@@ -5997,7 +6003,7 @@ proto.ListBaseVoicesResponce.prototype.clearGoogleVoicesList = function() {
  * repeated ai.inworld.voices.BaseVoice inworld_voices = 2;
  * @return {!Array<!proto.ai.inworld.voices.BaseVoice>}
  */
-proto.ListBaseVoicesResponce.prototype.getInworldVoicesList = function() {
+proto.ai.inworld.engine.ListBaseVoicesResponce.prototype.getInworldVoicesList = function() {
   return /** @type{!Array<!proto.ai.inworld.voices.BaseVoice>} */ (
     jspb.Message.getRepeatedWrapperField(this, ai_inworld_voices_base_voice_pb.BaseVoice, 2));
 };
@@ -6005,9 +6011,9 @@ proto.ListBaseVoicesResponce.prototype.getInworldVoicesList = function() {
 
 /**
  * @param {!Array<!proto.ai.inworld.voices.BaseVoice>} value
- * @return {!proto.ListBaseVoicesResponce} returns this
+ * @return {!proto.ai.inworld.engine.ListBaseVoicesResponce} returns this
 */
-proto.ListBaseVoicesResponce.prototype.setInworldVoicesList = function(value) {
+proto.ai.inworld.engine.ListBaseVoicesResponce.prototype.setInworldVoicesList = function(value) {
   return jspb.Message.setRepeatedWrapperField(this, 2, value);
 };
 
@@ -6017,16 +6023,16 @@ proto.ListBaseVoicesResponce.prototype.setInworldVoicesList = function(value) {
  * @param {number=} opt_index
  * @return {!proto.ai.inworld.voices.BaseVoice}
  */
-proto.ListBaseVoicesResponce.prototype.addInworldVoices = function(opt_value, opt_index) {
+proto.ai.inworld.engine.ListBaseVoicesResponce.prototype.addInworldVoices = function(opt_value, opt_index) {
   return jspb.Message.addToRepeatedWrapperField(this, 2, opt_value, proto.ai.inworld.voices.BaseVoice, opt_index);
 };
 
 
 /**
  * Clears the list making it empty but non-null.
- * @return {!proto.ListBaseVoicesResponce} returns this
+ * @return {!proto.ai.inworld.engine.ListBaseVoicesResponce} returns this
  */
-proto.ListBaseVoicesResponce.prototype.clearInworldVoicesList = function() {
+proto.ai.inworld.engine.ListBaseVoicesResponce.prototype.clearInworldVoicesList = function() {
   return this.setInworldVoicesList([]);
 };
 
@@ -6035,7 +6041,7 @@ proto.ListBaseVoicesResponce.prototype.clearInworldVoicesList = function() {
  * repeated ai.inworld.voices.BaseVoice eleven_labs_voices = 3;
  * @return {!Array<!proto.ai.inworld.voices.BaseVoice>}
  */
-proto.ListBaseVoicesResponce.prototype.getElevenLabsVoicesList = function() {
+proto.ai.inworld.engine.ListBaseVoicesResponce.prototype.getElevenLabsVoicesList = function() {
   return /** @type{!Array<!proto.ai.inworld.voices.BaseVoice>} */ (
     jspb.Message.getRepeatedWrapperField(this, ai_inworld_voices_base_voice_pb.BaseVoice, 3));
 };
@@ -6043,9 +6049,9 @@ proto.ListBaseVoicesResponce.prototype.getElevenLabsVoicesList = function() {
 
 /**
  * @param {!Array<!proto.ai.inworld.voices.BaseVoice>} value
- * @return {!proto.ListBaseVoicesResponce} returns this
+ * @return {!proto.ai.inworld.engine.ListBaseVoicesResponce} returns this
 */
-proto.ListBaseVoicesResponce.prototype.setElevenLabsVoicesList = function(value) {
+proto.ai.inworld.engine.ListBaseVoicesResponce.prototype.setElevenLabsVoicesList = function(value) {
   return jspb.Message.setRepeatedWrapperField(this, 3, value);
 };
 
@@ -6055,16 +6061,16 @@ proto.ListBaseVoicesResponce.prototype.setElevenLabsVoicesList = function(value)
  * @param {number=} opt_index
  * @return {!proto.ai.inworld.voices.BaseVoice}
  */
-proto.ListBaseVoicesResponce.prototype.addElevenLabsVoices = function(opt_value, opt_index) {
+proto.ai.inworld.engine.ListBaseVoicesResponce.prototype.addElevenLabsVoices = function(opt_value, opt_index) {
   return jspb.Message.addToRepeatedWrapperField(this, 3, opt_value, proto.ai.inworld.voices.BaseVoice, opt_index);
 };
 
 
 /**
  * Clears the list making it empty but non-null.
- * @return {!proto.ListBaseVoicesResponce} returns this
+ * @return {!proto.ai.inworld.engine.ListBaseVoicesResponce} returns this
  */
-proto.ListBaseVoicesResponce.prototype.clearElevenLabsVoicesList = function() {
+proto.ai.inworld.engine.ListBaseVoicesResponce.prototype.clearElevenLabsVoicesList = function() {
   return this.setElevenLabsVoicesList([]);
 };
 
@@ -6073,7 +6079,7 @@ proto.ListBaseVoicesResponce.prototype.clearElevenLabsVoicesList = function() {
  * repeated ai.inworld.voices.BaseVoice inworld_v2_voices = 4;
  * @return {!Array<!proto.ai.inworld.voices.BaseVoice>}
  */
-proto.ListBaseVoicesResponce.prototype.getInworldV2VoicesList = function() {
+proto.ai.inworld.engine.ListBaseVoicesResponce.prototype.getInworldV2VoicesList = function() {
   return /** @type{!Array<!proto.ai.inworld.voices.BaseVoice>} */ (
     jspb.Message.getRepeatedWrapperField(this, ai_inworld_voices_base_voice_pb.BaseVoice, 4));
 };
@@ -6081,9 +6087,9 @@ proto.ListBaseVoicesResponce.prototype.getInworldV2VoicesList = function() {
 
 /**
  * @param {!Array<!proto.ai.inworld.voices.BaseVoice>} value
- * @return {!proto.ListBaseVoicesResponce} returns this
+ * @return {!proto.ai.inworld.engine.ListBaseVoicesResponce} returns this
 */
-proto.ListBaseVoicesResponce.prototype.setInworldV2VoicesList = function(value) {
+proto.ai.inworld.engine.ListBaseVoicesResponce.prototype.setInworldV2VoicesList = function(value) {
   return jspb.Message.setRepeatedWrapperField(this, 4, value);
 };
 
@@ -6093,16 +6099,16 @@ proto.ListBaseVoicesResponce.prototype.setInworldV2VoicesList = function(value) 
  * @param {number=} opt_index
  * @return {!proto.ai.inworld.voices.BaseVoice}
  */
-proto.ListBaseVoicesResponce.prototype.addInworldV2Voices = function(opt_value, opt_index) {
+proto.ai.inworld.engine.ListBaseVoicesResponce.prototype.addInworldV2Voices = function(opt_value, opt_index) {
   return jspb.Message.addToRepeatedWrapperField(this, 4, opt_value, proto.ai.inworld.voices.BaseVoice, opt_index);
 };
 
 
 /**
  * Clears the list making it empty but non-null.
- * @return {!proto.ListBaseVoicesResponce} returns this
+ * @return {!proto.ai.inworld.engine.ListBaseVoicesResponce} returns this
  */
-proto.ListBaseVoicesResponce.prototype.clearInworldV2VoicesList = function() {
+proto.ai.inworld.engine.ListBaseVoicesResponce.prototype.clearInworldV2VoicesList = function() {
   return this.setInworldV2VoicesList([]);
 };
 
@@ -6123,8 +6129,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.AccessToken.prototype.toObject = function(opt_includeInstance) {
-  return proto.AccessToken.toObject(opt_includeInstance, this);
+proto.ai.inworld.engine.AccessToken.prototype.toObject = function(opt_includeInstance) {
+  return proto.ai.inworld.engine.AccessToken.toObject(opt_includeInstance, this);
 };
 
 
@@ -6133,11 +6139,11 @@ proto.AccessToken.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.AccessToken} msg The msg instance to transform.
+ * @param {!proto.ai.inworld.engine.AccessToken} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.AccessToken.toObject = function(includeInstance, msg) {
+proto.ai.inworld.engine.AccessToken.toObject = function(includeInstance, msg) {
   var f, obj = {
     token: jspb.Message.getFieldWithDefault(msg, 1, ""),
     type: jspb.Message.getFieldWithDefault(msg, 2, ""),
@@ -6156,23 +6162,23 @@ proto.AccessToken.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.AccessToken}
+ * @return {!proto.ai.inworld.engine.AccessToken}
  */
-proto.AccessToken.deserializeBinary = function(bytes) {
+proto.ai.inworld.engine.AccessToken.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.AccessToken;
-  return proto.AccessToken.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.ai.inworld.engine.AccessToken;
+  return proto.ai.inworld.engine.AccessToken.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.AccessToken} msg The message object to deserialize into.
+ * @param {!proto.ai.inworld.engine.AccessToken} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.AccessToken}
+ * @return {!proto.ai.inworld.engine.AccessToken}
  */
-proto.AccessToken.deserializeBinaryFromReader = function(msg, reader) {
+proto.ai.inworld.engine.AccessToken.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -6209,9 +6215,9 @@ proto.AccessToken.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.AccessToken.prototype.serializeBinary = function() {
+proto.ai.inworld.engine.AccessToken.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.AccessToken.serializeBinaryToWriter(this, writer);
+  proto.ai.inworld.engine.AccessToken.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -6219,11 +6225,11 @@ proto.AccessToken.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.AccessToken} message
+ * @param {!proto.ai.inworld.engine.AccessToken} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.AccessToken.serializeBinaryToWriter = function(message, writer) {
+proto.ai.inworld.engine.AccessToken.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getToken();
   if (f.length > 0) {
@@ -6261,16 +6267,16 @@ proto.AccessToken.serializeBinaryToWriter = function(message, writer) {
  * optional string token = 1;
  * @return {string}
  */
-proto.AccessToken.prototype.getToken = function() {
+proto.ai.inworld.engine.AccessToken.prototype.getToken = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.AccessToken} returns this
+ * @return {!proto.ai.inworld.engine.AccessToken} returns this
  */
-proto.AccessToken.prototype.setToken = function(value) {
+proto.ai.inworld.engine.AccessToken.prototype.setToken = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
@@ -6279,16 +6285,16 @@ proto.AccessToken.prototype.setToken = function(value) {
  * optional string type = 2;
  * @return {string}
  */
-proto.AccessToken.prototype.getType = function() {
+proto.ai.inworld.engine.AccessToken.prototype.getType = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.AccessToken} returns this
+ * @return {!proto.ai.inworld.engine.AccessToken} returns this
  */
-proto.AccessToken.prototype.setType = function(value) {
+proto.ai.inworld.engine.AccessToken.prototype.setType = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
 };
 
@@ -6297,7 +6303,7 @@ proto.AccessToken.prototype.setType = function(value) {
  * optional google.protobuf.Timestamp expiration_time = 3;
  * @return {?proto.google.protobuf.Timestamp}
  */
-proto.AccessToken.prototype.getExpirationTime = function() {
+proto.ai.inworld.engine.AccessToken.prototype.getExpirationTime = function() {
   return /** @type{?proto.google.protobuf.Timestamp} */ (
     jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 3));
 };
@@ -6305,18 +6311,18 @@ proto.AccessToken.prototype.getExpirationTime = function() {
 
 /**
  * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.AccessToken} returns this
+ * @return {!proto.ai.inworld.engine.AccessToken} returns this
 */
-proto.AccessToken.prototype.setExpirationTime = function(value) {
+proto.ai.inworld.engine.AccessToken.prototype.setExpirationTime = function(value) {
   return jspb.Message.setWrapperField(this, 3, value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.AccessToken} returns this
+ * @return {!proto.ai.inworld.engine.AccessToken} returns this
  */
-proto.AccessToken.prototype.clearExpirationTime = function() {
+proto.ai.inworld.engine.AccessToken.prototype.clearExpirationTime = function() {
   return this.setExpirationTime(undefined);
 };
 
@@ -6325,7 +6331,7 @@ proto.AccessToken.prototype.clearExpirationTime = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.AccessToken.prototype.hasExpirationTime = function() {
+proto.ai.inworld.engine.AccessToken.prototype.hasExpirationTime = function() {
   return jspb.Message.getField(this, 3) != null;
 };
 
@@ -6334,16 +6340,16 @@ proto.AccessToken.prototype.hasExpirationTime = function() {
  * optional string session_id = 4;
  * @return {string}
  */
-proto.AccessToken.prototype.getSessionId = function() {
+proto.ai.inworld.engine.AccessToken.prototype.getSessionId = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.AccessToken} returns this
+ * @return {!proto.ai.inworld.engine.AccessToken} returns this
  */
-proto.AccessToken.prototype.setSessionId = function(value) {
+proto.ai.inworld.engine.AccessToken.prototype.setSessionId = function(value) {
   return jspb.Message.setProto3StringField(this, 4, value);
 };
 
@@ -6354,7 +6360,7 @@ proto.AccessToken.prototype.setSessionId = function(value) {
  * @private {!Array<number>}
  * @const
  */
-proto.GenerateTokenRequest.repeatedFields_ = [2];
+proto.ai.inworld.engine.GenerateTokenRequest.repeatedFields_ = [2];
 
 
 
@@ -6371,8 +6377,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.GenerateTokenRequest.prototype.toObject = function(opt_includeInstance) {
-  return proto.GenerateTokenRequest.toObject(opt_includeInstance, this);
+proto.ai.inworld.engine.GenerateTokenRequest.prototype.toObject = function(opt_includeInstance) {
+  return proto.ai.inworld.engine.GenerateTokenRequest.toObject(opt_includeInstance, this);
 };
 
 
@@ -6381,11 +6387,11 @@ proto.GenerateTokenRequest.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.GenerateTokenRequest} msg The msg instance to transform.
+ * @param {!proto.ai.inworld.engine.GenerateTokenRequest} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.GenerateTokenRequest.toObject = function(includeInstance, msg) {
+proto.ai.inworld.engine.GenerateTokenRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
     key: jspb.Message.getFieldWithDefault(msg, 1, ""),
     resourcesList: (f = jspb.Message.getRepeatedField(msg, 2)) == null ? undefined : f
@@ -6402,23 +6408,23 @@ proto.GenerateTokenRequest.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.GenerateTokenRequest}
+ * @return {!proto.ai.inworld.engine.GenerateTokenRequest}
  */
-proto.GenerateTokenRequest.deserializeBinary = function(bytes) {
+proto.ai.inworld.engine.GenerateTokenRequest.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.GenerateTokenRequest;
-  return proto.GenerateTokenRequest.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.ai.inworld.engine.GenerateTokenRequest;
+  return proto.ai.inworld.engine.GenerateTokenRequest.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.GenerateTokenRequest} msg The message object to deserialize into.
+ * @param {!proto.ai.inworld.engine.GenerateTokenRequest} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.GenerateTokenRequest}
+ * @return {!proto.ai.inworld.engine.GenerateTokenRequest}
  */
-proto.GenerateTokenRequest.deserializeBinaryFromReader = function(msg, reader) {
+proto.ai.inworld.engine.GenerateTokenRequest.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -6446,9 +6452,9 @@ proto.GenerateTokenRequest.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.GenerateTokenRequest.prototype.serializeBinary = function() {
+proto.ai.inworld.engine.GenerateTokenRequest.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.GenerateTokenRequest.serializeBinaryToWriter(this, writer);
+  proto.ai.inworld.engine.GenerateTokenRequest.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -6456,11 +6462,11 @@ proto.GenerateTokenRequest.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.GenerateTokenRequest} message
+ * @param {!proto.ai.inworld.engine.GenerateTokenRequest} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.GenerateTokenRequest.serializeBinaryToWriter = function(message, writer) {
+proto.ai.inworld.engine.GenerateTokenRequest.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getKey();
   if (f.length > 0) {
@@ -6483,16 +6489,16 @@ proto.GenerateTokenRequest.serializeBinaryToWriter = function(message, writer) {
  * optional string key = 1;
  * @return {string}
  */
-proto.GenerateTokenRequest.prototype.getKey = function() {
+proto.ai.inworld.engine.GenerateTokenRequest.prototype.getKey = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.GenerateTokenRequest} returns this
+ * @return {!proto.ai.inworld.engine.GenerateTokenRequest} returns this
  */
-proto.GenerateTokenRequest.prototype.setKey = function(value) {
+proto.ai.inworld.engine.GenerateTokenRequest.prototype.setKey = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
@@ -6501,16 +6507,16 @@ proto.GenerateTokenRequest.prototype.setKey = function(value) {
  * repeated string resources = 2;
  * @return {!Array<string>}
  */
-proto.GenerateTokenRequest.prototype.getResourcesList = function() {
+proto.ai.inworld.engine.GenerateTokenRequest.prototype.getResourcesList = function() {
   return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 2));
 };
 
 
 /**
  * @param {!Array<string>} value
- * @return {!proto.GenerateTokenRequest} returns this
+ * @return {!proto.ai.inworld.engine.GenerateTokenRequest} returns this
  */
-proto.GenerateTokenRequest.prototype.setResourcesList = function(value) {
+proto.ai.inworld.engine.GenerateTokenRequest.prototype.setResourcesList = function(value) {
   return jspb.Message.setField(this, 2, value || []);
 };
 
@@ -6518,18 +6524,18 @@ proto.GenerateTokenRequest.prototype.setResourcesList = function(value) {
 /**
  * @param {string} value
  * @param {number=} opt_index
- * @return {!proto.GenerateTokenRequest} returns this
+ * @return {!proto.ai.inworld.engine.GenerateTokenRequest} returns this
  */
-proto.GenerateTokenRequest.prototype.addResources = function(value, opt_index) {
+proto.ai.inworld.engine.GenerateTokenRequest.prototype.addResources = function(value, opt_index) {
   return jspb.Message.addToRepeatedField(this, 2, value, opt_index);
 };
 
 
 /**
  * Clears the list making it empty but non-null.
- * @return {!proto.GenerateTokenRequest} returns this
+ * @return {!proto.ai.inworld.engine.GenerateTokenRequest} returns this
  */
-proto.GenerateTokenRequest.prototype.clearResourcesList = function() {
+proto.ai.inworld.engine.GenerateTokenRequest.prototype.clearResourcesList = function() {
   return this.setResourcesList([]);
 };
 
@@ -6540,7 +6546,7 @@ proto.GenerateTokenRequest.prototype.clearResourcesList = function() {
  * @private {!Array<number>}
  * @const
  */
-proto.ActorRelations.repeatedFields_ = [2];
+proto.ai.inworld.engine.ActorRelations.repeatedFields_ = [2];
 
 
 
@@ -6557,8 +6563,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.ActorRelations.prototype.toObject = function(opt_includeInstance) {
-  return proto.ActorRelations.toObject(opt_includeInstance, this);
+proto.ai.inworld.engine.ActorRelations.prototype.toObject = function(opt_includeInstance) {
+  return proto.ai.inworld.engine.ActorRelations.toObject(opt_includeInstance, this);
 };
 
 
@@ -6567,15 +6573,15 @@ proto.ActorRelations.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.ActorRelations} msg The msg instance to transform.
+ * @param {!proto.ai.inworld.engine.ActorRelations} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.ActorRelations.toObject = function(includeInstance, msg) {
+proto.ai.inworld.engine.ActorRelations.toObject = function(includeInstance, msg) {
   var f, obj = {
     actorId: jspb.Message.getFieldWithDefault(msg, 1, ""),
     relationsList: jspb.Message.toObjectList(msg.getRelationsList(),
-    proto.ActorRelations.Relation.toObject, includeInstance)
+    proto.ai.inworld.engine.ActorRelations.Relation.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -6589,23 +6595,23 @@ proto.ActorRelations.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.ActorRelations}
+ * @return {!proto.ai.inworld.engine.ActorRelations}
  */
-proto.ActorRelations.deserializeBinary = function(bytes) {
+proto.ai.inworld.engine.ActorRelations.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.ActorRelations;
-  return proto.ActorRelations.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.ai.inworld.engine.ActorRelations;
+  return proto.ai.inworld.engine.ActorRelations.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.ActorRelations} msg The message object to deserialize into.
+ * @param {!proto.ai.inworld.engine.ActorRelations} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.ActorRelations}
+ * @return {!proto.ai.inworld.engine.ActorRelations}
  */
-proto.ActorRelations.deserializeBinaryFromReader = function(msg, reader) {
+proto.ai.inworld.engine.ActorRelations.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -6617,8 +6623,8 @@ proto.ActorRelations.deserializeBinaryFromReader = function(msg, reader) {
       msg.setActorId(value);
       break;
     case 2:
-      var value = new proto.ActorRelations.Relation;
-      reader.readMessage(value,proto.ActorRelations.Relation.deserializeBinaryFromReader);
+      var value = new proto.ai.inworld.engine.ActorRelations.Relation;
+      reader.readMessage(value,proto.ai.inworld.engine.ActorRelations.Relation.deserializeBinaryFromReader);
       msg.addRelations(value);
       break;
     default:
@@ -6634,9 +6640,9 @@ proto.ActorRelations.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.ActorRelations.prototype.serializeBinary = function() {
+proto.ai.inworld.engine.ActorRelations.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.ActorRelations.serializeBinaryToWriter(this, writer);
+  proto.ai.inworld.engine.ActorRelations.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -6644,11 +6650,11 @@ proto.ActorRelations.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.ActorRelations} message
+ * @param {!proto.ai.inworld.engine.ActorRelations} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.ActorRelations.serializeBinaryToWriter = function(message, writer) {
+proto.ai.inworld.engine.ActorRelations.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getActorId();
   if (f.length > 0) {
@@ -6662,7 +6668,7 @@ proto.ActorRelations.serializeBinaryToWriter = function(message, writer) {
     writer.writeRepeatedMessage(
       2,
       f,
-      proto.ActorRelations.Relation.serializeBinaryToWriter
+      proto.ai.inworld.engine.ActorRelations.Relation.serializeBinaryToWriter
     );
   }
 };
@@ -6684,8 +6690,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.ActorRelations.Relation.prototype.toObject = function(opt_includeInstance) {
-  return proto.ActorRelations.Relation.toObject(opt_includeInstance, this);
+proto.ai.inworld.engine.ActorRelations.Relation.prototype.toObject = function(opt_includeInstance) {
+  return proto.ai.inworld.engine.ActorRelations.Relation.toObject(opt_includeInstance, this);
 };
 
 
@@ -6694,11 +6700,11 @@ proto.ActorRelations.Relation.prototype.toObject = function(opt_includeInstance)
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.ActorRelations.Relation} msg The msg instance to transform.
+ * @param {!proto.ai.inworld.engine.ActorRelations.Relation} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.ActorRelations.Relation.toObject = function(includeInstance, msg) {
+proto.ai.inworld.engine.ActorRelations.Relation.toObject = function(includeInstance, msg) {
   var f, obj = {
     type: jspb.Message.getFieldWithDefault(msg, 1, ""),
     label: jspb.Message.getFieldWithDefault(msg, 2, "")
@@ -6715,23 +6721,23 @@ proto.ActorRelations.Relation.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.ActorRelations.Relation}
+ * @return {!proto.ai.inworld.engine.ActorRelations.Relation}
  */
-proto.ActorRelations.Relation.deserializeBinary = function(bytes) {
+proto.ai.inworld.engine.ActorRelations.Relation.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.ActorRelations.Relation;
-  return proto.ActorRelations.Relation.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.ai.inworld.engine.ActorRelations.Relation;
+  return proto.ai.inworld.engine.ActorRelations.Relation.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.ActorRelations.Relation} msg The message object to deserialize into.
+ * @param {!proto.ai.inworld.engine.ActorRelations.Relation} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.ActorRelations.Relation}
+ * @return {!proto.ai.inworld.engine.ActorRelations.Relation}
  */
-proto.ActorRelations.Relation.deserializeBinaryFromReader = function(msg, reader) {
+proto.ai.inworld.engine.ActorRelations.Relation.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -6759,9 +6765,9 @@ proto.ActorRelations.Relation.deserializeBinaryFromReader = function(msg, reader
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.ActorRelations.Relation.prototype.serializeBinary = function() {
+proto.ai.inworld.engine.ActorRelations.Relation.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.ActorRelations.Relation.serializeBinaryToWriter(this, writer);
+  proto.ai.inworld.engine.ActorRelations.Relation.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -6769,11 +6775,11 @@ proto.ActorRelations.Relation.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.ActorRelations.Relation} message
+ * @param {!proto.ai.inworld.engine.ActorRelations.Relation} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.ActorRelations.Relation.serializeBinaryToWriter = function(message, writer) {
+proto.ai.inworld.engine.ActorRelations.Relation.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getType();
   if (f.length > 0) {
@@ -6796,16 +6802,16 @@ proto.ActorRelations.Relation.serializeBinaryToWriter = function(message, writer
  * optional string type = 1;
  * @return {string}
  */
-proto.ActorRelations.Relation.prototype.getType = function() {
+proto.ai.inworld.engine.ActorRelations.Relation.prototype.getType = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.ActorRelations.Relation} returns this
+ * @return {!proto.ai.inworld.engine.ActorRelations.Relation} returns this
  */
-proto.ActorRelations.Relation.prototype.setType = function(value) {
+proto.ai.inworld.engine.ActorRelations.Relation.prototype.setType = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
@@ -6814,16 +6820,16 @@ proto.ActorRelations.Relation.prototype.setType = function(value) {
  * optional string label = 2;
  * @return {string}
  */
-proto.ActorRelations.Relation.prototype.getLabel = function() {
+proto.ai.inworld.engine.ActorRelations.Relation.prototype.getLabel = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.ActorRelations.Relation} returns this
+ * @return {!proto.ai.inworld.engine.ActorRelations.Relation} returns this
  */
-proto.ActorRelations.Relation.prototype.setLabel = function(value) {
+proto.ai.inworld.engine.ActorRelations.Relation.prototype.setLabel = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
 };
 
@@ -6832,54 +6838,54 @@ proto.ActorRelations.Relation.prototype.setLabel = function(value) {
  * optional string actor_id = 1;
  * @return {string}
  */
-proto.ActorRelations.prototype.getActorId = function() {
+proto.ai.inworld.engine.ActorRelations.prototype.getActorId = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.ActorRelations} returns this
+ * @return {!proto.ai.inworld.engine.ActorRelations} returns this
  */
-proto.ActorRelations.prototype.setActorId = function(value) {
+proto.ai.inworld.engine.ActorRelations.prototype.setActorId = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
  * repeated Relation relations = 2;
- * @return {!Array<!proto.ActorRelations.Relation>}
+ * @return {!Array<!proto.ai.inworld.engine.ActorRelations.Relation>}
  */
-proto.ActorRelations.prototype.getRelationsList = function() {
-  return /** @type{!Array<!proto.ActorRelations.Relation>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.ActorRelations.Relation, 2));
+proto.ai.inworld.engine.ActorRelations.prototype.getRelationsList = function() {
+  return /** @type{!Array<!proto.ai.inworld.engine.ActorRelations.Relation>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.ai.inworld.engine.ActorRelations.Relation, 2));
 };
 
 
 /**
- * @param {!Array<!proto.ActorRelations.Relation>} value
- * @return {!proto.ActorRelations} returns this
+ * @param {!Array<!proto.ai.inworld.engine.ActorRelations.Relation>} value
+ * @return {!proto.ai.inworld.engine.ActorRelations} returns this
 */
-proto.ActorRelations.prototype.setRelationsList = function(value) {
+proto.ai.inworld.engine.ActorRelations.prototype.setRelationsList = function(value) {
   return jspb.Message.setRepeatedWrapperField(this, 2, value);
 };
 
 
 /**
- * @param {!proto.ActorRelations.Relation=} opt_value
+ * @param {!proto.ai.inworld.engine.ActorRelations.Relation=} opt_value
  * @param {number=} opt_index
- * @return {!proto.ActorRelations.Relation}
+ * @return {!proto.ai.inworld.engine.ActorRelations.Relation}
  */
-proto.ActorRelations.prototype.addRelations = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 2, opt_value, proto.ActorRelations.Relation, opt_index);
+proto.ai.inworld.engine.ActorRelations.prototype.addRelations = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 2, opt_value, proto.ai.inworld.engine.ActorRelations.Relation, opt_index);
 };
 
 
 /**
  * Clears the list making it empty but non-null.
- * @return {!proto.ActorRelations} returns this
+ * @return {!proto.ai.inworld.engine.ActorRelations} returns this
  */
-proto.ActorRelations.prototype.clearRelationsList = function() {
+proto.ai.inworld.engine.ActorRelations.prototype.clearRelationsList = function() {
   return this.setRelationsList([]);
 };
 
@@ -6890,7 +6896,7 @@ proto.ActorRelations.prototype.clearRelationsList = function() {
  * @private {!Array<number>}
  * @const
  */
-proto.ConversationState.repeatedFields_ = [1];
+proto.ai.inworld.engine.ConversationState.repeatedFields_ = [1];
 
 
 
@@ -6907,8 +6913,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.ConversationState.prototype.toObject = function(opt_includeInstance) {
-  return proto.ConversationState.toObject(opt_includeInstance, this);
+proto.ai.inworld.engine.ConversationState.prototype.toObject = function(opt_includeInstance) {
+  return proto.ai.inworld.engine.ConversationState.toObject(opt_includeInstance, this);
 };
 
 
@@ -6917,14 +6923,14 @@ proto.ConversationState.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.ConversationState} msg The msg instance to transform.
+ * @param {!proto.ai.inworld.engine.ConversationState} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.ConversationState.toObject = function(includeInstance, msg) {
+proto.ai.inworld.engine.ConversationState.toObject = function(includeInstance, msg) {
   var f, obj = {
     conversationsettingsList: jspb.Message.toObjectList(msg.getConversationsettingsList(),
-    proto.ConversationState.ConversationSettings.toObject, includeInstance)
+    proto.ai.inworld.engine.ConversationState.ConversationSettings.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -6938,23 +6944,23 @@ proto.ConversationState.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.ConversationState}
+ * @return {!proto.ai.inworld.engine.ConversationState}
  */
-proto.ConversationState.deserializeBinary = function(bytes) {
+proto.ai.inworld.engine.ConversationState.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.ConversationState;
-  return proto.ConversationState.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.ai.inworld.engine.ConversationState;
+  return proto.ai.inworld.engine.ConversationState.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.ConversationState} msg The message object to deserialize into.
+ * @param {!proto.ai.inworld.engine.ConversationState} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.ConversationState}
+ * @return {!proto.ai.inworld.engine.ConversationState}
  */
-proto.ConversationState.deserializeBinaryFromReader = function(msg, reader) {
+proto.ai.inworld.engine.ConversationState.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -6962,8 +6968,8 @@ proto.ConversationState.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = new proto.ConversationState.ConversationSettings;
-      reader.readMessage(value,proto.ConversationState.ConversationSettings.deserializeBinaryFromReader);
+      var value = new proto.ai.inworld.engine.ConversationState.ConversationSettings;
+      reader.readMessage(value,proto.ai.inworld.engine.ConversationState.ConversationSettings.deserializeBinaryFromReader);
       msg.addConversationsettings(value);
       break;
     default:
@@ -6979,9 +6985,9 @@ proto.ConversationState.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.ConversationState.prototype.serializeBinary = function() {
+proto.ai.inworld.engine.ConversationState.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.ConversationState.serializeBinaryToWriter(this, writer);
+  proto.ai.inworld.engine.ConversationState.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -6989,18 +6995,18 @@ proto.ConversationState.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.ConversationState} message
+ * @param {!proto.ai.inworld.engine.ConversationState} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.ConversationState.serializeBinaryToWriter = function(message, writer) {
+proto.ai.inworld.engine.ConversationState.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getConversationsettingsList();
   if (f.length > 0) {
     writer.writeRepeatedMessage(
       1,
       f,
-      proto.ConversationState.ConversationSettings.serializeBinaryToWriter
+      proto.ai.inworld.engine.ConversationState.ConversationSettings.serializeBinaryToWriter
     );
   }
 };
@@ -7012,7 +7018,7 @@ proto.ConversationState.serializeBinaryToWriter = function(message, writer) {
  * @private {!Array<number>}
  * @const
  */
-proto.ConversationState.ConversationSettings.repeatedFields_ = [2,3,4];
+proto.ai.inworld.engine.ConversationState.ConversationSettings.repeatedFields_ = [2,3,4];
 
 
 
@@ -7029,8 +7035,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.ConversationState.ConversationSettings.prototype.toObject = function(opt_includeInstance) {
-  return proto.ConversationState.ConversationSettings.toObject(opt_includeInstance, this);
+proto.ai.inworld.engine.ConversationState.ConversationSettings.prototype.toObject = function(opt_includeInstance) {
+  return proto.ai.inworld.engine.ConversationState.ConversationSettings.toObject(opt_includeInstance, this);
 };
 
 
@@ -7039,11 +7045,11 @@ proto.ConversationState.ConversationSettings.prototype.toObject = function(opt_i
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.ConversationState.ConversationSettings} msg The msg instance to transform.
+ * @param {!proto.ai.inworld.engine.ConversationState.ConversationSettings} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.ConversationState.ConversationSettings.toObject = function(includeInstance, msg) {
+proto.ai.inworld.engine.ConversationState.ConversationSettings.toObject = function(includeInstance, msg) {
   var f, obj = {
     conversationId: jspb.Message.getFieldWithDefault(msg, 1, ""),
     participantsList: (f = jspb.Message.getRepeatedField(msg, 2)) == null ? undefined : f,
@@ -7063,23 +7069,23 @@ proto.ConversationState.ConversationSettings.toObject = function(includeInstance
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.ConversationState.ConversationSettings}
+ * @return {!proto.ai.inworld.engine.ConversationState.ConversationSettings}
  */
-proto.ConversationState.ConversationSettings.deserializeBinary = function(bytes) {
+proto.ai.inworld.engine.ConversationState.ConversationSettings.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.ConversationState.ConversationSettings;
-  return proto.ConversationState.ConversationSettings.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.ai.inworld.engine.ConversationState.ConversationSettings;
+  return proto.ai.inworld.engine.ConversationState.ConversationSettings.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.ConversationState.ConversationSettings} msg The message object to deserialize into.
+ * @param {!proto.ai.inworld.engine.ConversationState.ConversationSettings} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.ConversationState.ConversationSettings}
+ * @return {!proto.ai.inworld.engine.ConversationState.ConversationSettings}
  */
-proto.ConversationState.ConversationSettings.deserializeBinaryFromReader = function(msg, reader) {
+proto.ai.inworld.engine.ConversationState.ConversationSettings.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -7116,9 +7122,9 @@ proto.ConversationState.ConversationSettings.deserializeBinaryFromReader = funct
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.ConversationState.ConversationSettings.prototype.serializeBinary = function() {
+proto.ai.inworld.engine.ConversationState.ConversationSettings.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.ConversationState.ConversationSettings.serializeBinaryToWriter(this, writer);
+  proto.ai.inworld.engine.ConversationState.ConversationSettings.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -7126,11 +7132,11 @@ proto.ConversationState.ConversationSettings.prototype.serializeBinary = functio
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.ConversationState.ConversationSettings} message
+ * @param {!proto.ai.inworld.engine.ConversationState.ConversationSettings} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.ConversationState.ConversationSettings.serializeBinaryToWriter = function(message, writer) {
+proto.ai.inworld.engine.ConversationState.ConversationSettings.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getConversationId();
   if (f.length > 0) {
@@ -7168,16 +7174,16 @@ proto.ConversationState.ConversationSettings.serializeBinaryToWriter = function(
  * optional string conversation_id = 1;
  * @return {string}
  */
-proto.ConversationState.ConversationSettings.prototype.getConversationId = function() {
+proto.ai.inworld.engine.ConversationState.ConversationSettings.prototype.getConversationId = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.ConversationState.ConversationSettings} returns this
+ * @return {!proto.ai.inworld.engine.ConversationState.ConversationSettings} returns this
  */
-proto.ConversationState.ConversationSettings.prototype.setConversationId = function(value) {
+proto.ai.inworld.engine.ConversationState.ConversationSettings.prototype.setConversationId = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
@@ -7186,16 +7192,16 @@ proto.ConversationState.ConversationSettings.prototype.setConversationId = funct
  * repeated string participants = 2;
  * @return {!Array<string>}
  */
-proto.ConversationState.ConversationSettings.prototype.getParticipantsList = function() {
+proto.ai.inworld.engine.ConversationState.ConversationSettings.prototype.getParticipantsList = function() {
   return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 2));
 };
 
 
 /**
  * @param {!Array<string>} value
- * @return {!proto.ConversationState.ConversationSettings} returns this
+ * @return {!proto.ai.inworld.engine.ConversationState.ConversationSettings} returns this
  */
-proto.ConversationState.ConversationSettings.prototype.setParticipantsList = function(value) {
+proto.ai.inworld.engine.ConversationState.ConversationSettings.prototype.setParticipantsList = function(value) {
   return jspb.Message.setField(this, 2, value || []);
 };
 
@@ -7203,18 +7209,18 @@ proto.ConversationState.ConversationSettings.prototype.setParticipantsList = fun
 /**
  * @param {string} value
  * @param {number=} opt_index
- * @return {!proto.ConversationState.ConversationSettings} returns this
+ * @return {!proto.ai.inworld.engine.ConversationState.ConversationSettings} returns this
  */
-proto.ConversationState.ConversationSettings.prototype.addParticipants = function(value, opt_index) {
+proto.ai.inworld.engine.ConversationState.ConversationSettings.prototype.addParticipants = function(value, opt_index) {
   return jspb.Message.addToRepeatedField(this, 2, value, opt_index);
 };
 
 
 /**
  * Clears the list making it empty but non-null.
- * @return {!proto.ConversationState.ConversationSettings} returns this
+ * @return {!proto.ai.inworld.engine.ConversationState.ConversationSettings} returns this
  */
-proto.ConversationState.ConversationSettings.prototype.clearParticipantsList = function() {
+proto.ai.inworld.engine.ConversationState.ConversationSettings.prototype.clearParticipantsList = function() {
   return this.setParticipantsList([]);
 };
 
@@ -7223,16 +7229,16 @@ proto.ConversationState.ConversationSettings.prototype.clearParticipantsList = f
  * repeated string spectators = 3;
  * @return {!Array<string>}
  */
-proto.ConversationState.ConversationSettings.prototype.getSpectatorsList = function() {
+proto.ai.inworld.engine.ConversationState.ConversationSettings.prototype.getSpectatorsList = function() {
   return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 3));
 };
 
 
 /**
  * @param {!Array<string>} value
- * @return {!proto.ConversationState.ConversationSettings} returns this
+ * @return {!proto.ai.inworld.engine.ConversationState.ConversationSettings} returns this
  */
-proto.ConversationState.ConversationSettings.prototype.setSpectatorsList = function(value) {
+proto.ai.inworld.engine.ConversationState.ConversationSettings.prototype.setSpectatorsList = function(value) {
   return jspb.Message.setField(this, 3, value || []);
 };
 
@@ -7240,94 +7246,94 @@ proto.ConversationState.ConversationSettings.prototype.setSpectatorsList = funct
 /**
  * @param {string} value
  * @param {number=} opt_index
- * @return {!proto.ConversationState.ConversationSettings} returns this
+ * @return {!proto.ai.inworld.engine.ConversationState.ConversationSettings} returns this
  */
-proto.ConversationState.ConversationSettings.prototype.addSpectators = function(value, opt_index) {
+proto.ai.inworld.engine.ConversationState.ConversationSettings.prototype.addSpectators = function(value, opt_index) {
   return jspb.Message.addToRepeatedField(this, 3, value, opt_index);
 };
 
 
 /**
  * Clears the list making it empty but non-null.
- * @return {!proto.ConversationState.ConversationSettings} returns this
+ * @return {!proto.ai.inworld.engine.ConversationState.ConversationSettings} returns this
  */
-proto.ConversationState.ConversationSettings.prototype.clearSpectatorsList = function() {
+proto.ai.inworld.engine.ConversationState.ConversationSettings.prototype.clearSpectatorsList = function() {
   return this.setSpectatorsList([]);
 };
 
 
 /**
  * repeated ai.inworld.packets.Actor participating_actors = 4;
- * @return {!Array<!proto.Actor>}
+ * @return {!Array<!proto.ai.inworld.packets.Actor>}
  */
-proto.ConversationState.ConversationSettings.prototype.getParticipatingActorsList = function() {
-  return /** @type{!Array<!proto.Actor>} */ (
+proto.ai.inworld.engine.ConversationState.ConversationSettings.prototype.getParticipatingActorsList = function() {
+  return /** @type{!Array<!proto.ai.inworld.packets.Actor>} */ (
     jspb.Message.getRepeatedWrapperField(this, ai_inworld_packets_packets_pb.Actor, 4));
 };
 
 
 /**
- * @param {!Array<!proto.Actor>} value
- * @return {!proto.ConversationState.ConversationSettings} returns this
+ * @param {!Array<!proto.ai.inworld.packets.Actor>} value
+ * @return {!proto.ai.inworld.engine.ConversationState.ConversationSettings} returns this
 */
-proto.ConversationState.ConversationSettings.prototype.setParticipatingActorsList = function(value) {
+proto.ai.inworld.engine.ConversationState.ConversationSettings.prototype.setParticipatingActorsList = function(value) {
   return jspb.Message.setRepeatedWrapperField(this, 4, value);
 };
 
 
 /**
- * @param {!proto.Actor=} opt_value
+ * @param {!proto.ai.inworld.packets.Actor=} opt_value
  * @param {number=} opt_index
- * @return {!proto.Actor}
+ * @return {!proto.ai.inworld.packets.Actor}
  */
-proto.ConversationState.ConversationSettings.prototype.addParticipatingActors = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 4, opt_value, proto.Actor, opt_index);
+proto.ai.inworld.engine.ConversationState.ConversationSettings.prototype.addParticipatingActors = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 4, opt_value, proto.ai.inworld.packets.Actor, opt_index);
 };
 
 
 /**
  * Clears the list making it empty but non-null.
- * @return {!proto.ConversationState.ConversationSettings} returns this
+ * @return {!proto.ai.inworld.engine.ConversationState.ConversationSettings} returns this
  */
-proto.ConversationState.ConversationSettings.prototype.clearParticipatingActorsList = function() {
+proto.ai.inworld.engine.ConversationState.ConversationSettings.prototype.clearParticipatingActorsList = function() {
   return this.setParticipatingActorsList([]);
 };
 
 
 /**
  * repeated ConversationSettings conversationSettings = 1;
- * @return {!Array<!proto.ConversationState.ConversationSettings>}
+ * @return {!Array<!proto.ai.inworld.engine.ConversationState.ConversationSettings>}
  */
-proto.ConversationState.prototype.getConversationsettingsList = function() {
-  return /** @type{!Array<!proto.ConversationState.ConversationSettings>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.ConversationState.ConversationSettings, 1));
+proto.ai.inworld.engine.ConversationState.prototype.getConversationsettingsList = function() {
+  return /** @type{!Array<!proto.ai.inworld.engine.ConversationState.ConversationSettings>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.ai.inworld.engine.ConversationState.ConversationSettings, 1));
 };
 
 
 /**
- * @param {!Array<!proto.ConversationState.ConversationSettings>} value
- * @return {!proto.ConversationState} returns this
+ * @param {!Array<!proto.ai.inworld.engine.ConversationState.ConversationSettings>} value
+ * @return {!proto.ai.inworld.engine.ConversationState} returns this
 */
-proto.ConversationState.prototype.setConversationsettingsList = function(value) {
+proto.ai.inworld.engine.ConversationState.prototype.setConversationsettingsList = function(value) {
   return jspb.Message.setRepeatedWrapperField(this, 1, value);
 };
 
 
 /**
- * @param {!proto.ConversationState.ConversationSettings=} opt_value
+ * @param {!proto.ai.inworld.engine.ConversationState.ConversationSettings=} opt_value
  * @param {number=} opt_index
- * @return {!proto.ConversationState.ConversationSettings}
+ * @return {!proto.ai.inworld.engine.ConversationState.ConversationSettings}
  */
-proto.ConversationState.prototype.addConversationsettings = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.ConversationState.ConversationSettings, opt_index);
+proto.ai.inworld.engine.ConversationState.prototype.addConversationsettings = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.ai.inworld.engine.ConversationState.ConversationSettings, opt_index);
 };
 
 
 /**
  * Clears the list making it empty but non-null.
- * @return {!proto.ConversationState} returns this
+ * @return {!proto.ai.inworld.engine.ConversationState} returns this
  */
-proto.ConversationState.prototype.clearConversationsettingsList = function() {
+proto.ai.inworld.engine.ConversationState.prototype.clearConversationsettingsList = function() {
   return this.setConversationsettingsList([]);
 };
 
@@ -7335,7 +7341,7 @@ proto.ConversationState.prototype.clearConversationsettingsList = function() {
 /**
  * @enum {number}
  */
-proto.VoicePreset = {
+proto.ai.inworld.engine.VoicePreset = {
   VOICE_PRESET_UNSPECIFIED: 0,
   VOICE_PRESET_FEMALE_1: 1,
   VOICE_PRESET_FEMALE_2: 2,
@@ -7373,4 +7379,4 @@ proto.VoicePreset = {
   INWORLD_VOICE_PRESET_ROBOT_FLUTTERSHY: 34
 };
 
-goog.object.extend(exports, proto);
+goog.object.extend(exports, proto.ai.inworld.engine);
