@@ -55,6 +55,8 @@ export class CapabilitiesRequest extends jspb.Message {
     setAudio2Face(value: boolean): CapabilitiesRequest;
     getInspect(): boolean;
     setInspect(value: boolean): CapabilitiesRequest;
+    getMultiModalActionPlanning(): boolean;
+    setMultiModalActionPlanning(value: boolean): CapabilitiesRequest;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): CapabilitiesRequest.AsObject;
@@ -89,6 +91,7 @@ export namespace CapabilitiesRequest {
         multiAgent: boolean,
         audio2Face: boolean,
         inspect: boolean,
+        multiModalActionPlanning: boolean,
     }
 }
 
