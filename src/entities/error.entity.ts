@@ -6,7 +6,8 @@ import {
   ReconnectionType as ProtoErrorReconnectionType,
   ResourceType as ProtoErrorResourceType,
 } from '@proto/ai/inworld/common/status_pb';
-import { deserializeGrpcStatusDetails } from '@stackpath/node-grpc-error-details';
+
+import { deserializeGrpcStatusDetails } from '../common/helpers';
 
 export enum ErrorType {
   SESSION_TOKEN_EXPIRED = 'SESSION_TOKEN_EXPIRED',
@@ -47,10 +48,6 @@ interface InworldStatus {
   resourceNotFound?: ResourceNotFoundDetails;
 }
 
-const deserializeMap = {
-  'ai.inworld.common.InworldStatus': ProtoInworldStatus.deserializeBinary,
-};
-
 export class InworldError {
   message: string;
   code: Status | undefined;
@@ -63,10 +60,7 @@ export class InworldError {
   }
 
   static fromProto(proto: ServiceError): InworldError {
-    const grpcErrorDetails = deserializeGrpcStatusDetails(
-      proto,
-      deserializeMap,
-    );
+    const grpcErrorDetails = deserializeGrpcStatusDetails(proto);
 
     let details: InworldStatus[] | undefined;
 
