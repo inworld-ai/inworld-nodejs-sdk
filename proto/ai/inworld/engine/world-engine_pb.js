@@ -13,7 +13,13 @@
 
 var jspb = require('google-protobuf');
 var goog = jspb;
-var global = Function('return this')();
+var global = (function() {
+  if (this) { return this; }
+  if (typeof window !== 'undefined') { return window; }
+  if (typeof global !== 'undefined') { return global; }
+  if (typeof self !== 'undefined') { return self; }
+  return Function('return this')();
+}.call(null));
 
 
 
@@ -701,7 +707,8 @@ proto.CapabilitiesRequest.toObject = function(includeInstance, msg) {
     ttsMp3: jspb.Message.getBooleanFieldWithDefault(msg, 19, false),
     multiAgent: jspb.Message.getBooleanFieldWithDefault(msg, 20, false),
     audio2Face: jspb.Message.getBooleanFieldWithDefault(msg, 21, false),
-    inspect: jspb.Message.getBooleanFieldWithDefault(msg, 22, false)
+    inspect: jspb.Message.getBooleanFieldWithDefault(msg, 22, false),
+    multiModalActionPlanning: jspb.Message.getBooleanFieldWithDefault(msg, 23, false)
   };
 
   if (includeInstance) {
@@ -821,6 +828,10 @@ proto.CapabilitiesRequest.deserializeBinaryFromReader = function(msg, reader) {
     case 22:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setInspect(value);
+      break;
+    case 23:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setMultiModalActionPlanning(value);
       break;
     default:
       reader.skipField();
@@ -995,6 +1006,13 @@ proto.CapabilitiesRequest.serializeBinaryToWriter = function(message, writer) {
   if (f) {
     writer.writeBool(
       22,
+      f
+    );
+  }
+  f = message.getMultiModalActionPlanning();
+  if (f) {
+    writer.writeBool(
+      23,
       f
     );
   }
@@ -1376,6 +1394,24 @@ proto.CapabilitiesRequest.prototype.getInspect = function() {
  */
 proto.CapabilitiesRequest.prototype.setInspect = function(value) {
   return jspb.Message.setProto3BooleanField(this, 22, value);
+};
+
+
+/**
+ * optional bool multi_modal_action_planning = 23;
+ * @return {boolean}
+ */
+proto.CapabilitiesRequest.prototype.getMultiModalActionPlanning = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 23, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.CapabilitiesRequest} returns this
+ */
+proto.CapabilitiesRequest.prototype.setMultiModalActionPlanning = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 23, value);
 };
 
 
