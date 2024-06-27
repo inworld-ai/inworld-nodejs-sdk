@@ -1,16 +1,16 @@
-/* eslint-disable */
-import { deserializeGrpcStatusDetails } from '../mocks/grpc-details.mock';
-/* eslint-enable */
-
 import { Metadata, ServiceError } from '@grpc/grpc-js';
 import { Status } from '@grpc/grpc-js/build/src/constants';
 import {
   ErrorType as ProtoErrorType,
+  InworldStatus as ProtoInworldStatus,
   ReconnectionType as ProtoErrorReconnectionType,
+  ResourceNotFoundDetails,
   ResourceType as ProtoErrorResourceType,
 } from '@proto/ai/inworld/common/status_pb';
+import { Status as GoogleStatus } from '@proto/google/status_pb';
 import { v4 } from 'uuid';
 
+import * as helpers from '../../src/common/helpers';
 import {
   ErrorReconnectionType,
   ErrorResourceType,
@@ -122,8 +122,73 @@ const resourceTypeTestTable = [
   },
 ];
 
+let deserializeGrpcStatusDetails: jest.SpyInstance;
+
 beforeEach(() => {
   jest.clearAllMocks();
+  deserializeGrpcStatusDetails = jest
+    .spyOn(helpers, 'deserializeGrpcStatusDetails')
+    .mockImplementation((proto: ServiceError) => {
+      const status = new ProtoInworldStatus();
+      let details: any;
+
+      try {
+        details = JSON.parse(proto.details);
+      } catch (e) {
+        return null;
+      }
+
+      const {
+        errorType,
+        reconnectType,
+        maxRetries,
+        resourceNotFound,
+        reconnectTime,
+      } = details;
+
+      if (
+        errorType === undefined &&
+        reconnectType === undefined &&
+        maxRetries === undefined &&
+        resourceNotFound === undefined
+      ) {
+        return { details: [], status: {} as GoogleStatus };
+      }
+
+      if (errorType) {
+        status.setErrorType(errorType);
+      }
+
+      if (reconnectType) {
+        status.setReconnectType(reconnectType);
+      }
+
+      if (maxRetries) {
+        status.setMaxRetries(maxRetries);
+      }
+
+      if (reconnectTime) {
+        status.setReconnectTime(
+          helpers.protoTimestamp(new Date(reconnectTime)),
+        );
+      }
+
+      if (resourceNotFound) {
+        let resourceType =
+          resourceNotFound.resourceType ===
+          ProtoErrorResourceType.RESOURCE_TYPE_CONVERSATION
+            ? ProtoErrorResourceType.RESOURCE_TYPE_CONVERSATION
+            : ProtoErrorResourceType.RESOURCE_TYPE_UNDEFINED;
+
+        status.setResourceNotFound(
+          new ResourceNotFoundDetails()
+            .setResourceType(resourceType as unknown as ProtoErrorResourceType)
+            .setResourceId(resourceNotFound.resourceId),
+        );
+      }
+
+      return { details: [status], status: {} as GoogleStatus };
+    });
 });
 
 test.each(errorTypeTestTable)(
