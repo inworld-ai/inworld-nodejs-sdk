@@ -8,9 +8,11 @@ import * as jspb from "google-protobuf";
 import * as google_protobuf_duration_pb from "google-protobuf/google/protobuf/duration_pb";
 import * as google_protobuf_struct_pb from "google-protobuf/google/protobuf/struct_pb";
 import * as google_protobuf_timestamp_pb from "google-protobuf/google/protobuf/timestamp_pb";
+import * as google_rpc_status_pb from "../../../google/rpc/status_pb";
 import * as ai_inworld_options_options_pb from "../../../ai/inworld/options/options_pb";
 import * as ai_inworld_engine_configuration_configuration_pb from "../../../ai/inworld/engine/configuration/configuration_pb";
 import * as ai_inworld_language_codes_language_codes_pb from "../../../ai/inworld/language_codes/language_codes_pb";
+import * as ai_inworld_packets_entities_packets_pb from "../../../ai/inworld/packets/entities_packets_pb";
 
 export class Actor extends jspb.Message { 
     getType(): Actor.Type;
@@ -191,10 +193,20 @@ export class InworldPacket extends jspb.Message {
     getSessionControlResponse(): SessionControlResponseEvent | undefined;
     setSessionControlResponse(value?: SessionControlResponseEvent): InworldPacket;
 
-    hasA2fEvent(): boolean;
-    clearA2fEvent(): void;
-    getA2fEvent(): Audio2FaceAnimationEvent | undefined;
-    setA2fEvent(value?: Audio2FaceAnimationEvent): InworldPacket;
+    hasLatencyReport(): boolean;
+    clearLatencyReport(): void;
+    getLatencyReport(): LatencyReportEvent | undefined;
+    setLatencyReport(value?: LatencyReportEvent): InworldPacket;
+
+    hasOperationStatus(): boolean;
+    clearOperationStatus(): void;
+    getOperationStatus(): OperationStatusEvent | undefined;
+    setOperationStatus(value?: OperationStatusEvent): InworldPacket;
+
+    hasEntitiesItemsOperation(): boolean;
+    clearEntitiesItemsOperation(): void;
+    getEntitiesItemsOperation(): ai_inworld_packets_entities_packets_pb.ItemsOperationEvent | undefined;
+    setEntitiesItemsOperation(value?: ai_inworld_packets_entities_packets_pb.ItemsOperationEvent): InworldPacket;
 
     getPacketCase(): InworldPacket.PacketCase;
 
@@ -226,7 +238,9 @@ export namespace InworldPacket {
         debugInfo?: DebugInfoEvent.AsObject,
         sessionControl?: SessionControlEvent.AsObject,
         sessionControlResponse?: SessionControlResponseEvent.AsObject,
-        a2fEvent?: Audio2FaceAnimationEvent.AsObject,
+        latencyReport?: LatencyReportEvent.AsObject,
+        operationStatus?: OperationStatusEvent.AsObject,
+        entitiesItemsOperation?: ai_inworld_packets_entities_packets_pb.ItemsOperationEvent.AsObject,
     }
 
     export enum PacketCase {
@@ -244,7 +258,9 @@ export namespace InworldPacket {
         DEBUG_INFO = 18,
         SESSION_CONTROL = 19,
         SESSION_CONTROL_RESPONSE = 20,
-        A2F_EVENT = 21,
+        LATENCY_REPORT = 22,
+        OPERATION_STATUS = 23,
+        ENTITIES_ITEMS_OPERATION = 24,
     }
 
 }
@@ -464,6 +480,8 @@ export class CustomEvent extends jspb.Message {
     getParametersList(): Array<CustomEvent.Parameter>;
     setParametersList(value: Array<CustomEvent.Parameter>): CustomEvent;
     addParameters(value?: CustomEvent.Parameter, index?: number): CustomEvent.Parameter;
+    getType(): CustomEvent.Type;
+    setType(value: CustomEvent.Type): CustomEvent;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): CustomEvent.AsObject;
@@ -480,6 +498,7 @@ export namespace CustomEvent {
         name: string,
         playback: Playback,
         parametersList: Array<CustomEvent.Parameter.AsObject>,
+        type: CustomEvent.Type,
     }
 
 
@@ -504,6 +523,13 @@ export namespace CustomEvent {
             name: string,
             value: string,
         }
+    }
+
+
+    export enum Type {
+    UNSPECIFIED = 0,
+    TRIGGER = 1,
+    TASK = 2,
     }
 
 }
@@ -810,6 +836,118 @@ export namespace RelationInfo {
 
 }
 
+export class LatencyReportEvent extends jspb.Message { 
+
+    hasPingPong(): boolean;
+    clearPingPong(): void;
+    getPingPong(): PingPongReport | undefined;
+    setPingPong(value?: PingPongReport): LatencyReportEvent;
+
+    hasPerceivedLatency(): boolean;
+    clearPerceivedLatency(): void;
+    getPerceivedLatency(): PerceivedLatencyReport | undefined;
+    setPerceivedLatency(value?: PerceivedLatencyReport): LatencyReportEvent;
+
+    getReportCase(): LatencyReportEvent.ReportCase;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): LatencyReportEvent.AsObject;
+    static toObject(includeInstance: boolean, msg: LatencyReportEvent): LatencyReportEvent.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: LatencyReportEvent, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): LatencyReportEvent;
+    static deserializeBinaryFromReader(message: LatencyReportEvent, reader: jspb.BinaryReader): LatencyReportEvent;
+}
+
+export namespace LatencyReportEvent {
+    export type AsObject = {
+        pingPong?: PingPongReport.AsObject,
+        perceivedLatency?: PerceivedLatencyReport.AsObject,
+    }
+
+    export enum ReportCase {
+        REPORT_NOT_SET = 0,
+        PING_PONG = 1,
+        PERCEIVED_LATENCY = 2,
+    }
+
+}
+
+export class PingPongReport extends jspb.Message { 
+    getType(): PingPongReport.Type;
+    setType(value: PingPongReport.Type): PingPongReport;
+
+    hasPingPacketId(): boolean;
+    clearPingPacketId(): void;
+    getPingPacketId(): PacketId | undefined;
+    setPingPacketId(value?: PacketId): PingPongReport;
+
+    hasPingTimestamp(): boolean;
+    clearPingTimestamp(): void;
+    getPingTimestamp(): google_protobuf_timestamp_pb.Timestamp | undefined;
+    setPingTimestamp(value?: google_protobuf_timestamp_pb.Timestamp): PingPongReport;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): PingPongReport.AsObject;
+    static toObject(includeInstance: boolean, msg: PingPongReport): PingPongReport.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: PingPongReport, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): PingPongReport;
+    static deserializeBinaryFromReader(message: PingPongReport, reader: jspb.BinaryReader): PingPongReport;
+}
+
+export namespace PingPongReport {
+    export type AsObject = {
+        type: PingPongReport.Type,
+        pingPacketId?: PacketId.AsObject,
+        pingTimestamp?: google_protobuf_timestamp_pb.Timestamp.AsObject,
+    }
+
+    export enum Type {
+    UNSPECIFIED = 0,
+    PING = 1,
+    PONG = 2,
+    }
+
+}
+
+export class PerceivedLatencyReport extends jspb.Message { 
+    getPrecision(): PerceivedLatencyReport.Precision;
+    setPrecision(value: PerceivedLatencyReport.Precision): PerceivedLatencyReport;
+
+    hasLatency(): boolean;
+    clearLatency(): void;
+    getLatency(): google_protobuf_duration_pb.Duration | undefined;
+    setLatency(value?: google_protobuf_duration_pb.Duration): PerceivedLatencyReport;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): PerceivedLatencyReport.AsObject;
+    static toObject(includeInstance: boolean, msg: PerceivedLatencyReport): PerceivedLatencyReport.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: PerceivedLatencyReport, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): PerceivedLatencyReport;
+    static deserializeBinaryFromReader(message: PerceivedLatencyReport, reader: jspb.BinaryReader): PerceivedLatencyReport;
+}
+
+export namespace PerceivedLatencyReport {
+    export type AsObject = {
+        precision: PerceivedLatencyReport.Precision,
+        latency?: google_protobuf_duration_pb.Duration.AsObject,
+    }
+
+    export enum Precision {
+    UNSPECIFIED = 0,
+    FINE = 1,
+    ESTIMATED = 2,
+    PUSH_TO_TALK = 3,
+    NON_SPEECH = 4,
+    }
+
+}
+
 export class MutationEvent extends jspb.Message { 
 
     hasCancelResponses(): boolean;
@@ -979,6 +1117,8 @@ export class ApplyResponse extends jspb.Message {
     clearPacketId(): void;
     getPacketId(): PacketId | undefined;
     setPacketId(value?: PacketId): ApplyResponse;
+    getApplyResponseType(): ApplyResponse.ApplyResponseType;
+    setApplyResponseType(value: ApplyResponse.ApplyResponseType): ApplyResponse;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): ApplyResponse.AsObject;
@@ -993,7 +1133,14 @@ export class ApplyResponse extends jspb.Message {
 export namespace ApplyResponse {
     export type AsObject = {
         packetId?: PacketId.AsObject,
+        applyResponseType: ApplyResponse.ApplyResponseType,
     }
+
+    export enum ApplyResponseType {
+    APPLY_RESPONSE_TYPE_DEFAULT = 0,
+    APPLY_RESPONSE_TYPE_COMMIT = 1,
+    }
+
 }
 
 export class LoadScene extends jspb.Message { 
@@ -1468,31 +1615,6 @@ export namespace SessionConfigurationPayload {
     }
 }
 
-export class Audio2FaceAnimationEvent extends jspb.Message { 
-    getAnimdata(): string;
-    setAnimdata(value: string): Audio2FaceAnimationEvent;
-    getAudio(): Uint8Array | string;
-    getAudio_asU8(): Uint8Array;
-    getAudio_asB64(): string;
-    setAudio(value: Uint8Array | string): Audio2FaceAnimationEvent;
-
-    serializeBinary(): Uint8Array;
-    toObject(includeInstance?: boolean): Audio2FaceAnimationEvent.AsObject;
-    static toObject(includeInstance: boolean, msg: Audio2FaceAnimationEvent): Audio2FaceAnimationEvent.AsObject;
-    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-    static serializeBinaryToWriter(message: Audio2FaceAnimationEvent, writer: jspb.BinaryWriter): void;
-    static deserializeBinary(bytes: Uint8Array): Audio2FaceAnimationEvent;
-    static deserializeBinaryFromReader(message: Audio2FaceAnimationEvent, reader: jspb.BinaryReader): Audio2FaceAnimationEvent;
-}
-
-export namespace Audio2FaceAnimationEvent {
-    export type AsObject = {
-        animdata: string,
-        audio: Uint8Array | string,
-    }
-}
-
 export class Continuation extends jspb.Message { 
 
     hasContinuationInfo(): boolean;
@@ -1787,6 +1909,29 @@ export namespace ConversationEventPayload {
     EVICTED = 3,
     }
 
+}
+
+export class OperationStatusEvent extends jspb.Message { 
+
+    hasStatus(): boolean;
+    clearStatus(): void;
+    getStatus(): google_rpc_status_pb.Status | undefined;
+    setStatus(value?: google_rpc_status_pb.Status): OperationStatusEvent;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): OperationStatusEvent.AsObject;
+    static toObject(includeInstance: boolean, msg: OperationStatusEvent): OperationStatusEvent.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: OperationStatusEvent, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): OperationStatusEvent;
+    static deserializeBinaryFromReader(message: OperationStatusEvent, reader: jspb.BinaryReader): OperationStatusEvent;
+}
+
+export namespace OperationStatusEvent {
+    export type AsObject = {
+        status?: google_rpc_status_pb.Status.AsObject,
+    }
 }
 
 export enum Playback {
