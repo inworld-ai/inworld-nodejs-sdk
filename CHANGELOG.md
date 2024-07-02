@@ -1,3 +1,9 @@
+## [1.14.2] - 2024-06-27
+
+### Fixed
+
+- Extract error details without external packages
+
 ## [1.14.1] - 2024-06-17
 
 ### Fixed
