@@ -13,7 +13,13 @@
 
 var jspb = require('google-protobuf');
 var goog = jspb;
-var global = Function('return this')();
+var global = (function() {
+  if (this) { return this; }
+  if (typeof window !== 'undefined') { return window; }
+  if (typeof global !== 'undefined') { return global; }
+  if (typeof self !== 'undefined') { return self; }
+  return Function('return this')();
+}.call(null));
 
 var ai_inworld_language_codes_language_codes_pb = require('../../../ai/inworld/language_codes/language_codes_pb.js');
 goog.object.extend(proto, ai_inworld_language_codes_language_codes_pb);

@@ -17,4 +17,5 @@ export enum LanguageCode {
     ZH_CN = 2,
     KO_KR = 3,
     JA_JP = 4,
+    RU_RU = 5,
 }

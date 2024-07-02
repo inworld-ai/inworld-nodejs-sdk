@@ -55,6 +55,8 @@ export class CapabilitiesRequest extends jspb.Message {
     setAudio2Face(value: boolean): CapabilitiesRequest;
     getInspect(): boolean;
     setInspect(value: boolean): CapabilitiesRequest;
+    getMultiModalActionPlanning(): boolean;
+    setMultiModalActionPlanning(value: boolean): CapabilitiesRequest;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): CapabilitiesRequest.AsObject;
@@ -89,6 +91,7 @@ export namespace CapabilitiesRequest {
         multiAgent: boolean,
         audio2Face: boolean,
         inspect: boolean,
+        multiModalActionPlanning: boolean,
     }
 }
 
@@ -440,6 +443,11 @@ export class PreviousState extends jspb.Message {
     getConversationState(): ConversationState | undefined;
     setConversationState(value?: ConversationState): PreviousState;
 
+    hasEntitiesState(): boolean;
+    clearEntitiesState(): void;
+    getEntitiesState(): PreviousState.EntitiesState | undefined;
+    setEntitiesState(value?: PreviousState.EntitiesState): PreviousState;
+
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): PreviousState.AsObject;
     static toObject(includeInstance: boolean, msg: PreviousState): PreviousState.AsObject;
@@ -455,6 +463,7 @@ export namespace PreviousState {
         stateHoldersList: Array<PreviousState.StateHolder.AsObject>,
         gameSessionId: string,
         conversationState?: ConversationState.AsObject,
+        entitiesState?: PreviousState.EntitiesState.AsObject,
     }
 
 
@@ -505,6 +514,66 @@ export namespace PreviousState {
     STATE_FORMAT_UNKNOWN = 0,
     STATE_FORMAT_SESSION_BRAIN_STATE = 1,
     STATE_FORMAT_EXTERNAL_BRAIN_STATE = 2,
+        }
+
+    }
+
+    export class EntitiesState extends jspb.Message { 
+        clearEntityItemsList(): void;
+        getEntityItemsList(): Array<PreviousState.EntitiesState.EntityItem>;
+        setEntityItemsList(value: Array<PreviousState.EntitiesState.EntityItem>): EntitiesState;
+        addEntityItems(value?: PreviousState.EntitiesState.EntityItem, index?: number): PreviousState.EntitiesState.EntityItem;
+
+        serializeBinary(): Uint8Array;
+        toObject(includeInstance?: boolean): EntitiesState.AsObject;
+        static toObject(includeInstance: boolean, msg: EntitiesState): EntitiesState.AsObject;
+        static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+        static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+        static serializeBinaryToWriter(message: EntitiesState, writer: jspb.BinaryWriter): void;
+        static deserializeBinary(bytes: Uint8Array): EntitiesState;
+        static deserializeBinaryFromReader(message: EntitiesState, reader: jspb.BinaryReader): EntitiesState;
+    }
+
+    export namespace EntitiesState {
+        export type AsObject = {
+            entityItemsList: Array<PreviousState.EntitiesState.EntityItem.AsObject>,
+        }
+
+
+        export class EntityItem extends jspb.Message { 
+            getId(): string;
+            setId(value: string): EntityItem;
+            getDisplayName(): string;
+            setDisplayName(value: string): EntityItem;
+            getDescription(): string;
+            setDescription(value: string): EntityItem;
+
+            getPropertiesMap(): jspb.Map<string, string>;
+            clearPropertiesMap(): void;
+            clearEntitiesList(): void;
+            getEntitiesList(): Array<string>;
+            setEntitiesList(value: Array<string>): EntityItem;
+            addEntities(value: string, index?: number): string;
+
+            serializeBinary(): Uint8Array;
+            toObject(includeInstance?: boolean): EntityItem.AsObject;
+            static toObject(includeInstance: boolean, msg: EntityItem): EntityItem.AsObject;
+            static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+            static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+            static serializeBinaryToWriter(message: EntityItem, writer: jspb.BinaryWriter): void;
+            static deserializeBinary(bytes: Uint8Array): EntityItem;
+            static deserializeBinaryFromReader(message: EntityItem, reader: jspb.BinaryReader): EntityItem;
+        }
+
+        export namespace EntityItem {
+            export type AsObject = {
+                id: string,
+                displayName: string,
+                description: string,
+
+                propertiesMap: Array<[string, string]>,
+                entitiesList: Array<string>,
+            }
         }
 
     }
