@@ -201,7 +201,7 @@ async function testControlPacket(packet: InworldPacket) {
     // control
     expect(packet.isControl).toBeTruthy();
     expect(packet.control.action).toBeDefined();
-    if (!packet.isInteractionEnd()) {
+    if (!packet.isInteractionEnd() || !!packet.control.conversation) {
       expect(packet.control.conversation?.participants).toBeDefined();
       expect(packet.control.conversation?.type).toBeDefined();
     } else {
@@ -209,7 +209,7 @@ async function testControlPacket(packet: InworldPacket) {
     }
     // packetId
     expect(packet.packetId.conversationId).toBeDefined();
-    if (!packet.isInteractionEnd()) {
+    if (!packet.isInteractionEnd() || !!packet.control.conversation) {
       expect(packet.routing.source.isCharacter).toBeFalsy();
       expect(packet.routing.source.isPlayer).toBeFalsy();
     } else {
