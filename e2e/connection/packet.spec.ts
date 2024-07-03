@@ -18,6 +18,34 @@ test('[Packet] Packet properties are correct for new connection with no text sen
     'This test confirms that all packet properties for a new connection with no text sent are correct',
   );
 
-  const connection = await openConnectionManually(key, name, npc);
+  const config = {
+    capabilities: { emotions: true },
+    connection: {
+      autoReconnect: false,
+    },
+  };
+
+  const connection = await openConnectionManually(key, name, npc, config);
+  connection.close();
+}, 10000);
+
+test('[Packet] Packet properties are correct for new connection with text sent', async () => {
+  await allure.allureId('1354');
+  await allure.suite('Node.js SDK');
+  await allure.feature('Connection');
+  await allure.story('Packet');
+  await allure.description(
+    'This test confirms that all packet properties for a new connection with text sent are correct',
+  );
+
+  const config = {
+    capabilities: { emotions: true },
+    connection: {
+      autoReconnect: false,
+    },
+  };
+
+  const connection = await openConnectionManually(key, name, npc, config);
+  await connection.sendText('Hi');
   connection.close();
 }, 10000);

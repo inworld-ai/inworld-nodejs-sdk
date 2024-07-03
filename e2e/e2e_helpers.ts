@@ -1,4 +1,5 @@
 import {
+  ClientConfiguration,
   InworldClient,
   InworldConnectionService,
   InworldError,
@@ -153,54 +154,213 @@ function testSceneMutationPacket(packet: InworldPacket) {
   }
 }
 
-function testInitialPackets(packets: InworldPacket[]) {
-  expect(packets.length).toBeGreaterThan(0);
+async function testEmotionPacket(
+  packet: InworldPacket,
+  connection: InworldConnectionService,
+  idCheck: (id: string) => boolean,
+) {
+  if (packet.isEmotion()) {
+    // packetId
+    expect(packet.packetId.interactionId).toBeDefined();
+    expect(idCheck(packet.packetId.interactionId!)).toBeTruthy();
+    expect(packet.packetId.conversationId).toBeDefined();
+    // routing
+    let characters = await connection.getCharacters();
+    let characterName = characters[0].id;
+    expect(packet.routing.source.name).toBe(characterName);
+    expect(packet.routing.source.isCharacter).toBeTruthy();
+    expect(packet.routing.source.isPlayer).toBeFalsy();
+    // emotion
+    expect(packet.emotions.behavior).toBeDefined();
+    expect(packet.emotions.strength).toBeDefined();
+  }
+}
 
+async function testAudioPacket(
+  packet: InworldPacket,
+  connection: InworldConnectionService,
+  idCheck: (id: string) => boolean,
+) {
+  if (packet.isAudio()) {
+    // packetId
+    expect(packet.packetId.interactionId).toBeDefined();
+    expect(idCheck(packet.packetId.interactionId!)).toBeTruthy();
+    expect(packet.packetId.conversationId).toBeDefined();
+    // routing
+    let characters = await connection.getCharacters();
+    let characterName = characters[0].id;
+    expect(packet.routing.source.name).toBe(characterName);
+    expect(packet.routing.source.isCharacter).toBeTruthy();
+    expect(packet.routing.source.isPlayer).toBeFalsy();
+    // audio
+    expect(packet.audio.chunk).toBeDefined();
+  }
+}
+
+async function testControlPacket(packet: InworldPacket) {
+  if (packet.isControl()) {
+    // control
+    expect(packet.isControl).toBeTruthy();
+    expect(packet.control.action).toBeDefined();
+    if (!packet.isInteractionEnd() || !!packet.control.conversation) {
+      expect(packet.control.conversation?.participants).toBeDefined();
+      expect(packet.control.conversation?.type).toBeDefined();
+    } else {
+      expect(packet.control.action).toBe('INTERACTION_END');
+    }
+    // packetId
+    expect(packet.packetId.conversationId).toBeDefined();
+    if (!packet.isInteractionEnd() || !!packet.control.conversation) {
+      expect(packet.routing.source.isCharacter).toBeFalsy();
+      expect(packet.routing.source.isPlayer).toBeFalsy();
+    } else {
+      expect(packet.routing.source.isCharacter).toBeTruthy();
+    }
+  }
+}
+
+async function testTextPacket(
+  packet: InworldPacket,
+  connection: InworldConnectionService,
+  idCheck: (id: string) => boolean,
+) {
+  if (packet.isText()) {
+    // packetId
+    expect(packet.packetId.interactionId).toBeDefined();
+    expect(idCheck(packet.packetId.interactionId!)).toBeTruthy();
+    expect(packet.packetId.conversationId).toBeDefined();
+    // routing
+    let characters = await connection.getCharacters();
+    let characterName = characters[0].id;
+    expect(packet.routing.source.name).toBe(characterName);
+    expect(packet.routing.source.isCharacter).toBeTruthy();
+    expect(packet.routing.source.isPlayer).toBeFalsy();
+    // text
+    expect(packet.text.text).toBeDefined();
+    expect(packet.text.final).toBeDefined();
+  }
+}
+
+export function interactionIDCheck() {
+  let initialValue: string | undefined = undefined;
+  let isFirstCall = true;
+
+  return function (value: string): boolean {
+    if (isFirstCall) {
+      initialValue = value;
+      isFirstCall = false;
+      return true;
+    } else {
+      return value === initialValue;
+    }
+  };
+}
+
+function testPackets(
+  packets: InworldPacket[],
+  connection: InworldConnectionService,
+  config: ClientConfiguration,
+) {
+  let hasEmotionPacket = false;
+  let hasInteraction = false;
+  expect(packets.length).toBeGreaterThan(0);
+  const idCheck = interactionIDCheck();
   for (let packet of packets) {
     testBasePacketStructure(packet);
     testSceneMutationPacket(packet);
+    testTextPacket(packet, connection, idCheck);
+    testAudioPacket(packet, connection, idCheck);
+    testEmotionPacket(packet, connection, idCheck);
+    testControlPacket(packet);
+
+    if (packet.isEmotion()) {
+      hasEmotionPacket = true;
+    }
+    if (packet.isInteractionEnd()) {
+      hasInteraction = true;
+    }
   }
+  if (!!config.capabilities?.emotions && hasInteraction) {
+    expect(hasEmotionPacket).toBeTruthy();
+  }
+}
+
+interface InworldConnectionServiceWrapper {
+  close: () => void;
+  sendText: (text: string) => Promise<void>;
+}
+
+interface ByInteractionId {
+  [key: string]: InworldPacket[];
 }
 
 export async function openConnectionManually(
   apikey: [string, string],
   username: string,
-  scene: string,
-): Promise<InworldConnectionService> {
-  let packets: InworldPacket[] = [];
+  npc: string,
+  config: ClientConfiguration,
+): Promise<InworldConnectionServiceWrapper> {
+  const packets: InworldPacket[] = [];
+  const byInteractionId: ByInteractionId = {};
 
-  return new Promise<InworldConnectionService>(async (resolve, reject) => {
-    const client = new InworldClient()
-      .setApiKey({
-        key: apikey[0],
-        secret: apikey[1],
-      })
-      .setUser({ fullName: username })
-      .setConfiguration({
-        capabilities: { emotions: true },
-        connection: {
-          autoReconnect: false,
+  return new Promise<InworldConnectionServiceWrapper>(
+    async (resolve, reject) => {
+      const client = new InworldClient()
+        .setApiKey({
+          key: apikey[0],
+          secret: apikey[1],
+        })
+        .setUser({ fullName: username })
+        .setConfiguration(config)
+        .setScene(npc)
+        .setOnError((err: InworldError) => {
+          switch (err.code) {
+            case status.ABORTED:
+            case status.CANCELLED:
+              break;
+            default:
+              connection.close();
+              reject(err);
+              break;
+          }
+        })
+        .setOnMessage((packet: InworldPacket) => {
+          packets.push(packet);
+
+          if (packet.packetId.interactionId) {
+            byInteractionId[packet.packetId.interactionId] =
+              byInteractionId[packet.packetId.interactionId] ?? [];
+            byInteractionId[packet.packetId.interactionId].push(packet);
+          }
+        });
+
+      const connection = client.build();
+      await connection.open();
+      testPackets(packets, connection, config);
+
+      resolve({
+        close: connection.close.bind(connection),
+        sendText: async (text: string) => {
+          const sent = await connection.sendText(text);
+
+          return new Promise(async (resolve, _reject) => {
+            const interval = setInterval(() => {
+              const lastIndex = byInteractionId?.[sent.packetId.interactionId!];
+              const lastItem = lastIndex?.[lastIndex.length - 1];
+
+              if (lastItem?.isInteractionEnd()) {
+                clearInterval(interval);
+                testPackets(
+                  byInteractionId[sent.packetId.interactionId!],
+                  connection,
+                  config,
+                );
+                resolve();
+              }
+            });
+          });
         },
-      })
-      .setScene(scene)
-      .setOnError((err: InworldError) => {
-        switch (err.code) {
-          case status.ABORTED:
-          case status.CANCELLED:
-            break;
-          default:
-            connection.close();
-            reject(err);
-            break;
-        }
-      })
-      .setOnMessage((packet: InworldPacket) => {
-        packets.push(packet);
       });
-
-    const connection = client.build();
-    await connection.open();
-    testInitialPackets(packets);
-    resolve(connection);
-  });
+    },
+  );
 }
