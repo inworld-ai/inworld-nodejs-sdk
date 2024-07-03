@@ -1,9 +1,6 @@
 import * as allure from 'allure-js-commons';
 
-import {
-  openConnectionManually,
-  openConnectionManuallySendText,
-} from '../e2e_helpers';
+import { openConnectionManually } from '../e2e_helpers';
 
 let key: [string, string] = [
   process.env.INWORLD_E2E_KEY!,
@@ -21,7 +18,14 @@ test('[Packet] Packet properties are correct for new connection with no text sen
     'This test confirms that all packet properties for a new connection with no text sent are correct',
   );
 
-  const connection = await openConnectionManually(key, name, npc);
+  const config = {
+    capabilities: { emotions: true },
+    connection: {
+      autoReconnect: false,
+    },
+  };
+
+  const connection = await openConnectionManually(key, name, npc, config);
   connection.close();
 }, 10000);
 
@@ -34,6 +38,14 @@ test('[Packet] Packet properties are correct for new connection with text sent',
     'This test confirms that all packet properties for a new connection with text sent are correct',
   );
 
-  const connection = await openConnectionManuallySendText(key, name, npc, 'Hi');
+  const config = {
+    capabilities: { emotions: true },
+    connection: {
+      autoReconnect: false,
+    },
+  };
+
+  const connection = await openConnectionManually(key, name, npc, config);
+  await connection.sendText('Hi');
   connection.close();
-}, 10000);
+}, 60000);

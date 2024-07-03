@@ -1,4 +1,5 @@
 import {
+  ClientConfiguration,
   InworldClient,
   InworldConnectionService,
   InworldError,
@@ -258,7 +259,10 @@ export function interactionIDCheck() {
 function testPackets(
   packets: InworldPacket[],
   connection: InworldConnectionService,
+  config: ClientConfiguration,
 ) {
+  let hasEmotionPacket = false;
+  let hasInteraction = false;
   expect(packets.length).toBeGreaterThan(0);
   const idCheck = interactionIDCheck();
   for (let packet of packets) {
@@ -268,95 +272,95 @@ function testPackets(
     testAudioPacket(packet, connection, idCheck);
     testEmotionPacket(packet, connection, idCheck);
     testControlPacket(packet);
+
+    if (packet.isEmotion()) {
+      hasEmotionPacket = true;
+    }
+    if (packet.isInteractionEnd()) {
+      hasInteraction = true;
+    }
   }
+  if (!!config.capabilities?.emotions && hasInteraction) {
+    expect(hasEmotionPacket).toBeTruthy();
+  }
+}
+
+interface InworldConnectionServiceWrapper {
+  close: () => void;
+  sendText: (text: string) => Promise<void>;
+}
+
+interface ByInteractionId {
+  [key: string]: InworldPacket[];
 }
 
 export async function openConnectionManually(
   apikey: [string, string],
   username: string,
   npc: string,
-): Promise<InworldConnectionService> {
-  let packets: InworldPacket[] = [];
+  config: ClientConfiguration,
+): Promise<InworldConnectionServiceWrapper> {
+  const packets: InworldPacket[] = [];
+  const byInteractionId: ByInteractionId = {};
 
-  return new Promise<InworldConnectionService>(async (resolve, reject) => {
-    const client = new InworldClient()
-      .setApiKey({
-        key: apikey[0],
-        secret: apikey[1],
-      })
-      .setUser({ fullName: username })
-      .setConfiguration({
-        capabilities: { emotions: true },
-        connection: {
-          autoReconnect: false,
+  return new Promise<InworldConnectionServiceWrapper>(
+    async (resolve, reject) => {
+      const client = new InworldClient()
+        .setApiKey({
+          key: apikey[0],
+          secret: apikey[1],
+        })
+        .setUser({ fullName: username })
+        .setConfiguration(config)
+        .setScene(npc)
+        .setOnError((err: InworldError) => {
+          switch (err.code) {
+            case status.ABORTED:
+            case status.CANCELLED:
+              break;
+            default:
+              connection.close();
+              reject(err);
+              break;
+          }
+        })
+        .setOnMessage((packet: InworldPacket) => {
+          packets.push(packet);
+
+          if (packet.packetId.interactionId) {
+            byInteractionId[packet.packetId.interactionId] =
+              byInteractionId[packet.packetId.interactionId] ?? [];
+            byInteractionId[packet.packetId.interactionId].push(packet);
+          }
+        });
+
+      const connection = client.build();
+      await connection.open();
+      testPackets(packets, connection, config);
+
+      resolve({
+        close: connection.close.bind(connection),
+        sendText: async (text: string) => {
+          const sent = await connection.sendText(text);
+
+          return new Promise(async (resolve, _reject) => {
+            const interval = setInterval(() => {
+              const lastIndex = byInteractionId?.[sent.packetId.interactionId!];
+              const lastItem = lastIndex?.[lastIndex.length - 1];
+
+              if (lastItem?.isInteractionEnd()) {
+                clearInterval(interval);
+                testPackets(
+                  byInteractionId[sent.packetId.interactionId!],
+                  connection,
+                  config,
+                );
+                resolve();
+              }
+            });
+          });
         },
-      })
-      .setScene(npc)
-      .setOnError((err: InworldError) => {
-        switch (err.code) {
-          case status.ABORTED:
-          case status.CANCELLED:
-            break;
-          default:
-            connection.close();
-            reject(err);
-            break;
-        }
-      })
-      .setOnMessage((packet: InworldPacket) => {
-        packets.push(packet);
       });
-
-    const connection = client.build();
-    await connection.open();
-    testPackets(packets, connection);
-    resolve(connection);
-  });
-}
-
-export async function openConnectionManuallySendText(
-  apikey: [string, string],
-  username: string,
-  npc: string,
-  message: string,
-): Promise<InworldConnectionService> {
-  let packets: InworldPacket[] = [];
-
-  return new Promise<InworldConnectionService>(async (resolve, reject) => {
-    const client = new InworldClient()
-      .setApiKey({
-        key: apikey[0],
-        secret: apikey[1],
-      })
-      .setUser({ fullName: username })
-      .setConfiguration({
-        capabilities: { emotions: true },
-        connection: {
-          autoReconnect: false,
-        },
-      })
-      .setScene(npc)
-      .setOnError((err: InworldError) => {
-        switch (err.code) {
-          case status.ABORTED:
-          case status.CANCELLED:
-            break;
-          default:
-            connection.close();
-            reject(err);
-            break;
-        }
-      })
-      .setOnMessage((packet: InworldPacket) => {
-        packets.push(packet);
-        if (packet.isInteractionEnd()) {
-          testPackets(packets, connection);
-          resolve(connection);
-        }
-      });
-
-    const connection = client.build();
-    await connection.open();
-    await connection.sendText(message);
-  });
+    },
+  );
 }
