@@ -74,16 +74,6 @@ export async function sendAudio(
   const highWaterMark = 1024 * 5;
 
   return new Promise<string>(async (resolve, reject) => {
-    let i = 0;
-
-    const audioStream = fs.createReadStream(audio, { highWaterMark });
-    const sendChunk = (chunk: string) => {
-      setTimeout(() => {
-        connection.sendAudio(chunk);
-      }, timeout * i);
-      i++;
-    };
-
     const connection = new InworldClient()
       .setApiKey({
         key: apikey[0],
@@ -111,6 +101,16 @@ export async function sendAudio(
         }
       })
       .build();
+
+    let i = 0;
+
+    const audioStream = fs.createReadStream(audio, { highWaterMark });
+    const sendChunk = (chunk: string) => {
+      setTimeout(() => {
+        connection.sendAudio(chunk);
+      }, timeout * i);
+      i++;
+    };
 
     await connection.sendAudioSessionStart();
 
@@ -266,6 +266,7 @@ function testPackets(
   expect(packets.length).toBeGreaterThan(0);
   const idCheck = interactionIDCheck();
   for (let packet of packets) {
+    // console.log(packet);
     testBasePacketStructure(packet);
     testSceneMutationPacket(packet);
     testTextPacket(packet, connection, idCheck);
@@ -288,6 +289,7 @@ function testPackets(
 interface InworldConnectionServiceWrapper {
   close: () => void;
   sendText: (text: string) => Promise<void>;
+  sendAudio: (audio: string) => Promise<void>;
 }
 
 interface ByInteractionId {
@@ -302,6 +304,8 @@ export async function openConnectionManually(
 ): Promise<InworldConnectionServiceWrapper> {
   const packets: InworldPacket[] = [];
   const byInteractionId: ByInteractionId = {};
+  const timeout = 200;
+  const highWaterMark = 1024 * 5;
 
   return new Promise<InworldConnectionServiceWrapper>(
     async (resolve, reject) => {
@@ -325,7 +329,16 @@ export async function openConnectionManually(
           }
         })
         .setOnMessage((packet: InworldPacket) => {
+          // console.log('packet push');
+          // console.log(packet);
           packets.push(packet);
+
+          if (packet.isText() && packet.routing.source.isPlayer) {
+            if (packet.text.final) {
+              // console.log('SENDAUDISESSIONEND');
+              connection.sendAudioSessionEnd();
+            }
+          }
 
           if (packet.packetId.interactionId) {
             byInteractionId[packet.packetId.interactionId] =
@@ -349,6 +362,56 @@ export async function openConnectionManually(
               const lastItem = lastIndex?.[lastIndex.length - 1];
 
               if (lastItem?.isInteractionEnd()) {
+                clearInterval(interval);
+                testPackets(
+                  byInteractionId[sent.packetId.interactionId!],
+                  connection,
+                  config,
+                );
+                resolve();
+              }
+            });
+          });
+        },
+        sendAudio: async (audio: string) => {
+          // console.log('send audio');
+          let i = 0;
+
+          const audioStream = fs.createReadStream(audio, { highWaterMark });
+          const sendChunk = (chunk: string) => {
+            setTimeout(() => {
+              connection.sendAudio(chunk);
+            }, timeout * i);
+            i++;
+          };
+
+          const sent = await connection.sendAudioSessionStart();
+          // await connection.sendAudioSessionStart();
+          // console.log(sent);
+
+          audioStream.on('data', sendChunk).on('end', async () => {
+            audioStream.close();
+
+            const silenceStream = fs.createReadStream(
+              'e2e/connection/silence.wav',
+              {
+                highWaterMark,
+              },
+            );
+
+            silenceStream
+              .on('data', sendChunk)
+              .on('end', () => silenceStream.close());
+          });
+
+          return new Promise(async (resolve, _reject) => {
+            const interval = setInterval(() => {
+              const lastIndex = byInteractionId?.[sent.packetId.interactionId!];
+              const lastItem = lastIndex?.[lastIndex.length - 1];
+
+              // console.log(lastItem);
+              if (lastItem?.isInteractionEnd()) {
+                // console.log('TEST PACKETS RESOLVE');
                 clearInterval(interval);
                 testPackets(
                   byInteractionId[sent.packetId.interactionId!],
