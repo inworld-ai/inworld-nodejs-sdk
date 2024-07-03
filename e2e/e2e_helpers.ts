@@ -387,7 +387,6 @@ export async function openConnectionManually(
 
           const sent = await connection.sendAudioSessionStart();
           // await connection.sendAudioSessionStart();
-          // console.log(sent);
 
           audioStream.on('data', sendChunk).on('end', async () => {
             audioStream.close();
