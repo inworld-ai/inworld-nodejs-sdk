@@ -48,4 +48,4 @@ test('[Packet] Packet properties are correct for new connection with text sent',
   const connection = await openConnectionManually(key, name, npc, config);
   await connection.sendText('Hi');
   connection.close();
-}, 60000);
+}, 10000);
