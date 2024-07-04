@@ -167,9 +167,15 @@ async function testEmotionPacket(
     // routing
     let characters = await connection.getCharacters();
     let characterName = characters[0].id;
-    expect(packet.routing.source.name).toBe(characterName);
-    expect(packet.routing.source.isCharacter).toBeTruthy();
-    expect(packet.routing.source.isPlayer).toBeFalsy();
+    if (packet.routing.source.isPlayer) {
+      expect(packet.routing.source.name).toBe('');
+      expect(packet.routing.source.isPlayer).toBeTruthy();
+      expect(packet.routing.source.isCharacter).toBeFalsy();
+    } else {
+      expect(packet.routing.source.name).toBe(characterName);
+      expect(packet.routing.source.isCharacter).toBeTruthy();
+      expect(packet.routing.source.isPlayer).toBeFalsy();
+    }
     // emotion
     expect(packet.emotions.behavior).toBeDefined();
     expect(packet.emotions.strength).toBeDefined();
@@ -189,9 +195,15 @@ async function testAudioPacket(
     // routing
     let characters = await connection.getCharacters();
     let characterName = characters[0].id;
-    expect(packet.routing.source.name).toBe(characterName);
-    expect(packet.routing.source.isCharacter).toBeTruthy();
-    expect(packet.routing.source.isPlayer).toBeFalsy();
+    if (packet.routing.source.isPlayer) {
+      expect(packet.routing.source.name).toBe('');
+      expect(packet.routing.source.isPlayer).toBeTruthy();
+      expect(packet.routing.source.isCharacter).toBeFalsy();
+    } else {
+      expect(packet.routing.source.name).toBe(characterName);
+      expect(packet.routing.source.isCharacter).toBeTruthy();
+      expect(packet.routing.source.isPlayer).toBeFalsy();
+    }
     // audio
     expect(packet.audio.chunk).toBeDefined();
   }
@@ -232,9 +244,15 @@ async function testTextPacket(
     // routing
     let characters = await connection.getCharacters();
     let characterName = characters[0].id;
-    expect(packet.routing.source.name).toBe(characterName);
-    expect(packet.routing.source.isCharacter).toBeTruthy();
-    expect(packet.routing.source.isPlayer).toBeFalsy();
+    if (packet.routing.source.isPlayer) {
+      expect(packet.routing.source.name).toBe('');
+      expect(packet.routing.source.isPlayer).toBeTruthy();
+      expect(packet.routing.source.isCharacter).toBeFalsy();
+    } else {
+      expect(packet.routing.source.name).toBe(characterName);
+      expect(packet.routing.source.isCharacter).toBeTruthy();
+      expect(packet.routing.source.isPlayer).toBeFalsy();
+    }
     // text
     expect(packet.text.text).toBeDefined();
     expect(packet.text.final).toBeDefined();
@@ -266,7 +284,6 @@ function testPackets(
   expect(packets.length).toBeGreaterThan(0);
   const idCheck = interactionIDCheck();
   for (let packet of packets) {
-    // console.log(packet);
     testBasePacketStructure(packet);
     testSceneMutationPacket(packet);
     testTextPacket(packet, connection, idCheck);
@@ -333,7 +350,6 @@ export async function openConnectionManually(
 
           if (packet.isText() && packet.routing.source.isPlayer) {
             if (packet.text.final) {
-              // console.log('SENDAUDISESSIONEND');
               connection.sendAudioSessionEnd();
             }
           }
@@ -406,7 +422,6 @@ export async function openConnectionManually(
               if (lastItem?.isInteractionEnd()) {
                 clearInterval(interval);
                 testPackets(packets, connection, config);
-                // console.log(packets);
                 resolve();
               }
             });
