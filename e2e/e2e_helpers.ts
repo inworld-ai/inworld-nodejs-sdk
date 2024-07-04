@@ -329,8 +329,6 @@ export async function openConnectionManually(
           }
         })
         .setOnMessage((packet: InworldPacket) => {
-          // console.log('packet push');
-          // console.log(packet);
           packets.push(packet);
 
           if (packet.isText() && packet.routing.source.isPlayer) {
@@ -374,19 +372,17 @@ export async function openConnectionManually(
           });
         },
         sendAudio: async (audio: string) => {
-          // console.log('send audio');
           let i = 0;
 
           const audioStream = fs.createReadStream(audio, { highWaterMark });
           const sendChunk = (chunk: string) => {
-            setTimeout(() => {
+            setTimeout(async () => {
               connection.sendAudio(chunk);
             }, timeout * i);
             i++;
           };
 
-          const sent = await connection.sendAudioSessionStart();
-          // await connection.sendAudioSessionStart();
+          await connection.sendAudioSessionStart();
 
           audioStream.on('data', sendChunk).on('end', async () => {
             audioStream.close();
@@ -405,18 +401,12 @@ export async function openConnectionManually(
 
           return new Promise(async (resolve, _reject) => {
             const interval = setInterval(() => {
-              const lastIndex = byInteractionId?.[sent.packetId.interactionId!];
-              const lastItem = lastIndex?.[lastIndex.length - 1];
+              const lastItem = packets[packets.length - 1];
 
-              // console.log(lastItem);
               if (lastItem?.isInteractionEnd()) {
-                // console.log('TEST PACKETS RESOLVE');
                 clearInterval(interval);
-                testPackets(
-                  byInteractionId[sent.packetId.interactionId!],
-                  connection,
-                  config,
-                );
+                testPackets(packets, connection, config);
+                // console.log(packets);
                 resolve();
               }
             });
