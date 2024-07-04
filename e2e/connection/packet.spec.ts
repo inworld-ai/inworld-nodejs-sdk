@@ -9,13 +9,13 @@ let key: [string, string] = [
 let name: string = 'Tester';
 let npc: string = process.env.INWORLD_E2E_CHARACTER_TEXT!;
 
-test('[Packet] Packet properties are correct for new connection with no text sent', async () => {
+test('[Packet] Packet properties are correct for new connection with nothing sent', async () => {
   await allure.allureId('1255');
   await allure.suite('Node.js SDK');
   await allure.feature('Connection');
   await allure.story('Packet');
   await allure.description(
-    'This test confirms that all packet properties for a new connection with no text sent are correct',
+    'This test confirms that all packet properties for a new connection with nothing sent are correct',
   );
 
   const config = {
@@ -51,7 +51,7 @@ test('[Packet] Packet properties are correct for new connection with text sent',
 }, 10000);
 
 test('[Packet] Packet properties are correct for new connection with audio sent', async () => {
-  // await allure.allureId('1354');
+  await allure.allureId('1457');
   await allure.suite('Node.js SDK');
   await allure.feature('Connection');
   await allure.story('Packet');
