@@ -128,6 +128,68 @@ export async function sendAudio(
   });
 }
 
+export async function changeSceneSendText(
+  apikey: [string, string],
+  username: string,
+  npc: string,
+  scene: string,
+  message: string,
+): Promise<[string, string]> {
+  let output: [string, string] = ['', ''];
+
+  return new Promise<[string, string]>(async (resolve, reject) => {
+    const client = new InworldClient()
+      .setApiKey({
+        key: apikey[0],
+        secret: apikey[1],
+      })
+      .setUser({ fullName: username })
+      .setConfiguration({
+        capabilities: { emotions: true },
+        connection: {
+          autoReconnect: false,
+        },
+      })
+      .setScene(npc)
+      .setOnError((err: InworldError) => {
+        switch (err.code) {
+          case status.ABORTED:
+          case status.CANCELLED:
+            break;
+          default:
+            connection.close();
+            reject(err);
+            break;
+        }
+      })
+      .setOnMessage((packet: InworldPacket) => {
+        // TEXT
+        if (packet.isText()) {
+          output[0] += packet.text.text + '\n';
+        }
+
+        // EMOTION
+        if (packet.isEmotion()) {
+          output[1] += packet.emotions.behavior.code + '\n';
+          output[1] += packet.emotions.strength.code + '\n';
+        }
+
+        // INTERACTION_END
+        if (packet.isInteractionEnd()) {
+          connection.close();
+          resolve(output);
+        }
+      });
+
+    const connection = client.build();
+
+    await connection.open();
+    await connection.getCharacters();
+    await connection.changeScene(scene);
+    await connection.sendText(message);
+  });
+}
+
 function testBasePacketStructure(packet: InworldPacket) {
   // packetId
   expect(packet.packetId.packetId).toBeDefined();
