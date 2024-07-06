@@ -1,6 +1,6 @@
 import { ServiceError } from '@grpc/grpc-js';
 import { InworldStatus as ProtoInworldStatus } from '@proto/ai/inworld/common/status_pb';
-import { Status } from '@proto/google/status_pb';
+import { Status } from '@proto/google/rpc/status_pb';
 import { Timestamp } from 'google-protobuf/google/protobuf/timestamp_pb';
 
 const { version } = require('@root/package.json');
