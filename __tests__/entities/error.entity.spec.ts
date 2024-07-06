@@ -7,7 +7,7 @@ import {
   ResourceNotFoundDetails,
   ResourceType as ProtoErrorResourceType,
 } from '@proto/ai/inworld/common/status_pb';
-import { Status as GoogleStatus } from '@proto/google/status_pb';
+import { Status as GoogleStatus } from '@proto/google/rpc/status_pb';
 import { v4 } from 'uuid';
 
 import * as helpers from '../../src/common/helpers';
