@@ -317,16 +317,13 @@ class InworldConnectionManager {
   private packets: InworldPacket[] = [];
   private byInteractionId: ByInteractionId = {};
   private connection: InworldConnectionService;
-  private config: ClientConfiguration;
 
   constructor(
     private apikey: [string, string],
     private username: string,
     private npc: string,
-    config: ClientConfiguration,
-  ) {
-    this.config = config;
-  }
+    private config: ClientConfiguration,
+  ) {}
 
   private async initializeConnection(): Promise<void> {
     const client = new InworldClient()
