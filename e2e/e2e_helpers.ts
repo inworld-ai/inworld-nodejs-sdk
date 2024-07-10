@@ -352,8 +352,6 @@ export async function openConnectionManually(
 ): Promise<InworldConnectionServiceWrapper> {
   const packets: InworldPacket[] = [];
   const byInteractionId: ByInteractionId = {};
-  // const timeout = 200;
-  // const highWaterMark = 1024 * 5;
 
   return new Promise<InworldConnectionServiceWrapper>(
     async (resolve, reject) => {
@@ -378,12 +376,6 @@ export async function openConnectionManually(
         })
         .setOnMessage((packet: InworldPacket) => {
           packets.push(packet);
-
-          // if (packet.isText() && packet.routing.source.isPlayer) {
-          //   if (packet.text.final) {
-          //     connection.sendAudioSessionEnd();
-          //   }
-          // }
 
           if (packet.packetId.interactionId) {
             byInteractionId[packet.packetId.interactionId] =
