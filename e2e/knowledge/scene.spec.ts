@@ -30,7 +30,9 @@ test('[Scene] NPC should know scene location', async () => {
 
   const connection = await openConnectionManually(key, name, npc, config);
   await connection.changeScene(scene);
-  const result = await connection.sendText('Do you know where we are?');
+  const result = await connection.sendText(
+    'Do you know where we currently are?',
+  );
   connection.close();
 
   expect(result[0]).toContain('Hollywood');
