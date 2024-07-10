@@ -320,24 +320,25 @@ function sendFile(file: string, connection: InworldConnectionService) {
     const timeout = 200;
     const highWaterMark = 1024 * 5;
 
+    const delay = (i: number, fn: (i: number) => Promise<void>) => {
+      setTimeout(async () => await fn(i), timeout * i);
+    };
+
     const sendChunk = (chunk: string) => {
-      setTimeout(async () => {
+      delay(i, async (i: number) => {
         await connection.sendAudio(chunk);
 
-        if (totalChunks >= 0 && i == totalChunks) {
-          // console.log('resolve');
+        if (i + 1 == totalChunks) {
           resolve();
         }
-      }, timeout * i);
+      });
       i++;
-      // console.log('i = ' + i);
     };
 
     const stream = fs.createReadStream(file, { highWaterMark });
 
     stream.on('data', sendChunk).on('end', async () => {
       totalChunks = i;
-      // console.log('totalChunks = ' + totalChunks);
       stream.close();
     });
   });
@@ -425,14 +426,12 @@ export async function openConnectionManually(
           await sendFile('e2e/connection/silence.wav', connection);
           await connection.sendAudioSessionEnd();
 
-          const audioRelatedPackets = packets.slice(lastIndex + 1);
-
           return new Promise(async (resolve, _reject) => {
             const interval = setInterval(() => {
+              const audioRelatedPackets = packets.slice(lastIndex + 1);
               const lastItem =
                 audioRelatedPackets[audioRelatedPackets.length - 1];
 
-              // console.log(lastItem);
               if (lastItem?.isInteractionEnd()) {
                 clearInterval(interval);
                 testPackets(audioRelatedPackets, connection, config);
