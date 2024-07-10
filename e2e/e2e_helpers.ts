@@ -313,6 +313,36 @@ interface ByInteractionId {
   [key: string]: InworldPacket[];
 }
 
+function sendFile(file: string, connection: InworldConnectionService) {
+  return new Promise<void>(async (resolve, _reject) => {
+    let i: number = 0;
+    let totalChunks: number = -1;
+    const timeout = 200;
+    const highWaterMark = 1024 * 5;
+
+    const sendChunk = (chunk: string) => {
+      setTimeout(async () => {
+        await connection.sendAudio(chunk);
+
+        if (totalChunks >= 0 && i == totalChunks) {
+          // console.log('resolve');
+          resolve();
+        }
+      }, timeout * i);
+      i++;
+      // console.log('i = ' + i);
+    };
+
+    const stream = fs.createReadStream(file, { highWaterMark });
+
+    stream.on('data', sendChunk).on('end', async () => {
+      totalChunks = i;
+      // console.log('totalChunks = ' + totalChunks);
+      stream.close();
+    });
+  });
+}
+
 export async function openConnectionManually(
   apikey: [string, string],
   username: string,
@@ -321,8 +351,8 @@ export async function openConnectionManually(
 ): Promise<InworldConnectionServiceWrapper> {
   const packets: InworldPacket[] = [];
   const byInteractionId: ByInteractionId = {};
-  const timeout = 200;
-  const highWaterMark = 1024 * 5;
+  // const timeout = 200;
+  // const highWaterMark = 1024 * 5;
 
   return new Promise<InworldConnectionServiceWrapper>(
     async (resolve, reject) => {
@@ -348,11 +378,11 @@ export async function openConnectionManually(
         .setOnMessage((packet: InworldPacket) => {
           packets.push(packet);
 
-          if (packet.isText() && packet.routing.source.isPlayer) {
-            if (packet.text.final) {
-              connection.sendAudioSessionEnd();
-            }
-          }
+          // if (packet.isText() && packet.routing.source.isPlayer) {
+          //   if (packet.text.final) {
+          //     connection.sendAudioSessionEnd();
+          //   }
+          // }
 
           if (packet.packetId.interactionId) {
             byInteractionId[packet.packetId.interactionId] =
@@ -388,40 +418,24 @@ export async function openConnectionManually(
           });
         },
         sendAudio: async (audio: string) => {
-          let i = 0;
-
-          const audioStream = fs.createReadStream(audio, { highWaterMark });
-          const sendChunk = (chunk: string) => {
-            setTimeout(async () => {
-              connection.sendAudio(chunk);
-            }, timeout * i);
-            i++;
-          };
+          const lastIndex = packets.length - 1;
 
           await connection.sendAudioSessionStart();
+          await sendFile(audio, connection);
+          await sendFile('e2e/connection/silence.wav', connection);
+          await connection.sendAudioSessionEnd();
 
-          audioStream.on('data', sendChunk).on('end', async () => {
-            audioStream.close();
-
-            const silenceStream = fs.createReadStream(
-              'e2e/connection/silence.wav',
-              {
-                highWaterMark,
-              },
-            );
-
-            silenceStream
-              .on('data', sendChunk)
-              .on('end', () => silenceStream.close());
-          });
+          const audioRelatedPackets = packets.slice(lastIndex + 1);
 
           return new Promise(async (resolve, _reject) => {
             const interval = setInterval(() => {
-              const lastItem = packets[packets.length - 1];
+              const lastItem =
+                audioRelatedPackets[audioRelatedPackets.length - 1];
 
+              // console.log(lastItem);
               if (lastItem?.isInteractionEnd()) {
                 clearInterval(interval);
-                testPackets(packets, connection, config);
+                testPackets(audioRelatedPackets, connection, config);
                 resolve();
               }
             });
