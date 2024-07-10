@@ -1,6 +1,6 @@
 import * as allure from 'allure-js-commons';
 
-import { sendText } from '../e2e_helpers';
+import { changeSceneSendText } from '../e2e_helpers';
 
 let key: [string, string] = [
   process.env.INWORLD_E2E_KEY!,
@@ -8,6 +8,7 @@ let key: [string, string] = [
 ];
 let name: string = 'Tester';
 let npc: string = process.env.INWORLD_E2E_CHARACTER_SCENE!;
+let scene: string = process.env.INWORLD_E2E_SCENE_MOVIESET!;
 
 jest.retryTimes(3);
 
@@ -20,11 +21,12 @@ test('[Scene] NPC should know scene location', async () => {
     'This test confirms that NPC knows the scene location',
   );
 
-  const result = await sendText(
+  const result = await changeSceneSendText(
     key,
     name,
     npc,
-    'Do you know where our physical location is?',
+    scene,
+    'Where are we?',
   );
   expect(result[0]).toContain('Hollywood');
 }, 10000);
