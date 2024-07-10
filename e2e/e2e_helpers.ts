@@ -305,8 +305,9 @@ function testPackets(
 
 interface InworldConnectionServiceWrapper {
   close: () => void;
-  sendText: (text: string) => Promise<void>;
+  sendText: (text: string) => Promise<[string, string]>;
   sendAudio: (audio: string) => Promise<void>;
+  changeScene: (scene: string) => Promise<void>;
 }
 
 interface ByInteractionId {
@@ -317,6 +318,7 @@ class InworldConnectionManager {
   private packets: InworldPacket[] = [];
   private byInteractionId: ByInteractionId = {};
   private connection: InworldConnectionService;
+  private output: [string, string] = ['', ''];
 
   constructor(
     private apikey: [string, string],
@@ -345,6 +347,17 @@ class InworldConnectionManager {
         }
       })
       .setOnMessage((packet: InworldPacket) => {
+        // TEXT
+        if (packet.isText()) {
+          this.output[0] += packet.text.text + '\n';
+        }
+
+        // EMOTION
+        if (packet.isEmotion()) {
+          this.output[1] += packet.emotions.behavior.code + '\n';
+          this.output[1] += packet.emotions.strength.code + '\n';
+        }
+
         this.packets.push(packet);
 
         if (packet.packetId.interactionId) {
@@ -390,10 +403,10 @@ class InworldConnectionManager {
     });
   }
 
-  public async sendText(text: string): Promise<void> {
+  public async sendText(text: string): Promise<[string, string]> {
     const sent = await this.connection.sendText(text);
 
-    return new Promise<void>((resolve, _reject) => {
+    return new Promise<[string, string]>((resolve, _reject) => {
       const interval = setInterval(() => {
         const lastIndex = this.byInteractionId?.[sent.packetId.interactionId!];
         const lastItem = lastIndex?.[lastIndex.length - 1];
@@ -405,7 +418,7 @@ class InworldConnectionManager {
             this.connection,
             this.config,
           );
-          resolve();
+          resolve(this.output);
         }
       });
     });
@@ -433,11 +446,17 @@ class InworldConnectionManager {
     });
   }
 
+  public async changeScene(scene: string): Promise<void> {
+    await this.connection.getCharacters();
+    await this.connection.changeScene(scene);
+  }
+
   public getWrapper(): InworldConnectionServiceWrapper {
     return {
       close: this.connection.close.bind(this.connection),
       sendText: this.sendText.bind(this),
       sendAudio: this.sendAudio.bind(this),
+      changeScene: this.changeScene.bind(this),
     };
   }
 
