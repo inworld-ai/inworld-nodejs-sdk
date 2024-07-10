@@ -74,16 +74,6 @@ export async function sendAudio(
   const highWaterMark = 1024 * 5;
 
   return new Promise<string>(async (resolve, reject) => {
-    let i = 0;
-
-    const audioStream = fs.createReadStream(audio, { highWaterMark });
-    const sendChunk = (chunk: string) => {
-      setTimeout(() => {
-        connection.sendAudio(chunk);
-      }, timeout * i);
-      i++;
-    };
-
     const connection = new InworldClient()
       .setApiKey({
         key: apikey[0],
@@ -111,6 +101,16 @@ export async function sendAudio(
         }
       })
       .build();
+
+    let i = 0;
+
+    const audioStream = fs.createReadStream(audio, { highWaterMark });
+    const sendChunk = (chunk: string) => {
+      setTimeout(() => {
+        connection.sendAudio(chunk);
+      }, timeout * i);
+      i++;
+    };
 
     await connection.sendAudioSessionStart();
 
@@ -167,9 +167,15 @@ async function testEmotionPacket(
     // routing
     let characters = await connection.getCharacters();
     let characterName = characters[0].id;
-    expect(packet.routing.source.name).toBe(characterName);
-    expect(packet.routing.source.isCharacter).toBeTruthy();
-    expect(packet.routing.source.isPlayer).toBeFalsy();
+    if (packet.routing.source.isPlayer) {
+      expect(packet.routing.source.name).toBe('');
+      expect(packet.routing.source.isPlayer).toBeTruthy();
+      expect(packet.routing.source.isCharacter).toBeFalsy();
+    } else {
+      expect(packet.routing.source.name).toBe(characterName);
+      expect(packet.routing.source.isCharacter).toBeTruthy();
+      expect(packet.routing.source.isPlayer).toBeFalsy();
+    }
     // emotion
     expect(packet.emotions.behavior).toBeDefined();
     expect(packet.emotions.strength).toBeDefined();
@@ -189,9 +195,15 @@ async function testAudioPacket(
     // routing
     let characters = await connection.getCharacters();
     let characterName = characters[0].id;
-    expect(packet.routing.source.name).toBe(characterName);
-    expect(packet.routing.source.isCharacter).toBeTruthy();
-    expect(packet.routing.source.isPlayer).toBeFalsy();
+    if (packet.routing.source.isPlayer) {
+      expect(packet.routing.source.name).toBe('');
+      expect(packet.routing.source.isPlayer).toBeTruthy();
+      expect(packet.routing.source.isCharacter).toBeFalsy();
+    } else {
+      expect(packet.routing.source.name).toBe(characterName);
+      expect(packet.routing.source.isCharacter).toBeTruthy();
+      expect(packet.routing.source.isPlayer).toBeFalsy();
+    }
     // audio
     expect(packet.audio.chunk).toBeDefined();
   }
@@ -232,9 +244,15 @@ async function testTextPacket(
     // routing
     let characters = await connection.getCharacters();
     let characterName = characters[0].id;
-    expect(packet.routing.source.name).toBe(characterName);
-    expect(packet.routing.source.isCharacter).toBeTruthy();
-    expect(packet.routing.source.isPlayer).toBeFalsy();
+    if (packet.routing.source.isPlayer) {
+      expect(packet.routing.source.name).toBe('');
+      expect(packet.routing.source.isPlayer).toBeTruthy();
+      expect(packet.routing.source.isCharacter).toBeFalsy();
+    } else {
+      expect(packet.routing.source.name).toBe(characterName);
+      expect(packet.routing.source.isCharacter).toBeTruthy();
+      expect(packet.routing.source.isPlayer).toBeFalsy();
+    }
     // text
     expect(packet.text.text).toBeDefined();
     expect(packet.text.final).toBeDefined();
@@ -288,10 +306,151 @@ function testPackets(
 interface InworldConnectionServiceWrapper {
   close: () => void;
   sendText: (text: string) => Promise<void>;
+  sendAudio: (audio: string) => Promise<void>;
 }
 
 interface ByInteractionId {
   [key: string]: InworldPacket[];
+}
+
+class InworldConnectionManager {
+  private packets: InworldPacket[] = [];
+  private byInteractionId: ByInteractionId = {};
+  private connection: InworldConnectionService;
+
+  constructor(
+    private apikey: [string, string],
+    private username: string,
+    private npc: string,
+    private config: ClientConfiguration,
+  ) {}
+
+  private async initializeConnection(): Promise<void> {
+    const client = new InworldClient()
+      .setApiKey({
+        key: this.apikey[0],
+        secret: this.apikey[1],
+      })
+      .setUser({ fullName: this.username })
+      .setConfiguration(this.config)
+      .setScene(this.npc)
+      .setOnError((err: InworldError) => {
+        switch (err.code) {
+          case status.ABORTED:
+          case status.CANCELLED:
+            break;
+          default:
+            this.connection.close();
+            throw err;
+        }
+      })
+      .setOnMessage((packet: InworldPacket) => {
+        this.packets.push(packet);
+
+        if (packet.packetId.interactionId) {
+          this.byInteractionId[packet.packetId.interactionId] =
+            this.byInteractionId[packet.packetId.interactionId] ?? [];
+          this.byInteractionId[packet.packetId.interactionId].push(packet);
+        }
+      });
+
+    this.connection = client.build();
+    await this.connection.open();
+    testPackets(this.packets, this.connection, this.config);
+  }
+
+  private async sendFile(file: string): Promise<void> {
+    return new Promise<void>((resolve, _reject) => {
+      let i = 0;
+      let totalChunks = -1;
+      const timeout = 200;
+      const highWaterMark = 1024 * 5;
+
+      const delay = (i: number, fn: (i: number) => Promise<void>) => {
+        setTimeout(async () => await fn(i), timeout * i);
+      };
+
+      const sendChunk = (chunk: string) => {
+        delay(i, async (i: number) => {
+          await this.connection.sendAudio(chunk);
+
+          if (i + 1 == totalChunks) {
+            resolve();
+          }
+        });
+        i++;
+      };
+
+      const stream = fs.createReadStream(file, { highWaterMark });
+
+      stream.on('data', sendChunk).on('end', async () => {
+        totalChunks = i;
+        stream.close();
+      });
+    });
+  }
+
+  public async sendText(text: string): Promise<void> {
+    const sent = await this.connection.sendText(text);
+
+    return new Promise<void>((resolve, _reject) => {
+      const interval = setInterval(() => {
+        const lastIndex = this.byInteractionId?.[sent.packetId.interactionId!];
+        const lastItem = lastIndex?.[lastIndex.length - 1];
+
+        if (lastItem?.isInteractionEnd()) {
+          clearInterval(interval);
+          testPackets(
+            this.byInteractionId[sent.packetId.interactionId!],
+            this.connection,
+            this.config,
+          );
+          resolve();
+        }
+      });
+    });
+  }
+
+  public async sendAudio(audio: string): Promise<void> {
+    const lastIndex = this.packets.length - 1;
+
+    await this.connection.sendAudioSessionStart();
+    await this.sendFile(audio);
+    await this.sendFile('e2e/connection/silence.wav');
+    await this.connection.sendAudioSessionEnd();
+
+    return new Promise<void>((resolve, _reject) => {
+      const interval = setInterval(() => {
+        const audioRelatedPackets = this.packets.slice(lastIndex + 1);
+        const lastItem = audioRelatedPackets[audioRelatedPackets.length - 1];
+
+        if (lastItem?.isInteractionEnd()) {
+          clearInterval(interval);
+          testPackets(audioRelatedPackets, this.connection, this.config);
+          resolve();
+        }
+      });
+    });
+  }
+
+  public getWrapper(): InworldConnectionServiceWrapper {
+    return {
+      close: this.connection.close.bind(this.connection),
+      sendText: this.sendText.bind(this),
+      sendAudio: this.sendAudio.bind(this),
+    };
+  }
+
+  public static async create(
+    apikey: [string, string],
+    username: string,
+    npc: string,
+    config: ClientConfiguration,
+  ): Promise<InworldConnectionServiceWrapper> {
+    const manager = new InworldConnectionManager(apikey, username, npc, config);
+    await manager.initializeConnection();
+    return manager.getWrapper();
+  }
 }
 
 export async function openConnectionManually(
@@ -300,67 +459,5 @@ export async function openConnectionManually(
   npc: string,
   config: ClientConfiguration,
 ): Promise<InworldConnectionServiceWrapper> {
-  const packets: InworldPacket[] = [];
-  const byInteractionId: ByInteractionId = {};
-
-  return new Promise<InworldConnectionServiceWrapper>(
-    async (resolve, reject) => {
-      const client = new InworldClient()
-        .setApiKey({
-          key: apikey[0],
-          secret: apikey[1],
-        })
-        .setUser({ fullName: username })
-        .setConfiguration(config)
-        .setScene(npc)
-        .setOnError((err: InworldError) => {
-          switch (err.code) {
-            case status.ABORTED:
-            case status.CANCELLED:
-              break;
-            default:
-              connection.close();
-              reject(err);
-              break;
-          }
-        })
-        .setOnMessage((packet: InworldPacket) => {
-          packets.push(packet);
-
-          if (packet.packetId.interactionId) {
-            byInteractionId[packet.packetId.interactionId] =
-              byInteractionId[packet.packetId.interactionId] ?? [];
-            byInteractionId[packet.packetId.interactionId].push(packet);
-          }
-        });
-
-      const connection = client.build();
-      await connection.open();
-      testPackets(packets, connection, config);
-
-      resolve({
-        close: connection.close.bind(connection),
-        sendText: async (text: string) => {
-          const sent = await connection.sendText(text);
-
-          return new Promise(async (resolve, _reject) => {
-            const interval = setInterval(() => {
-              const lastIndex = byInteractionId?.[sent.packetId.interactionId!];
-              const lastItem = lastIndex?.[lastIndex.length - 1];
-
-              if (lastItem?.isInteractionEnd()) {
-                clearInterval(interval);
-                testPackets(
-                  byInteractionId[sent.packetId.interactionId!],
-                  connection,
-                  config,
-                );
-                resolve();
-              }
-            });
-          });
-        },
-      });
-    },
-  );
+  return InworldConnectionManager.create(apikey, username, npc, config);
 }
