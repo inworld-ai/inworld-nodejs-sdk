@@ -11,7 +11,7 @@ let npc: string = process.env.INWORLD_E2E_CHARACTER_SCENE!;
 let scene: string = process.env.INWORLD_E2E_SCENE_MOVIESET!;
 
 const config = {
-  capabilities: { emotions: true },
+  capabilities: { emotions: false },
   connection: {
     autoReconnect: false,
   },
