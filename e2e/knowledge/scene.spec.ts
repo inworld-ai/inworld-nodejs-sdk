@@ -10,6 +10,13 @@ let name: string = 'Tester';
 let npc: string = process.env.INWORLD_E2E_CHARACTER_SCENE!;
 let scene: string = process.env.INWORLD_E2E_SCENE_MOVIESET!;
 
+const config = {
+  capabilities: { emotions: true },
+  connection: {
+    autoReconnect: false,
+  },
+};
+
 jest.retryTimes(3);
 
 test('[Scene] NPC should know scene location', async () => {
@@ -20,13 +27,6 @@ test('[Scene] NPC should know scene location', async () => {
   await allure.description(
     'This test confirms that NPC knows the scene location',
   );
-
-  const config = {
-    capabilities: { emotions: false },
-    connection: {
-      autoReconnect: false,
-    },
-  };
 
   const connection = await openConnectionManually(key, name, npc, config);
   await connection.changeScene(scene);
