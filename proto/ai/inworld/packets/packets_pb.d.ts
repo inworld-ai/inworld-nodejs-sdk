@@ -425,6 +425,8 @@ export namespace ControlEvent {
 export class AudioSessionStartPayload extends jspb.Message { 
     getMode(): AudioSessionStartPayload.MicrophoneMode;
     setMode(value: AudioSessionStartPayload.MicrophoneMode): AudioSessionStartPayload;
+    getUnderstandingMode(): AudioSessionStartPayload.UnderstandingMode;
+    setUnderstandingMode(value: AudioSessionStartPayload.UnderstandingMode): AudioSessionStartPayload;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): AudioSessionStartPayload.AsObject;
@@ -439,12 +441,19 @@ export class AudioSessionStartPayload extends jspb.Message {
 export namespace AudioSessionStartPayload {
     export type AsObject = {
         mode: AudioSessionStartPayload.MicrophoneMode,
+        understandingMode: AudioSessionStartPayload.UnderstandingMode,
     }
 
     export enum MicrophoneMode {
     UNSPECIFIED = 0,
     OPEN_MIC = 1,
     EXPECT_AUDIO_END = 2,
+    }
+
+    export enum UnderstandingMode {
+    UNSPECIFIED_UNDERSTANDING_MODE = 0,
+    FULL = 1,
+    SPEECH_RECOGNITION_ONLY = 2,
     }
 
 }
