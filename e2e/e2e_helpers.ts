@@ -8,126 +8,6 @@ import {
 } from '@inworld/nodejs-sdk';
 import * as fs from 'fs';
 
-export async function sendText(
-  apikey: [string, string],
-  username: string,
-  npc: string,
-  message: string,
-): Promise<[string, string]> {
-  let output: [string, string] = ['', ''];
-
-  return new Promise<[string, string]>(async (resolve, reject) => {
-    const client = new InworldClient()
-      .setApiKey({
-        key: apikey[0],
-        secret: apikey[1],
-      })
-      .setUser({ fullName: username })
-      .setConfiguration({
-        capabilities: { emotions: true },
-      })
-      .setScene(npc)
-      .setOnError((err: InworldError) => {
-        switch (err.code) {
-          case status.ABORTED:
-          case status.CANCELLED:
-            break;
-          default:
-            connection.close();
-            reject(err);
-            break;
-        }
-      })
-      .setOnMessage((packet: InworldPacket) => {
-        // TEXT
-        if (packet.isText()) {
-          output[0] += packet.text.text + '\n';
-        }
-
-        // EMOTION
-        if (packet.isEmotion()) {
-          output[1] += packet.emotions.behavior.code + '\n';
-          output[1] += packet.emotions.strength.code + '\n';
-        }
-
-        // INTERACTION_END
-        if (packet.isInteractionEnd()) {
-          connection.close();
-          resolve(output);
-        }
-      });
-
-    const connection = client.build();
-
-    await connection.sendText(message);
-  });
-}
-
-export async function sendAudio(
-  apikey: [string, string],
-  username: string,
-  npc: string,
-  audio: string,
-): Promise<string> {
-  let output: string = '';
-  const timeout = 200;
-  const highWaterMark = 1024 * 5;
-
-  return new Promise<string>(async (resolve, reject) => {
-    const connection = new InworldClient()
-      .setApiKey({
-        key: apikey[0],
-        secret: apikey[1],
-      })
-      .setScene(npc)
-      .setUser({ fullName: username })
-      .setOnError((err: InworldError) => {
-        reject(err);
-      })
-      .setOnMessage((packet: InworldPacket) => {
-        if (packet.isText() && packet.routing.source.isPlayer) {
-          if (packet.text.final) {
-            connection.sendAudioSessionEnd();
-          }
-        }
-
-        if (packet.isText() && packet.routing.source.isCharacter) {
-          output += packet.text.text + '\n';
-        }
-
-        if (packet.isInteractionEnd()) {
-          connection.close();
-          resolve(output);
-        }
-      })
-      .build();
-
-    let i = 0;
-
-    const audioStream = fs.createReadStream(audio, { highWaterMark });
-    const sendChunk = (chunk: string) => {
-      setTimeout(() => {
-        connection.sendAudio(chunk);
-      }, timeout * i);
-      i++;
-    };
-
-    await connection.sendAudioSessionStart();
-
-    audioStream.on('data', sendChunk).on('end', async () => {
-      audioStream.close();
-
-      const silenceStream = fs.createReadStream('e2e/connection/silence.wav', {
-        highWaterMark,
-      });
-
-      silenceStream
-        .on('data', sendChunk)
-        .on('end', () => silenceStream.close());
-    });
-  });
-}
-
 function testBasePacketStructure(packet: InworldPacket) {
   // packetId
   expect(packet.packetId.packetId).toBeDefined();
@@ -306,7 +186,7 @@ function testPackets(
 interface InworldConnectionServiceWrapper {
   close: () => void;
   sendText: (text: string) => Promise<[string, string]>;
-  sendAudio: (audio: string) => Promise<void>;
+  sendAudio: (audio: string) => Promise<[string, string]>;
   changeScene: (scene: string) => Promise<void>;
 }
 
@@ -314,11 +194,15 @@ interface ByInteractionId {
   [key: string]: InworldPacket[];
 }
 
+interface ByInteractionIdOutput {
+  [key: string]: [string, string];
+}
+
 class InworldConnectionManager {
   private packets: InworldPacket[] = [];
   private byInteractionId: ByInteractionId = {};
   private connection: InworldConnectionService;
-  private output: [string, string] = ['', ''];
+  private byInteractionIdOutput: ByInteractionIdOutput = {};
 
   constructor(
     private apikey: [string, string],
@@ -347,23 +231,32 @@ class InworldConnectionManager {
         }
       })
       .setOnMessage((packet: InworldPacket) => {
-        // TEXT
-        if (packet.isText()) {
-          this.output[0] += packet.text.text + '\n';
-        }
-
-        // EMOTION
-        if (packet.isEmotion()) {
-          this.output[1] += packet.emotions.behavior.code + '\n';
-          this.output[1] += packet.emotions.strength.code + '\n';
-        }
-
         this.packets.push(packet);
 
-        if (packet.packetId.interactionId) {
-          this.byInteractionId[packet.packetId.interactionId] =
-            this.byInteractionId[packet.packetId.interactionId] ?? [];
-          this.byInteractionId[packet.packetId.interactionId].push(packet);
+        let intId = packet.packetId.interactionId;
+
+        if (!!intId) {
+          this.byInteractionId[intId] = this.byInteractionId[intId] ?? [];
+          this.byInteractionId[intId].push(packet);
+
+          // TEXT
+          if (packet.isText() && packet.routing.source.isCharacter) {
+            this.byInteractionIdOutput[intId] = this.byInteractionIdOutput[
+              intId
+            ] ?? ['', ''];
+            this.byInteractionIdOutput[intId][0] += packet.text.text + '\n';
+          }
+
+          // EMOTION
+          if (packet.isEmotion()) {
+            this.byInteractionIdOutput[intId] = this.byInteractionIdOutput[
+              intId
+            ] ?? ['', ''];
+            this.byInteractionIdOutput[intId][1] +=
+              packet.emotions.behavior.code + '\n';
+            this.byInteractionIdOutput[intId][1] +=
+              packet.emotions.strength.code + '\n';
+          }
         }
       });
 
@@ -418,13 +311,13 @@ class InworldConnectionManager {
             this.connection,
             this.config,
           );
-          resolve(this.output);
+          resolve(this.byInteractionIdOutput[sent.packetId.interactionId!]);
         }
       });
     });
   }
 
-  public async sendAudio(audio: string): Promise<void> {
+  public async sendAudio(audio: string): Promise<[string, string]> {
     const lastIndex = this.packets.length - 1;
 
     await this.connection.sendAudioSessionStart();
@@ -432,7 +325,7 @@ class InworldConnectionManager {
     await this.sendFile('e2e/connection/silence.wav');
     await this.connection.sendAudioSessionEnd();
 
-    return new Promise<void>((resolve, _reject) => {
+    return new Promise<[string, string]>((resolve, _reject) => {
       const interval = setInterval(() => {
         const audioRelatedPackets = this.packets.slice(lastIndex + 1);
         const lastItem = audioRelatedPackets[audioRelatedPackets.length - 1];
@@ -440,7 +333,7 @@ class InworldConnectionManager {
         if (lastItem?.isInteractionEnd()) {
           clearInterval(interval);
           testPackets(audioRelatedPackets, this.connection, this.config);
-          resolve();
+          resolve(this.byInteractionIdOutput[lastItem.packetId.interactionId!]);
         }
       });
     });
