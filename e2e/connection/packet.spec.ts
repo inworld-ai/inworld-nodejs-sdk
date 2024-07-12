@@ -8,6 +8,7 @@ let key: [string, string] = [
 ];
 let name: string = 'Tester';
 let npc: string = process.env.INWORLD_E2E_CHARACTER_TEXT!;
+let npc2: string = process.env.INWORLD_E2E_CHARACTER_NARRATOR!;
 
 const config = {
   capabilities: { emotions: true },
@@ -56,3 +57,17 @@ test('[Packet] Packet properties are correct for new connection with audio sent'
   await connection.sendAudio('e2e/connection/test.wav');
   connection.close();
 }, 30000);
+
+test('[Packet] Packet properties are correct for new connection with narrated actions sent', async () => {
+  // await allure.allureId('');
+  await allure.suite('Node.js SDK');
+  await allure.feature('Connection');
+  await allure.story('Packet');
+  await allure.description(
+    'This test confirms that all packet properties for a new connection with narrated actions sent are correct',
+  );
+
+  const connection = await openConnectionManually(key, name, npc2, config);
+  await connection.sendNarrated('Waves hand');
+  connection.close();
+}, 10000);
