@@ -17,6 +17,13 @@ const config = {
   },
 };
 
+const config2 = {
+  capabilities: { emotions: true, narratedActions: true },
+  connection: {
+    autoReconnect: false,
+  },
+};
+
 test('[Packet] Packet properties are correct for new connection with nothing sent', async () => {
   await allure.allureId('1255');
   await allure.suite('Node.js SDK');
@@ -67,7 +74,7 @@ test('[Packet] Packet properties are correct for new connection with narrated ac
     'This test confirms that all packet properties for a new connection with narrated actions sent are correct',
   );
 
-  const connection = await openConnectionManually(key, name, npc2, config);
+  const connection = await openConnectionManually(key, name, npc2, config2);
   await connection.sendNarrated('Waves hand');
   connection.close();
 }, 10000);
