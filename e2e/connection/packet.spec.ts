@@ -9,6 +9,13 @@ let key: [string, string] = [
 let name: string = 'Tester';
 let npc: string = process.env.INWORLD_E2E_CHARACTER_TEXT!;
 
+const config = {
+  capabilities: { emotions: true },
+  connection: {
+    autoReconnect: false,
+  },
+};
+
 test('[Packet] Packet properties are correct for new connection with nothing sent', async () => {
   await allure.allureId('1255');
   await allure.suite('Node.js SDK');
@@ -17,13 +24,6 @@ test('[Packet] Packet properties are correct for new connection with nothing sen
   await allure.description(
     'This test confirms that all packet properties for a new connection with nothing sent are correct',
   );
-
-  const config = {
-    capabilities: { emotions: true },
-    connection: {
-      autoReconnect: false,
-    },
-  };
 
   const connection = await openConnectionManually(key, name, npc, config);
   connection.close();
@@ -38,13 +38,6 @@ test('[Packet] Packet properties are correct for new connection with text sent',
     'This test confirms that all packet properties for a new connection with text sent are correct',
   );
 
-  const config = {
-    capabilities: { emotions: true },
-    connection: {
-      autoReconnect: false,
-    },
-  };
-
   const connection = await openConnectionManually(key, name, npc, config);
   await connection.sendText('Hi');
   connection.close();
@@ -58,13 +51,6 @@ test('[Packet] Packet properties are correct for new connection with audio sent'
   await allure.description(
     'This test confirms that all packet properties for a new connection with audio sent are correct',
   );
-
-  const config = {
-    capabilities: { emotions: true },
-    connection: {
-      autoReconnect: false,
-    },
-  };
 
   const connection = await openConnectionManually(key, name, npc, config);
   await connection.sendAudio('e2e/connection/test.wav');

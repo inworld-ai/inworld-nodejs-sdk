@@ -1,6 +1,6 @@
 import * as allure from 'allure-js-commons';
 
-import { sendText } from '../e2e_helpers';
+import { openConnectionManually } from '../e2e_helpers';
 
 let key: [string, string] = [
   process.env.INWORLD_E2E_KEY!,
@@ -8,6 +8,14 @@ let key: [string, string] = [
 ];
 let name: string = 'Tester';
 let npc: string = process.env.INWORLD_E2E_CHARACTER_SCENE!;
+let scene: string = process.env.INWORLD_E2E_SCENE_MOVIESET!;
+
+const config = {
+  capabilities: { emotions: false },
+  connection: {
+    autoReconnect: false,
+  },
+};
 
 jest.retryTimes(3);
 
@@ -20,11 +28,12 @@ test('[Scene] NPC should know scene location', async () => {
     'This test confirms that NPC knows the scene location',
   );
 
-  const result = await sendText(
-    key,
-    name,
-    npc,
-    'Do you know where our physical location is?',
+  const connection = await openConnectionManually(key, name, npc, config);
+  await connection.changeScene(scene);
+  const result = await connection.sendText(
+    'Do you know where we currently are?',
   );
+  connection.close();
+
   expect(result[0]).toContain('Hollywood');
 }, 10000);
