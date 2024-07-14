@@ -49,6 +49,7 @@ goog.exportSymbol('proto.ApplyResponse.ApplyResponseType', null, global);
 goog.exportSymbol('proto.AudioChunk', null, global);
 goog.exportSymbol('proto.AudioSessionStartPayload', null, global);
 goog.exportSymbol('proto.AudioSessionStartPayload.MicrophoneMode', null, global);
+goog.exportSymbol('proto.AudioSessionStartPayload.UnderstandingMode', null, global);
 goog.exportSymbol('proto.CancelResponses', null, global);
 goog.exportSymbol('proto.CancelResponsesEvent', null, global);
 goog.exportSymbol('proto.Continuation', null, global);
@@ -4001,7 +4002,8 @@ proto.AudioSessionStartPayload.prototype.toObject = function(opt_includeInstance
  */
 proto.AudioSessionStartPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    mode: jspb.Message.getFieldWithDefault(msg, 1, 0)
+    mode: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    understandingMode: jspb.Message.getFieldWithDefault(msg, 2, 0)
   };
 
   if (includeInstance) {
@@ -4042,6 +4044,10 @@ proto.AudioSessionStartPayload.deserializeBinaryFromReader = function(msg, reade
       var value = /** @type {!proto.AudioSessionStartPayload.MicrophoneMode} */ (reader.readEnum());
       msg.setMode(value);
       break;
+    case 2:
+      var value = /** @type {!proto.AudioSessionStartPayload.UnderstandingMode} */ (reader.readEnum());
+      msg.setUnderstandingMode(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -4078,6 +4084,13 @@ proto.AudioSessionStartPayload.serializeBinaryToWriter = function(message, write
       f
     );
   }
+  f = message.getUnderstandingMode();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      2,
+      f
+    );
+  }
 };
 
 
@@ -4088,6 +4101,15 @@ proto.AudioSessionStartPayload.MicrophoneMode = {
   UNSPECIFIED: 0,
   OPEN_MIC: 1,
   EXPECT_AUDIO_END: 2
+};
+
+/**
+ * @enum {number}
+ */
+proto.AudioSessionStartPayload.UnderstandingMode = {
+  UNSPECIFIED_UNDERSTANDING_MODE: 0,
+  FULL: 1,
+  SPEECH_RECOGNITION_ONLY: 2
 };
 
 /**
@@ -4105,6 +4127,24 @@ proto.AudioSessionStartPayload.prototype.getMode = function() {
  */
 proto.AudioSessionStartPayload.prototype.setMode = function(value) {
   return jspb.Message.setProto3EnumField(this, 1, value);
+};
+
+
+/**
+ * optional UnderstandingMode understanding_mode = 2;
+ * @return {!proto.AudioSessionStartPayload.UnderstandingMode}
+ */
+proto.AudioSessionStartPayload.prototype.getUnderstandingMode = function() {
+  return /** @type {!proto.AudioSessionStartPayload.UnderstandingMode} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+};
+
+
+/**
+ * @param {!proto.AudioSessionStartPayload.UnderstandingMode} value
+ * @return {!proto.AudioSessionStartPayload} returns this
+ */
+proto.AudioSessionStartPayload.prototype.setUnderstandingMode = function(value) {
+  return jspb.Message.setProto3EnumField(this, 2, value);
 };
 
 
