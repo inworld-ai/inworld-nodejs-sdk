@@ -24,6 +24,13 @@ const config2 = {
   },
 };
 
+const config = {
+  capabilities: { emotions: true },
+  connection: {
+    autoReconnect: false,
+  },
+};
+
 test('[Packet] Packet properties are correct for new connection with nothing sent', async () => {
   await allure.allureId('1255');
   await allure.suite('Node.js SDK');
