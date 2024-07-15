@@ -59,7 +59,7 @@ test('[Packet] Packet properties are correct for new connection with audio sent'
 }, 30000);
 
 test('[Packet] Packet properties are correct for new connection with trigger sent', async () => {
-  // await allure.allureId('1457');
+  await allure.allureId('1682');
   await allure.suite('Node.js SDK');
   await allure.feature('Connection');
   await allure.story('Packet');
