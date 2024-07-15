@@ -10,13 +10,6 @@ let name: string = 'Tester';
 let npc: string = process.env.INWORLD_E2E_CHARACTER_TEXT!;
 let npc2: string = process.env.INWORLD_E2E_CHARACTER_NARRATOR!;
 
-const config = {
-  capabilities: { emotions: true },
-  connection: {
-    autoReconnect: false,
-  },
-};
-
 const config2 = {
   capabilities: { emotions: true, narratedActions: true },
   connection: {
