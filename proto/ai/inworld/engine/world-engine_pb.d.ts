@@ -59,6 +59,8 @@ export class CapabilitiesRequest extends jspb.Message {
     setMultiModalActionPlanning(value: boolean): CapabilitiesRequest;
     getPingPongReport(): boolean;
     setPingPongReport(value: boolean): CapabilitiesRequest;
+    getPerceivedLatencyReport(): boolean;
+    setPerceivedLatencyReport(value: boolean): CapabilitiesRequest;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): CapabilitiesRequest.AsObject;
@@ -95,6 +97,7 @@ export namespace CapabilitiesRequest {
         inspect: boolean,
         multiModalActionPlanning: boolean,
         pingPongReport: boolean,
+        perceivedLatencyReport: boolean,
     }
 }
 
