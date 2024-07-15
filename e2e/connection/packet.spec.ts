@@ -75,6 +75,9 @@ test('[Packet] Packet properties are correct for new connection with narrated ac
   );
 
   const connection = await openConnectionManually(key, name, npc2, config2);
-  await connection.sendNarrated('Waves hand');
+  await connection.sendNarrated(
+    '{character}s neighbour Paul was murdered in his apartment. {player}, who is a detective, responsible for investigating the case, meets {character} near entrance of their apartment.',
+  );
+  await connection.sendText('Hello');
   connection.close();
 }, 10000);
