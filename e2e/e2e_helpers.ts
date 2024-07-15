@@ -139,6 +139,33 @@ async function testTextPacket(
   }
 }
 
+async function testNarratedPacket(
+  packet: InworldPacket,
+  connection: InworldConnectionService,
+  idCheck: (id: string) => boolean,
+) {
+  if (packet.isNarratedAction()) {
+    // packetId
+    expect(packet.packetId.interactionId).toBeDefined();
+    expect(idCheck(packet.packetId.interactionId!)).toBeTruthy();
+    expect(packet.packetId.conversationId).toBeDefined();
+    // routing
+    let characters = await connection.getCharacters();
+    let characterName = characters[0].id;
+    if (packet.routing.source.isPlayer) {
+      expect(packet.routing.source.name).toBe('');
+      expect(packet.routing.source.isPlayer).toBeTruthy();
+      expect(packet.routing.source.isCharacter).toBeFalsy();
+    } else {
+      expect(packet.routing.source.name).toBe(characterName);
+      expect(packet.routing.source.isCharacter).toBeTruthy();
+      expect(packet.routing.source.isPlayer).toBeFalsy();
+    }
+    // narratedAction
+    expect(packet.narratedAction.text).toBeDefined();
+  }
+}
+
 export function interactionIDCheck() {
   let initialValue: string | undefined = undefined;
   let isFirstCall = true;
@@ -169,6 +196,7 @@ function testPackets(
     testTextPacket(packet, connection, idCheck);
     testAudioPacket(packet, connection, idCheck);
     testEmotionPacket(packet, connection, idCheck);
+    testNarratedPacket(packet, connection, idCheck);
     testControlPacket(packet);
 
     if (packet.isEmotion()) {
