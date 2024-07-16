@@ -10,7 +10,7 @@ jobs:
     uses: ./.github/workflows/demand.yml
     with:
       test_suite: 'e2e/*'
-      os: 'ubuntu-latest'
+      os: ubuntu-latest
       environment: 'PROD'
     secrets: inherit
 
