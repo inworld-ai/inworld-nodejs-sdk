@@ -225,7 +225,7 @@ proto.configuration.CapabilitiesConfiguration.toObject = function(includeInstanc
     audio2face: jspb.Message.getBooleanFieldWithDefault(msg, 21, false),
     inspect: jspb.Message.getBooleanFieldWithDefault(msg, 22, false),
     pingPongReport: jspb.Message.getBooleanFieldWithDefault(msg, 23, false),
-    percievedLatencyReport: jspb.Message.getBooleanFieldWithDefault(msg, 24, false),
+    perceivedLatencyReport: jspb.Message.getBooleanFieldWithDefault(msg, 24, false),
     multiModalActionPlanning: jspb.Message.getBooleanFieldWithDefault(msg, 25, false)
   };
 
@@ -337,7 +337,7 @@ proto.configuration.CapabilitiesConfiguration.deserializeBinaryFromReader = func
       break;
     case 24:
       var value = /** @type {boolean} */ (reader.readBool());
-      msg.setPercievedLatencyReport(value);
+      msg.setPerceivedLatencyReport(value);
       break;
     case 25:
       var value = /** @type {boolean} */ (reader.readBool());
@@ -498,7 +498,7 @@ proto.configuration.CapabilitiesConfiguration.serializeBinaryToWriter = function
       f
     );
   }
-  f = message.getPercievedLatencyReport();
+  f = message.getPerceivedLatencyReport();
   if (f) {
     writer.writeBool(
       24,
@@ -840,10 +840,10 @@ proto.configuration.CapabilitiesConfiguration.prototype.setPingPongReport = func
 
 
 /**
- * optional bool percieved_latency_report = 24;
+ * optional bool perceived_latency_report = 24;
  * @return {boolean}
  */
-proto.configuration.CapabilitiesConfiguration.prototype.getPercievedLatencyReport = function() {
+proto.configuration.CapabilitiesConfiguration.prototype.getPerceivedLatencyReport = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 24, false));
 };
 
@@ -852,7 +852,7 @@ proto.configuration.CapabilitiesConfiguration.prototype.getPercievedLatencyRepor
  * @param {boolean} value
  * @return {!proto.configuration.CapabilitiesConfiguration} returns this
  */
-proto.configuration.CapabilitiesConfiguration.prototype.setPercievedLatencyReport = function(value) {
+proto.configuration.CapabilitiesConfiguration.prototype.setPerceivedLatencyReport = function(value) {
   return jspb.Message.setProto3BooleanField(this, 24, value);
 };
 
