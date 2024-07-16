@@ -6,6 +6,7 @@ on:
 jobs:
   run-e2e-tests:
     needs: build-pr
+    if: github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'main'
     uses: ./.github/workflows/demand.yml
     with:
       test_suite: 'e2e/*'
