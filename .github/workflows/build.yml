@@ -4,6 +4,10 @@ on:
   pull_request:
 
 jobs:
+#   run-e2e-tests:
+#     uses: ./.github/workflows/demand.yml
+#     secrets: inherit
+
   build-pr:
     runs-on: ubuntu-latest
     concurrency:
@@ -16,9 +20,7 @@ jobs:
         uses: ./.github/actions/build_package
       - name: Run unit tests
         run: yarn test:unit
-      - name: Run e2e tests
-        if: github.event.pull_request.base.ref == 'main'
-        run: yarn test:e2e
+      - uses: ./.github/workflows/demand.yml
       - name: Ensure working directory is clean
         uses: CatChen/check-git-status-action@v1
         with:
