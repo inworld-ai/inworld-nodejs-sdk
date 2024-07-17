@@ -67,8 +67,10 @@ jobs:
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
+        with:
+          ref: TEST-96-update-node-js-workflows
       - name: Run e2e tests
-        uses: ./.github/actions/e2e/action.yml
+        uses: ./.github/actions/e2e
         with:
           test_suite: ${{ github.event.inputs.test_suite }}
           os: ${{ github.event.inputs.os }}
