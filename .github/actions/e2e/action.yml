@@ -1,0 +1,62 @@
+name: run-e2e
+inputs:
+  test_suite:
+    description: 'Select the test suite to run'
+    required: true
+    default: 'e2e/*'
+  os:
+    description: 'Choose OS to run on'
+    required: true
+    default: 'ubuntu-latest'
+    options:
+      - ubuntu-latest
+      - windows-latest
+      - macos-latest
+  environment:
+    description: 'Choose environment to run on'
+    required: true
+    default: 'PROD'
+    options:
+      - 'PROD'
+      - 'STAGE'
+      - 'DEV'
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup node
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18.x'
+    - name: Checkout source code
+      uses: actions/checkout@v3
+    - id: "auth"
+      name: "Authenticate to Google Cloud"
+      uses: "google-github-actions/auth@v2"
+      with:
+        token_format: "access_token"
+        workload_identity_provider: "${{ inputs.AUTH_IDENTITY_PROVIDER }}"
+        service_account: "${{ inputs.AUTH_SERVICE_ACCOUNT }}"
+    - id: "secrets"
+      uses: 'google-github-actions/get-secretmanager-secrets@v2'
+      with:
+        secrets: |-
+          ALLURE_TOKEN:${{ inputs.PROJECT_ID }}/allure-token
+    - name: Install Packages
+      run: yarn install
+    - name: Install inworld/nodejs-sdk
+      run: yarn add @inworld/nodejs-sdk
+    - name: Setup Allure TestOps
+      if: always()
+      uses: allure-framework/setup-allurectl@v1.0.0
+      with:
+        allure-endpoint: 'https://inworld.testops.cloud/'
+        allure-token: '${{ steps.secrets.outputs.ALLURE_TOKEN }}'
+        allure-project-id: 35
+      continue-on-error: true
+    - name: Run Tests
+      run: yarn jest "${{ inputs.test_suite }}"     
+    - name: Upload Allure Results
+      env:
+        ALLURE_TOKEN: '${{ steps.secrets.outputs.ALLURE_TOKEN }}'
+      if: always()
+      run: allurectl upload build/allure-results

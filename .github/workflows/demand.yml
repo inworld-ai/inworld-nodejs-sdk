@@ -1,15 +1,15 @@
 name: On Demand Test Run
 
-on:
-  workflow_call:
-    inputs:
-      test_suite:
-        required: true
-        default: 'e2e/*'
-        type: string
-      environment:
-        default: 'PROD'
-        type: string
+# on:
+#   workflow_call:
+#     inputs:
+#       test_suite:
+#         required: true
+#         default: 'e2e/*'
+#         type: string
+#       environment:
+#         default: 'PROD'
+#         type: string
 
   workflow_dispatch:
     inputs:
@@ -65,40 +65,9 @@ jobs:
         contents: 'read'
         id-token: 'write'
     steps:
-      - name: Setup node
-        uses: actions/setup-node@v3
+      - name: Run e2e tests
+        uses: ./.github/actions/e2e
         with:
-          node-version: '18.x'
-      - name: Checkout source code
-        uses: actions/checkout@v3
-      - id: "auth"
-        name: "Authenticate to Google Cloud"
-        uses: "google-github-actions/auth@v2"
-        with:
-          token_format: "access_token"
-          workload_identity_provider: "${{ env.AUTH_IDENTITY_PROVIDER }}"
-          service_account: "${{ env.AUTH_SERVICE_ACCOUNT }}"
-      - id: "secrets"
-        uses: 'google-github-actions/get-secretmanager-secrets@v2'
-        with:
-          secrets: |-
-            ALLURE_TOKEN:${{env.PROJECT_ID}}/allure-token
-      - name: Install Packages
-        run: yarn install
-      - name: Install inworld/nodejs-sdk
-        run: yarn add @inworld/nodejs-sdk
-      - name: Setup Allure TestOps
-        if: always()
-        uses: allure-framework/setup-allurectl@v1.0.0
-        with:
-          allure-endpoint: ${{ env.ALLURE_ENDPOINT }}
-          allure-token: '${{ steps.secrets.outputs.ALLURE_TOKEN }}'
-          allure-project-id: ${{ env.ALLURE_PROJECT_ID }}
-        continue-on-error: true
-      - name: Run Tests
-        run: yarn jest "${{ github.event.inputs.test_suite }}"     
-      - name: Upload Allure Results
-        env:
-          ALLURE_TOKEN: '${{ steps.secrets.outputs.ALLURE_TOKEN }}'
-        if: always()
-        run: allurectl upload ${{ env.ALLURE_RESULTS }}
+          test_suite: ${{ github.event.inputs.test_suite }}
+          os: ${{ github.event.inputs.os }}
+          environment: ${{ github.event.inputs.environment }}
