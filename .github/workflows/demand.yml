@@ -1,16 +1,6 @@
 name: On Demand Test Run
 
 on:
-  workflow_call:
-    inputs:
-      test_suite:
-        required: true
-        default: 'e2e/*'
-        type: string
-      environment:
-        default: 'PROD'
-        type: string
-
   workflow_dispatch:
     inputs:
       test_suite:
