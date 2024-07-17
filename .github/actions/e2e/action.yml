@@ -43,8 +43,10 @@ runs:
           ALLURE_TOKEN:${{ inputs.PROJECT_ID }}/allure-token
     - name: Install Packages
       run: yarn install
+      shell: bash
     - name: Install inworld/nodejs-sdk
       run: yarn add @inworld/nodejs-sdk
+      shell: bash
     - name: Setup Allure TestOps
       if: always()
       uses: allure-framework/setup-allurectl@v1.0.0
@@ -55,8 +57,10 @@ runs:
       continue-on-error: true
     - name: Run Tests
       run: yarn jest "${{ inputs.test_suite }}"     
+      shell: bash
     - name: Upload Allure Results
       env:
         ALLURE_TOKEN: '${{ steps.secrets.outputs.ALLURE_TOKEN }}'
       if: always()
       run: allurectl upload build/allure-results
+      shell: bash
