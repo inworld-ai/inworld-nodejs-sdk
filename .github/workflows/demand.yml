@@ -7,9 +7,6 @@ on:
         required: true
         default: 'e2e/*'
         type: string
-      os:
-        default: ubuntu-latest
-        type: string
       environment:
         default: 'PROD'
         type: string
