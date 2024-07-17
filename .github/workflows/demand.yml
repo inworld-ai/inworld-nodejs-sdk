@@ -66,9 +66,9 @@ jobs:
         id-token: 'write'
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Run e2e tests
-        uses: ./.github/actions/e2e
+        uses: ./.github/actions/e2e/action.yml
         with:
           test_suite: ${{ github.event.inputs.test_suite }}
           os: ${{ github.event.inputs.os }}
