@@ -34,13 +34,13 @@ runs:
       uses: "google-github-actions/auth@v2"
       with:
         token_format: "access_token"
-        workload_identity_provider: "${{ inputs.AUTH_IDENTITY_PROVIDER }}"
-        service_account: "${{ inputs.AUTH_SERVICE_ACCOUNT }}"
+        workload_identity_provider: "${{ env.AUTH_IDENTITY_PROVIDER }}"
+        service_account: "${{ env.AUTH_SERVICE_ACCOUNT }}"
     - id: "secrets"
       uses: 'google-github-actions/get-secretmanager-secrets@v2'
       with:
         secrets: |-
-          ALLURE_TOKEN:${{ inputs.PROJECT_ID }}/allure-token
+          ALLURE_TOKEN:${{ env.PROJECT_ID }}/allure-token
     - name: Install Packages
       run: yarn install
       shell: bash
