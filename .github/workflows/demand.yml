@@ -65,6 +65,8 @@ jobs:
         contents: 'read'
         id-token: 'write'
     steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
       - name: Run e2e tests
         uses: ./.github/actions/e2e
         with:
