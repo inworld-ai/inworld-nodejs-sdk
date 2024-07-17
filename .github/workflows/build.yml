@@ -9,6 +9,27 @@ jobs:
     concurrency:
       group: build-a-${{ github.ref }}
       cancel-in-progress: true
+    env:
+      INWORLD_E2E_KEY: ${{ secrets.INWORLD_E2E_KEY }}
+      INWORLD_E2E_SECRET: ${{ secrets.INWORLD_E2E_SECRET }}
+      INWORLD_E2E_SCENE_HOUSE: ${{ vars.INWORLD_E2E_SCENE_HOUSE }}
+      INWORLD_E2E_SCENE_MOVIESET: ${{ vars.INWORLD_E2E_SCENE_MOVIESET }}
+      INWORLD_E2E_SCENE_CASTLE: ${{ vars.INWORLD_E2E_SCENE_CASTLE }}
+      INWORLD_E2E_SCENE_STUDIO: ${{ vars.INWORLD_E2E_SCENE_STUDIO }}
+      INWORLD_E2E_CHARACTER_AUDIO: ${{ vars.INWORLD_E2E_CHARACTER_AUDIO }}
+      INWORLD_E2E_CHARACTER_SCENE: ${{ vars.INWORLD_E2E_CHARACTER_SCENE }}
+      INWORLD_E2E_CHARACTER_TEXT: ${{ vars.INWORLD_E2E_CHARACTER_TEXT }}
+      INWORLD_E2E_CHARACTER_VERB: ${{ vars.INWORLD_E2E_CHARACTER_VERB }}
+      ALLURE_ENDPOINT: 'https://inworld.testops.cloud/'
+      ALLURE_PROJECT_ID: '35'
+      ALLURE_JOB_RUN_ID: ''
+      ALLURE_RESULTS: 'build/allure-results'
+      AUTH_IDENTITY_PROVIDER: ${{ vars.AUTH_IDENTITY_PROVIDER }}
+      AUTH_SERVICE_ACCOUNT: ${{ vars.AUTH_SERVICE_ACCOUNT }}
+      ENV: ${{ github.event.inputs.environment }}
+      OS: ${{ github.event.inputs.os }}
+      PROJECT_ID: ${{ vars.PROJECT_ID }}
+      NODE_SDK_INWORLD_ENGINE_HOST:  ${{ secrets.NODE_SDK_INWORLD_ENGINE_HOST }}
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
