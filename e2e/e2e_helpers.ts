@@ -140,6 +140,33 @@ async function testTextPacket(
   }
 }
 
+async function testNarratedPacket(
+  packet: InworldPacket,
+  connection: InworldConnectionService,
+  idCheck: (id: string) => boolean,
+) {
+  if (packet.isNarratedAction()) {
+    // packetId
+    expect(packet.packetId.interactionId).toBeDefined();
+    expect(idCheck(packet.packetId.interactionId!)).toBeTruthy();
+    expect(packet.packetId.conversationId).toBeDefined();
+    // routing
+    let characters = await connection.getCharacters();
+    let characterName = characters[0].id;
+    if (packet.routing.source.isPlayer) {
+      expect(packet.routing.source.name).toBe('');
+      expect(packet.routing.source.isPlayer).toBeTruthy();
+      expect(packet.routing.source.isCharacter).toBeFalsy();
+    } else {
+      expect(packet.routing.source.name).toBe(characterName);
+      expect(packet.routing.source.isCharacter).toBeTruthy();
+      expect(packet.routing.source.isPlayer).toBeFalsy();
+    }
+    // narratedAction
+    expect(packet.narratedAction.text).toBeDefined();
+  }
+}
+
 async function testTriggerPacket(
   packet: InworldPacket,
   connection: InworldConnectionService,
@@ -198,12 +225,13 @@ function testPackets(
     testAudioPacket(packet, connection, idCheck);
     testEmotionPacket(packet, connection, idCheck);
     testTriggerPacket(packet, connection, idCheck);
+    testNarratedPacket(packet, connection, idCheck);
     testControlPacket(packet);
 
     if (packet.isEmotion()) {
       hasEmotionPacket = true;
     }
-    if (packet.isInteractionEnd()) {
+    if (packet.isText() || packet.isAudio()) {
       hasInteraction = true;
     }
   }
@@ -220,6 +248,7 @@ interface InworldConnectionServiceWrapper {
     trigger: string,
     parameters?: TriggerParameter[],
   ) => Promise<[string, string]>;
+  sendNarrated: (text: string) => Promise<[string, string]>;
   changeScene: (scene: string) => Promise<void>;
 }
 
@@ -372,6 +401,27 @@ class InworldConnectionManager {
     });
   }
 
+  public async sendNarrated(text: string): Promise<[string, string]> {
+    const sent = await this.connection.sendNarratedAction(text);
+    
+    return new Promise<[string, string]>((resolve, _reject) => {
+      const interval = setInterval(() => {
+        const lastIndex = this.byInteractionId?.[sent.packetId.interactionId!];
+        const lastItem = lastIndex?.[lastIndex.length - 1];
+
+        if (lastItem?.isInteractionEnd()) {
+          clearInterval(interval);
+          testPackets(
+            this.byInteractionId[sent.packetId.interactionId!],
+            this.connection,
+            this.config,
+          );
+          resolve(this.byInteractionIdOutput[sent.packetId.interactionId!]);
+        }
+      });
+    });
+  }
+  
   public async sendTrigger(
     trigger: string,
     parameters?: TriggerParameter[],
@@ -395,7 +445,7 @@ class InworldConnectionManager {
       });
     });
   }
-
+  
   public async changeScene(scene: string): Promise<void> {
     await this.connection.getCharacters();
     await this.connection.changeScene(scene);
@@ -407,6 +457,7 @@ class InworldConnectionManager {
       sendText: this.sendText.bind(this),
       sendAudio: this.sendAudio.bind(this),
       sendTrigger: this.sendTrigger.bind(this),
+      sendNarrated: this.sendNarrated.bind(this),
       changeScene: this.changeScene.bind(this),
     };
   }
