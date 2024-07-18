@@ -25,8 +25,6 @@ const config2 = {
   },
 };
 
-
-
 test('[Packet] Packet properties are correct for new connection with nothing sent', async () => {
   await allure.allureId('1255');
   await allure.suite('Node.js SDK');

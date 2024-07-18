@@ -403,7 +403,7 @@ class InworldConnectionManager {
 
   public async sendNarrated(text: string): Promise<[string, string]> {
     const sent = await this.connection.sendNarratedAction(text);
-    
+
     return new Promise<[string, string]>((resolve, _reject) => {
       const interval = setInterval(() => {
         const lastIndex = this.byInteractionId?.[sent.packetId.interactionId!];
@@ -421,7 +421,7 @@ class InworldConnectionManager {
       });
     });
   }
-  
+
   public async sendTrigger(
     trigger: string,
     parameters?: TriggerParameter[],
@@ -445,7 +445,7 @@ class InworldConnectionManager {
       });
     });
   }
-  
+
   public async changeScene(scene: string): Promise<void> {
     await this.connection.getCharacters();
     await this.connection.changeScene(scene);
