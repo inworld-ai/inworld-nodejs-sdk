@@ -9,3 +9,4 @@ INWORLD_E2E_CHARACTER_AUDIO=workspaces/integrations_testing/characters/audio
 INWORLD_E2E_CHARACTER_SCENE=workspaces/integrations_testing/characters/scene
 INWORLD_E2E_CHARACTER_TEXT=workspaces/integrations_testing/characters/text
 INWORLD_E2E_CHARACTER_VERB=workspaces/integrations_testing/characters/verb
+INWORLD_E2E_CHARACTER_NARRATOR=workspaces/integrations_testing/characters/narrator
