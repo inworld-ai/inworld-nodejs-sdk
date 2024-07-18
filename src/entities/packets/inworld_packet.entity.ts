@@ -35,6 +35,7 @@ export interface InworldPacketProps {
   sceneMutation?: SceneMutation;
   date: string;
   type: InworldPacketType;
+  proto?: ProtoPacket;
 }
 
 export interface SceneMutation {
@@ -47,6 +48,7 @@ export interface SceneMutation {
 }
 
 export class InworldPacket {
+  private proto: ProtoPacket.AsObject;
   private type: InworldPacketType = InworldPacketType.UNKNOWN;
 
   readonly date: string;
@@ -69,6 +71,7 @@ export class InworldPacket {
     this.routing = props.routing;
     this.date = props.date;
     this.type = props.type;
+    this.proto = props.proto?.toObject();
 
     if (this.isText()) {
       this.text = props.text;
@@ -105,6 +108,10 @@ export class InworldPacket {
     if (this.isSceneMutationResponse() || this.isSceneMutationRequest()) {
       this.sceneMutation = props.sceneMutation;
     }
+  }
+
+  getProto() {
+    return this.proto;
   }
 
   isText() {
@@ -189,6 +196,7 @@ export class InworldPacket {
 
     return new InworldPacket({
       type,
+      proto,
       date: proto.getTimestamp().toDate().toISOString(),
       packetId: PacketId.fromProto(proto.getPacketId()),
       routing: Routing.fromProto(proto.getRouting()),

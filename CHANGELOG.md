@@ -1,3 +1,9 @@
+## [Unreleased]
+
+### Added
+
+- Add getProto method to Inworld packets
+
 ## [1.14.2] - 2024-06-27
 
 ### Fixed
