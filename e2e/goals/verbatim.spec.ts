@@ -1,6 +1,6 @@
 import * as allure from 'allure-js-commons';
 
-import { sendText } from '../e2e_helpers';
+import { openConnectionManually } from '../e2e_helpers';
 
 let key: [string, string] = [
   process.env.INWORLD_E2E_KEY!,
@@ -8,6 +8,13 @@ let key: [string, string] = [
 ];
 let name: string = 'Tester';
 let npc: string = process.env.INWORLD_E2E_CHARACTER_VERB!;
+
+const config = {
+  capabilities: { emotions: true },
+  connection: {
+    autoReconnect: false,
+  },
+};
 
 jest.retryTimes(3);
 
@@ -20,6 +27,9 @@ test('[Verbatim] NPC should say an exact verbatim when training phrase is trigge
     'This test confirms that NPC says correct exact verbatim when a training phrase is triggered',
   );
 
-  const result = await sendText(key, name, npc, 'How can I get stronger?');
+  const connection = await openConnectionManually(key, name, npc, config);
+  const result = await connection.sendText('How can I get stronger?');
+  connection.close();
+
   expect(result[0]).toMatch('Visit the Queen Bee and get a honeybee stinger!');
 }, 10000);
