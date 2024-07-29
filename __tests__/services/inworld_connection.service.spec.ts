@@ -12,6 +12,7 @@ import { v4 } from 'uuid';
 import {
   ConversationState,
   MicrophoneMode,
+  UnderstandingMode,
 } from '../../src/common/data_structures';
 import { InworldPacket } from '../../src/entities/packets/inworld_packet.entity';
 import { EventFactory } from '../../src/factories/event';
@@ -453,7 +454,38 @@ describe('send', () => {
       mode,
     });
     expect(packet).toBeInstanceOf(InworldPacket);
-    expect(packet.isControl()).toEqual(true);
+    expect(packet?.isControl()).toEqual(true);
+  });
+
+  test('should send audio session start for speach recognition only', async () => {
+    const understandingMode = UnderstandingMode.SPEECH_RECOGNITION_ONLY;
+    const sendAudioSessionStart = jest.spyOn(eventFactory, 'audioSessionStart');
+
+    const [packet] = await Promise.all([
+      service.sendAudioSessionStart({ understandingMode }),
+      new Promise((resolve: any) => {
+        setTimeout(() => {
+          connection.onMessage!(incoming);
+          resolve(true);
+        }, 0);
+      }),
+    ]);
+
+    expect(open).toHaveBeenCalledTimes(0);
+    expect(service.isActive()).toEqual(true);
+    expect(service.getConversations()).toEqual([
+      {
+        conversationId,
+        characters: [characters[0]],
+      },
+    ]);
+    expect(sendAudioSessionStart).toHaveBeenCalledTimes(1);
+    expect(sendAudioSessionStart).toHaveBeenLastCalledWith({
+      conversationId,
+      understandingMode,
+    });
+    expect(packet).toBeInstanceOf(InworldPacket);
+    expect(packet?.isControl()).toEqual(true);
   });
 
   test('should send audio session end', async () => {

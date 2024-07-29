@@ -1,6 +1,10 @@
 require('dotenv').config();
 
-const { DislikeType, MicrophoneMode } = require('@inworld/nodejs-sdk');
+const {
+  DislikeType,
+  MicrophoneMode,
+  UnderstandingMode,
+} = require('@inworld/nodejs-sdk');
 
 const { Client } = require('./components/client');
 const { Recorder } = require('./components/recorder');
@@ -44,6 +48,7 @@ const run = async function () {
   console.info(`Console commands:
     |- /start - starts audio capturing.
     |- /start-push-to-talk - starts audio capturing in push-to-talk mode. Send /end to stop.
+    |- /start-recognition-only - starts audio capturing in recognition-only mode. Send /end to stop.
     |- /end - ends audio capturing.
     |- /trigger %name% %params%  - send trigger with name and params. (Params should be in JSON format such as [{"name":"value","value":"invalid"}]. Params are optional.)
     |- /narration - send narrated action.
@@ -68,11 +73,16 @@ const run = async function () {
     switch (command) {
       case '/start':
       case '/start-push-to-talk':
+      case '/start-recognition-only':
         const mode =
           command === '/start-push-to-talk'
             ? MicrophoneMode.EXPECT_AUDIO_END
             : undefined;
-        await connection.sendAudioSessionStart({ mode });
+        const understandingMode =
+          command === '/start-recognition-only'
+            ? UnderstandingMode.SPEECH_RECOGNITION_ONLY
+            : undefined;
+        await connection.sendAudioSessionStart({ mode, understandingMode });
         recorder.capture();
         break;
 

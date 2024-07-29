@@ -27,6 +27,7 @@ import {
   SendPacketParams,
   SendTriggerPacketParams,
   SessionControlProps,
+  UnderstandingMode,
 } from '../common/data_structures';
 import { protoTimestamp } from '../common/helpers';
 import { Character } from '../entities/character.entity';
@@ -310,8 +311,23 @@ export class EventFactory {
           break;
       }
 
+      let protoUnderstandingMode;
+
+      switch (params.understandingMode) {
+        case UnderstandingMode.SPEECH_RECOGNITION_ONLY:
+          protoUnderstandingMode =
+            AudioSessionStartPayload.UnderstandingMode.SPEECH_RECOGNITION_ONLY;
+          break;
+        default:
+          protoUnderstandingMode =
+            AudioSessionStartPayload.UnderstandingMode.FULL;
+          break;
+      }
+
       event.setAudioSessionStart(
-        new AudioSessionStartPayload().setMode(protoMode),
+        new AudioSessionStartPayload()
+          .setMode(protoMode)
+          .setUnderstandingMode(protoUnderstandingMode),
       );
     }
 
