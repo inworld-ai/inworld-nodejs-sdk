@@ -32,7 +32,7 @@ export class Conversation {
   }
 
   playAudio(packet: InworldPacket) {
-    if (this.cancelResponses[packet.packetId.interactionId]) {
+    if (this.cancelResponses[packet.packetId.interactionId!]) {
       return;
     }
 
@@ -46,15 +46,23 @@ export class Conversation {
             !!audio && packetId.utteranceId === packet.packetId.utteranceId,
         );
 
-        if (this.order === DISPLAY_WHEN.AFTER_AUDIO_PLAYING) {
-          const found = this.markAsApplied(
-            ({ text, packetId }: InworldPacket) =>
-              !!text && packetId.utteranceId === packet.packetId.utteranceId,
-          );
+        const text = this.markAsApplied(
+          ({ text, packetId }: InworldPacket) =>
+            !!text && packetId.utteranceId === packet.packetId.utteranceId,
+        );
 
-          if (found) {
-            this.renderPacket(found.packet);
-          }
+        if (text) {
+          this.renderPacket(text.packet);
+        }
+
+        const action = this.markAsApplied(
+          ({ narratedAction, packetId }: InworldPacket) =>
+            !!narratedAction &&
+            packetId.interactionId === packet.packetId.interactionId,
+        );
+
+        if (action) {
+          this.renderPacket(action.packet);
         }
 
         const interactionEnd = this.queue.find(

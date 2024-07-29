@@ -25,6 +25,11 @@ export class InworldStatus extends jspb.Message {
     getResourceNotFound(): ResourceNotFoundDetails | undefined;
     setResourceNotFound(value?: ResourceNotFoundDetails): InworldStatus;
 
+    hasVersionConflict(): boolean;
+    clearVersionConflict(): void;
+    getVersionConflict(): VersionConflictDetails | undefined;
+    setVersionConflict(value?: VersionConflictDetails): InworldStatus;
+
     getErrorDetailsCase(): InworldStatus.ErrorDetailsCase;
 
     serializeBinary(): Uint8Array;
@@ -44,11 +49,13 @@ export namespace InworldStatus {
         reconnectTime?: google_protobuf_timestamp_pb.Timestamp.AsObject,
         maxRetries: number,
         resourceNotFound?: ResourceNotFoundDetails.AsObject,
+        versionConflict?: VersionConflictDetails.AsObject,
     }
 
     export enum ErrorDetailsCase {
         ERROR_DETAILS_NOT_SET = 0,
         RESOURCE_NOT_FOUND = 5,
+        VERSION_CONFLICT = 6,
     }
 
 }
@@ -73,6 +80,32 @@ export namespace ResourceNotFoundDetails {
     export type AsObject = {
         resourceId: string,
         resourceType: ResourceType,
+    }
+}
+
+export class VersionConflictDetails extends jspb.Message { 
+    getClientVersion(): number;
+    setClientVersion(value: number): VersionConflictDetails;
+    getServerVersion(): number;
+    setServerVersion(value: number): VersionConflictDetails;
+    getRequestIndex(): number;
+    setRequestIndex(value: number): VersionConflictDetails;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): VersionConflictDetails.AsObject;
+    static toObject(includeInstance: boolean, msg: VersionConflictDetails): VersionConflictDetails.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: VersionConflictDetails, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): VersionConflictDetails;
+    static deserializeBinaryFromReader(message: VersionConflictDetails, reader: jspb.BinaryReader): VersionConflictDetails;
+}
+
+export namespace VersionConflictDetails {
+    export type AsObject = {
+        clientVersion: number,
+        serverVersion: number,
+        requestIndex: number,
     }
 }
 
