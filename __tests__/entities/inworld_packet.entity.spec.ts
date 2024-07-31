@@ -1,3 +1,4 @@
+import { InworldPacket as ProtoPacket } from '@proto/ai/inworld/packets/packets_pb';
 import { v4 } from 'uuid';
 
 import {
@@ -42,8 +43,10 @@ test('should get audio packet fields', () => {
   const audio = new AudioEvent({
     chunk: v4(),
   });
+  const proto = new ProtoPacket();
 
   const packet = new InworldPacket({
+    proto,
     audio,
     packetId,
     routing,
@@ -57,6 +60,7 @@ test('should get audio packet fields', () => {
   expect(packet.routing).toEqual(routing);
   expect(packet.date).toEqual(date);
   expect(packet.packetId).toEqual(packetId);
+  expect(packet.getProto()).toEqual(proto.toObject());
 });
 
 test('should get text packet fields', () => {
@@ -64,8 +68,10 @@ test('should get text packet fields', () => {
     text: v4(),
     final: false,
   });
+  const proto = new ProtoPacket();
 
   const packet = new InworldPacket({
+    proto,
     text,
     packetId: packetIdWithCorrelation,
     routing,
@@ -79,13 +85,16 @@ test('should get text packet fields', () => {
   expect(packet.routing).toEqual(routing);
   expect(packet.date).toEqual(date);
   expect(packet.packetId).toEqual(packetIdWithCorrelation);
+  expect(packet.getProto()).toEqual(proto.toObject());
 });
 
 test('should get trigger packet fields', () => {
   const trigger = new TriggerEvent({
     name: v4(),
   });
+  const proto = new ProtoPacket();
   const packet = new InworldPacket({
+    proto,
     packetId: packetIdWithCorrelation,
     routing,
     date,
@@ -99,10 +108,13 @@ test('should get trigger packet fields', () => {
   expect(packet.routing).toEqual(routing);
   expect(packet.date).toEqual(date);
   expect(packet.packetId).toEqual(packetIdWithCorrelation);
+  expect(packet.getProto()).toEqual(proto.toObject());
 });
 
 test('should get emotion packet fields', () => {
+  const proto = new ProtoPacket();
   const packet = new InworldPacket({
+    proto,
     packetId,
     routing,
     date,
@@ -113,10 +125,13 @@ test('should get emotion packet fields', () => {
   expect(packet.routing).toEqual(routing);
   expect(packet.date).toEqual(date);
   expect(packet.packetId).toEqual(packetId);
+  expect(packet.getProto()).toEqual(proto.toObject());
 });
 
 test('should get silence packet fields', () => {
+  const proto = new ProtoPacket();
   const packet = new InworldPacket({
+    proto,
     packetId,
     routing,
     date,
@@ -128,11 +143,14 @@ test('should get silence packet fields', () => {
   expect(packet.routing).toEqual(routing);
   expect(packet.date).toEqual(date);
   expect(packet.packetId).toEqual(packetId);
+  expect(packet.getProto()).toEqual(proto.toObject());
 });
 
 test('should get narracted action packet fields', () => {
   const text = v4();
+  const proto = new ProtoPacket();
   const packet = new InworldPacket({
+    proto,
     packetId,
     routing,
     date,
@@ -146,12 +164,15 @@ test('should get narracted action packet fields', () => {
   expect(packet.date).toEqual(date);
   expect(packet.packetId).toEqual(packetId);
   expect(packet.narratedAction.text).toEqual(text);
+  expect(packet.getProto()).toEqual(proto.toObject());
 });
 
 describe('scene mutation', () => {
   test('should get scene change event request', () => {
     const name = v4();
+    const proto = new ProtoPacket();
     const packet = new InworldPacket({
+      proto,
       packetId,
       routing,
       date,
@@ -164,11 +185,14 @@ describe('scene mutation', () => {
     expect(packet.date).toEqual(date);
     expect(packet.packetId).toEqual(packetId);
     expect(packet.sceneMutation.name).toEqual(name);
+    expect(packet.getProto()).toEqual(proto.toObject());
   });
 
   test('should get character add event request', () => {
     const addedCharacterNames = [v4(), v4()];
+    const proto = new ProtoPacket();
     const packet = new InworldPacket({
+      proto,
       packetId,
       routing,
       date,
@@ -183,10 +207,13 @@ describe('scene mutation', () => {
     expect(packet.sceneMutation.addedCharacterNames).toEqual(
       addedCharacterNames,
     );
+    expect(packet.getProto()).toEqual(proto.toObject());
   });
 
   test('should get scene change event response', () => {
+    const proto = new ProtoPacket();
     const packet = new InworldPacket({
+      proto,
       packetId,
       routing,
       date,
@@ -199,11 +226,14 @@ describe('scene mutation', () => {
     expect(packet.date).toEqual(date);
     expect(packet.packetId).toEqual(packetId);
     expect(packet.sceneMutation.loadedCharacters).toEqual(characters);
+    expect(packet.getProto()).toEqual(proto.toObject());
   });
 
   test('should get character add event response', () => {
     const addedCharacterNames = characters.map((c) => c.displayName);
+    const proto = new ProtoPacket();
     const packet = new InworldPacket({
+      proto,
       packetId,
       routing,
       date,
@@ -218,12 +248,15 @@ describe('scene mutation', () => {
     expect(packet.sceneMutation.addedCharacterNames).toEqual(
       addedCharacterNames,
     );
+    expect(packet.getProto()).toEqual(proto.toObject());
   });
 });
 
 describe('control', () => {
   test('should get interaction end packet fields', () => {
+    const proto = new ProtoPacket();
     const packet = new InworldPacket({
+      proto,
       packetId,
       routing,
       date,
@@ -238,6 +271,7 @@ describe('control', () => {
     expect(packet.routing).toEqual(routing);
     expect(packet.date).toEqual(date);
     expect(packet.packetId).toEqual(packetId);
+    expect(packet.getProto()).toEqual(proto.toObject());
   });
 
   test('should get warning packet fields', () => {
@@ -245,7 +279,9 @@ describe('control', () => {
       action: InworlControlAction.WARNING,
       description: v4(),
     });
+    const proto = new ProtoPacket();
     const packet = new InworldPacket({
+      proto,
       packetId,
       routing,
       date,
@@ -259,5 +295,6 @@ describe('control', () => {
     expect(packet.routing).toEqual(routing);
     expect(packet.date).toEqual(date);
     expect(packet.packetId).toEqual(packetId);
+    expect(packet.getProto()).toEqual(proto.toObject());
   });
 });
