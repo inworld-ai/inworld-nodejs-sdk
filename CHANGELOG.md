@@ -3,6 +3,7 @@
 ### Added
 
 - Add getProto method to Inworld packets
+- Support SPEECH_RECOGNITION_ONLY mode
 
 ## [1.14.2] - 2024-06-27
 

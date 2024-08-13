@@ -24,6 +24,7 @@ import { v4 } from 'uuid';
 import {
   InworldConversationEventType,
   MicrophoneMode,
+  UnderstandingMode,
 } from '../../src/common/data_structures';
 import { protoTimestamp } from '../../src/common/helpers';
 import { InworldPacket } from '../../src/entities/packets/inworld_packet.entity';
@@ -143,6 +144,44 @@ describe('event types', () => {
       expect(event.getControl().getAudioSessionStart().getMode()).toEqual(
         expected,
       );
+      expect(packetId.getPacketId()).toBeDefined();
+      expect(packetId.getInteractionId()).toBeFalsy();
+      expect(packetId.getUtteranceId()).toBeFalsy();
+      expect(packetId.getCorrelationId()).toBeFalsy();
+      expect(packetId.getConversationId()).toEqual(conversationId);
+      expect(event.hasRouting()).toEqual(true);
+      expect(event.getRouting().getTarget()).toBeFalsy();
+      expect(event.getRouting().getTargetsList()).toEqual([]);
+      expect(event.hasTimestamp()).toEqual(true);
+    },
+  );
+
+  test.each([
+    {
+      input: UnderstandingMode.FULL,
+      expected: AudioSessionStartPayload.UnderstandingMode.FULL,
+    },
+    {
+      input: UnderstandingMode.SPEECH_RECOGNITION_ONLY,
+      expected:
+        AudioSessionStartPayload.UnderstandingMode.SPEECH_RECOGNITION_ONLY,
+    },
+  ])(
+    'should generate audio session start with understandingMode $input',
+    ({ input, expected }) => {
+      const event = factory.audioSessionStart({
+        conversationId,
+        understandingMode: input,
+      });
+      const packetId = event.getPacketId();
+
+      expect(event.hasControl()).toEqual(true);
+      expect(event.getControl().getAction()).toEqual(
+        ControlEvent.Action.AUDIO_SESSION_START,
+      );
+      expect(
+        event.getControl().getAudioSessionStart().getUnderstandingMode(),
+      ).toEqual(expected);
       expect(packetId.getPacketId()).toBeDefined();
       expect(packetId.getInteractionId()).toBeFalsy();
       expect(packetId.getUtteranceId()).toBeFalsy();
