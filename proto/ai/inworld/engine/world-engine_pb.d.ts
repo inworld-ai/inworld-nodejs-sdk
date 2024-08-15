@@ -533,6 +533,10 @@ export namespace PreviousState {
         getEntitiesList(): Array<PreviousState.EntitiesState.Entity>;
         setEntitiesList(value: Array<PreviousState.EntitiesState.Entity>): EntitiesState;
         addEntities(value?: PreviousState.EntitiesState.Entity, index?: number): PreviousState.EntitiesState.Entity;
+        clearDisplayIdsMappingList(): void;
+        getDisplayIdsMappingList(): Array<PreviousState.EntitiesState.DisplayIdsMapping>;
+        setDisplayIdsMappingList(value: Array<PreviousState.EntitiesState.DisplayIdsMapping>): EntitiesState;
+        addDisplayIdsMapping(value?: PreviousState.EntitiesState.DisplayIdsMapping, index?: number): PreviousState.EntitiesState.DisplayIdsMapping;
 
         serializeBinary(): Uint8Array;
         toObject(includeInstance?: boolean): EntitiesState.AsObject;
@@ -548,6 +552,7 @@ export namespace PreviousState {
         export type AsObject = {
             entityItemsList: Array<PreviousState.EntitiesState.EntityItem.AsObject>,
             entitiesList: Array<PreviousState.EntitiesState.Entity.AsObject>,
+            displayIdsMappingList: Array<PreviousState.EntitiesState.DisplayIdsMapping.AsObject>,
         }
 
 
@@ -565,6 +570,8 @@ export namespace PreviousState {
             getEntitiesList(): Array<string>;
             setEntitiesList(value: Array<string>): EntityItem;
             addEntities(value: string, index?: number): string;
+            getDisplayId(): string;
+            setDisplayId(value: string): EntityItem;
 
             serializeBinary(): Uint8Array;
             toObject(includeInstance?: boolean): EntityItem.AsObject;
@@ -584,6 +591,7 @@ export namespace PreviousState {
 
                 propertiesMap: Array<[string, string]>,
                 entitiesList: Array<string>,
+                displayId: string,
             }
         }
 
@@ -611,6 +619,56 @@ export namespace PreviousState {
                 displayName: string,
                 description: string,
             }
+        }
+
+        export class DisplayIdsMapping extends jspb.Message { 
+            getDisplayName(): string;
+            setDisplayName(value: string): DisplayIdsMapping;
+            getSequencenumber(): number;
+            setSequencenumber(value: number): DisplayIdsMapping;
+
+            getMappingMap(): jspb.Map<string, PreviousState.EntitiesState.DisplayIdsMapping.DisplayId>;
+            clearMappingMap(): void;
+
+            serializeBinary(): Uint8Array;
+            toObject(includeInstance?: boolean): DisplayIdsMapping.AsObject;
+            static toObject(includeInstance: boolean, msg: DisplayIdsMapping): DisplayIdsMapping.AsObject;
+            static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+            static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+            static serializeBinaryToWriter(message: DisplayIdsMapping, writer: jspb.BinaryWriter): void;
+            static deserializeBinary(bytes: Uint8Array): DisplayIdsMapping;
+            static deserializeBinaryFromReader(message: DisplayIdsMapping, reader: jspb.BinaryReader): DisplayIdsMapping;
+        }
+
+        export namespace DisplayIdsMapping {
+            export type AsObject = {
+                displayName: string,
+                sequencenumber: number,
+
+                mappingMap: Array<[string, PreviousState.EntitiesState.DisplayIdsMapping.DisplayId.AsObject]>,
+            }
+
+
+            export class DisplayId extends jspb.Message { 
+                getId(): string;
+                setId(value: string): DisplayId;
+
+                serializeBinary(): Uint8Array;
+                toObject(includeInstance?: boolean): DisplayId.AsObject;
+                static toObject(includeInstance: boolean, msg: DisplayId): DisplayId.AsObject;
+                static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+                static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+                static serializeBinaryToWriter(message: DisplayId, writer: jspb.BinaryWriter): void;
+                static deserializeBinary(bytes: Uint8Array): DisplayId;
+                static deserializeBinaryFromReader(message: DisplayId, reader: jspb.BinaryReader): DisplayId;
+            }
+
+            export namespace DisplayId {
+                export type AsObject = {
+                    id: string,
+                }
+            }
+
         }
 
     }
