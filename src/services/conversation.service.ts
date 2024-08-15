@@ -157,7 +157,7 @@ export class ConversationService<
   async sendAudioSessionStart(params?: AudioSessionStartPacketParams) {
     return this.ensureConversation(() =>
       this.connection.getEventFactory().audioSessionStart({
-        mode: params?.mode,
+        ...params,
         conversationId: this.getConversationId(),
       }),
     );
