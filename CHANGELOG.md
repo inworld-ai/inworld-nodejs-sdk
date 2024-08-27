@@ -4,6 +4,8 @@
 
 - Add getProto method to Inworld packets
 - Support SPEECH_RECOGNITION_ONLY mode
+- Allow to manage entity items
+- Tasks event support
 
 ## [1.14.2] - 2024-06-27
 

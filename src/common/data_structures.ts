@@ -26,6 +26,7 @@ export interface Capabilities {
   debugInfo?: boolean;
   emotions?: boolean;
   interruptions?: boolean;
+  multiModalActionPlanning?: boolean;
   narratedActions?: boolean;
   phonemes?: boolean;
   silence?: boolean;
@@ -108,15 +109,18 @@ export interface Extension<
   afterLoadScene?: (res: CurrentSceneStatus) => void;
 }
 
-export interface TriggerParameter {
+export interface CustomParameter {
   name: string;
   value: string;
 }
+export interface TaskParameter extends CustomParameter {}
+export interface TriggerParameter extends CustomParameter {}
 
 export enum InworldPacketType {
   UNKNOWN = 'UNKNOWN',
   TEXT = 'TEXT',
   AUDIO = 'AUDIO',
+  TASK = 'TASK',
   TRIGGER = 'TRIGGER',
   EMOTION = 'EMOTION',
   CONTROL = 'CONTROL',
@@ -127,6 +131,8 @@ export enum InworldPacketType {
   SCENE_MUTATION_RESPONSE = 'SCENE_MUTATION_RESPONSE',
   CONVERSATION_UPDATE = 'CONVERSATION_UPDATE',
   CONVERSATION_EVENT = 'CONVERSATION_EVENT',
+  ENTITIES_ITEM_OPERATION = 'ENTITIES_ITEM_OPERATION',
+  OPERATION_STATUS = 'OPERATION_STATUS',
 }
 
 export enum InworlControlAction {
@@ -166,8 +172,8 @@ export interface SendPacketParams {
   conversationId: string;
 }
 
-export interface SendTriggerPacketParams extends SendPacketParams {
-  parameters?: TriggerParameter[];
+export interface SendCustomPacketParams extends SendPacketParams {
+  parameters?: CustomParameter[];
   character?: Character;
 }
 
@@ -192,4 +198,22 @@ export interface ChangeSceneProps {
   capabilities?: Capabilities;
   sessionContinuation?: SessionContinuationProps;
   gameSessionId?: string;
+}
+
+export enum ItemsInEntitiesOperationType {
+  ADD = 'ADD',
+  REMOVE = 'REMOVE',
+  REPLACE = 'REPLACE',
+}
+
+export interface EntityItemProps {
+  id: string;
+  displayName?: string;
+  description?: string;
+  properties?: { [key: string]: string };
+}
+
+export interface SceneHistoryItem {
+  character: Character;
+  packet: ProtoPacket;
 }
