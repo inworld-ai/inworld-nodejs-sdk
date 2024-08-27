@@ -69,16 +69,15 @@ describe('getSessionState', () => {
 
     expect(generateSessionToken).toHaveBeenCalledTimes(1);
     expect(result.state).toEqual(sessionState.getState_asB64());
+    expect(result.stateU8).toEqual(sessionState.getState_asU8());
     expect(result.creationTime).toEqual(
       sessionState.getCreationTime().toDate().toISOString(),
     );
     expect(result.version?.interactionId).toEqual(interactionId);
   });
 
-  test('should return session state without version', async () => {
-    const sessionState = new SessionState()
-      .setState(v4())
-      .setCreationTime(protoTimestamp());
+  test('should return session with state only', async () => {
+    const sessionState = new SessionState().setState(v4());
     const generateSessionToken = jest
       .spyOn(StateSerializationClient.prototype, 'getSessionState')
       .mockImplementationOnce((_request, _metadata, _options, callback) => {
@@ -95,9 +94,8 @@ describe('getSessionState', () => {
 
     expect(generateSessionToken).toHaveBeenCalledTimes(1);
     expect(result.state).toEqual(sessionState.getState_asB64());
-    expect(result.creationTime).toEqual(
-      sessionState.getCreationTime().toDate().toISOString(),
-    );
+    expect(result.stateU8).toEqual(sessionState.getState_asU8());
+    expect(result.creationTime).toBeUndefined();
     expect(result.version).toBeUndefined();
   });
 });

@@ -16,6 +16,7 @@ export interface getSessionStateProps {
 
 export interface SessionState {
   state?: string;
+  stateU8?: Uint8Array;
   creationTime?: string;
   version?: {
     interactionId?: string;
@@ -61,7 +62,8 @@ export class StateSerializationClientGrpcService {
 
     return {
       state: response.getState_asB64(),
-      creationTime: response.getCreationTime().toDate().toISOString(),
+      stateU8: response.getState_asU8(),
+      creationTime: response.getCreationTime()?.toDate().toISOString(),
       ...(interactionId && {
         version: { interactionId },
       }),
