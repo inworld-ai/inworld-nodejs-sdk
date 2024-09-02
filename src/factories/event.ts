@@ -22,15 +22,18 @@ import {
 import { v4 } from 'uuid';
 
 import {
+  ItemsInEntitiesOperationType,
   MicrophoneMode,
   SendAudioSessionStartPacketParams,
+  SendCustomPacketParams,
   SendPacketParams,
-  SendTriggerPacketParams,
   SessionControlProps,
   UnderstandingMode,
 } from '../common/data_structures';
 import { protoTimestamp } from '../common/helpers';
 import { Character } from '../entities/character.entity';
+import { EntityItem } from '../entities/entities/entity_item';
+import { ItemOperation } from '../entities/entities/item_operation';
 
 export interface SendCancelResponsePacketParams {
   interactionId?: string;
@@ -106,29 +109,8 @@ export class EventFactory {
     }).setText(event);
   }
 
-  trigger(name: string, params: SendTriggerPacketParams): ProtoPacket {
-    const { parameters = [], character, conversationId } = params;
-
-    const event = new CustomEvent().setName(name);
-
-    if (parameters.length) {
-      event.setParametersList(
-        parameters.map((p) =>
-          new CustomEvent.Parameter().setName(p.name).setValue(p.value),
-        ),
-      );
-    }
-
-    const base = this.baseProtoPacket({
-      correlationId: true,
-      conversationId,
-    }).setCustom(event);
-
-    if (character) {
-      base.setRouting(this.routing({ character }));
-    }
-
-    return base;
+  trigger(name: string, params: SendCustomPacketParams): ProtoPacket {
+    return this.customEvent(name, CustomEvent.Type.TRIGGER, params);
   }
 
   cancelResponse(params: SendCancelResponsePacketParams): ProtoPacket {
@@ -262,6 +244,49 @@ export class EventFactory {
       .setMutation(mutation);
   }
 
+  static createOrUpdateItems(props: {
+    items: EntityItem[];
+    addToEntities: string[];
+  }): ProtoPacket {
+    return new ProtoPacket()
+      .setPacketId(new PacketId().setPacketId(v4()))
+      .setRouting(this.worldRouting())
+      .setTimestamp(protoTimestamp())
+      .setEntitiesItemsOperation(
+        new ItemOperation({
+          createOrUpdateItems: props,
+        }).toProto(),
+      );
+  }
+
+  static removeItems(ids: string[]): ProtoPacket {
+    return new ProtoPacket()
+      .setPacketId(new PacketId().setPacketId(v4()))
+      .setRouting(this.worldRouting())
+      .setTimestamp(protoTimestamp())
+      .setEntitiesItemsOperation(
+        new ItemOperation({
+          removeItems: { itemIds: ids },
+        }).toProto(),
+      );
+  }
+
+  static itemsInEntities(props: {
+    type: ItemsInEntitiesOperationType;
+    itemIds: string[];
+    entityNames: string[];
+  }): ProtoPacket {
+    return new ProtoPacket()
+      .setPacketId(new PacketId().setPacketId(v4()))
+      .setRouting(this.worldRouting())
+      .setTimestamp(protoTimestamp())
+      .setEntitiesItemsOperation(
+        new ItemOperation({
+          itemsInEntities: props,
+        }).toProto(),
+      );
+  }
+
   baseProtoPacket(props?: {
     utteranceId?: boolean;
     interactionId?: boolean;
@@ -336,6 +361,35 @@ export class EventFactory {
       interactionId: false,
       conversationId: params.conversationId,
     }).setControl(event);
+  }
+
+  private customEvent(
+    name: string,
+    type: CustomEvent.Type,
+    params: SendCustomPacketParams,
+  ): ProtoPacket {
+    const { parameters = [], character, conversationId } = params;
+
+    const event = new CustomEvent().setName(name).setType(type);
+
+    if (parameters.length) {
+      event.setParametersList(
+        parameters.map((p) =>
+          new CustomEvent.Parameter().setName(p.name).setValue(p.value),
+        ),
+      );
+    }
+
+    const base = this.baseProtoPacket({
+      correlationId: true,
+      conversationId,
+    }).setCustom(event);
+
+    if (character) {
+      base.setRouting(this.routing({ character }));
+    }
+
+    return base;
   }
 
   private routing(props?: { character: Character }): Routing {

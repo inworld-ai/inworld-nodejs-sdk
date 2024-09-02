@@ -8,6 +8,7 @@ import {
   ConversationEventPayload,
   ConversationUpdatePayload,
   CurrentSceneStatus,
+  CustomEvent,
   DataChunk,
   EmotionEvent,
   InworldPacket as ProtoPacket,
@@ -15,9 +16,11 @@ import {
   LoadScene,
   MutationEvent,
   NarratedAction,
+  OperationStatusEvent,
   PacketId,
   Routing,
 } from '@proto/ai/inworld/packets/packets_pb';
+import { Status } from '@proto/google/rpc/status_pb';
 import { Duration } from 'google-protobuf/google/protobuf/duration_pb';
 import { v4 } from 'uuid';
 
@@ -547,6 +550,55 @@ describe('convert packet to external one', () => {
     expect(result.isTrigger()).toEqual(true);
   });
 
+  test('task with parameters', () => {
+    const rounting = new Routing()
+      .setSource(new Actor())
+      .setTarget(new Actor());
+    const event = new CustomEvent()
+      .setName(v4())
+      .setType(CustomEvent.Type.TASK);
+    const packetId = new PacketId()
+      .setPacketId(v4())
+      .setUtteranceId(v4())
+      .setInteractionId(v4());
+    const packet = new ProtoPacket()
+      .setPacketId(packetId)
+      .setRouting(rounting)
+      .setTimestamp(protoTimestamp())
+      .setCustom(event);
+    const result = InworldPacket.fromProto(packet);
+
+    expect(result).toBeInstanceOf(InworldPacket);
+    expect(result.isTask()).toEqual(true);
+  });
+
+  test('task without parameters', () => {
+    const rounting = new Routing()
+      .setSource(new Actor())
+      .setTarget(new Actor());
+    const event = new CustomEvent()
+      .setName(v4())
+      .setType(CustomEvent.Type.TASK)
+      .setParametersList(
+        [{ name: v4(), value: v4() }].map((p) =>
+          new CustomEvent.Parameter().setName(p.name).setValue(p.value),
+        ),
+      );
+    const packetId = new PacketId()
+      .setPacketId(v4())
+      .setUtteranceId(v4())
+      .setInteractionId(v4());
+    const packet = new ProtoPacket()
+      .setPacketId(packetId)
+      .setRouting(rounting)
+      .setTimestamp(protoTimestamp())
+      .setCustom(event);
+    const result = InworldPacket.fromProto(packet);
+
+    expect(result).toBeInstanceOf(InworldPacket);
+    expect(result.isTask()).toEqual(true);
+  });
+
   test('emotion', () => {
     const rounting = new Routing()
       .setSource(new Actor())
@@ -886,6 +938,26 @@ describe('convert packet to external one', () => {
       expect(result.isControl()).toEqual(true);
       expect(result.isInteractionEnd()).toEqual(false);
       expect(result.date).toEqual(today.toISOString());
+    });
+  });
+  describe('entities and items', () => {
+    test('operation status', () => {
+      const packet = new ProtoPacket()
+        .setPacketId(new PacketId().setPacketId(v4()))
+        .setTimestamp(protoTimestamp())
+        .setRouting(
+          new Routing().setSource(new Actor()).setTargetsList([new Actor()]),
+        )
+        .setOperationStatus(
+          new OperationStatusEvent().setStatus(
+            new Status().setCode(200).setMessage(v4()).setDetailsList([]),
+          ),
+        );
+
+      const result = InworldPacket.fromProto(packet);
+
+      expect(result).toBeInstanceOf(InworldPacket);
+      expect(result.isOperationStatus()).toEqual(true);
     });
   });
 });

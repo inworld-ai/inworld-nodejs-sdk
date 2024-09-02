@@ -6,6 +6,8 @@
 - Support SPEECH_RECOGNITION_ONLY mode
 - Add version to session state
 - Allow to get session state as a Uint8Array
+- Allow to manage entity items
+- Tasks event support
 
 ## [1.14.2] - 2024-06-27
 

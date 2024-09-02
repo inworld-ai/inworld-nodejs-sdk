@@ -116,6 +116,7 @@ export const capabilitiesProps: Capabilities = {
   interruptions: true,
   narratedActions: true,
   phonemes: true,
+  multiModalActionPlanning: true,
   silence: true,
   debugInfo: true,
 };
@@ -126,6 +127,7 @@ export const capabilities = new CapabilitiesConfiguration()
   .setEmotions(true)
   .setInterruptions(true)
   .setPhonemeInfo(true)
+  .setMultiModalActionPlanning(true)
   .setSilenceEvents(true)
   .setContinuation(true);
 
