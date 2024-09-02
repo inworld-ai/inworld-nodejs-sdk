@@ -4,6 +4,8 @@
 
 - Add getProto method to Inworld packets
 - Support SPEECH_RECOGNITION_ONLY mode
+- Add version to session state
+- Allow to get session state as a Uint8Array
 - Allow to manage entity items
 - Tasks event support
 

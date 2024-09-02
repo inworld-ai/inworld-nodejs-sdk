@@ -75,6 +75,7 @@ import {
   FeedbackDislikeProps,
   FeedbackLikeProps,
 } from './services/feedback.service';
+import { SessionState } from './services/gprc/state_serialization_client_grpc.service';
 import { InworldConnectionService } from './services/inworld_connection.service';
 
 const config = Config.getInstance();
@@ -125,6 +126,7 @@ export {
   Session,
   SessionContinuation,
   SessionContinuationProps,
+  SessionState,
   SessionToken,
   SessionTokenProps,
   status,
