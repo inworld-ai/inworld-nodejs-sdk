@@ -2,7 +2,7 @@ import { DialogPhrase, PreviousDialog } from './previous_dialog.entity';
 
 export interface SessionContinuationProps {
   previousDialog?: DialogPhrase[];
-  previousState?: string;
+  previousState?: string | Uint8Array;
 }
 
 export class SessionContinuation {
