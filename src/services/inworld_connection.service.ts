@@ -18,18 +18,22 @@ import { EventFactory } from '../factories/event';
 import { characterHasValidFormat, sceneHasValidFormat } from '../guard/scene';
 import { ConnectionService } from './connection.service';
 import { ConversationService } from './conversation.service';
+import { EntityService } from './entity.service';
 import { FeedbackService } from './feedback.service';
 
 export class InworldConnectionService<
   InworldPacketT extends InworldPacket = InworldPacket,
 > {
   readonly feedback: FeedbackService<InworldPacketT>;
+  readonly entity: EntityService<InworldPacketT>;
+
   private connection: ConnectionService<InworldPacketT>;
   private oneToOneConversation: ConversationService<InworldPacketT>;
 
   constructor(connection: ConnectionService<InworldPacketT>) {
     this.connection = connection;
     this.feedback = new FeedbackService(connection);
+    this.entity = new EntityService(connection);
   }
 
   async getSessionState() {

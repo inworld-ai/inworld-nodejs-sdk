@@ -10,6 +10,9 @@ export class Capability {
       .setEmotions(capabilities.emotions ?? false)
       .setInterruptions(capabilities.interruptions ?? false)
       .setMultiAgent(true)
+      .setMultiModalActionPlanning(
+        capabilities.multiModalActionPlanning ?? false,
+      )
       .setNarratedActions(capabilities.narratedActions ?? false)
       .setPhonemeInfo(capabilities.phonemes ?? false)
       .setSilenceEvents(capabilities.silence ?? false);
