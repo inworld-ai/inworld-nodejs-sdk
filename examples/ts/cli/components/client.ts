@@ -16,7 +16,7 @@ import { CLIENT_ACTION, CONVERSATION_ACTION, DISPLAY_WHEN } from './types';
 export interface ClientProps {
   multiCharacters?: boolean;
   config?: ClientConfiguration;
-  previousState?: string;
+  previousState?: string | Uint8Array;
   text?: { displayWhen: DISPLAY_WHEN };
   onDisconnect: () => void;
 }

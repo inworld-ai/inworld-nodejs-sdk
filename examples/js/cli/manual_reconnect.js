@@ -8,7 +8,7 @@ const { changeCharacter, characterInfo, listCharacters } = require('./helpers');
 
 const split = require('split');
 
-const DISCONNECT_TIMEOUT = 30 * 1000; // 30 seconds
+const DISCONNECT_TIMEOUT = 2 * 60 * 1000; // 2 minutes
 
 const recorder = new Recorder({
   onData: async (data) => connection.sendAudio(data),
@@ -62,7 +62,8 @@ const run = async function () {
   console.info(`Console commands:
     |- /open - open connection.
     |- /close - close connection.
-    |- /save-session-state - save session state in app memory.
+    |- /save-session-state - save session state in app memory as string.
+    |- /save-session-state-bytes - save session state in app memory as bytes.
     |- /restore-session-state - restore session state from app memory.
     |- /start - starts audio capturing.
     |- /start-push-to-talk - starts audio capturing in push-to-talk mode. Send /end to stop.
@@ -151,11 +152,21 @@ const run = async function () {
         break;
 
       case '/save-session-state':
+      case '/save-session-state-bytes':
         if (!connection.isActive() || !client.getInteractionIsEnded()) {
           console.log('Open connection first and send at least one packet');
         } else {
           console.log('Saving. Wait...');
-          sessionState = (await connection.getSessionState()).state;
+
+          const state = await connection.getSessionState();
+          console.log('State:', state);
+          sessionState =
+            command === '/save-session-state' ? state.state : state.stateU8;
+          if (sessionState) {
+            console.log('State:', state);
+            console.log('interactionId: ', state.version?.interactionId);
+          }
+
           console.log(
             sessionState
               ? 'Session state is saved.'
