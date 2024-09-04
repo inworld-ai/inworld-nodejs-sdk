@@ -1155,6 +1155,8 @@ export namespace ApplyResponse {
 export class LoadScene extends jspb.Message { 
     getName(): string;
     setName(value: string): LoadScene;
+    getIsResetScene(): boolean;
+    setIsResetScene(value: boolean): LoadScene;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): LoadScene.AsObject;
@@ -1169,6 +1171,7 @@ export class LoadScene extends jspb.Message {
 export namespace LoadScene {
     export type AsObject = {
         name: string,
+        isResetScene: boolean,
     }
 }
 
