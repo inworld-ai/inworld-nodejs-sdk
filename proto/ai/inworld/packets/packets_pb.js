@@ -8546,7 +8546,8 @@ proto.LoadScene.prototype.toObject = function(opt_includeInstance) {
  */
 proto.LoadScene.toObject = function(includeInstance, msg) {
   var f, obj = {
-    name: jspb.Message.getFieldWithDefault(msg, 1, "")
+    name: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    isResetScene: jspb.Message.getBooleanFieldWithDefault(msg, 2, false)
   };
 
   if (includeInstance) {
@@ -8587,6 +8588,10 @@ proto.LoadScene.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {string} */ (reader.readString());
       msg.setName(value);
       break;
+    case 2:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setIsResetScene(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -8623,6 +8628,13 @@ proto.LoadScene.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getIsResetScene();
+  if (f) {
+    writer.writeBool(
+      2,
+      f
+    );
+  }
 };
 
 
@@ -8641,6 +8653,24 @@ proto.LoadScene.prototype.getName = function() {
  */
 proto.LoadScene.prototype.setName = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional bool is_reset_scene = 2;
+ * @return {boolean}
+ */
+proto.LoadScene.prototype.getIsResetScene = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 2, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.LoadScene} returns this
+ */
+proto.LoadScene.prototype.setIsResetScene = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 2, value);
 };
 
 
