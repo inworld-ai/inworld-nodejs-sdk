@@ -4,7 +4,13 @@ const { MicrophoneMode } = require('@inworld/nodejs-sdk');
 
 const { Client } = require('./components/client');
 const { Recorder } = require('./components/recorder');
-const { changeCharacter, characterInfo, listCharacters } = require('./helpers');
+const {
+  changeCharacter,
+  characterInfo,
+  listCharacters,
+  addCharacters,
+  changeScene,
+} = require('./helpers');
 
 const split = require('split');
 
@@ -73,6 +79,8 @@ const run = async function () {
     |- /info - shows current character.
     |- /list-all - shows available characters (created within the scene).
     |- /character %character-id% - id of the target character (Get full list using /list-all command).
+    |- /change-scene %scene% - scene resource name to be loaded: workspaces/{workspace}/scenes/{scene}
+    |- /add-characters %characters% - list of characters to be loaded: workspaces/{workspace}/characters/{character}. Use comma to separate characters.
     |- c - cancel current response.
     |- <any other text> - sends text event to server.
   `);
@@ -190,6 +198,18 @@ const run = async function () {
           } else {
             console.log('Nothing to restore...');
           }
+        }
+        break;
+
+      case '/change-scene':
+        changeScene(connection, args[0]);
+        break;
+
+      case '/add-characters':
+        if (args.length) {
+          await addCharacters(connection, args);
+        } else {
+          console.log('/add-characters requires characters list');
         }
         break;
 
