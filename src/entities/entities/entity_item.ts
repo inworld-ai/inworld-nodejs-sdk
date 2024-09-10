@@ -6,7 +6,7 @@ export class EntityItem {
   readonly id: string;
   readonly displayName: string | undefined;
   readonly description: string | undefined;
-  readonly properties: Record<string, string> | undefined;
+  readonly properties: Record<string, string> = {};
 
   constructor({ id, displayName, description, properties }: EntityItemProps) {
     this.id = id;
@@ -19,7 +19,7 @@ export class EntityItem {
       this.description = description;
     }
 
-    if (properties) {
+    if (Object.keys(properties).length > 0) {
       this.properties = properties;
     }
   }
