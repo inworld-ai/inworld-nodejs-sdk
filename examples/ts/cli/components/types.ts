@@ -17,3 +17,42 @@ export enum CONVERSATION_ACTION {
 export enum CLIENT_ACTION {
   SEND_CANCEL_RESPONSES = 'SEND_CANCEL_RESPONSES',
 }
+
+export enum MapSimulatorTriggers {
+  Start = 'start',
+  TaskFailed = 'inworld.task.failed',
+  TaskSucceeded = 'inworld.task.succeeded',
+}
+
+export const actionFunctions = [
+  'from',
+  'to',
+  'where',
+  'who',
+  'what',
+  'about',
+  'with',
+];
+
+export const compatibleTasks = [
+  'go',
+  'take',
+  'examine',
+  'use',
+  'turn_on',
+  'turn_off',
+  'open',
+  'close',
+  'consume',
+  'put',
+  'give',
+  'throw',
+  'steal',
+  'attack',
+  'hug',
+  'dig',
+  'pour',
+  'fill',
+];
+
+export const consumeTasks = ['consume', 'use'];

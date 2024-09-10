@@ -18,7 +18,11 @@ export interface ClientProps {
   config?: ClientConfiguration;
   previousState?: string | Uint8Array;
   text?: { displayWhen: DISPLAY_WHEN };
-  onDisconnect: () => void;
+  onDisconnect?: () => void;
+  onMessage?: (
+    packet: InworldPacket,
+    conversationProcess?: ChildProcess,
+  ) => void;
 }
 export class Client {
   private client: InworldClient;
@@ -54,9 +58,13 @@ export class Client {
       .setOnError(this.handleError)
       .setOnDisconnect(() => {
         console.log('Disconnected');
-        props.onDisconnect();
+        props.onDisconnect?.();
       })
-      .setOnMessage(this.onMessage);
+      .setOnMessage((packet: InworldPacket) => {
+        const callback = props.onMessage ?? this.onMessage;
+
+        callback(packet, this.conversationProcess);
+      });
 
     if (props.previousState) {
       this.client.setSessionContinuation({
