@@ -9,6 +9,10 @@
 - Allow to manage entity items
 - Tasks event support
 
+### Fixed
+
+- Add user to scene automatically in case of one-to-one conversation
+
 ## [1.14.2] - 2024-06-27
 
 ### Fixed
