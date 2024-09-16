@@ -194,6 +194,10 @@ export interface ConversationMapItem<
   state: ConversationState;
 }
 
+export enum ConversationParticipant {
+  USER = 'USER',
+}
+
 export interface ChangeSceneProps {
   capabilities?: Capabilities;
   sessionContinuation?: SessionContinuationProps;

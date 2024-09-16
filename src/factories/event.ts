@@ -22,6 +22,7 @@ import {
 import { v4 } from 'uuid';
 
 import {
+  ConversationParticipant,
   ItemsInEntitiesOperationType,
   MicrophoneMode,
   SendAudioSessionStartPacketParams,
@@ -157,7 +158,9 @@ export class EventFactory {
       .setConversationUpdate(
         new ConversationUpdatePayload().setParticipantsList(
           participants.map((p) =>
-            new Actor().setName(p).setType(Actor.Type.AGENT),
+            p === ConversationParticipant.USER
+              ? new Actor().setType(Actor.Type.PLAYER)
+              : new Actor().setName(p).setType(Actor.Type.AGENT),
           ),
         ),
       );

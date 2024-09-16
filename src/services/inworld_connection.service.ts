@@ -4,6 +4,7 @@ import {
   AudioSessionStartPacketParams,
   CancelResponsesProps,
   ChangeSceneProps,
+  ConversationParticipant,
   ConversationState,
   TriggerParameter,
 } from '../common/data_structures';
@@ -75,7 +76,7 @@ export class InworldConnectionService<
       this.oneToOneConversation = new ConversationService<InworldPacketT>(
         this.connection,
         {
-          participants: [character.resourceName],
+          participants: [character.resourceName, ConversationParticipant.USER],
           addCharacters: this.addCharacters.bind(this),
         },
       );
@@ -290,7 +291,7 @@ export class InworldConnectionService<
       this.oneToOneConversation = new ConversationService<InworldPacketT>(
         this.connection,
         {
-          participants: [character.resourceName],
+          participants: [character.resourceName, ConversationParticipant.USER],
           addCharacters: this.addCharacters.bind(this),
         },
       );
