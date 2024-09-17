@@ -28,8 +28,8 @@ jobs:
       - name: Set ref
         run: echo "REF=main" >> $GITHUB_ENV
         if: inputs.beta_version == ''
-      - name: Set config path
-        run: echo "CONFIG_PATH=.release-it.prerelease.json" >> $GITHUB_ENV
+      - name: Set config
+        run: echo "CONFIG=-c .release-it.prerelease.json" >> $GITHUB_ENV
         if: inputs.beta_version != ''
       - name: Echo version
         run: echo "${{ env.VERSION }}"
@@ -44,7 +44,7 @@ jobs:
         uses: ./.github/actions/build_package
       - name: Bump version
         run: |
-          yarn release:bump ${{ env.VERSION }} -c ${{ env.CONFIG_PATH }} --ci
+          yarn release:bump ${{ env.VERSION }} -c ${{ env.CONFIG }} --ci
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
