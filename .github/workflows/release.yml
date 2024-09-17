@@ -10,25 +10,41 @@ on:
         - patch
         - minor
         - major
+        - beta
+
+      beta_version:
+        type: string
+        description: Type version if beta increment is selected
 
 jobs:
   github-release:
     runs-on: ubuntu-latest
     steps:
-      - name: Echo increment
-        run: echo "${{ inputs.increment }}"
+      - name: Set version
+        run: echo "VERSION=${{ inputs.increment}}" >> $GITHUB_ENV
+      - name: Set beta version
+        run: echo "VERSION=${{ inputs.beta_version }}" >> $GITHUB_ENV
+        if: inputs.beta_version != ''
+      - name: Set ref
+        run: echo "REF=main" >> $GITHUB_ENV
+        if: inputs.beta_version == ''
+      - name: Set config path
+        run: echo "CONFIG_PATH=.release-it.prerelease.json" >> $GITHUB_ENV
+        if: inputs.beta_version != ''
+      - name: Echo version
+        run: echo "${{ env.VERSION }}"
       - name: Set git user
         run: git config --global user.email "github-service-account@inworld.ai" &&  git config --global user.name "CI-inworld"
       - name: Checkout source code
         uses: actions/checkout@v3
         with:
-          ref: main
+          ref: ${{ env.REF }}
           ssh-key: ${{ secrets.GH_SERVICE_ACCOUNT_SSH_KEY }}
       - name: Run build
         uses: ./.github/actions/build_package
       - name: Bump version
         run: |
-          yarn release:bump ${{ inputs.increment }} --ci
+          yarn release:bump ${{ env.VERSION }} -c ${{ env.CONFIG_PATH }} --ci
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -39,12 +55,17 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v3
         with:
-          ref: main
+          ref: ${{ env.REF }}
+      - name: Pull latest changes
+        run: git pull
       - name: Run build
         uses: ./.github/actions/build_package
+      - name: Set Tag
+        run: echo "TAG=--tag=beta" >> $GITHUB_ENV
+        if: inputs.beta_version != ''
       - run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
       - name: Publish to npm
-        run: yarn release:publish
+        run: yarn release:publish ${{ env.TAG }}
 
   release-notification:
     runs-on: [self-hosted, kubernetes, nodocker]
