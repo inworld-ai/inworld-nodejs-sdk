@@ -1,13 +1,16 @@
 .github
 .husky
 coverage
+e2e
 examples
 __tests__
 /src
 */**/node_modules/*
 */**/.eslintcache
+.linelint.yml
 .eslintrc.json
 .prettierrc.json
+.release-it.prerelease.json
 jest.config.json
 /tsconfig.json
 /tsconfig.paths.json
