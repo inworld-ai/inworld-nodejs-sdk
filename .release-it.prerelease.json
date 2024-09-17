@@ -1,0 +1,21 @@
+{
+  "git": {
+    "commitMessage": "chore: Release v${version}"
+  },
+  "github": {
+    "release": false
+  },
+  "hooks": {
+    "before:init": [
+      "git pull",
+      "yarn install",
+      "yarn build",
+      "yarn lint:check",
+      "yarn prettier:check",
+      "yarn test:unit"
+    ]
+  },
+  "npm": {
+    "publish": false
+  }
+}
