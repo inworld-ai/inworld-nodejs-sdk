@@ -44,7 +44,7 @@ jobs:
         uses: ./.github/actions/build_package
       - name: Bump version
         run: |
-          yarn release:bump ${{ env.VERSION }} -c ${{ env.CONFIG }} --ci
+          yarn release:bump ${{ env.VERSION }} ${{ env.CONFIG }} --ci
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
