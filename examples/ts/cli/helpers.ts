@@ -1,8 +1,19 @@
+import * as fs from 'fs';
+import * as util from 'util';
+
+import YAML = require('yaml');
+
 import {
   Character,
   ConversationService,
+  EntityItemProps,
   InworldConnectionService,
 } from '@inworld/nodejs-sdk';
+
+import { MapSimulatorTriggers } from './components/types';
+
+const access = util.promisify(fs.access);
+const readFile = util.promisify(fs.readFile);
 
 export const listCharacters = async (connection: InworldConnectionService) => {
   const characters = await connection.getCharacters();
@@ -62,6 +73,18 @@ export const listConversations = async (
   }
 };
 
+export const listItems = async (items: EntityItemProps[]) => {
+  if (items.length > 0) {
+    console.log('------------------------------');
+    items.forEach((i) => {
+      console.log(`${i.displayName} (${i.id})`);
+    });
+    console.log('------------------------------');
+  } else {
+    console.error('No items found');
+  }
+};
+
 export const changeScene = async (
   connection: InworldConnectionService,
   scene: string,
@@ -80,4 +103,55 @@ export const addCharacters = async (
 ) => {
   const done = await connection.addCharacters(characters);
   console.log(done ? 'Characters loaded' : 'Characters not loaded.');
+};
+
+export const checkPathAccess = async (folder: fs.PathLike) => {
+  try {
+    await access(folder, fs.constants.F_OK);
+    return true;
+  } catch (e) {
+    return false;
+  }
+};
+
+export const readYaml = async (file: string) => {
+  try {
+    const data = await readFile(file, 'utf8');
+    return YAML.parse(data);
+  } catch (e) {
+    return '';
+  }
+};
+
+export const addItems = async (
+  connection: InworldConnectionService,
+  filePath: string,
+) => {
+  if (!(await checkPathAccess(filePath))) {
+    console.error(`File ${filePath} not found`);
+    return;
+  }
+
+  const items: EntityItemProps[] = [];
+  const data = await readYaml(filePath);
+
+  if (data.items?.length > 0) {
+    console.log('\nAdding items...');
+    data.items.forEach(async (i: any) => {
+      const { entities, display_name, ...item } = i;
+      const itemToSend = {
+        ...item,
+        displayName: display_name,
+      };
+      items.push(itemToSend);
+      await connection.entity.createOrUpdateItems({
+        items: [itemToSend],
+        addToEntities: entities,
+      });
+    });
+
+    await connection.sendTrigger(MapSimulatorTriggers.Start);
+  }
+
+  return items;
 };
