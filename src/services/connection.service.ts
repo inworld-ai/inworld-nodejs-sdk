@@ -5,7 +5,9 @@ import {
   CurrentSceneStatus,
   InworldPacket as ProtoPacket,
   LoadedScene,
+  PacketId,
 } from '@proto/ai/inworld/packets/packets_pb';
+import { Duration } from 'google-protobuf/google/protobuf/duration_pb';
 
 import {
   ApiKey,
@@ -533,6 +535,13 @@ export class ConnectionService<
         });
       }
 
+      // Handle latency ping pong.
+      if (inworldPacket.isPingPongReport()) {
+        this.sendPingPongResponse(inworldPacket);
+        // Don't pass text packet outside.
+        return;
+      }
+
       this.connectionProps.onMessage?.(inworldPacket);
 
       if (inworldPacket.isWarning()) {
@@ -553,6 +562,23 @@ export class ConnectionService<
         });
       }
     };
+  }
+
+  private sendPingPongResponse(packet: InworldPacketT) {
+    this.send(() =>
+      this.getEventFactory().pong(
+        new PacketId()
+          .setPacketId(packet.packetId.packetId)
+          .setConversationId(packet.packetId.conversationId)
+          .setInteractionId(packet.packetId.interactionId)
+          .setCorrelationId(packet.packetId.correlationId),
+        packet.latencyReport.pingPong.pingTimestamp,
+      ),
+    );
+  }
+
+  private sendPerceivedLatencyReport(latencyPerceived: Duration) {
+    this.send(() => this.getEventFactory().perceivedLatency(latencyPerceived));
   }
 
   private initializeExtension() {

@@ -14,7 +14,9 @@ export class Capability {
         capabilities.multiModalActionPlanning ?? false,
       )
       .setNarratedActions(capabilities.narratedActions ?? false)
+      .setPerceivedLatencyReport(capabilities.perceivedLatencyReport ?? true)
       .setPhonemeInfo(capabilities.phonemes ?? false)
+      .setPingPongReport(capabilities.pingPongReport ?? true)
       .setSilenceEvents(capabilities.silence ?? false);
   }
 }

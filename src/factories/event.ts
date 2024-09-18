@@ -9,16 +9,21 @@ import {
   CustomEvent,
   DataChunk,
   InworldPacket as ProtoPacket,
+  LatencyReportEvent,
   LoadCharacters,
   LoadScene,
   MutationEvent,
   NarratedAction,
   PacketId,
+  PerceivedLatencyReport,
+  PingPongReport,
   Routing,
   SessionConfigurationPayload,
   TextEvent,
   UnloadCharacters,
 } from '@proto/ai/inworld/packets/packets_pb';
+import { Duration } from 'google-protobuf/google/protobuf/duration_pb';
+import { Timestamp } from 'google-protobuf/google/protobuf/timestamp_pb';
 import { v4 } from 'uuid';
 
 import {
@@ -82,6 +87,37 @@ export class EventFactory {
 
   audioSessionEnd(params: SendPacketParams): ProtoPacket {
     return this.audioSession(ControlEvent.Action.AUDIO_SESSION_END, params);
+  }
+
+  pong(packetId: PacketId, pingTimestamp: Timestamp): ProtoPacket {
+    const event = new LatencyReportEvent().setPingPong(
+      new PingPongReport()
+        .setPingPacketId(packetId)
+        .setPingTimestamp(pingTimestamp)
+        .setType(PingPongReport.Type.PONG),
+    );
+
+    return this.baseProtoPacket({
+      utteranceId: false,
+      interactionId: false,
+    }).setLatencyReport(event);
+  }
+
+  perceivedLatency(
+    latencyPerceived: Duration,
+    precisionToSend: PerceivedLatencyReport.Precision = PerceivedLatencyReport
+      .Precision.FINE,
+  ): ProtoPacket {
+    const event = new LatencyReportEvent().setPerceivedLatency(
+      new PerceivedLatencyReport()
+        .setLatency(latencyPerceived)
+        .setPrecision(precisionToSend),
+    );
+
+    return this.baseProtoPacket({
+      utteranceId: false,
+      interactionId: false,
+    }).setLatencyReport(event);
   }
 
   mutePlayback(isMuted: boolean, params: SendPacketParams): ProtoPacket {
