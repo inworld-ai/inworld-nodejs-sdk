@@ -81,7 +81,7 @@ export class InworldPacket {
     this.routing = props.routing;
     this.date = props.date;
     this.type = props.type;
-    this.proto = props.proto?.toObject();
+    this.proto = props.proto.toObject();
 
     if (this.isText()) {
       this.text = props.text;

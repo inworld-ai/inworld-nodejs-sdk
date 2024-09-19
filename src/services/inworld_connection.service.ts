@@ -93,6 +93,7 @@ export class InworldConnectionService<
     ) {
       await this.oneToOneConversation.updateParticipants([
         character.resourceName,
+        ConversationParticipant.USER,
       ]);
     }
   }
