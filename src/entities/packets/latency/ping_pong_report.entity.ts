@@ -4,6 +4,15 @@ import { Timestamp } from 'google-protobuf/google/protobuf/timestamp_pb';
 import { PacketId } from '../packet_id.entity';
 import { PingPongReportType } from './ping_pong_report_type.entity';
 
+export enum PingPongType {
+  // No type is specified, means this is empty report.
+  UNSPECIFIED = 'UNSPECIFIED',
+  // Sent from the server to the client.
+  PING = 'PING',
+  // Upon receiving a ping, the client has to send back a pong packet.
+  PONG = 'PONG',
+}
+
 export class PingPongReport {
   readonly packeId: PacketId | null;
   readonly pingTimestamp: Timestamp;
@@ -33,5 +42,16 @@ export class PingPongReport {
         PingPongReportType.fromProto(proto.getType()),
       ),
     });
+  }
+
+  static getProtoPingPongReportType(type: ProtoPingPongReport.Type) {
+    switch (type) {
+      case ProtoPingPongReport.Type.PING:
+        return PingPongType.PING;
+      case ProtoPingPongReport.Type.PONG:
+        return PingPongType.PONG;
+      default:
+        return PingPongType.UNSPECIFIED;
+    }
   }
 }

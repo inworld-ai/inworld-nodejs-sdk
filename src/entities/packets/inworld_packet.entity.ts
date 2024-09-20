@@ -227,11 +227,11 @@ export class InworldPacket {
   }
 
   isPingPongReport() {
-    return this.isLatencyReport() && this.latencyReport.pingPong;
+    return this.isLatencyReport() && !!this.latencyReport.pingPong;
   }
 
   isPerceivedLatencyReport() {
-    return this.isLatencyReport() && this.latencyReport.perceivedLatency;
+    return this.isLatencyReport() && !!this.latencyReport.perceivedLatency;
   }
 
   shouldHaveConversationId() {

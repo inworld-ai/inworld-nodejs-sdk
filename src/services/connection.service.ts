@@ -5,7 +5,6 @@ import {
   CurrentSceneStatus,
   InworldPacket as ProtoPacket,
   LoadedScene,
-  PacketId,
 } from '@proto/ai/inworld/packets/packets_pb';
 import { Duration } from 'google-protobuf/google/protobuf/duration_pb';
 
@@ -537,7 +536,7 @@ export class ConnectionService<
 
       // Handle latency ping pong.
       if (inworldPacket.isPingPongReport()) {
-        this.sendPingPongResponse(inworldPacket);
+        this.sendPingPongResponse(packet);
         // Don't pass text packet outside.
         return;
       }
@@ -564,17 +563,8 @@ export class ConnectionService<
     };
   }
 
-  private sendPingPongResponse(packet: InworldPacketT) {
-    this.send(() =>
-      this.getEventFactory().pong(
-        new PacketId()
-          .setPacketId(packet.packetId.packetId)
-          .setConversationId(packet.packetId.conversationId)
-          .setInteractionId(packet.packetId.interactionId)
-          .setCorrelationId(packet.packetId.correlationId),
-        packet.latencyReport.pingPong.pingTimestamp,
-      ),
-    );
+  private sendPingPongResponse(packet: ProtoPacket) {
+    this.send(() => this.getEventFactory().pong(packet));
   }
 
   private sendPerceivedLatencyReport(latencyPerceived: Duration) {

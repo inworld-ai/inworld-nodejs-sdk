@@ -23,7 +23,6 @@ import {
   UnloadCharacters,
 } from '@proto/ai/inworld/packets/packets_pb';
 import { Duration } from 'google-protobuf/google/protobuf/duration_pb';
-import { Timestamp } from 'google-protobuf/google/protobuf/timestamp_pb';
 import { v4 } from 'uuid';
 
 import {
@@ -89,11 +88,21 @@ export class EventFactory {
     return this.audioSession(ControlEvent.Action.AUDIO_SESSION_END, params);
   }
 
-  pong(packetId: PacketId, pingTimestamp: Timestamp): ProtoPacket {
+  pong(initialPacket: ProtoPacket): ProtoPacket {
+    const packetId = initialPacket.getPacketId();
+
     const event = new LatencyReportEvent().setPingPong(
       new PingPongReport()
-        .setPingPacketId(packetId)
-        .setPingTimestamp(pingTimestamp)
+        .setPingPacketId(
+          new PacketId()
+            .setPacketId(packetId.getPacketId())
+            .setConversationId(packetId.getConversationId())
+            .setInteractionId(packetId.getInteractionId())
+            .setCorrelationId(packetId.getCorrelationId()),
+        )
+        .setPingTimestamp(
+          initialPacket.getLatencyReport().getPingPong().getPingTimestamp(),
+        )
         .setType(PingPongReport.Type.PONG),
     );
 

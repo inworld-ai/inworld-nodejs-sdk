@@ -25,10 +25,10 @@ export class LatencyReportEvent {
 
   static fromProto(proto: ProtoLatencyReportEvent) {
     return new LatencyReportEvent({
-      ...(proto.getPingPong() && {
+      ...(proto.hasPingPong() && {
         pingPong: PingPongReport.fromProto(proto.getPingPong()),
       }),
-      ...(proto.getPerceivedLatency() && {
+      ...(proto.hasPerceivedLatency() && {
         perceivedLatency: PerceivedLatencyReport.fromProto(
           proto.getPerceivedLatency(),
         ),
