@@ -1,6 +1,7 @@
 import {
   CreateOrUpdateItemsOperation as ProtoCreateOrUpdateItemsOperation,
   EntityItem as ProtoEntityItem,
+  ItemsInEntitiesOperation as ProtoItemsInEntitiesOperation,
   ItemsOperationEvent as ProtoItemsOperationEvent,
 } from '@proto/ai/inworld/packets/entities_packets_pb';
 import { v4 } from 'uuid';
@@ -105,7 +106,7 @@ test('should convert from proto', () => {
     new ProtoCreateOrUpdateItemsOperation()
       .setAddToEntitiesList([v4(), v4()])
       .setItemsList(
-        items?.map((item) => {
+        items.map((item) => {
           const proto = new ProtoEntityItem()
             .setId(item.id)
             .setDisplayName(item.displayName)
@@ -141,7 +142,7 @@ test('should convert from proto', () => {
   );
 });
 
-test('should convert to proto', () => {
+test('should convert createOrUpdate to proto', () => {
   const id = v4();
   const displayName = v4();
   const description = v4();
@@ -186,4 +187,28 @@ test('should convert to proto', () => {
         properties: Object.fromEntries(item.getPropertiesMap().entries()),
       })),
   ).toEqual(itemOperation.createOrUpdateItems?.items);
+});
+
+test('should convert itemsInEntities to proto', () => {
+  const itemsInEntities = {
+    itemIds: [v4(), v4()],
+    type: ItemsInEntitiesOperationType.ADD,
+    entityNames: [v4(), v4()],
+  };
+
+  const itemOperation = new ItemOperation({
+    itemsInEntities,
+  });
+
+  expect(itemOperation.toProto().getItemsInEntities()?.getType()).toEqual(
+    ProtoItemsInEntitiesOperation.Type.ADD,
+  );
+});
+
+test('should convert empty itemsInEntities to proto', () => {
+  const itemOperation = new ItemOperation({});
+
+  expect(itemOperation.toProto().getItemsInEntities()?.getType()).toEqual(
+    undefined,
+  );
 });

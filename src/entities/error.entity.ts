@@ -65,7 +65,7 @@ export class InworldError {
     let details: InworldStatus[] | undefined;
 
     if (grpcErrorDetails?.details?.length > 0) {
-      details = grpcErrorDetails.details?.map((d: ProtoInworldStatus) => {
+      details = grpcErrorDetails.details.map((d: ProtoInworldStatus) => {
         const { errorType, maxRetries, reconnectType, resourceNotFound } =
           d.toObject();
         const { resourceId, resourceType } = resourceNotFound || {};
