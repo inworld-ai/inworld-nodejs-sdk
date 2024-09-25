@@ -2,7 +2,6 @@ import { PingPongReport as ProtoPingPongReport } from '@proto/ai/inworld/packets
 import { Timestamp } from 'google-protobuf/google/protobuf/timestamp_pb';
 
 import { PacketId } from '../packet_id.entity';
-import { PingPongReportType } from './ping_pong_report_type.entity';
 
 export enum PingPongType {
   // No type is specified, means this is empty report.
@@ -16,7 +15,7 @@ export enum PingPongType {
 export class PingPongReport {
   readonly packeId: PacketId | null;
   readonly pingTimestamp: Timestamp;
-  readonly type: PingPongReportType;
+  readonly type: PingPongType;
 
   constructor({
     packetId,
@@ -25,7 +24,7 @@ export class PingPongReport {
   }: {
     packetId: PacketId | null;
     pingTimestamp: Timestamp;
-    type: PingPongReportType;
+    type: PingPongType;
   }) {
     this.packeId = packetId;
     this.pingTimestamp = pingTimestamp;
@@ -38,9 +37,7 @@ export class PingPongReport {
         ? PacketId.fromProto(proto.getPingPacketId())
         : null,
       pingTimestamp: proto.getPingTimestamp(),
-      type: new PingPongReportType(
-        PingPongReportType.fromProto(proto.getType()),
-      ),
+      type: this.getProtoPingPongReportType(proto.getType()),
     });
   }
 

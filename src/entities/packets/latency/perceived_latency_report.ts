@@ -1,8 +1,6 @@
 import { PerceivedLatencyReport as ProtoPerceivedLatencyReport } from '@proto/ai/inworld/packets/packets_pb';
 import { Duration } from 'google-protobuf/google/protobuf/duration_pb';
 
-import { PerceivedLatencyReportPrecision } from './perceived_latency_report_precision.entity';
-
 export enum PerceivedLatencyReportPrecisionType {
   UNSPECIFIED = 'UNSPECIFIED',
   FINE = 'FINE',
@@ -13,14 +11,14 @@ export enum PerceivedLatencyReportPrecisionType {
 
 export class PerceivedLatencyReport {
   readonly latency: Duration;
-  readonly precision: PerceivedLatencyReportPrecision;
+  readonly precision: PerceivedLatencyReportPrecisionType;
 
   constructor({
     latency,
     precision,
   }: {
     latency: Duration;
-    precision: PerceivedLatencyReportPrecision;
+    precision: PerceivedLatencyReportPrecisionType;
   }) {
     this.latency = latency;
     this.precision = precision;
@@ -29,9 +27,7 @@ export class PerceivedLatencyReport {
   static fromProto(proto: ProtoPerceivedLatencyReport) {
     return new PerceivedLatencyReport({
       latency: proto.getLatency(),
-      precision: new PerceivedLatencyReportPrecision(
-        this.getPerceivedLatencyReportPrecision(proto.getPrecision()),
-      ),
+      precision: this.getPerceivedLatencyReportPrecision(proto.getPrecision()),
     });
   }
 
