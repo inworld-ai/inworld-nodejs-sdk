@@ -122,6 +122,7 @@ export enum ErrorType {
     AUDIO_SESSION_EXPIRED = 9,
     SESSION_PAUSED = 10,
     VERSION_CONFLICT = 11,
+    AUDIO_SESSION_ALREADY_STARTED = 12,
 }
 
 export enum ReconnectionType {

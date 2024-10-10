@@ -47,6 +47,14 @@ export class CapabilitiesConfiguration extends jspb.Message {
     setPerceivedLatencyReport(value: boolean): CapabilitiesConfiguration;
     getMultiModalActionPlanning(): boolean;
     setMultiModalActionPlanning(value: boolean): CapabilitiesConfiguration;
+    getLogs(): boolean;
+    setLogs(value: boolean): CapabilitiesConfiguration;
+    getLogsWarning(): boolean;
+    setLogsWarning(value: boolean): CapabilitiesConfiguration;
+    getLogsInfo(): boolean;
+    setLogsInfo(value: boolean): CapabilitiesConfiguration;
+    getLogsDebug(): boolean;
+    setLogsDebug(value: boolean): CapabilitiesConfiguration;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): CapabilitiesConfiguration.AsObject;
@@ -80,6 +88,10 @@ export namespace CapabilitiesConfiguration {
         pingPongReport: boolean,
         perceivedLatencyReport: boolean,
         multiModalActionPlanning: boolean,
+        logs: boolean,
+        logsWarning: boolean,
+        logsInfo: boolean,
+        logsDebug: boolean,
     }
 }
 
