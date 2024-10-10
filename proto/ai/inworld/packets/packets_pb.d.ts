@@ -208,6 +208,11 @@ export class InworldPacket extends jspb.Message {
     getEntitiesItemsOperation(): ai_inworld_packets_entities_packets_pb.ItemsOperationEvent | undefined;
     setEntitiesItemsOperation(value?: ai_inworld_packets_entities_packets_pb.ItemsOperationEvent): InworldPacket;
 
+    hasLog(): boolean;
+    clearLog(): void;
+    getLog(): LogsEvent | undefined;
+    setLog(value?: LogsEvent): InworldPacket;
+
     getPacketCase(): InworldPacket.PacketCase;
 
     serializeBinary(): Uint8Array;
@@ -241,6 +246,7 @@ export namespace InworldPacket {
         latencyReport?: LatencyReportEvent.AsObject,
         operationStatus?: OperationStatusEvent.AsObject,
         entitiesItemsOperation?: ai_inworld_packets_entities_packets_pb.ItemsOperationEvent.AsObject,
+        log?: LogsEvent.AsObject,
     }
 
     export enum PacketCase {
@@ -261,6 +267,7 @@ export namespace InworldPacket {
         LATENCY_REPORT = 22,
         OPERATION_STATUS = 23,
         ENTITIES_ITEMS_OPERATION = 24,
+        LOG = 25,
     }
 
 }
@@ -953,6 +960,42 @@ export namespace PerceivedLatencyReport {
     ESTIMATED = 2,
     PUSH_TO_TALK = 3,
     NON_SPEECH = 4,
+    }
+
+}
+
+export class LogsEvent extends jspb.Message { 
+    getText(): string;
+    setText(value: string): LogsEvent;
+    getLevel(): LogsEvent.LogLevel;
+    setLevel(value: LogsEvent.LogLevel): LogsEvent;
+
+    getMetadataMap(): jspb.Map<string, string>;
+    clearMetadataMap(): void;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): LogsEvent.AsObject;
+    static toObject(includeInstance: boolean, msg: LogsEvent): LogsEvent.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: LogsEvent, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): LogsEvent;
+    static deserializeBinaryFromReader(message: LogsEvent, reader: jspb.BinaryReader): LogsEvent;
+}
+
+export namespace LogsEvent {
+    export type AsObject = {
+        text: string,
+        level: LogsEvent.LogLevel,
+
+        metadataMap: Array<[string, string]>,
+    }
+
+    export enum LogLevel {
+    UNSPECIFIED = 0,
+    WARNING = 1,
+    INFO = 2,
+    DEBUG = 3,
     }
 
 }
