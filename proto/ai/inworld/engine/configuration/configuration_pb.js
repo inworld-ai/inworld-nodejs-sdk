@@ -226,7 +226,11 @@ proto.configuration.CapabilitiesConfiguration.toObject = function(includeInstanc
     inspect: jspb.Message.getBooleanFieldWithDefault(msg, 22, false),
     pingPongReport: jspb.Message.getBooleanFieldWithDefault(msg, 23, false),
     perceivedLatencyReport: jspb.Message.getBooleanFieldWithDefault(msg, 24, false),
-    multiModalActionPlanning: jspb.Message.getBooleanFieldWithDefault(msg, 25, false)
+    multiModalActionPlanning: jspb.Message.getBooleanFieldWithDefault(msg, 25, false),
+    logs: jspb.Message.getBooleanFieldWithDefault(msg, 26, false),
+    logsWarning: jspb.Message.getBooleanFieldWithDefault(msg, 27, false),
+    logsInfo: jspb.Message.getBooleanFieldWithDefault(msg, 28, false),
+    logsDebug: jspb.Message.getBooleanFieldWithDefault(msg, 29, false)
   };
 
   if (includeInstance) {
@@ -342,6 +346,22 @@ proto.configuration.CapabilitiesConfiguration.deserializeBinaryFromReader = func
     case 25:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setMultiModalActionPlanning(value);
+      break;
+    case 26:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setLogs(value);
+      break;
+    case 27:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setLogsWarning(value);
+      break;
+    case 28:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setLogsInfo(value);
+      break;
+    case 29:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setLogsDebug(value);
       break;
     default:
       reader.skipField();
@@ -509,6 +529,34 @@ proto.configuration.CapabilitiesConfiguration.serializeBinaryToWriter = function
   if (f) {
     writer.writeBool(
       25,
+      f
+    );
+  }
+  f = message.getLogs();
+  if (f) {
+    writer.writeBool(
+      26,
+      f
+    );
+  }
+  f = message.getLogsWarning();
+  if (f) {
+    writer.writeBool(
+      27,
+      f
+    );
+  }
+  f = message.getLogsInfo();
+  if (f) {
+    writer.writeBool(
+      28,
+      f
+    );
+  }
+  f = message.getLogsDebug();
+  if (f) {
+    writer.writeBool(
+      29,
       f
     );
   }
@@ -872,6 +920,78 @@ proto.configuration.CapabilitiesConfiguration.prototype.getMultiModalActionPlann
  */
 proto.configuration.CapabilitiesConfiguration.prototype.setMultiModalActionPlanning = function(value) {
   return jspb.Message.setProto3BooleanField(this, 25, value);
+};
+
+
+/**
+ * optional bool logs = 26;
+ * @return {boolean}
+ */
+proto.configuration.CapabilitiesConfiguration.prototype.getLogs = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 26, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.configuration.CapabilitiesConfiguration} returns this
+ */
+proto.configuration.CapabilitiesConfiguration.prototype.setLogs = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 26, value);
+};
+
+
+/**
+ * optional bool logs_warning = 27;
+ * @return {boolean}
+ */
+proto.configuration.CapabilitiesConfiguration.prototype.getLogsWarning = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 27, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.configuration.CapabilitiesConfiguration} returns this
+ */
+proto.configuration.CapabilitiesConfiguration.prototype.setLogsWarning = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 27, value);
+};
+
+
+/**
+ * optional bool logs_info = 28;
+ * @return {boolean}
+ */
+proto.configuration.CapabilitiesConfiguration.prototype.getLogsInfo = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 28, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.configuration.CapabilitiesConfiguration} returns this
+ */
+proto.configuration.CapabilitiesConfiguration.prototype.setLogsInfo = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 28, value);
+};
+
+
+/**
+ * optional bool logs_debug = 29;
+ * @return {boolean}
+ */
+proto.configuration.CapabilitiesConfiguration.prototype.getLogsDebug = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 29, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.configuration.CapabilitiesConfiguration} returns this
+ */
+proto.configuration.CapabilitiesConfiguration.prototype.setLogsDebug = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 29, value);
 };
 
 
