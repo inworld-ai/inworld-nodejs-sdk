@@ -226,3 +226,10 @@ export interface SceneHistoryItem {
   character: Character;
   packet: ProtoPacket;
 }
+
+export enum LogLevel {
+  UNSPECIFIED = 'UNSPECIFIED',
+  WARNING = 'WARNING',
+  INFO = 'INFO',
+  DEBUG = 'DEBUG',
+}

@@ -1,11 +1,5 @@
 import { LogsEvent as ProtoLogsEvent } from '@proto/ai/inworld/packets/packets_pb';
-
-export enum LogLevel {
-  UNSPECIFIED = 'UNSPECIFIED',
-  WARNING = 'WARNING',
-  INFO = 'INFO',
-  DEBUG = 'DEBUG',
-}
+import { LogLevel } from 'common/data_structures';
 
 export class LogsEvent {
   readonly text: string;
