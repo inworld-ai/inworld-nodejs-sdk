@@ -26,6 +26,10 @@ export interface Capabilities {
   debugInfo?: boolean;
   emotions?: boolean;
   interruptions?: boolean;
+  logs?: boolean;
+  logsWarning?: boolean;
+  logsInfo?: boolean;
+  logsDebug?: boolean;
   multiModalActionPlanning?: boolean;
   narratedActions?: boolean;
   perceivedLatencyReport?: boolean;
