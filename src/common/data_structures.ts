@@ -26,6 +26,10 @@ export interface Capabilities {
   debugInfo?: boolean;
   emotions?: boolean;
   interruptions?: boolean;
+  logs?: boolean;
+  logsWarning?: boolean;
+  logsInfo?: boolean;
+  logsDebug?: boolean;
   multiModalActionPlanning?: boolean;
   narratedActions?: boolean;
   phonemes?: boolean;
@@ -121,6 +125,7 @@ export enum InworldPacketType {
   TEXT = 'TEXT',
   AUDIO = 'AUDIO',
   TASK = 'TASK',
+  LOG = 'LOG',
   TRIGGER = 'TRIGGER',
   EMOTION = 'EMOTION',
   CONTROL = 'CONTROL',
@@ -220,4 +225,11 @@ export interface EntityItemProps {
 export interface SceneHistoryItem {
   character: Character;
   packet: ProtoPacket;
+}
+
+export enum LogLevel {
+  UNSPECIFIED = 'UNSPECIFIED',
+  WARNING = 'WARNING',
+  INFO = 'INFO',
+  DEBUG = 'DEBUG',
 }

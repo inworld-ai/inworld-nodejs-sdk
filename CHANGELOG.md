@@ -1,3 +1,9 @@
+## Unreleased 
+
+### Added
+
+- Server to Client log packets
+
 ## [1.15.0] - 2024-09-17
 
 ### Added
