@@ -10,16 +10,27 @@ export enum LogLevel {
 export class LogsEvent {
   readonly text: string;
   readonly level: LogLevel;
+  readonly metadata: Record<string, string>;
 
-  constructor({ text, level }: { text: string; level: LogLevel }) {
+  constructor({
+    text,
+    level,
+    metadata,
+  }: {
+    text: string;
+    level: LogLevel;
+    metadata: Record<string, string>;
+  }) {
     this.text = text;
     this.level = level;
+    this.metadata = metadata;
   }
 
   static fromProto(proto: ProtoLogsEvent) {
     return new LogsEvent({
       text: proto.getText(),
       level: LogsEvent.getLogLevel(proto.getLevel()),
+      metadata: Object.fromEntries(proto.getMetadataMap().entries()),
     });
   }
 
