@@ -6,7 +6,10 @@ import {
 import { CapabilitiesConfiguration } from '@proto/ai/inworld/engine/configuration/configuration_pb';
 import { WorldEngineClient } from '@proto/ai/inworld/engine/world-engine_grpc_pb';
 import { ClientRequest } from '@proto/ai/inworld/engine/world-engine_pb';
-import { Continuation } from '@proto/ai/inworld/packets/packets_pb';
+import {
+  Continuation,
+  ControlEvent,
+} from '@proto/ai/inworld/packets/packets_pb';
 import os = require('os');
 
 import { v4 } from 'uuid';
@@ -580,6 +583,72 @@ describe('openSession', () => {
     stream.emit('close');
 
     expect(onDisconnect).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('updateSession', () => {
+  let client: WorldEngineClientGrpcService<ExtendedInworldPacket>;
+  let onMessage: jest.Mock;
+  let onError: jest.Mock;
+  let onDisconnect: jest.Mock;
+  let stream: ClientDuplexStreamImpl<any, any>;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.restoreAllMocks();
+    client = new WorldEngineClientGrpcService();
+
+    stream = getStream();
+    jest
+      .spyOn(WorldEngineClient.prototype, 'openSession')
+      .mockImplementation(() => stream);
+
+    onError = jest.fn();
+    onMessage = jest.fn();
+    onDisconnect = jest.fn();
+  });
+
+  test('should create stream with handlers', async () => {
+    const result = await Promise.all([
+      client.openSession({
+        name: SCENE,
+        config: { capabilities },
+        sessionToken,
+        extension,
+        onError,
+        onMessage,
+        onDisconnect,
+      }),
+      new Promise(emitSceneStatusEvent(stream)),
+    ]);
+
+    const removeAllListeners = jest.spyOn(
+      ClientDuplexStreamImpl.prototype,
+      'removeAllListeners',
+    );
+    const write = jest.spyOn(ClientDuplexStreamImpl.prototype, 'write');
+    const newScene = v4();
+
+    await Promise.all([
+      client.updateSession({
+        sessionToken,
+        connection: result[0][0],
+        name: newScene,
+        extension,
+        onMessage,
+      }),
+      new Promise(emitSceneStatusEvent(stream)),
+    ]);
+
+    expect(onMessage).toHaveBeenCalledTimes(2);
+    expect(removeAllListeners).toHaveBeenCalledTimes(2);
+    expect(write).toHaveBeenCalledTimes(2);
+    expect(write.mock.calls[0][0].getControl().getAction()).toEqual(
+      ControlEvent.Action.SESSION_CONFIGURATION,
+    );
+    expect(
+      write.mock.calls[1][0].getMutation().getLoadScene().getName(),
+    ).toEqual(newScene);
   });
 });
 

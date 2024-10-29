@@ -1,7 +1,10 @@
 import { LoadedScene } from '@proto/ai/inworld/packets/packets_pb';
 import { v4 } from 'uuid';
 
-import { ConversationState } from '../../src/common/data_structures';
+import {
+  ConversationParticipant,
+  ConversationState,
+} from '../../src/common/data_structures';
 import { MULTI_CHAR_NARRATED_ACTIONS } from '../../src/common/errors';
 import { EventFactory } from '../../src/factories/event';
 import { ConnectionService } from '../../src/services/connection.service';
@@ -143,6 +146,9 @@ describe('update participants', () => {
   });
 
   test('should add characters to scene automatically', async () => {
+    jest
+      .spyOn(connection, 'getCharactersList')
+      .mockImplementation(() => Promise.resolve([characters[1]]));
     const newCharacter = createCharacter();
 
     expect(service.getCharacters()).toEqual([characters[0]]);
@@ -156,6 +162,7 @@ describe('update participants', () => {
       service.updateParticipants([
         characters[0].resourceName,
         newCharacter.resourceName,
+        ConversationParticipant.USER,
       ]),
       new Promise((resolve: any) => {
         setTimeout(() => {
@@ -169,6 +176,11 @@ describe('update participants', () => {
     ]);
 
     expect(addCharacters).toHaveBeenCalledTimes(1);
+    expect(service.getParticipants()).toEqual([
+      characters[0].resourceName,
+      newCharacter.resourceName,
+      ConversationParticipant.USER,
+    ]);
   });
 });
 
@@ -218,7 +230,7 @@ describe('send', () => {
     expect(cancelResponse).toHaveBeenCalledTimes(0);
   });
 
-  test('should keep packages in queue until conversation is active', async () => {
+  test('should keep packets in queue until conversation is active', async () => {
     jest.spyOn(ConnectionService.prototype, 'send').mockImplementation(() =>
       Promise.resolve({
         packetId: {
@@ -260,5 +272,10 @@ describe('send', () => {
     expect(connection.conversations.get(conversationId)?.state).toEqual(
       ConversationState.ACTIVE,
     );
+    expect(connection.send).toHaveBeenCalledTimes(5);
+
+    await Promise.all([service.sendText(v4()), service.sendText(v4())]);
+
+    expect(connection.send).toHaveBeenCalledTimes(7);
   });
 });

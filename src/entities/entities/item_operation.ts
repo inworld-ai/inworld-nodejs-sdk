@@ -78,7 +78,7 @@ export class ItemOperation {
         new ProtoCreateOrUpdateItemsOperation()
           .setAddToEntitiesList(this.createOrUpdateItems.addToEntities)
           .setItemsList(
-            this.createOrUpdateItems.items?.map((item) => item.toProto()) || [],
+            this.createOrUpdateItems.items.map((item) => item.toProto()),
           ),
       );
     }
@@ -91,19 +91,19 @@ export class ItemOperation {
       );
     }
 
-    if (this.itemsInEntities) {
+    if (this.itemsInEntities?.type) {
       return new ProtoItemsOperationEvent().setItemsInEntities(
         new ProtoItemsInEntitiesOperation()
           .setType(
-            this.itemsInEntities.type
-              ? ItemOperation.convertOperationTypeToProto(
-                  this.itemsInEntities.type,
-                )
-              : ProtoItemsInEntitiesOperation.Type.UNSPECIFIED,
+            ItemOperation.convertOperationTypeToProto(
+              this.itemsInEntities.type,
+            ),
           )
           .setItemIdsList(this.itemsInEntities.itemIds)
           .setEntityNamesList(this.itemsInEntities.entityNames),
       );
+    } else {
+      return new ProtoItemsOperationEvent();
     }
   }
 

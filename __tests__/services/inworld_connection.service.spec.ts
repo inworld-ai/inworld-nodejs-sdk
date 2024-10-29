@@ -10,6 +10,7 @@ import {
 import { v4 } from 'uuid';
 
 import {
+  ConversationParticipant,
   ConversationState,
   MicrophoneMode,
   UnderstandingMode,
@@ -146,11 +147,33 @@ describe('character', () => {
       ConnectionService.prototype,
       'setCurrentCharacter',
     );
+    const updateParticipants = jest
+      .spyOn(ConversationService.prototype, 'updateParticipants')
+      .mockImplementationOnce(jest.fn());
 
-    service.setCurrentCharacter(characters[0]);
+    await service.setCurrentCharacter(characters[0]);
+
+    const conversation = await service.getCurrentConversation();
 
     expect(setCurrentCharacter).toHaveBeenCalledTimes(1);
     expect(setCurrentCharacter).toHaveBeenCalledWith(characters[0]);
+    expect(conversation.getParticipants()).toEqual([
+      characters[0].resourceName,
+      ConversationParticipant.USER,
+    ]);
+    expect(updateParticipants).toHaveBeenCalledTimes(0);
+
+    connection.conversations.get(conversation.getConversationId())!.state =
+      ConversationState.ACTIVE;
+
+    await service.setCurrentCharacter(characters[1]);
+
+    expect(setCurrentCharacter).toHaveBeenCalledWith(characters[1]);
+    expect(updateParticipants).toHaveBeenCalledWith([
+      characters[1].resourceName,
+      ConversationParticipant.USER,
+    ]);
+    expect(updateParticipants).toHaveBeenCalledTimes(1);
   });
 
   test('should change current character for existing one-to-one conversation', async () => {
