@@ -22,6 +22,10 @@ const props = {
       emotions: true,
       narratedActions: true,
       silence: true,
+      logs: true,
+      logsWarning: true,
+      logsInfo: true,
+      logsDebug: true,
     },
     connection: {
       autoReconnect: false,
