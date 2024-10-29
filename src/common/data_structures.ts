@@ -26,9 +26,15 @@ export interface Capabilities {
   debugInfo?: boolean;
   emotions?: boolean;
   interruptions?: boolean;
+  logs?: boolean;
+  logsWarning?: boolean;
+  logsInfo?: boolean;
+  logsDebug?: boolean;
   multiModalActionPlanning?: boolean;
   narratedActions?: boolean;
+  perceivedLatencyReport?: boolean;
   phonemes?: boolean;
+  pingPongReport?: boolean;
   silence?: boolean;
 }
 
@@ -133,6 +139,7 @@ export enum InworldPacketType {
   CONVERSATION_EVENT = 'CONVERSATION_EVENT',
   ENTITIES_ITEM_OPERATION = 'ENTITIES_ITEM_OPERATION',
   OPERATION_STATUS = 'OPERATION_STATUS',
+  LATENCY_REPORT = 'LATENCY_REPORT',
 }
 
 export enum InworlControlAction {
@@ -150,6 +157,11 @@ export enum InworldConversationEventType {
   STARTED = 'STARTED',
   UPDATED = 'UPDATED',
   EVICTED = 'EVICTED',
+}
+
+export enum InworldLatencyReportType {
+  PERCEIVED_LATENCY = 'PERCEIVED_LATENCY',
+  PING_PONG = 'PING_PONG',
 }
 
 export enum ConversationState {
