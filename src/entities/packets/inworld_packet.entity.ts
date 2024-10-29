@@ -16,6 +16,7 @@ import { AudioEvent } from './audio.entity';
 import { CancelResponsesEvent } from './cancel_responses.entity';
 import { ControlEvent } from './control.entity';
 import { EmotionEvent } from './emotion/emotion.entity';
+import { LatencyReportEvent } from './latency/latency_report.entity';
 import { LogsEvent } from './log.entity';
 import { NarratedAction } from './narrated_action.entity';
 import { OperationStatusEvent } from './operation_status.entity';
@@ -42,6 +43,7 @@ export interface InworldPacketProps {
   sceneMutation?: SceneMutation;
   entitiesItemsOperation?: ItemOperation;
   operationStatus?: OperationStatusEvent;
+  latencyReport?: LatencyReportEvent;
   date: string;
   type: InworldPacketType;
   proto?: ProtoPacket;
@@ -78,6 +80,7 @@ export class InworldPacket {
   readonly sceneMutation: SceneMutation;
   readonly entitiesItemsOperation: ItemOperation;
   readonly operationStatus: OperationStatusEvent;
+  readonly latencyReport: LatencyReportEvent;
 
   constructor(props: InworldPacketProps) {
     this.packetId = props.packetId;
@@ -136,6 +139,10 @@ export class InworldPacket {
 
     if (this.isOperationStatus()) {
       this.operationStatus = props.operationStatus;
+    }
+
+    if (this.isLatencyReport()) {
+      this.latencyReport = props.latencyReport;
     }
   }
 
@@ -226,6 +233,18 @@ export class InworldPacket {
     return this.type === InworldPacketType.OPERATION_STATUS;
   }
 
+  isLatencyReport() {
+    return this.type === InworldPacketType.LATENCY_REPORT;
+  }
+
+  isPingPongReport() {
+    return this.isLatencyReport() && !!this.latencyReport.pingPong;
+  }
+
+  isPerceivedLatencyReport() {
+    return this.isLatencyReport() && !!this.latencyReport.perceivedLatency;
+  }
+
   shouldHaveConversationId() {
     return (
       this.isAudio() ||
@@ -269,6 +288,9 @@ export class InworldPacket {
       }),
       ...(type === InworldPacketType.LOG && {
         log: LogsEvent.fromProto(proto.getLog()),
+      }),
+      ...(type === InworldPacketType.LATENCY_REPORT && {
+        latencyReport: LatencyReportEvent.fromProto(proto.getLatencyReport()),
       }),
       ...(type === InworldPacketType.CANCEL_RESPONSE && {
         cancelResponses: CancelResponsesEvent.fromProto(proto.getMutation()),
@@ -347,6 +369,8 @@ export class InworldPacket {
       case packet.hasDataChunk() &&
         packet.getDataChunk().getType() === DataChunk.DataType.SILENCE:
         return InworldPacketType.SILENCE;
+      case packet.hasLatencyReport():
+        return InworldPacketType.LATENCY_REPORT;
       case packet.hasCustom() &&
         packet.getCustom().getType() === CustomEvent.Type.TASK:
         return InworldPacketType.TASK;

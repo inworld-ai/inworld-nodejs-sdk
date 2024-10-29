@@ -4,5 +4,9 @@ node_modules
 .eslintcache
 *.log
 
+.env*
+!.env-sample
+**/.env
+
 # Mac filesystem
 **/.DS_Store

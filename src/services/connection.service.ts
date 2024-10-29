@@ -6,6 +6,7 @@ import {
   InworldPacket as ProtoPacket,
   LoadedScene,
 } from '@proto/ai/inworld/packets/packets_pb';
+import { Duration } from 'google-protobuf/google/protobuf/duration_pb';
 
 import {
   ApiKey,
@@ -73,6 +74,7 @@ export class ConnectionService<
 
   private intervals: NodeJS.Timeout[] = [];
   private packetQueue: QueueItem[] = [];
+  private packetQueuePercievedLatency: ProtoPacket[] = [];
 
   private engineService = new WorldEngineClientGrpcService<InworldPacketT>();
   private stateService = new StateSerializationClientGrpcService();
@@ -352,6 +354,10 @@ export class ConnectionService<
   private writeToStream(getPacket: () => ProtoPacket) {
     const packet = getPacket();
 
+    if (!!packet.getText()) {
+      this.packetQueuePercievedLatency.push(packet);
+    }
+
     this.stream?.write(packet);
 
     this.logger.debug({
@@ -463,6 +469,7 @@ export class ConnectionService<
 
     this.intervals = [];
     this.packetQueue = [];
+    this.packetQueuePercievedLatency = [];
   }
 
   private convertPacketFromProto(packet: ProtoPacket) {
@@ -512,6 +519,50 @@ export class ConnectionService<
 
       const sceneStatus = packet.getControl()?.getCurrentSceneStatus();
 
+      // Handle percieved latency
+      if (this.packetQueuePercievedLatency.length > 0) {
+        let packetQueuePercievedLatencyIndex: number = -1;
+        for (let i = 0; i < this.packetQueuePercievedLatency.length; i++) {
+          const packetSent: ProtoPacket = this.packetQueuePercievedLatency[i];
+          if (
+            packet.getPacketId().getCorrelationId() &&
+            packet.getPacketId().getCorrelationId() ===
+              packetSent.getPacketId().getCorrelationId()
+          ) {
+            packetQueuePercievedLatencyIndex = i;
+            break;
+          }
+        }
+        if (packetQueuePercievedLatencyIndex > -1) {
+          const packetSent: ProtoPacket =
+            this.packetQueuePercievedLatency[packetQueuePercievedLatencyIndex];
+          const duration = new Duration();
+
+          duration.setSeconds(
+            packet.getTimestamp().getSeconds() -
+              packetSent.getTimestamp().getSeconds(),
+          );
+          duration.setNanos(
+            packet.getTimestamp().getNanos() -
+              packetSent.getTimestamp().getNanos(),
+          );
+
+          if (duration.getSeconds() < 0 && duration.getNanos() > 0) {
+            duration.setSeconds(duration.getSeconds() + 1);
+            duration.setNanos(duration.getNanos() - 1000000000);
+          } else if (duration.getSeconds() > 0 && duration.getNanos() < 0) {
+            duration.setSeconds(duration.getSeconds() - 1);
+            duration.setNanos(duration.getNanos() + 1000000000);
+          }
+
+          this.sendPerceivedLatencyReport(duration);
+          this.packetQueuePercievedLatency.splice(
+            packetQueuePercievedLatencyIndex,
+            1,
+          );
+        }
+      }
+
       if (
         packet.getControl()?.getAction() ===
           ControlEvent.Action.CURRENT_SCENE_STATUS &&
@@ -531,6 +582,13 @@ export class ConnectionService<
             ? ConversationState.ACTIVE
             : ConversationState.INACTIVE,
         });
+      }
+
+      // Handle latency ping pong.
+      if (inworldPacket.isPingPongReport()) {
+        this.sendPingPongResponse(packet);
+        // Don't pass text packet outside.
+        return;
       }
 
       this.connectionProps.onMessage?.(inworldPacket);
@@ -553,6 +611,14 @@ export class ConnectionService<
         });
       }
     };
+  }
+
+  private sendPingPongResponse(packet: ProtoPacket) {
+    this.send(() => this.getEventFactory().pong(packet));
+  }
+
+  private sendPerceivedLatencyReport(latencyPerceived: Duration) {
+    this.send(() => this.getEventFactory().perceivedLatency(latencyPerceived));
   }
 
   private initializeExtension() {
