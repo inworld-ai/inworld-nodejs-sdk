@@ -9,6 +9,10 @@ export class Capability {
       .setDebugInfo(capabilities.debugInfo ?? false)
       .setEmotions(capabilities.emotions ?? false)
       .setInterruptions(capabilities.interruptions ?? false)
+      .setLogs(capabilities.logs ?? false)
+      .setLogsWarning(capabilities.logsWarning ?? true)
+      .setLogsInfo(capabilities.logsInfo ?? true)
+      .setLogsDebug(capabilities.logsDebug ?? false)
       .setMultiAgent(true)
       .setMultiModalActionPlanning(
         capabilities.multiModalActionPlanning ?? false,

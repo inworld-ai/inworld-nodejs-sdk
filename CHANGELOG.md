@@ -1,7 +1,8 @@
-## [Unreleased]
+## Unreleased 
 
 ### Added
 
+- Server to Client log packets
 - Added latency reporting
 
 ## [1.15.0] - 2024-09-17

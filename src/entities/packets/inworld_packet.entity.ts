@@ -17,6 +17,7 @@ import { CancelResponsesEvent } from './cancel_responses.entity';
 import { ControlEvent } from './control.entity';
 import { EmotionEvent } from './emotion/emotion.entity';
 import { LatencyReportEvent } from './latency/latency_report.entity';
+import { LogsEvent } from './log.entity';
 import { NarratedAction } from './narrated_action.entity';
 import { OperationStatusEvent } from './operation_status.entity';
 import { PacketId } from './packet_id.entity';
@@ -33,6 +34,7 @@ export interface InworldPacketProps {
   task?: TaskEvent;
   trigger?: TriggerEvent;
   emotions?: EmotionEvent;
+  log?: LogsEvent;
   silence?: SilenceEvent;
   packetId: PacketId;
   routing: Routing;
@@ -71,6 +73,7 @@ export class InworldPacket {
   readonly control: ControlEvent;
   readonly trigger: TriggerEvent;
   readonly emotions: EmotionEvent;
+  readonly log: LogsEvent;
   readonly silence: SilenceEvent;
   readonly narratedAction: NarratedAction;
   readonly cancelResponses: CancelResponsesEvent;
@@ -100,6 +103,10 @@ export class InworldPacket {
 
     if (this.isEmotion()) {
       this.emotions = props.emotions;
+    }
+
+    if (this.isLog()) {
+      this.log = props.log;
     }
 
     if (this.isTask()) {
@@ -165,6 +172,10 @@ export class InworldPacket {
 
   isEmotion() {
     return this.type === InworldPacketType.EMOTION;
+  }
+
+  isLog() {
+    return this.type === InworldPacketType.LOG;
   }
 
   isInteractionEnd() {
@@ -275,6 +286,9 @@ export class InworldPacket {
       ...(type === InworldPacketType.EMOTION && {
         emotions: EmotionEvent.fromProto(proto.getEmotion()),
       }),
+      ...(type === InworldPacketType.LOG && {
+        log: LogsEvent.fromProto(proto.getLog()),
+      }),
       ...(type === InworldPacketType.LATENCY_REPORT && {
         latencyReport: LatencyReportEvent.fromProto(proto.getLatencyReport()),
       }),
@@ -366,6 +380,8 @@ export class InworldPacket {
         return InworldPacketType.CONTROL;
       case packet.hasEmotion():
         return InworldPacketType.EMOTION;
+      case packet.hasLog():
+        return InworldPacketType.LOG;
       case packet.getMutation()?.hasCancelResponses():
         return InworldPacketType.CANCEL_RESPONSE;
       case packet.getAction()?.hasNarratedAction():
