@@ -1,5 +1,6 @@
 import { LogsEvent as ProtoLogsEvent } from '@proto/ai/inworld/packets/packets_pb';
-import { LogLevel } from 'common/data_structures';
+
+import { LogLevel } from '../../common/data_structures';
 
 export class LogsEvent {
   readonly text: string;
