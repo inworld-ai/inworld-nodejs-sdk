@@ -17,6 +17,7 @@ const client = new Client({
     capabilities: {
       audio: true,
       interruptions: true,
+      debugInfo: true,
       logs: true,
       logsWarning: true,
       logsInfo: true,
