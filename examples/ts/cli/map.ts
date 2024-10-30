@@ -46,6 +46,7 @@ const client = new Client({
       logsWarning: true,
       logsInfo: true,
       logsDebug: true,
+      logsInternal: true,
     },
   },
   onMessage: async (
