@@ -13,6 +13,7 @@ export class Capability {
       .setLogsWarning(capabilities.logsWarning ?? true)
       .setLogsInfo(capabilities.logsInfo ?? true)
       .setLogsDebug(capabilities.logsDebug ?? false)
+      .setLogsInternal(capabilities.logsInternal ?? false)
       .setMultiAgent(true)
       .setMultiModalActionPlanning(
         capabilities.multiModalActionPlanning ?? false,
