@@ -3,7 +3,7 @@ import {
   EntityItem as ProtoEntityItem,
   ItemsInEntitiesOperation as ProtoItemsInEntitiesOperation,
   ItemsOperationEvent as ProtoItemsOperationEvent,
-} from '@proto/ai/inworld/packets/entities_packets_pb';
+} from '@proto/ai/inworld/packets/entities/entities_packets_pb';
 import { v4 } from 'uuid';
 
 import { ItemsInEntitiesOperationType } from '../../../src/common/data_structures';

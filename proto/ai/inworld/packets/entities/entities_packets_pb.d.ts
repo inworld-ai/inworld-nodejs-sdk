@@ -1,5 +1,5 @@
 // package: ai.inworld.packets.entities
-// file: ai/inworld/packets/entities_packets.proto
+// file: ai/inworld/packets/entities/entities_packets.proto
 
 /* tslint:disable */
 /* eslint-disable */
