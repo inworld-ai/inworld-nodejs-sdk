@@ -22,6 +22,7 @@ const client = new Client({
       logsWarning: true,
       logsInfo: true,
       logsDebug: true,
+      logsInternal: true,
     },
   },
   text: { displayWhen: DISPLAY_WHEN.AFTER_AUDIO_PLAYING },

@@ -27,6 +27,7 @@ const props = {
       logsWarning: true,
       logsInfo: true,
       logsDebug: true,
+      logsInternal: true,
     },
     connection: {
       autoReconnect: false,
