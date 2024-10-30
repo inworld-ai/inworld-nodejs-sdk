@@ -230,7 +230,8 @@ proto.configuration.CapabilitiesConfiguration.toObject = function(includeInstanc
     logs: jspb.Message.getBooleanFieldWithDefault(msg, 26, false),
     logsWarning: jspb.Message.getBooleanFieldWithDefault(msg, 27, false),
     logsInfo: jspb.Message.getBooleanFieldWithDefault(msg, 28, false),
-    logsDebug: jspb.Message.getBooleanFieldWithDefault(msg, 29, false)
+    logsDebug: jspb.Message.getBooleanFieldWithDefault(msg, 29, false),
+    logsInternal: jspb.Message.getBooleanFieldWithDefault(msg, 30, false)
   };
 
   if (includeInstance) {
@@ -362,6 +363,10 @@ proto.configuration.CapabilitiesConfiguration.deserializeBinaryFromReader = func
     case 29:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setLogsDebug(value);
+      break;
+    case 30:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setLogsInternal(value);
       break;
     default:
       reader.skipField();
@@ -557,6 +562,13 @@ proto.configuration.CapabilitiesConfiguration.serializeBinaryToWriter = function
   if (f) {
     writer.writeBool(
       29,
+      f
+    );
+  }
+  f = message.getLogsInternal();
+  if (f) {
+    writer.writeBool(
+      30,
       f
     );
   }
@@ -992,6 +1004,24 @@ proto.configuration.CapabilitiesConfiguration.prototype.getLogsDebug = function(
  */
 proto.configuration.CapabilitiesConfiguration.prototype.setLogsDebug = function(value) {
   return jspb.Message.setProto3BooleanField(this, 29, value);
+};
+
+
+/**
+ * optional bool logs_internal = 30;
+ * @return {boolean}
+ */
+proto.configuration.CapabilitiesConfiguration.prototype.getLogsInternal = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 30, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.configuration.CapabilitiesConfiguration} returns this
+ */
+proto.configuration.CapabilitiesConfiguration.prototype.setLogsInternal = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 30, value);
 };
 
 

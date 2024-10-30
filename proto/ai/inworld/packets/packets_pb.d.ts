@@ -12,7 +12,7 @@ import * as google_rpc_status_pb from "../../../google/rpc/status_pb";
 import * as ai_inworld_options_options_pb from "../../../ai/inworld/options/options_pb";
 import * as ai_inworld_engine_configuration_configuration_pb from "../../../ai/inworld/engine/configuration/configuration_pb";
 import * as ai_inworld_language_codes_language_codes_pb from "../../../ai/inworld/language_codes/language_codes_pb";
-import * as ai_inworld_packets_entities_packets_pb from "../../../ai/inworld/packets/entities_packets_pb";
+import * as ai_inworld_packets_entities_entities_packets_pb from "../../../ai/inworld/packets/entities/entities_packets_pb";
 
 export class Actor extends jspb.Message { 
     getType(): Actor.Type;
@@ -205,8 +205,8 @@ export class InworldPacket extends jspb.Message {
 
     hasEntitiesItemsOperation(): boolean;
     clearEntitiesItemsOperation(): void;
-    getEntitiesItemsOperation(): ai_inworld_packets_entities_packets_pb.ItemsOperationEvent | undefined;
-    setEntitiesItemsOperation(value?: ai_inworld_packets_entities_packets_pb.ItemsOperationEvent): InworldPacket;
+    getEntitiesItemsOperation(): ai_inworld_packets_entities_entities_packets_pb.ItemsOperationEvent | undefined;
+    setEntitiesItemsOperation(value?: ai_inworld_packets_entities_entities_packets_pb.ItemsOperationEvent): InworldPacket;
 
     hasLog(): boolean;
     clearLog(): void;
@@ -245,7 +245,7 @@ export namespace InworldPacket {
         sessionControlResponse?: SessionControlResponseEvent.AsObject,
         latencyReport?: LatencyReportEvent.AsObject,
         operationStatus?: OperationStatusEvent.AsObject,
-        entitiesItemsOperation?: ai_inworld_packets_entities_packets_pb.ItemsOperationEvent.AsObject,
+        entitiesItemsOperation?: ai_inworld_packets_entities_entities_packets_pb.ItemsOperationEvent.AsObject,
         log?: LogsEvent.AsObject,
     }
 
@@ -996,6 +996,7 @@ export namespace LogsEvent {
     WARNING = 1,
     INFO = 2,
     DEBUG = 3,
+    INTERNAL = 4,
     }
 
 }
