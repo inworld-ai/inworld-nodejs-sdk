@@ -61,6 +61,14 @@ export class CapabilitiesRequest extends jspb.Message {
     setPingPongReport(value: boolean): CapabilitiesRequest;
     getPerceivedLatencyReport(): boolean;
     setPerceivedLatencyReport(value: boolean): CapabilitiesRequest;
+    getLogs(): boolean;
+    setLogs(value: boolean): CapabilitiesRequest;
+    getLogsWarning(): boolean;
+    setLogsWarning(value: boolean): CapabilitiesRequest;
+    getLogsInfo(): boolean;
+    setLogsInfo(value: boolean): CapabilitiesRequest;
+    getLogsDebug(): boolean;
+    setLogsDebug(value: boolean): CapabilitiesRequest;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): CapabilitiesRequest.AsObject;
@@ -98,6 +106,10 @@ export namespace CapabilitiesRequest {
         multiModalActionPlanning: boolean,
         pingPongReport: boolean,
         perceivedLatencyReport: boolean,
+        logs: boolean,
+        logsWarning: boolean,
+        logsInfo: boolean,
+        logsDebug: boolean,
     }
 }
 
@@ -454,6 +466,11 @@ export class PreviousState extends jspb.Message {
     getEntitiesState(): PreviousState.EntitiesState | undefined;
     setEntitiesState(value?: PreviousState.EntitiesState): PreviousState;
 
+    hasCustomTasksState(): boolean;
+    clearCustomTasksState(): void;
+    getCustomTasksState(): PreviousState.CustomTaskState | undefined;
+    setCustomTasksState(value?: PreviousState.CustomTaskState): PreviousState;
+
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): PreviousState.AsObject;
     static toObject(includeInstance: boolean, msg: PreviousState): PreviousState.AsObject;
@@ -470,6 +487,7 @@ export namespace PreviousState {
         gameSessionId: string,
         conversationState?: ConversationState.AsObject,
         entitiesState?: PreviousState.EntitiesState.AsObject,
+        customTasksState?: PreviousState.CustomTaskState.AsObject,
     }
 
 
@@ -669,6 +687,81 @@ export namespace PreviousState {
                 }
             }
 
+        }
+
+    }
+
+    export class CustomTaskState extends jspb.Message { 
+        clearCustomTasksList(): void;
+        getCustomTasksList(): Array<PreviousState.CustomTaskState.CustomTask>;
+        setCustomTasksList(value: Array<PreviousState.CustomTaskState.CustomTask>): CustomTaskState;
+        addCustomTasks(value?: PreviousState.CustomTaskState.CustomTask, index?: number): PreviousState.CustomTaskState.CustomTask;
+
+        serializeBinary(): Uint8Array;
+        toObject(includeInstance?: boolean): CustomTaskState.AsObject;
+        static toObject(includeInstance: boolean, msg: CustomTaskState): CustomTaskState.AsObject;
+        static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+        static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+        static serializeBinaryToWriter(message: CustomTaskState, writer: jspb.BinaryWriter): void;
+        static deserializeBinary(bytes: Uint8Array): CustomTaskState;
+        static deserializeBinaryFromReader(message: CustomTaskState, reader: jspb.BinaryReader): CustomTaskState;
+    }
+
+    export namespace CustomTaskState {
+        export type AsObject = {
+            customTasksList: Array<PreviousState.CustomTaskState.CustomTask.AsObject>,
+        }
+
+
+        export class TaskParameter extends jspb.Message { 
+            getId(): string;
+            setId(value: string): TaskParameter;
+            getDescription(): string;
+            setDescription(value: string): TaskParameter;
+
+            serializeBinary(): Uint8Array;
+            toObject(includeInstance?: boolean): TaskParameter.AsObject;
+            static toObject(includeInstance: boolean, msg: TaskParameter): TaskParameter.AsObject;
+            static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+            static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+            static serializeBinaryToWriter(message: TaskParameter, writer: jspb.BinaryWriter): void;
+            static deserializeBinary(bytes: Uint8Array): TaskParameter;
+            static deserializeBinaryFromReader(message: TaskParameter, reader: jspb.BinaryReader): TaskParameter;
+        }
+
+        export namespace TaskParameter {
+            export type AsObject = {
+                id: string,
+                description: string,
+            }
+        }
+
+        export class CustomTask extends jspb.Message { 
+            getId(): string;
+            setId(value: string): CustomTask;
+            getDescription(): string;
+            setDescription(value: string): CustomTask;
+            clearParametersList(): void;
+            getParametersList(): Array<PreviousState.CustomTaskState.TaskParameter>;
+            setParametersList(value: Array<PreviousState.CustomTaskState.TaskParameter>): CustomTask;
+            addParameters(value?: PreviousState.CustomTaskState.TaskParameter, index?: number): PreviousState.CustomTaskState.TaskParameter;
+
+            serializeBinary(): Uint8Array;
+            toObject(includeInstance?: boolean): CustomTask.AsObject;
+            static toObject(includeInstance: boolean, msg: CustomTask): CustomTask.AsObject;
+            static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+            static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+            static serializeBinaryToWriter(message: CustomTask, writer: jspb.BinaryWriter): void;
+            static deserializeBinary(bytes: Uint8Array): CustomTask;
+            static deserializeBinaryFromReader(message: CustomTask, reader: jspb.BinaryReader): CustomTask;
+        }
+
+        export namespace CustomTask {
+            export type AsObject = {
+                id: string,
+                description: string,
+                parametersList: Array<PreviousState.CustomTaskState.TaskParameter.AsObject>,
+            }
         }
 
     }

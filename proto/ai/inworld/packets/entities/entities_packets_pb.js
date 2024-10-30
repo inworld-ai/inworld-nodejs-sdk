@@ -1,4 +1,4 @@
-// source: ai/inworld/packets/entities_packets.proto
+// source: ai/inworld/packets/entities/entities_packets.proto
 /**
  * @fileoverview
  * @enhanceable

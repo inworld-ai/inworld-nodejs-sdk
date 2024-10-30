@@ -35,8 +35,8 @@ var ai_inworld_engine_configuration_configuration_pb = require('../../../ai/inwo
 goog.object.extend(proto, ai_inworld_engine_configuration_configuration_pb);
 var ai_inworld_language_codes_language_codes_pb = require('../../../ai/inworld/language_codes/language_codes_pb.js');
 goog.object.extend(proto, ai_inworld_language_codes_language_codes_pb);
-var ai_inworld_packets_entities_packets_pb = require('../../../ai/inworld/packets/entities_packets_pb.js');
-goog.object.extend(proto, ai_inworld_packets_entities_packets_pb);
+var ai_inworld_packets_entities_entities_packets_pb = require('../../../ai/inworld/packets/entities/entities_packets_pb.js');
+goog.object.extend(proto, ai_inworld_packets_entities_entities_packets_pb);
 goog.exportSymbol('proto.ActionEvent', null, global);
 goog.exportSymbol('proto.ActionEvent.ActionCase', null, global);
 goog.exportSymbol('proto.Actor', null, global);
@@ -2046,7 +2046,7 @@ proto.InworldPacket.toObject = function(includeInstance, msg) {
     sessionControlResponse: (f = msg.getSessionControlResponse()) && proto.SessionControlResponseEvent.toObject(includeInstance, f),
     latencyReport: (f = msg.getLatencyReport()) && proto.LatencyReportEvent.toObject(includeInstance, f),
     operationStatus: (f = msg.getOperationStatus()) && proto.OperationStatusEvent.toObject(includeInstance, f),
-    entitiesItemsOperation: (f = msg.getEntitiesItemsOperation()) && ai_inworld_packets_entities_packets_pb.ItemsOperationEvent.toObject(includeInstance, f),
+    entitiesItemsOperation: (f = msg.getEntitiesItemsOperation()) && ai_inworld_packets_entities_entities_packets_pb.ItemsOperationEvent.toObject(includeInstance, f),
     log: (f = msg.getLog()) && proto.LogsEvent.toObject(includeInstance, f)
   };
 
@@ -2175,8 +2175,8 @@ proto.InworldPacket.deserializeBinaryFromReader = function(msg, reader) {
       msg.setOperationStatus(value);
       break;
     case 24:
-      var value = new ai_inworld_packets_entities_packets_pb.ItemsOperationEvent;
-      reader.readMessage(value,ai_inworld_packets_entities_packets_pb.ItemsOperationEvent.deserializeBinaryFromReader);
+      var value = new ai_inworld_packets_entities_entities_packets_pb.ItemsOperationEvent;
+      reader.readMessage(value,ai_inworld_packets_entities_entities_packets_pb.ItemsOperationEvent.deserializeBinaryFromReader);
       msg.setEntitiesItemsOperation(value);
       break;
     case 25:
@@ -2362,7 +2362,7 @@ proto.InworldPacket.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       24,
       f,
-      ai_inworld_packets_entities_packets_pb.ItemsOperationEvent.serializeBinaryToWriter
+      ai_inworld_packets_entities_entities_packets_pb.ItemsOperationEvent.serializeBinaryToWriter
     );
   }
   f = message.getLog();
@@ -3048,7 +3048,7 @@ proto.InworldPacket.prototype.hasOperationStatus = function() {
  */
 proto.InworldPacket.prototype.getEntitiesItemsOperation = function() {
   return /** @type{?proto.entities.ItemsOperationEvent} */ (
-    jspb.Message.getWrapperField(this, ai_inworld_packets_entities_packets_pb.ItemsOperationEvent, 24));
+    jspb.Message.getWrapperField(this, ai_inworld_packets_entities_entities_packets_pb.ItemsOperationEvent, 24));
 };
 
 
@@ -7458,7 +7458,8 @@ proto.LogsEvent.LogLevel = {
   UNSPECIFIED: 0,
   WARNING: 1,
   INFO: 2,
-  DEBUG: 3
+  DEBUG: 3,
+  INTERNAL: 4
 };
 
 /**

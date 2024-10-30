@@ -1,4 +1,4 @@
-import { EntityItem as ProtoEntityItem } from '@proto/ai/inworld/packets/entities_packets_pb';
+import { EntityItem as ProtoEntityItem } from '@proto/ai/inworld/packets/entities/entities_packets_pb';
 
 import { EntityItemProps } from '../../common/data_structures';
 
