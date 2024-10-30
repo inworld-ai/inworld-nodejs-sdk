@@ -120,6 +120,7 @@ class Client {
       `);
     }
 
+    // LOG
     if (packet.isLog()) {
       console.log(`Log: 
         text: ${packet.log.text}
