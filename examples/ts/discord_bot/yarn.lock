@@ -291,10 +291,10 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-1.2.1.tgz#b520529ec21d8e5945a1851dfd1c32e94e39ff45"
   integrity sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==
 
-"@inworld/nodejs-sdk@1.15.0":
-  version "1.15.0"
-  resolved "https://registry.yarnpkg.com/@inworld/nodejs-sdk/-/nodejs-sdk-1.15.0.tgz#e1944ade03b099f901083fab735dbbed86322e7e"
-  integrity sha512-+o7EIqnHfL43UOgooaJ8eTNtOTzlwEyrcTmY60Q676XsGL+7OO72FieTqPeSjEgE6rBFQGzaadBG+D8uK4fV5A==
+"@inworld/nodejs-sdk@1.16.0":
+  version "1.16.0"
+  resolved "https://registry.yarnpkg.com/@inworld/nodejs-sdk/-/nodejs-sdk-1.16.0.tgz#3512f354b4d34efea7a4062679e0c4ac665844d1"
+  integrity sha512-zOniwCjMofw5EIE4hiKjj0LRPQkGuBiuTmbeeAvCquPL4ll6//YxMB24xgxaYr6bPkYLP03AyanHzfpBgLVanQ==
   dependencies:
     "@grpc/grpc-js" "^1.10.9"
     crypto-js "^4.2.0"
