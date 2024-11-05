@@ -14,7 +14,16 @@ const recorder = new Recorder({
 
 const client = new Client({
   config: {
-    capabilities: { audio: true, interruptions: true },
+    capabilities: {
+      audio: true,
+      interruptions: true,
+      debugInfo: true,
+      logs: true,
+      logsWarning: true,
+      logsInfo: true,
+      logsDebug: true,
+      logsInternal: true,
+    },
   },
   text: { displayWhen: DISPLAY_WHEN.AFTER_AUDIO_PLAYING },
   onDisconnect: () => {

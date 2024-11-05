@@ -120,6 +120,15 @@ class Client {
       `);
     }
 
+    // LOG
+    if (packet.isLog()) {
+      console.log(`Log: 
+        text: ${packet.log.text}
+        level: ${packet.log.level}
+        metadata: ${JSON.stringify(packet.log.metadata)}
+      `);
+    }
+
     // TRIGGER
     if (packet.isTrigger()) {
       console.log(`Trigger: ${packet.trigger.name}`);

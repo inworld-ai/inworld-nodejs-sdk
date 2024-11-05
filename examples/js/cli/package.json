@@ -8,7 +8,7 @@
     "start:multi-characters": "node multi_characters.js"
   },
   "dependencies": {
-    "@inworld/nodejs-sdk": "1.15.0",
+    "@inworld/nodejs-sdk": "1.16.0",
     "dotenv": "^16.0.1",
     "node-record-lpcm16": "^1.0.1",
     "split": "^1.0.1",

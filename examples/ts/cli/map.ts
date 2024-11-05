@@ -42,6 +42,11 @@ const client = new Client({
       debugInfo: true,
       emotions: true,
       multiModalActionPlanning: true,
+      logs: true,
+      logsWarning: true,
+      logsInfo: true,
+      logsDebug: true,
+      logsInternal: true,
     },
   },
   onMessage: async (
