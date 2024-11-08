@@ -172,6 +172,12 @@ export enum ConversationState {
   INACTIVE = 'INACTIVE',
 }
 
+export enum ConversationIntializeState {
+  ACTIVE = 'ACTIVE',
+  PROCESSING = 'PROCESSING',
+  INACTIVE = 'INACTIVE',
+}
+
 export enum MicrophoneMode {
   OPEN_MIC = 'OPEN_MIC',
   EXPECT_AUDIO_END = 'EXPECT_AUDIO_END',
