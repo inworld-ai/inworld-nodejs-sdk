@@ -34,7 +34,14 @@ export const examples: jspb.ExtensionFieldInfo<ExampleValue>;
 
 export const fieldMode: jspb.ExtensionFieldInfo<FieldMode>;
 
+export const serializationOption: jspb.ExtensionFieldInfo<SerializationOption>;
+
 export enum FieldMode {
     FIELD_MODE_UNSPECIFIED = 0,
     HIDDEN = 1,
+}
+
+export enum SerializationOption {
+    SERIALIZATION_OPTION_UNSPECIFIED = 0,
+    SKIP = 1,
 }

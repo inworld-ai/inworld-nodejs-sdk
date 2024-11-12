@@ -69,6 +69,8 @@ export class CapabilitiesRequest extends jspb.Message {
     setLogsInfo(value: boolean): CapabilitiesRequest;
     getLogsDebug(): boolean;
     setLogsDebug(value: boolean): CapabilitiesRequest;
+    getLogsInternal(): boolean;
+    setLogsInternal(value: boolean): CapabilitiesRequest;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): CapabilitiesRequest.AsObject;
@@ -110,6 +112,7 @@ export namespace CapabilitiesRequest {
         logsWarning: boolean,
         logsInfo: boolean,
         logsDebug: boolean,
+        logsInternal: boolean,
     }
 }
 
@@ -718,6 +721,10 @@ export namespace PreviousState {
             setId(value: string): TaskParameter;
             getDescription(): string;
             setDescription(value: string): TaskParameter;
+            clearEntitiesList(): void;
+            getEntitiesList(): Array<string>;
+            setEntitiesList(value: Array<string>): TaskParameter;
+            addEntities(value: string, index?: number): string;
 
             serializeBinary(): Uint8Array;
             toObject(includeInstance?: boolean): TaskParameter.AsObject;
@@ -733,6 +740,7 @@ export namespace PreviousState {
             export type AsObject = {
                 id: string,
                 description: string,
+                entitiesList: Array<string>,
             }
         }
 

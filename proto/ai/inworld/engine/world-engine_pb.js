@@ -506,7 +506,7 @@ if (goog.DEBUG && !COMPILED) {
  * @constructor
  */
 proto.PreviousState.CustomTaskState.TaskParameter = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.PreviousState.CustomTaskState.TaskParameter.repeatedFields_, null);
 };
 goog.inherits(proto.PreviousState.CustomTaskState.TaskParameter, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
@@ -890,7 +890,8 @@ proto.CapabilitiesRequest.toObject = function(includeInstance, msg) {
     logs: jspb.Message.getBooleanFieldWithDefault(msg, 26, false),
     logsWarning: jspb.Message.getBooleanFieldWithDefault(msg, 27, false),
     logsInfo: jspb.Message.getBooleanFieldWithDefault(msg, 28, false),
-    logsDebug: jspb.Message.getBooleanFieldWithDefault(msg, 29, false)
+    logsDebug: jspb.Message.getBooleanFieldWithDefault(msg, 29, false),
+    logsInternal: jspb.Message.getBooleanFieldWithDefault(msg, 30, false)
   };
 
   if (includeInstance) {
@@ -1038,6 +1039,10 @@ proto.CapabilitiesRequest.deserializeBinaryFromReader = function(msg, reader) {
     case 29:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setLogsDebug(value);
+      break;
+    case 30:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setLogsInternal(value);
       break;
     default:
       reader.skipField();
@@ -1261,6 +1266,13 @@ proto.CapabilitiesRequest.serializeBinaryToWriter = function(message, writer) {
   if (f) {
     writer.writeBool(
       29,
+      f
+    );
+  }
+  f = message.getLogsInternal();
+  if (f) {
+    writer.writeBool(
+      30,
       f
     );
   }
@@ -1768,6 +1780,24 @@ proto.CapabilitiesRequest.prototype.getLogsDebug = function() {
  */
 proto.CapabilitiesRequest.prototype.setLogsDebug = function(value) {
   return jspb.Message.setProto3BooleanField(this, 29, value);
+};
+
+
+/**
+ * optional bool logs_internal = 30;
+ * @return {boolean}
+ */
+proto.CapabilitiesRequest.prototype.getLogsInternal = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 30, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.CapabilitiesRequest} returns this
+ */
+proto.CapabilitiesRequest.prototype.setLogsInternal = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 30, value);
 };
 
 
@@ -5830,6 +5860,13 @@ proto.PreviousState.CustomTaskState.serializeBinaryToWriter = function(message, 
 
 
 
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.PreviousState.CustomTaskState.TaskParameter.repeatedFields_ = [3];
+
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -5862,7 +5899,8 @@ proto.PreviousState.CustomTaskState.TaskParameter.prototype.toObject = function(
 proto.PreviousState.CustomTaskState.TaskParameter.toObject = function(includeInstance, msg) {
   var f, obj = {
     id: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    description: jspb.Message.getFieldWithDefault(msg, 2, "")
+    description: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    entitiesList: (f = jspb.Message.getRepeatedField(msg, 3)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -5907,6 +5945,10 @@ proto.PreviousState.CustomTaskState.TaskParameter.deserializeBinaryFromReader = 
       var value = /** @type {string} */ (reader.readString());
       msg.setDescription(value);
       break;
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.addEntities(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -5950,6 +5992,13 @@ proto.PreviousState.CustomTaskState.TaskParameter.serializeBinaryToWriter = func
       f
     );
   }
+  f = message.getEntitiesList();
+  if (f.length > 0) {
+    writer.writeRepeatedString(
+      3,
+      f
+    );
+  }
 };
 
 
@@ -5986,6 +6035,43 @@ proto.PreviousState.CustomTaskState.TaskParameter.prototype.getDescription = fun
  */
 proto.PreviousState.CustomTaskState.TaskParameter.prototype.setDescription = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+/**
+ * repeated string entities = 3;
+ * @return {!Array<string>}
+ */
+proto.PreviousState.CustomTaskState.TaskParameter.prototype.getEntitiesList = function() {
+  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 3));
+};
+
+
+/**
+ * @param {!Array<string>} value
+ * @return {!proto.PreviousState.CustomTaskState.TaskParameter} returns this
+ */
+proto.PreviousState.CustomTaskState.TaskParameter.prototype.setEntitiesList = function(value) {
+  return jspb.Message.setField(this, 3, value || []);
+};
+
+
+/**
+ * @param {string} value
+ * @param {number=} opt_index
+ * @return {!proto.PreviousState.CustomTaskState.TaskParameter} returns this
+ */
+proto.PreviousState.CustomTaskState.TaskParameter.prototype.addEntities = function(value, opt_index) {
+  return jspb.Message.addToRepeatedField(this, 3, value, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.PreviousState.CustomTaskState.TaskParameter} returns this
+ */
+proto.PreviousState.CustomTaskState.TaskParameter.prototype.clearEntitiesList = function() {
+  return this.setEntitiesList([]);
 };
 
 
