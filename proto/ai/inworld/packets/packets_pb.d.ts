@@ -972,6 +972,10 @@ export class LogsEvent extends jspb.Message {
 
     getMetadataMap(): jspb.Map<string, string>;
     clearMetadataMap(): void;
+    clearDetailsList(): void;
+    getDetailsList(): Array<LogsEvent.LogDetail>;
+    setDetailsList(value: Array<LogsEvent.LogDetail>): LogsEvent;
+    addDetails(value?: LogsEvent.LogDetail, index?: number): LogsEvent.LogDetail;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): LogsEvent.AsObject;
@@ -989,7 +993,36 @@ export namespace LogsEvent {
         level: LogsEvent.LogLevel,
 
         metadataMap: Array<[string, string]>,
+        detailsList: Array<LogsEvent.LogDetail.AsObject>,
     }
+
+
+    export class LogDetail extends jspb.Message { 
+        getText(): string;
+        setText(value: string): LogDetail;
+
+        hasDetail(): boolean;
+        clearDetail(): void;
+        getDetail(): google_protobuf_struct_pb.Value | undefined;
+        setDetail(value?: google_protobuf_struct_pb.Value): LogDetail;
+
+        serializeBinary(): Uint8Array;
+        toObject(includeInstance?: boolean): LogDetail.AsObject;
+        static toObject(includeInstance: boolean, msg: LogDetail): LogDetail.AsObject;
+        static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+        static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+        static serializeBinaryToWriter(message: LogDetail, writer: jspb.BinaryWriter): void;
+        static deserializeBinary(bytes: Uint8Array): LogDetail;
+        static deserializeBinaryFromReader(message: LogDetail, reader: jspb.BinaryReader): LogDetail;
+    }
+
+    export namespace LogDetail {
+        export type AsObject = {
+            text: string,
+            detail?: google_protobuf_struct_pb.Value.AsObject,
+        }
+    }
+
 
     export enum LogLevel {
     UNSPECIFIED = 0,
