@@ -1,3 +1,9 @@
+## [Unreleased]
+
+### Fixed
+
+- Wait for one-to-one conversation loading on data sending
+
 ## [1.16.0] - 2024-11-05
 
 ### Added
