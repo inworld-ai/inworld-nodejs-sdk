@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+### Added
+
+- Add details to logs
+
 ### Fixed
 
 - Wait for one-to-one conversation loading on data sending

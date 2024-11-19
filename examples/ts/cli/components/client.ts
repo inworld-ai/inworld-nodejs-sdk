@@ -145,11 +145,7 @@ export class Client {
 
     // LOG
     if (packet.isLog()) {
-      console.log(`Log: 
-        text: ${packet.log.text}
-        level: ${packet.log.level}
-        metadata: ${JSON.stringify(packet.log.metadata)}
-      `);
+      console.log(`Log: ${JSON.stringify(packet.log, null, 2)}`);
     }
 
     // TRIGGER
