@@ -26,7 +26,9 @@ import {
   InworlControlAction,
   InworldPacketType,
   ItemsInEntitiesOperationType,
+  LogsEventLogDetail,
   MicrophoneMode,
+  ProtobufValue,
   SessionTokenProps,
   TaskParameter,
   TriggerParameter,
@@ -64,6 +66,7 @@ import {
   EmotionStrengthCode,
 } from './entities/packets/emotion/emotion_strength.entity';
 import { InworldPacket } from './entities/packets/inworld_packet.entity';
+import { LogsEvent } from './entities/packets/log.entity';
 import { PacketId } from './entities/packets/packet_id.entity';
 import { Actor, Routing } from './entities/packets/routing.entity';
 import { TextEvent } from './entities/packets/text.entity';
@@ -119,9 +122,12 @@ export {
   InworldPacketType,
   InworldTriggers,
   ItemsInEntitiesOperationType,
+  LogsEvent,
+  LogsEventLogDetail,
   MicrophoneMode,
   PacketId,
   PreviousDialog,
+  ProtobufValue,
   Routing,
   Scene,
   ServiceError,
