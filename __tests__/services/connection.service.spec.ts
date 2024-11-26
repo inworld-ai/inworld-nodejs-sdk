@@ -17,6 +17,11 @@ import { Logger } from '../../src/common/logger';
 import { Character } from '../../src/entities/character.entity';
 import { InworldError } from '../../src/entities/error.entity';
 import { InworldPacket } from '../../src/entities/packets/inworld_packet.entity';
+import { LatencyReportEvent } from '../../src/entities/packets/latency/latency_report.entity';
+import {
+  PingPongReport,
+  PingPongType,
+} from '../../src/entities/packets/latency/ping_pong_report.entity';
 import { Scene } from '../../src/entities/scene.entity';
 import { Session } from '../../src/entities/session.entity';
 import { SessionToken } from '../../src/entities/session_token.entity';
@@ -43,6 +48,7 @@ import {
   user,
 } from '../helpers';
 
+const eventFactory = new EventFactory();
 // eslint-disable-next-line no-console
 const onErrorLog = (err: InworldError) => console.log(err.message);
 const onError = jest.fn();
@@ -118,6 +124,7 @@ describe('message', () => {
     const generateSessionToken = jest
       .spyOn(connection, 'generateSessionToken')
       .mockImplementationOnce(() => Promise.resolve(sessionToken));
+
     const openSession = jest
       .spyOn(WorldEngineClient.prototype, 'openSession')
       .mockImplementationOnce(() => {
@@ -181,6 +188,89 @@ describe('message', () => {
       },
       sessionId: sessionToken.sessionId,
     });
+  });
+
+  test('should receive ping and send pong message', async () => {
+    const stream = getStream();
+    const sendPong = jest.spyOn(eventFactory, 'pong');
+    const onMessage = jest.fn();
+
+    const connection = new ConnectionService({
+      apiKey: { key: KEY, secret: SECRET },
+      config: { capabilities },
+      name: SCENE,
+      user,
+      onError: onErrorLog,
+      onMessage,
+      onDisconnect,
+    });
+
+    const sendPingPongResponse = jest.spyOn(connection, 'sendPingPongResponse');
+
+    const rounting = new Routing()
+      .setSource(new Actor())
+      .setTarget(new Actor());
+
+    const packetId = new PacketId().setPacketId(v4());
+    const timestamp = protoTimestamp();
+
+    const reportRequest = new LatencyReportEvent({
+      pingPong: new PingPongReport({
+        packetId,
+        pingTimestamp: timestamp,
+        type: PingPongType.PING,
+      }),
+    });
+
+    const packetRequest = new ProtoPacket()
+      .setPacketId(packetId)
+      .setRouting(rounting)
+      .setLatencyReport(reportRequest)
+      .setTimestamp(timestamp);
+
+    const eventResponse = new LatencyReportEvent({
+      pingPong: new PingPongReport({
+        packetId,
+        pingTimestamp: timestamp,
+        type: PingPongType.PONG,
+      }),
+    });
+
+    const packetResponse = eventFactory
+      .baseProtoPacket({
+        utteranceId: false,
+        interactionId: false,
+      })
+      .setLatencyReport(eventResponse);
+
+    packetResponse;
+
+    jest
+      .spyOn(connection, 'generateSessionToken')
+      .mockImplementationOnce(() => Promise.resolve(sessionToken));
+
+    jest
+      .spyOn(WorldEngineClient.prototype, 'openSession')
+      .mockImplementationOnce(() => {
+        setTimeout(() => new Promise(emitSceneStatusEvent(stream)), 0);
+        return stream;
+      });
+
+    await connection.open();
+
+    stream.emit('data', packetRequest);
+
+    expect(onMessage).toHaveBeenCalledTimes(1);
+    expect(onMessage).toHaveBeenCalledWith(
+      InworldPacket.fromProto(packetRequest),
+    );
+
+    expect(sendPingPongResponse).toHaveBeenCalledTimes(1);
+    expect(sendPingPongResponse).toHaveBeenLastCalledWith(packetRequest);
+    expect(sendPong).toHaveBeenCalledTimes(1);
+    expect(sendPong).toHaveBeenLastCalledWith(packetRequest);
+
+    // Confirm the packetResponse is properly created.
   });
 
   test('should replace scene characters', async () => {
@@ -277,6 +367,7 @@ describe('message', () => {
     jest
       .spyOn(connection, 'generateSessionToken')
       .mockImplementationOnce(() => Promise.resolve(sessionToken));
+
     jest
       .spyOn(WorldEngineClient.prototype, 'openSession')
       .mockImplementationOnce(() => {
