@@ -41,17 +41,9 @@
     protobufjs "^7.2.5"
     yargs "^17.7.2"
 
-"@inworld/nodejs-sdk@1.16.0":
-  version "1.16.0"
-  resolved "https://registry.yarnpkg.com/@inworld/nodejs-sdk/-/nodejs-sdk-1.16.0.tgz#3512f354b4d34efea7a4062679e0c4ac665844d1"
-  integrity sha512-zOniwCjMofw5EIE4hiKjj0LRPQkGuBiuTmbeeAvCquPL4ll6//YxMB24xgxaYr6bPkYLP03AyanHzfpBgLVanQ==
-  dependencies:
-    "@grpc/grpc-js" "^1.10.9"
-    crypto-js "^4.2.0"
-    google-protobuf "^3.21.2"
-    module-alias "^2.2.3"
-    uuid "^9.0.1"
-    winston "^3.12.0"
+"@inworld/nodejs-sdk@link:./../../..":
+  version "0.0.0"
+  uid ""
 
 "@jridgewell/resolve-uri@^3.0.3":
   version "3.1.1"

@@ -10,8 +10,6 @@ import {
   Continuation,
   ControlEvent,
 } from '@proto/ai/inworld/packets/packets_pb';
-import os = require('os');
-
 import { v4 } from 'uuid';
 
 import { Config } from '../../../src/common/config';
@@ -42,6 +40,8 @@ import {
   simpleExtension,
   user,
 } from '../../helpers';
+
+import os = require('os');
 
 const { version } = require('@root/package.json');
 
@@ -646,9 +646,7 @@ describe('updateSession', () => {
     expect(write.mock.calls[0][0].getControl().getAction()).toEqual(
       ControlEvent.Action.SESSION_CONFIGURATION,
     );
-    expect(
-      write.mock.calls[1][0].getMutation().getLoadScene().getName(),
-    ).toEqual(newScene);
+    expect(write.mock.calls[write.mock.calls.length - 1][0]).toEqual(newScene);
   });
 });
 
