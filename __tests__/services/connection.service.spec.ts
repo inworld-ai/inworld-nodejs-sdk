@@ -8,6 +8,7 @@ import {
   LoadedScene,
   PacketId,
   Routing,
+  TextEvent,
 } from '@proto/ai/inworld/packets/packets_pb';
 import { v4 } from 'uuid';
 
@@ -99,6 +100,16 @@ test('should generate session token', async () => {
 });
 
 describe('message', () => {
+  // const incoming = eventFactory
+  //   .baseProtoPacket({ conversationId })
+  //   .setControl(
+  //     new ControlEvent().setConversationEvent(
+  //       new ConversationEventPayload()
+  //         .setEventType(ConversationEventPayload.ConversationEventType.STARTED)
+  //         .setParticipantsList([]),
+  //     ),
+  //   );
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -194,42 +205,87 @@ describe('message', () => {
     });
   });
 
-  // test('should send perceived latency event', async () => {
-  //   const stream = getStream();
-  //   const sendPerceivedLatency = jest.spyOn(eventFactory, 'perceivedLatency');
-  //   const sendTextEvent = jest.spyOn(eventFactory, 'text');
+  test('should send perceived latency event', async () => {
+    // jest
+    //   .spyOn(ConversationService.prototype, 'getConversationId')
+    //   .mockImplementation(() => conversationId);
 
-  //   const text = v4();
+    process.stdout.write('conn: 0');
 
-  //   const connection = new ConnectionService({
-  //     apiKey: { key: KEY, secret: SECRET },
-  //     config: { capabilities },
-  //     name: SCENE,
-  //     user,
-  //     onError: onErrorLog,
-  //     onMessage,
-  //     onDisconnect,
-  //   });
+    // const sendPerceivedLatency = jest.spyOn(eventFactory, 'perceivedLatency');
+    // const sendTextEvent = jest.spyOn(eventFactory, 'text');
+    const stream = getStream();
 
-  //   const rounting = new Routing()
-  //     .setSource(new Actor())
-  //     .setTarget(new Actor());
+    const text = v4();
+    const message = new TextEvent();
 
-  //   const packetId = new PacketId().setPacketId(v4());
-  //   const timestamp = protoTimestamp();
+    process.stdout.write('conn: A');
 
-  //   const latencyReport = new LatencyReportEvent({
-  //     perceivedLatency: new PerceivedLatencyReport({
-  //       latency: 0,
-  //       precision: PerceivedLatencyReportPrecisionType.FINE,
-  //     })
-  //   });
+    const connection = new ConnectionService({
+      apiKey: { key: KEY, secret: SECRET },
+      config: { capabilities },
+      name: SCENE,
+      user,
+      onError: onErrorLog,
+      onMessage: async (packet) => {
+        process.stdout.write('conn: ' + JSON.stringify(packet));
 
-  // });
+        expect(onMessage).toHaveBeenCalledTimes(1);
+        expect(onMessage).toHaveBeenCalledWith(
+          InworldPacket.fromProto(packetRequest),
+        );
+      },
+      onDisconnect,
+    });
+
+    process.stdout.write('conn: B');
+
+    const rounting = new Routing()
+      .setSource(new Actor())
+      .setTarget(new Actor());
+
+    message.setText(JSON.stringify(text));
+
+    const packetRequest = new ProtoPacket()
+      .setPacketId(new PacketId().setPacketId(v4()))
+      .setRouting(rounting)
+      .setText(message)
+      .setTimestamp(protoTimestamp());
+
+    await connection.open();
+
+    process.stdout.write('conn: C');
+
+    stream.emit('data', packetRequest);
+
+    // const [packet] = await Promise.all([
+    //   connection.sendText(text),
+    //   new Promise((resolve: any) => {
+    //     setTimeout(() => {
+    //       connection.onMessage!(incoming);
+    //       resolve(true);
+    //     }, 0);
+    //   }),
+    // ]);
+
+    // const rounting = new Routing()
+    //   .setSource(new Actor())
+    //   .setTarget(new Actor());
+
+    // const packetId = new PacketId().setPacketId(v4());
+    // const timestamp = protoTimestamp();
+
+    // const latencyReport = new LatencyReportEvent({
+    //   perceivedLatency: new PerceivedLatencyReport({
+    //     latency: 0,
+    //     precision: PerceivedLatencyReportPrecisionType.FINE,
+    //   }),
+    // });
+  });
 
   test('should receive ping and send pong event', async () => {
     const stream = getStream();
-    const sendPong = jest.spyOn(eventFactory, 'pong');
+    // const sendPong = jest.spyOn(eventFactory, 'pong');
     const write = jest
       .spyOn(ClientDuplexStreamImpl.prototype, 'write')
       .mockImplementation(jest.fn());
@@ -261,7 +317,7 @@ describe('message', () => {
     });
 
     const packetRequest = new ProtoPacket()
-      .setPacketId(packetId)
+      .setPacketId(new PacketId().setPacketId(v4()))
       .setRouting(rounting)
       .setLatencyReport(reportRequest)
       .setTimestamp(timestamp);
@@ -304,11 +360,11 @@ describe('message', () => {
     );
 
     // How to check for the request data vs the response
-    // expect(write).toHaveBeenCalledTimes(1);
-    // expect(write).toHaveBeenLastCalledWith(packetRequest);
-    // expect(write.mock.calls[write.mock.calls.length - 1][0]).toEqual(
-    //   packetResponse,
-    // );
+    expect(write).toHaveBeenCalledTimes(1);
+    expect(write).toHaveBeenLastCalledWith(packetRequest);
+    expect(write.mock.calls[write.mock.calls.length - 1][0]).toEqual(
+      packetResponse,
+    );
   });
 
   test('should replace scene characters', async () => {
