@@ -305,7 +305,7 @@ describe('message', () => {
     const packetId = new PacketId().setPacketId(v4());
     const timestamp = protoTimestamp();
 
-    const reportRequest = new LatencyReportEvent().setPingPong(
+    const eventRequest = new LatencyReportEvent().setPingPong(
       new PingPongReport()
         .setPingPacketId(packetId)
         .setPingTimestamp(timestamp)
@@ -315,7 +315,7 @@ describe('message', () => {
     const packetRequest = new ProtoPacket()
       .setPacketId(new PacketId().setPacketId(v4()))
       .setRouting(rounting)
-      .setLatencyReport(reportRequest)
+      .setLatencyReport(eventRequest)
       .setTimestamp(timestamp);
 
     const eventResponse = new LatencyReportEvent().setPingPong(
