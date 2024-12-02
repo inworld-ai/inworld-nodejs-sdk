@@ -5,8 +5,10 @@ import {
   ControlEvent,
   CurrentSceneStatus,
   InworldPacket as ProtoPacket,
+  LatencyReportEvent,
   LoadedScene,
   PacketId,
+  PingPongReport,
   Routing,
   TextEvent,
 } from '@proto/ai/inworld/packets/packets_pb';
@@ -18,15 +20,10 @@ import { Logger } from '../../src/common/logger';
 import { Character } from '../../src/entities/character.entity';
 import { InworldError } from '../../src/entities/error.entity';
 import { InworldPacket } from '../../src/entities/packets/inworld_packet.entity';
-import { LatencyReportEvent } from '../../src/entities/packets/latency/latency_report.entity';
 // import {
 //   PerceivedLatencyReport,
 //   PerceivedLatencyReportPrecisionType,
 // } from '../../src/entities/packets/latency/perceived_latency_report';
-import {
-  PingPongReport,
-  PingPongType,
-} from '../../src/entities/packets/latency/ping_pong_report.entity';
 import { Scene } from '../../src/entities/scene.entity';
 import { Session } from '../../src/entities/session.entity';
 import { SessionToken } from '../../src/entities/session_token.entity';
@@ -308,13 +305,12 @@ describe('message', () => {
     const packetId = new PacketId().setPacketId(v4());
     const timestamp = protoTimestamp();
 
-    const reportRequest = new LatencyReportEvent({
-      pingPong: new PingPongReport({
-        packetId,
-        pingTimestamp: timestamp,
-        type: PingPongType.PING,
-      }),
-    });
+    const reportRequest = new LatencyReportEvent().setPingPong(
+      new PingPongReport()
+        .setPingPacketId(packetId)
+        .setPingTimestamp(timestamp)
+        .setType(PingPongReport.Type.PING),
+    );
 
     const packetRequest = new ProtoPacket()
       .setPacketId(new PacketId().setPacketId(v4()))
@@ -322,13 +318,12 @@ describe('message', () => {
       .setLatencyReport(reportRequest)
       .setTimestamp(timestamp);
 
-    const eventResponse = new LatencyReportEvent({
-      pingPong: new PingPongReport({
-        packetId,
-        pingTimestamp: timestamp,
-        type: PingPongType.PONG,
-      }),
-    });
+    const eventResponse = new LatencyReportEvent().setPingPong(
+      new PingPongReport()
+        .setPingPacketId(packetId)
+        .setPingTimestamp(timestamp)
+        .setType(PingPongReport.Type.PONG),
+    );
 
     const packetResponse = eventFactory
       .baseProtoPacket({
@@ -336,8 +331,6 @@ describe('message', () => {
         interactionId: false,
       })
       .setLatencyReport(eventResponse);
-
-    packetResponse;
 
     jest
       .spyOn(connection, 'generateSessionToken')
