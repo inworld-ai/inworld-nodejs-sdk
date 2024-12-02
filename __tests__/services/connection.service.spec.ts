@@ -282,7 +282,6 @@ describe('message', () => {
 
   test('should receive ping and send pong event', async () => {
     const stream = getStream();
-    // const sendPong = jest.spyOn(eventFactory, 'pong');
     const write = jest
       .spyOn(ClientDuplexStreamImpl.prototype, 'write')
       .mockImplementation(jest.fn());
@@ -318,19 +317,19 @@ describe('message', () => {
       .setLatencyReport(eventRequest)
       .setTimestamp(timestamp);
 
-    const eventResponse = new LatencyReportEvent().setPingPong(
-      new PingPongReport()
-        .setPingPacketId(packetId)
-        .setPingTimestamp(timestamp)
-        .setType(PingPongReport.Type.PONG),
-    );
+    // const eventResponse = new LatencyReportEvent().setPingPong(
+    //   new PingPongReport()
+    //     .setPingPacketId(packetId)
+    //     .setPingTimestamp(timestamp)
+    //     .setType(PingPongReport.Type.PONG),
+    // );
 
-    const packetResponse = eventFactory
-      .baseProtoPacket({
-        utteranceId: false,
-        interactionId: false,
-      })
-      .setLatencyReport(eventResponse);
+    // const packetResponse = eventFactory
+    //   .baseProtoPacket({
+    //     utteranceId: false,
+    //     interactionId: false,
+    //   })
+    //   .setLatencyReport(eventResponse);
 
     jest
       .spyOn(connection, 'generateSessionToken')
@@ -347,11 +346,17 @@ describe('message', () => {
 
     stream.emit('data', packetRequest);
 
-    // How to check for the request data vs the response
     expect(write).toHaveBeenCalledTimes(3);
-    expect(write).toHaveBeenLastCalledWith(packetRequest);
-    expect(write.mock.calls[write.mock.calls.length - 1][0]).toEqual(
-      packetResponse,
+    // expect(write).toHaveBeenLastCalledWith(packetRequest);
+    // expect(write.mock.calls[write.mock.calls.length - 1][0]).toEqual(
+    //   packetResponse,
+    // );
+    const result = write.mock.calls[write.mock.calls.length - 1][0].toObject();
+    expect(result.latencyReport.pingPong.type).toEqual(
+      PingPongReport.Type.PONG,
+    );
+    expect(result.latencyReport.pingPong.pingPacketId.packetId).toEqual(
+      packetRequest.getPacketId().getPacketId(),
     );
   });
 
