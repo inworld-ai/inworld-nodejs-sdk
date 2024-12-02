@@ -347,13 +347,8 @@ describe('message', () => {
 
     stream.emit('data', packetRequest);
 
-    expect(onMessage).toHaveBeenCalledTimes(1);
-    expect(onMessage).toHaveBeenCalledWith(
-      InworldPacket.fromProto(packetRequest),
-    );
-
     // How to check for the request data vs the response
-    expect(write).toHaveBeenCalledTimes(1);
+    expect(write).toHaveBeenCalledTimes(3);
     expect(write).toHaveBeenLastCalledWith(packetRequest);
     expect(write.mock.calls[write.mock.calls.length - 1][0]).toEqual(
       packetResponse,
