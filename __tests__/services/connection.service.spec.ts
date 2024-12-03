@@ -207,16 +207,15 @@ describe('message', () => {
     //   .spyOn(ConversationService.prototype, 'getConversationId')
     //   .mockImplementation(() => conversationId);
 
-    process.stdout.write('conn: 0');
-
     // const sendPerceivedLatency = jest.spyOn(eventFactory, 'perceivedLatency');
     // const sendTextEvent = jest.spyOn(eventFactory, 'text');
+
     const stream = getStream();
+
+    const onMessage = jest.fn();
 
     const text = v4();
     const message = new TextEvent();
-
-    process.stdout.write('conn: A');
 
     const connection = new ConnectionService({
       apiKey: { key: KEY, secret: SECRET },
@@ -224,18 +223,19 @@ describe('message', () => {
       name: SCENE,
       user,
       onError: onErrorLog,
-      onMessage: async (packet) => {
-        process.stdout.write('conn: ' + JSON.stringify(packet));
+      onMessage,
 
-        expect(onMessage).toHaveBeenCalledTimes(1);
-        expect(onMessage).toHaveBeenCalledWith(
-          InworldPacket.fromProto(packetRequest),
-        );
-      },
+      // : async (packet) => {
+      //   console.log('connA: ' + JSON.stringify(packet));
+
+      //   expect(onMessage).toHaveBeenCalledTimes(1);
+      //   expect(onMessage).toHaveBeenCalledWith(
+      //     InworldPacket.fromProto(packetRequest),
+      //   );
+      // },
+
       onDisconnect,
     });
-
-    process.stdout.write('conn: B');
 
     const rounting = new Routing()
       .setSource(new Actor())
@@ -251,9 +251,14 @@ describe('message', () => {
 
     await connection.open();
 
-    process.stdout.write('conn: C');
-
     stream.emit('data', packetRequest);
+
+    expect(onMessage).toHaveBeenCalledTimes(1);
+    expect(onMessage).toHaveBeenCalledWith(
+      InworldPacket.fromProto(packetRequest),
+    );
+
+    console.log('conn: End');
 
     // const [packet] = await Promise.all([
     //   connection.sendText(text),
@@ -316,20 +321,6 @@ describe('message', () => {
       .setRouting(rounting)
       .setLatencyReport(eventRequest)
       .setTimestamp(timestamp);
-
-    // const eventResponse = new LatencyReportEvent().setPingPong(
-    //   new PingPongReport()
-    //     .setPingPacketId(packetId)
-    //     .setPingTimestamp(timestamp)
-    //     .setType(PingPongReport.Type.PONG),
-    // );
-
-    // const packetResponse = eventFactory
-    //   .baseProtoPacket({
-    //     utteranceId: false,
-    //     interactionId: false,
-    //   })
-    //   .setLatencyReport(eventResponse);
 
     jest
       .spyOn(connection, 'generateSessionToken')

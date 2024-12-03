@@ -646,7 +646,9 @@ describe('updateSession', () => {
     expect(write.mock.calls[0][0].getControl().getAction()).toEqual(
       ControlEvent.Action.SESSION_CONFIGURATION,
     );
-    expect(write.mock.calls[write.mock.calls.length - 1][0]).toEqual(newScene);
+    expect(
+      write.mock.calls[1][0].getMutation().getLoadScene().getName(),
+    ).toEqual(newScene);
   });
 });
 
