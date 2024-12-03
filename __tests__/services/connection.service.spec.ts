@@ -20,10 +20,6 @@ import { Logger } from '../../src/common/logger';
 import { Character } from '../../src/entities/character.entity';
 import { InworldError } from '../../src/entities/error.entity';
 import { InworldPacket } from '../../src/entities/packets/inworld_packet.entity';
-// import {
-//   PerceivedLatencyReport,
-//   PerceivedLatencyReportPrecisionType,
-// } from '../../src/entities/packets/latency/perceived_latency_report';
 import { Scene } from '../../src/entities/scene.entity';
 import { Session } from '../../src/entities/session.entity';
 import { SessionToken } from '../../src/entities/session_token.entity';
@@ -50,7 +46,6 @@ import {
   user,
 } from '../helpers';
 
-// const eventFactory = new EventFactory();
 // eslint-disable-next-line no-console
 const onErrorLog = (err: InworldError) => console.log(err.message);
 const onError = jest.fn();
@@ -225,6 +220,7 @@ describe('message', () => {
       onError: onErrorLog,
       onMessage,
       // Do I listen here?
+
       // : async (packet) => {
       //   console.log('connA: ' + JSON.stringify(packet));
 
