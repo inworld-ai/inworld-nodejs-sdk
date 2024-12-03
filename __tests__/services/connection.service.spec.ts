@@ -50,7 +50,7 @@ import {
   user,
 } from '../helpers';
 
-const eventFactory = new EventFactory();
+// const eventFactory = new EventFactory();
 // eslint-disable-next-line no-console
 const onErrorLog = (err: InworldError) => console.log(err.message);
 const onError = jest.fn();
