@@ -347,10 +347,6 @@ describe('message', () => {
     stream.emit('data', packetRequest);
 
     expect(write).toHaveBeenCalledTimes(3);
-    // expect(write).toHaveBeenLastCalledWith(packetRequest);
-    // expect(write.mock.calls[write.mock.calls.length - 1][0]).toEqual(
-    //   packetResponse,
-    // );
     const result = write.mock.calls[write.mock.calls.length - 1][0].toObject();
     expect(result.latencyReport.pingPong.type).toEqual(
       PingPongReport.Type.PONG,
