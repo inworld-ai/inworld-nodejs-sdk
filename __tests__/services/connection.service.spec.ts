@@ -224,7 +224,7 @@ describe('message', () => {
       user,
       onError: onErrorLog,
       onMessage,
-
+      // Do I listen here?
       // : async (packet) => {
       //   console.log('connA: ' + JSON.stringify(packet));
 
@@ -253,12 +253,13 @@ describe('message', () => {
 
     stream.emit('data', packetRequest);
 
+    // Do I listen here?
     expect(onMessage).toHaveBeenCalledTimes(1);
     expect(onMessage).toHaveBeenCalledWith(
       InworldPacket.fromProto(packetRequest),
     );
 
-    console.log('conn: End');
+    // console.log('conn: End');
 
     // const [packet] = await Promise.all([
     //   connection.sendText(text),
