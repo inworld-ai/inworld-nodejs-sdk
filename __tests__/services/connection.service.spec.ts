@@ -8,10 +8,12 @@ import {
   LatencyReportEvent,
   LoadedScene,
   PacketId,
+  PerceivedLatencyReport as ProtoPerceivedLatencyReport,
   PingPongReport,
   Routing,
   TextEvent,
 } from '@proto/ai/inworld/packets/packets_pb';
+import { Duration } from 'google-protobuf/google/protobuf/duration_pb';
 import { v4 } from 'uuid';
 
 import { ConversationState } from '../../src/common/data_structures';
@@ -32,6 +34,7 @@ import {
   agents,
   capabilities,
   characters,
+  conversationId,
   createAgent,
   emitSceneStatusEvent,
   generateEmptyPacket,
@@ -92,16 +95,6 @@ test('should generate session token', async () => {
 });
 
 describe('message', () => {
-  // const incoming = eventFactory
-  //   .baseProtoPacket({ conversationId })
-  //   .setControl(
-  //     new ControlEvent().setConversationEvent(
-  //       new ConversationEventPayload()
-  //         .setEventType(ConversationEventPayload.ConversationEventType.STARTED)
-  //         .setParticipantsList([]),
-  //     ),
-  //   );
-
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -119,13 +112,11 @@ describe('message', () => {
       onDisconnect,
     });
 
-    const rounting = new Routing()
-      .setSource(new Actor())
-      .setTarget(new Actor());
+    const routing = new Routing().setSource(new Actor()).setTarget(new Actor());
 
     const packet = new ProtoPacket()
       .setPacketId(new PacketId().setPacketId(v4()))
-      .setRouting(rounting)
+      .setRouting(routing)
       .setTimestamp(protoTimestamp());
 
     const generateSessionToken = jest
@@ -163,13 +154,11 @@ describe('message', () => {
       onDisconnect,
     });
 
-    const rounting = new Routing()
-      .setSource(new Actor())
-      .setTarget(new Actor());
+    const routing = new Routing().setSource(new Actor()).setTarget(new Actor());
     const control = new ControlEvent().setAction(ControlEvent.Action.WARNING);
     const packet = new ProtoPacket()
       .setPacketId(new PacketId().setPacketId(v4()))
-      .setRouting(rounting)
+      .setRouting(routing)
       .setControl(control)
       .setTimestamp(protoTimestamp());
 
@@ -198,19 +187,13 @@ describe('message', () => {
   });
 
   test('should send perceived latency event', async () => {
-    // jest
-    //   .spyOn(ConversationService.prototype, 'getConversationId')
-    //   .mockImplementation(() => conversationId);
-
-    // const sendPerceivedLatency = jest.spyOn(eventFactory, 'perceivedLatency');
-    // const sendTextEvent = jest.spyOn(eventFactory, 'text');
+    jest
+      .spyOn(ConversationService.prototype, 'getConversationId')
+      .mockImplementation(() => conversationId);
 
     const stream = getStream();
 
     const onMessage = jest.fn();
-
-    const text = v4();
-    const message = new TextEvent();
 
     const connection = new ConnectionService({
       apiKey: { key: KEY, secret: SECRET },
@@ -219,67 +202,77 @@ describe('message', () => {
       user,
       onError: onErrorLog,
       onMessage,
-      // Do I listen here?
-
-      // : async (packet) => {
-      //   console.log('connA: ' + JSON.stringify(packet));
-
-      //   expect(onMessage).toHaveBeenCalledTimes(1);
-      //   expect(onMessage).toHaveBeenCalledWith(
-      //     InworldPacket.fromProto(packetRequest),
-      //   );
-      // },
-
       onDisconnect,
     });
 
-    const rounting = new Routing()
-      .setSource(new Actor())
-      .setTarget(new Actor());
+    const routing = new Routing().setSource(new Actor()).setTarget(new Actor());
 
+    const text = 'Hi';
+
+    const message = new TextEvent();
     message.setText(JSON.stringify(text));
 
-    const packetRequest = new ProtoPacket()
-      .setPacketId(new PacketId().setPacketId(v4()))
-      .setRouting(rounting)
-      .setText(message)
-      .setTimestamp(protoTimestamp());
+    jest
+      .spyOn(connection, 'generateSessionToken')
+      .mockImplementationOnce(() => Promise.resolve(sessionToken));
+
+    jest
+      .spyOn(WorldEngineClient.prototype, 'openSession')
+      .mockImplementationOnce(() => {
+        setTimeout(() => new Promise(emitSceneStatusEvent(stream)), 0);
+        return stream;
+      });
 
     await connection.open();
 
-    stream.emit('data', packetRequest);
+    const timeSent = protoTimestamp();
 
-    // Do I listen here?
-    expect(onMessage).toHaveBeenCalledTimes(1);
+    const packetResponse = new ProtoPacket()
+      .setPacketId(new PacketId().setPacketId(v4()))
+      .setText(message)
+      .setRouting(routing)
+      .setTimestamp(protoTimestamp());
+
+    stream.emit('data', packetResponse);
+
+    expect(onMessage).toHaveBeenCalledTimes(2);
     expect(onMessage).toHaveBeenCalledWith(
-      InworldPacket.fromProto(packetRequest),
+      InworldPacket.fromProto(packetResponse),
     );
 
-    // console.log('conn: End');
+    const duration = new Duration();
+    duration.setSeconds(
+      packetResponse.getTimestamp().getSeconds() - timeSent.getSeconds(),
+    );
+    duration.setNanos(
+      packetResponse.getTimestamp().getNanos() - timeSent.getNanos(),
+    );
 
-    // const [packet] = await Promise.all([
-    //   connection.sendText(text),
-    //   new Promise((resolve: any) => {
-    //     setTimeout(() => {
-    //       connection.onMessage!(incoming);
-    //       resolve(true);
-    //     }, 0);
-    //   }),
-    // ]);
+    if (duration.getSeconds() < 0 && duration.getNanos() > 0) {
+      duration.setSeconds(duration.getSeconds() + 1);
+      duration.setNanos(duration.getNanos() - 1000000000);
+    } else if (duration.getSeconds() > 0 && duration.getNanos() < 0) {
+      duration.setSeconds(duration.getSeconds() - 1);
+      duration.setNanos(duration.getNanos() + 1000000000);
+    }
 
-    // const rounting = new Routing()
-    //   .setSource(new Actor())
-    //   .setTarget(new Actor());
+    const latencyReport = new LatencyReportEvent().setPerceivedLatency(
+      new ProtoPerceivedLatencyReport()
+        .setLatency(duration)
+        .setPrecision(ProtoPerceivedLatencyReport.Precision.FINE),
+    );
 
-    // const packetId = new PacketId().setPacketId(v4());
-    // const timestamp = protoTimestamp();
+    const packetReport = new ProtoPacket()
+      .setPacketId(new PacketId().setPacketId(v4()))
+      .setLatencyReport(latencyReport)
+      .setRouting(routing)
+      .setTimestamp(protoTimestamp());
 
-    // const latencyReport = new LatencyReportEvent({
-    //   perceivedLatency: new PerceivedLatencyReport({
-    //     latency: 0,
-    //     precision: PerceivedLatencyReportPrecisionType.FINE,
-    //   }),
-    // });
+    await connection.send(() => {
+      return packetReport;
+    });
+
+    expect(connection.send).toHaveBeenCalledTimes(1);
   });
 
   test('should receive ping and send pong event', async () => {
@@ -299,9 +292,7 @@ describe('message', () => {
       onDisconnect,
     });
 
-    const rounting = new Routing()
-      .setSource(new Actor())
-      .setTarget(new Actor());
+    const routing = new Routing().setSource(new Actor()).setTarget(new Actor());
 
     const packetId = new PacketId().setPacketId(v4());
     const timestamp = protoTimestamp();
@@ -315,7 +306,7 @@ describe('message', () => {
 
     const packetRequest = new ProtoPacket()
       .setPacketId(new PacketId().setPacketId(v4()))
-      .setRouting(rounting)
+      .setRouting(routing)
       .setLatencyReport(eventRequest)
       .setTimestamp(timestamp);
 
@@ -684,9 +675,11 @@ describe('open', () => {
 
   test('should inactivate connection on disconnect stream event', async () => {
     const stream = getStream();
+
     jest
       .spyOn(connection, 'generateSessionToken')
       .mockImplementationOnce(() => Promise.resolve(sessionToken));
+
     jest
       .spyOn(WorldEngineClient.prototype, 'openSession')
       .mockImplementationOnce(() => {
