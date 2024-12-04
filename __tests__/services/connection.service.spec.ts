@@ -193,6 +193,10 @@ describe('message', () => {
 
     const stream = getStream();
 
+    const write = jest
+      .spyOn(ClientDuplexStreamImpl.prototype, 'write')
+      .mockImplementation(jest.fn());
+
     const onMessage = jest.fn();
 
     const connection = new ConnectionService({
@@ -268,11 +272,13 @@ describe('message', () => {
       .setRouting(routing)
       .setTimestamp(protoTimestamp());
 
-    await connection.send(() => {
-      return packetReport;
-    });
+    stream.emit('data', packetReport);
 
-    expect(connection.send).toHaveBeenCalledTimes(1);
+    expect(write).toHaveBeenCalledTimes(2);
+    const result = write.mock.calls[write.mock.calls.length - 1][0].toObject();
+    expect(result.latencyReport.perceivedLatency.latency).toEqual(
+      packetReport.getLatencyReport().getPerceivedLatency().getLatency(),
+    );
   });
 
   test('should receive ping and send pong event', async () => {
