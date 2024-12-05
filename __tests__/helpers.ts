@@ -14,6 +14,8 @@ import {
   PacketId,
   Routing,
 } from '@proto/ai/inworld/packets/packets_pb';
+import { Duration } from 'google-protobuf/google/protobuf/duration_pb';
+import { Timestamp } from 'google-protobuf/google/protobuf/timestamp_pb';
 import { v4 } from 'uuid';
 
 import { Capabilities, Extension, User } from '../src/common/data_structures';
@@ -102,6 +104,22 @@ export const sessionProto = new AccessToken()
   .setToken(v4())
   .setType('Bearer')
   .setExpirationTime(protoTimestamp(today));
+
+export const calculateTimeDifference = (from: Timestamp, to: Timestamp) => {
+  const duration = new Duration();
+  duration.setSeconds(to.getSeconds() - from.getSeconds());
+  duration.setNanos(to.getNanos() - from.getNanos());
+
+  if (duration.getSeconds() < 0 && duration.getNanos() > 0) {
+    duration.setSeconds(duration.getSeconds() + 1);
+    duration.setNanos(duration.getNanos() - 1000000000);
+  } else if (duration.getSeconds() > 0 && duration.getNanos() < 0) {
+    duration.setSeconds(duration.getSeconds() - 1);
+    duration.setNanos(duration.getNanos() + 1000000000);
+  }
+
+  return duration;
+};
 
 export const sessionToken = new SessionToken({
   sessionId: sessionProto.getSessionId(),

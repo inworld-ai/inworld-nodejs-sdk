@@ -13,7 +13,6 @@ import {
   Routing,
   TextEvent,
 } from '@proto/ai/inworld/packets/packets_pb';
-import { Duration } from 'google-protobuf/google/protobuf/duration_pb';
 import { v4 } from 'uuid';
 
 import { ConversationState } from '../../src/common/data_structures';
@@ -32,6 +31,7 @@ import { StateSerializationClientGrpcService } from '../../src/services/gprc/sta
 import { WorldEngineClientGrpcService } from '../../src/services/gprc/world_engine_client_grpc.service';
 import {
   agents,
+  calculateTimeDifference,
   capabilities,
   characters,
   conversationId,
@@ -229,10 +229,32 @@ describe('message', () => {
 
     await connection.open();
 
-    const timeSent = protoTimestamp();
+    const correlationId = v4();
+
+    const packetIDRequest = new PacketId()
+      .setPacketId(v4())
+      .setCorrelationId(correlationId);
+
+    const packetRequest = new ProtoPacket()
+      .setPacketId(packetIDRequest)
+      .setText(message)
+      .setRouting(routing)
+      .setTimestamp(protoTimestamp());
+
+    await connection.send(() => {
+      return packetRequest;
+    });
+
+    const result = write.mock.calls[write.mock.calls.length - 1][0].toObject();
+
+    expect(write).toHaveBeenCalled();
+
+    const packetIDResponse = new PacketId()
+      .setPacketId(v4())
+      .setCorrelationId(correlationId);
 
     const packetResponse = new ProtoPacket()
-      .setPacketId(new PacketId().setPacketId(v4()))
+      .setPacketId(packetIDResponse)
       .setText(message)
       .setRouting(routing)
       .setTimestamp(protoTimestamp());
@@ -243,22 +265,14 @@ describe('message', () => {
     expect(onMessage).toHaveBeenCalledWith(
       InworldPacket.fromProto(packetResponse),
     );
-
-    const duration = new Duration();
-    duration.setSeconds(
-      packetResponse.getTimestamp().getSeconds() - timeSent.getSeconds(),
-    );
-    duration.setNanos(
-      packetResponse.getTimestamp().getNanos() - timeSent.getNanos(),
+    expect(result.packetId.correlationId).toEqual(
+      packetRequest.getPacketId().getCorrelationId(),
     );
 
-    if (duration.getSeconds() < 0 && duration.getNanos() > 0) {
-      duration.setSeconds(duration.getSeconds() + 1);
-      duration.setNanos(duration.getNanos() - 1000000000);
-    } else if (duration.getSeconds() > 0 && duration.getNanos() < 0) {
-      duration.setSeconds(duration.getSeconds() - 1);
-      duration.setNanos(duration.getNanos() + 1000000000);
-    }
+    const duration = calculateTimeDifference(
+      packetRequest.getTimestamp(),
+      packetResponse.getTimestamp(),
+    );
 
     const latencyReport = new LatencyReportEvent().setPerceivedLatency(
       new ProtoPerceivedLatencyReport()
@@ -272,12 +286,19 @@ describe('message', () => {
       .setRouting(routing)
       .setTimestamp(protoTimestamp());
 
-    stream.emit('data', packetReport);
+    await connection.send(() => {
+      return packetReport;
+    });
 
-    expect(write).toHaveBeenCalledTimes(2);
-    const result = write.mock.calls[write.mock.calls.length - 1][0].toObject();
-    expect(result.latencyReport.perceivedLatency.latency).toEqual(
-      packetReport.getLatencyReport().getPerceivedLatency().getLatency(),
+    expect(write).toHaveBeenCalledTimes(5);
+    const resultEnd =
+      write.mock.calls[write.mock.calls.length - 1][0].toObject();
+
+    expect(resultEnd.timestamp.nanos).toEqual(
+      packetReport.getTimestamp().getNanos(),
+    );
+    expect(resultEnd.timestamp.seconds).toEqual(
+      packetReport.getTimestamp().getSeconds(),
     );
   });
 
