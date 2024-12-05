@@ -5,9 +5,13 @@ import {
   ControlEvent,
   CurrentSceneStatus,
   InworldPacket as ProtoPacket,
+  LatencyReportEvent,
   LoadedScene,
   PacketId,
+  PerceivedLatencyReport as ProtoPerceivedLatencyReport,
+  PingPongReport,
   Routing,
+  TextEvent,
 } from '@proto/ai/inworld/packets/packets_pb';
 import { v4 } from 'uuid';
 
@@ -27,8 +31,10 @@ import { StateSerializationClientGrpcService } from '../../src/services/gprc/sta
 import { WorldEngineClientGrpcService } from '../../src/services/gprc/world_engine_client_grpc.service';
 import {
   agents,
+  calculateTimeDifference,
   capabilities,
   characters,
+  conversationId,
   createAgent,
   emitSceneStatusEvent,
   generateEmptyPacket,
@@ -106,18 +112,17 @@ describe('message', () => {
       onDisconnect,
     });
 
-    const rounting = new Routing()
-      .setSource(new Actor())
-      .setTarget(new Actor());
+    const routing = new Routing().setSource(new Actor()).setTarget(new Actor());
 
     const packet = new ProtoPacket()
       .setPacketId(new PacketId().setPacketId(v4()))
-      .setRouting(rounting)
+      .setRouting(routing)
       .setTimestamp(protoTimestamp());
 
     const generateSessionToken = jest
       .spyOn(connection, 'generateSessionToken')
       .mockImplementationOnce(() => Promise.resolve(sessionToken));
+
     const openSession = jest
       .spyOn(WorldEngineClient.prototype, 'openSession')
       .mockImplementationOnce(() => {
@@ -149,13 +154,11 @@ describe('message', () => {
       onDisconnect,
     });
 
-    const rounting = new Routing()
-      .setSource(new Actor())
-      .setTarget(new Actor());
+    const routing = new Routing().setSource(new Actor()).setTarget(new Actor());
     const control = new ControlEvent().setAction(ControlEvent.Action.WARNING);
     const packet = new ProtoPacket()
       .setPacketId(new PacketId().setPacketId(v4()))
-      .setRouting(rounting)
+      .setRouting(routing)
       .setControl(control)
       .setTimestamp(protoTimestamp());
 
@@ -181,6 +184,182 @@ describe('message', () => {
       },
       sessionId: sessionToken.sessionId,
     });
+  });
+
+  test('should send perceived latency event', async () => {
+    jest
+      .spyOn(ConversationService.prototype, 'getConversationId')
+      .mockImplementation(() => conversationId);
+
+    const stream = getStream();
+
+    const write = jest
+      .spyOn(ClientDuplexStreamImpl.prototype, 'write')
+      .mockImplementation(jest.fn());
+
+    const onMessage = jest.fn();
+
+    const connection = new ConnectionService({
+      apiKey: { key: KEY, secret: SECRET },
+      config: { capabilities },
+      name: SCENE,
+      user,
+      onError: onErrorLog,
+      onMessage,
+      onDisconnect,
+    });
+
+    const routing = new Routing().setSource(new Actor()).setTarget(new Actor());
+
+    const text = 'Hi';
+
+    const message = new TextEvent();
+    message.setText(JSON.stringify(text));
+
+    jest
+      .spyOn(connection, 'generateSessionToken')
+      .mockImplementationOnce(() => Promise.resolve(sessionToken));
+
+    jest
+      .spyOn(WorldEngineClient.prototype, 'openSession')
+      .mockImplementationOnce(() => {
+        setTimeout(() => new Promise(emitSceneStatusEvent(stream)), 0);
+        return stream;
+      });
+
+    await connection.open();
+
+    const correlationId = v4();
+
+    const packetIDRequest = new PacketId()
+      .setPacketId(v4())
+      .setCorrelationId(correlationId);
+
+    const packetRequest = new ProtoPacket()
+      .setPacketId(packetIDRequest)
+      .setText(message)
+      .setRouting(routing)
+      .setTimestamp(protoTimestamp());
+
+    await connection.send(() => {
+      return packetRequest;
+    });
+
+    const result = write.mock.calls[write.mock.calls.length - 1][0].toObject();
+
+    expect(write).toHaveBeenCalled();
+
+    const packetIDResponse = new PacketId()
+      .setPacketId(v4())
+      .setCorrelationId(correlationId);
+
+    const packetResponse = new ProtoPacket()
+      .setPacketId(packetIDResponse)
+      .setText(message)
+      .setRouting(routing)
+      .setTimestamp(protoTimestamp());
+
+    stream.emit('data', packetResponse);
+
+    expect(onMessage).toHaveBeenCalledTimes(2);
+    expect(onMessage).toHaveBeenCalledWith(
+      InworldPacket.fromProto(packetResponse),
+    );
+    expect(result.packetId.correlationId).toEqual(
+      packetRequest.getPacketId().getCorrelationId(),
+    );
+
+    const duration = calculateTimeDifference(
+      packetRequest.getTimestamp(),
+      packetResponse.getTimestamp(),
+    );
+
+    const latencyReport = new LatencyReportEvent().setPerceivedLatency(
+      new ProtoPerceivedLatencyReport()
+        .setLatency(duration)
+        .setPrecision(ProtoPerceivedLatencyReport.Precision.FINE),
+    );
+
+    const packetReport = new ProtoPacket()
+      .setPacketId(new PacketId().setPacketId(v4()))
+      .setLatencyReport(latencyReport)
+      .setRouting(routing)
+      .setTimestamp(protoTimestamp());
+
+    await connection.send(() => {
+      return packetReport;
+    });
+
+    expect(write).toHaveBeenCalledTimes(5);
+    const resultEnd =
+      write.mock.calls[write.mock.calls.length - 1][0].toObject();
+
+    expect(resultEnd.timestamp.nanos).toEqual(
+      packetReport.getTimestamp().getNanos(),
+    );
+    expect(resultEnd.timestamp.seconds).toEqual(
+      packetReport.getTimestamp().getSeconds(),
+    );
+  });
+
+  test('should receive ping and send pong event', async () => {
+    const stream = getStream();
+    const write = jest
+      .spyOn(ClientDuplexStreamImpl.prototype, 'write')
+      .mockImplementation(jest.fn());
+    const onMessage = jest.fn();
+
+    const connection = new ConnectionService({
+      apiKey: { key: KEY, secret: SECRET },
+      config: { capabilities },
+      name: SCENE,
+      user,
+      onError: onErrorLog,
+      onMessage,
+      onDisconnect,
+    });
+
+    const routing = new Routing().setSource(new Actor()).setTarget(new Actor());
+
+    const packetId = new PacketId().setPacketId(v4());
+    const timestamp = protoTimestamp();
+
+    const eventRequest = new LatencyReportEvent().setPingPong(
+      new PingPongReport()
+        .setPingPacketId(packetId)
+        .setPingTimestamp(timestamp)
+        .setType(PingPongReport.Type.PING),
+    );
+
+    const packetRequest = new ProtoPacket()
+      .setPacketId(new PacketId().setPacketId(v4()))
+      .setRouting(routing)
+      .setLatencyReport(eventRequest)
+      .setTimestamp(timestamp);
+
+    jest
+      .spyOn(connection, 'generateSessionToken')
+      .mockImplementationOnce(() => Promise.resolve(sessionToken));
+
+    jest
+      .spyOn(WorldEngineClient.prototype, 'openSession')
+      .mockImplementationOnce(() => {
+        setTimeout(() => new Promise(emitSceneStatusEvent(stream)), 0);
+        return stream;
+      });
+
+    await connection.open();
+
+    stream.emit('data', packetRequest);
+
+    expect(write).toHaveBeenCalledTimes(3);
+    const result = write.mock.calls[write.mock.calls.length - 1][0].toObject();
+    expect(result.latencyReport.pingPong.type).toEqual(
+      PingPongReport.Type.PONG,
+    );
+    expect(result.latencyReport.pingPong.pingPacketId.packetId).toEqual(
+      packetRequest.getPacketId().getPacketId(),
+    );
   });
 
   test('should replace scene characters', async () => {
@@ -277,6 +456,7 @@ describe('message', () => {
     jest
       .spyOn(connection, 'generateSessionToken')
       .mockImplementationOnce(() => Promise.resolve(sessionToken));
+
     jest
       .spyOn(WorldEngineClient.prototype, 'openSession')
       .mockImplementationOnce(() => {
@@ -522,9 +702,11 @@ describe('open', () => {
 
   test('should inactivate connection on disconnect stream event', async () => {
     const stream = getStream();
+
     jest
       .spyOn(connection, 'generateSessionToken')
       .mockImplementationOnce(() => Promise.resolve(sessionToken));
+
     jest
       .spyOn(WorldEngineClient.prototype, 'openSession')
       .mockImplementationOnce(() => {
@@ -977,7 +1159,7 @@ describe('send', () => {
     expect(close).toHaveBeenCalledTimes(1);
   });
 
-  test('should load scene once in case of simultaneity sent packets', async () => {
+  test('should load scene once in case of simultaneously sent packets', async () => {
     const stream = getStream();
     const connection = new ConnectionService({
       apiKey: { key: KEY, secret: SECRET },
@@ -995,6 +1177,7 @@ describe('send', () => {
     jest
       .spyOn(connection, 'generateSessionToken')
       .mockImplementation(() => Promise.resolve(sessionToken));
+
     jest
       .spyOn(WorldEngineClient.prototype, 'openSession')
       .mockImplementationOnce(() => {
