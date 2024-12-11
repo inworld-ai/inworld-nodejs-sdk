@@ -8,7 +8,6 @@ import {
   LatencyReportEvent,
   LoadedScene,
   PacketId,
-  PerceivedLatencyReport as ProtoPerceivedLatencyReport,
   PingPongReport,
   Routing,
   TextEvent,
@@ -245,8 +244,6 @@ describe('message', () => {
 
     await connection.send(() => packetRequest);
 
-    const result = write.mock.calls[write.mock.calls.length - 1][0].toObject();
-
     expect(write).toHaveBeenCalled();
 
     const packetIDResponse = new PacketId()
@@ -261,45 +258,23 @@ describe('message', () => {
 
     stream.emit('data', packetResponse);
 
-    expect(onMessage).toHaveBeenCalledTimes(2);
-    expect(onMessage).toHaveBeenCalledWith(
-      InworldPacket.fromProto(packetResponse),
-    );
-    expect(result.packetId.correlationId).toEqual(
-      packetRequest.getPacketId().getCorrelationId(),
-    );
+    const resultReport =
+      write.mock.calls[write.mock.calls.length - 1][0].toObject();
 
     const duration = calculateTimeDifference(
       packetRequest.getTimestamp(),
       packetResponse.getTimestamp(),
     );
 
-    const latencyReport = new LatencyReportEvent().setPerceivedLatency(
-      new ProtoPerceivedLatencyReport()
-        .setLatency(duration)
-        .setPrecision(ProtoPerceivedLatencyReport.Precision.FINE),
+    expect(onMessage).toHaveBeenCalledTimes(2);
+    expect(onMessage).toHaveBeenCalledWith(
+      InworldPacket.fromProto(packetResponse),
     );
-
-    const packetReport = new ProtoPacket()
-      .setPacketId(new PacketId().setPacketId(v4()))
-      .setLatencyReport(latencyReport)
-      .setRouting(routing)
-      .setTimestamp(protoTimestamp());
-
-    await connection.send(() => {
-      return packetReport;
-    });
-
-    expect(write).toHaveBeenCalledTimes(5);
-    const resultEnd =
-      write.mock.calls[write.mock.calls.length - 1][0].toObject();
-
-    expect(resultEnd.timestamp.nanos).toEqual(
-      packetReport.getTimestamp().getNanos(),
+    expect(duration.getSeconds()).toEqual(
+      resultReport.latencyReport.perceivedLatency.latency.seconds,
     );
-
-    expect(resultEnd.timestamp.seconds).toEqual(
-      packetReport.getTimestamp().getSeconds(),
+    expect(duration.getNanos()).toEqual(
+      resultReport.latencyReport.perceivedLatency.latency.nanos,
     );
   });
 

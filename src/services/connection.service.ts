@@ -6,7 +6,6 @@ import {
   InworldPacket as ProtoPacket,
   LoadedScene,
 } from '@proto/ai/inworld/packets/packets_pb';
-import { calculateTimeDifference } from 'common/helpers';
 import { Duration } from 'google-protobuf/google/protobuf/duration_pb';
 
 import {
@@ -23,6 +22,7 @@ import {
   InworldConversationEventType,
   User,
 } from '../common/data_structures';
+import { calculateTimeDifference } from '../common/helpers';
 import { Logger } from '../common/logger';
 import { Capability } from '../entities/capability.entity';
 import { Character } from '../entities/character.entity';
@@ -539,8 +539,8 @@ export class ConnectionService<
             this.packetQueuePercievedLatency[packetQueuePercievedLatencyIndex];
 
           const duration = calculateTimeDifference(
-            packet.getTimestamp(),
             packetSent.getTimestamp(),
+            packet.getTimestamp(),
           );
 
           this.sendPerceivedLatencyReport(duration);
