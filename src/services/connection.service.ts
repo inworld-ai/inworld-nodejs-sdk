@@ -6,6 +6,7 @@ import {
   InworldPacket as ProtoPacket,
   LoadedScene,
 } from '@proto/ai/inworld/packets/packets_pb';
+import { calculateTimeDifference } from 'common/helpers';
 import { Duration } from 'google-protobuf/google/protobuf/duration_pb';
 
 import {
@@ -536,24 +537,11 @@ export class ConnectionService<
         if (packetQueuePercievedLatencyIndex > -1) {
           const packetSent: ProtoPacket =
             this.packetQueuePercievedLatency[packetQueuePercievedLatencyIndex];
-          const duration = new Duration();
 
-          duration.setSeconds(
-            packet.getTimestamp().getSeconds() -
-              packetSent.getTimestamp().getSeconds(),
+          const duration = calculateTimeDifference(
+            packet.getTimestamp(),
+            packetSent.getTimestamp(),
           );
-          duration.setNanos(
-            packet.getTimestamp().getNanos() -
-              packetSent.getTimestamp().getNanos(),
-          );
-
-          if (duration.getSeconds() < 0 && duration.getNanos() > 0) {
-            duration.setSeconds(duration.getSeconds() + 1);
-            duration.setNanos(duration.getNanos() - 1000000000);
-          } else if (duration.getSeconds() > 0 && duration.getNanos() < 0) {
-            duration.setSeconds(duration.getSeconds() - 1);
-            duration.setNanos(duration.getNanos() + 1000000000);
-          }
 
           this.sendPerceivedLatencyReport(duration);
           this.packetQueuePercievedLatency.splice(

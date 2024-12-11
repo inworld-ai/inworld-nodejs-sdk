@@ -16,7 +16,10 @@ import {
 import { v4 } from 'uuid';
 
 import { ConversationState } from '../../src/common/data_structures';
-import { protoTimestamp } from '../../src/common/helpers';
+import {
+  calculateTimeDifference,
+  protoTimestamp,
+} from '../../src/common/helpers';
 import { Logger } from '../../src/common/logger';
 import { Character } from '../../src/entities/character.entity';
 import { InworldError } from '../../src/entities/error.entity';
@@ -31,7 +34,6 @@ import { StateSerializationClientGrpcService } from '../../src/services/gprc/sta
 import { WorldEngineClientGrpcService } from '../../src/services/gprc/world_engine_client_grpc.service';
 import {
   agents,
-  calculateTimeDifference,
   capabilities,
   characters,
   conversationId,
@@ -241,9 +243,7 @@ describe('message', () => {
       .setRouting(routing)
       .setTimestamp(protoTimestamp());
 
-    await connection.send(() => {
-      return packetRequest;
-    });
+    await connection.send(() => packetRequest);
 
     const result = write.mock.calls[write.mock.calls.length - 1][0].toObject();
 
@@ -297,6 +297,7 @@ describe('message', () => {
     expect(resultEnd.timestamp.nanos).toEqual(
       packetReport.getTimestamp().getNanos(),
     );
+
     expect(resultEnd.timestamp.seconds).toEqual(
       packetReport.getTimestamp().getSeconds(),
     );

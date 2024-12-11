@@ -1,6 +1,7 @@
 import { ServiceError } from '@grpc/grpc-js';
 import { InworldStatus as ProtoInworldStatus } from '@proto/ai/inworld/common/status_pb';
 import { Status } from '@proto/google/rpc/status_pb';
+import { Duration } from 'google-protobuf/google/protobuf/duration_pb';
 import { Timestamp } from 'google-protobuf/google/protobuf/timestamp_pb';
 
 const { version } = require('@root/package.json');
@@ -36,4 +37,20 @@ export const deserializeGrpcStatusDetails = (error: ServiceError) => {
     status,
     details,
   };
+};
+
+export const calculateTimeDifference = (from: Timestamp, to: Timestamp) => {
+  const duration = new Duration();
+  duration.setSeconds(to.getSeconds() - from.getSeconds());
+  duration.setNanos(to.getNanos() - from.getNanos());
+
+  if (duration.getSeconds() < 0 && duration.getNanos() > 0) {
+    duration.setSeconds(duration.getSeconds() + 1);
+    duration.setNanos(duration.getNanos() - 1000000000);
+  } else if (duration.getSeconds() > 0 && duration.getNanos() < 0) {
+    duration.setSeconds(duration.getSeconds() - 1);
+    duration.setNanos(duration.getNanos() + 1000000000);
+  }
+
+  return duration;
 };
