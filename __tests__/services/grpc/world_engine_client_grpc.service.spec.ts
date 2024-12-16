@@ -10,8 +10,6 @@ import {
   Continuation,
   ControlEvent,
 } from '@proto/ai/inworld/packets/packets_pb';
-import os = require('os');
-
 import { v4 } from 'uuid';
 
 import { Config } from '../../../src/common/config';
@@ -42,6 +40,8 @@ import {
   simpleExtension,
   user,
 } from '../../helpers';
+
+import os = require('os');
 
 const { version } = require('@root/package.json');
 

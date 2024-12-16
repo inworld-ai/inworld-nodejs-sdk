@@ -238,6 +238,7 @@ describe('send', () => {
         },
       }),
     );
+
     jest
       .spyOn(ConversationService.prototype, 'getConversationId')
       .mockImplementation(() => conversationId);

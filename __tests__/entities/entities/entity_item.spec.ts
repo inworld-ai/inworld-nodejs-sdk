@@ -11,6 +11,7 @@ test('should get entity item fields', () => {
     key1: v4(),
     key2: v4(),
   };
+
   const item = new EntityItem({
     id,
     displayName,
