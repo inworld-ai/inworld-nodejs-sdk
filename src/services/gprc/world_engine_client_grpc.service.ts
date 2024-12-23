@@ -30,10 +30,10 @@ import { CLIENT_ID, SCENE_PATTERN } from '../../common/constants';
 import {
   ApiKey,
   Awaitable,
-  Extension,
   InternalClientConfiguration,
   User,
 } from '../../common/data_structures';
+import { Extension } from '../../common/data_structures/extension';
 import { grpcOptions } from '../../common/helpers';
 import { Logger } from '../../common/logger';
 import { SessionContinuation } from '../../entities/continuation/session_continuation.entity';

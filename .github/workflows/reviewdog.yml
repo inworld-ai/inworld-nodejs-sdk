@@ -41,3 +41,14 @@ jobs:
       - name: Linelint
         uses: fernandrone/linelint@master
         id: linelint
+
+  circular-deps:
+    runs-on: ubuntu-latest
+    name: Check for circular dependencies
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Build node env
+        uses: ./.github/actions/build_package
+      - name: Check for circular dependencies
+        run: yarn circular-deps

@@ -13,15 +13,17 @@ import {
   Awaitable,
   ChangeSceneProps,
   ConnectionState,
-  ConversationMapItem,
   ConversationState,
-  Extension,
   GenerateSessionTokenFn,
   GetterSetter,
   InternalClientConfiguration,
   InworldConversationEventType,
   User,
 } from '../common/data_structures';
+import {
+  ConvesationInterface,
+  Extension,
+} from '../common/data_structures/extension';
 import { calculateTimeDifference } from '../common/helpers';
 import { Logger } from '../common/logger';
 import { Capability } from '../entities/capability.entity';
@@ -87,8 +89,13 @@ export class ConnectionService<
   onError: (err: InworldError) => Awaitable<void>;
   onMessage: ((message: ProtoPacket) => Awaitable<void>) | undefined;
 
-  readonly conversations: Map<string, ConversationMapItem<InworldPacketT>> =
-    new Map();
+  readonly conversations: Map<
+    string,
+    {
+      service: ConvesationInterface<InworldPacketT>;
+      state: ConversationState;
+    }
+  > = new Map();
 
   constructor(props: ConnectionProps<InworldPacketT>) {
     this.connectionProps = props;

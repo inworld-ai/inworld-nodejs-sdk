@@ -5,12 +5,12 @@ import {
   Awaitable,
   Client,
   ClientConfiguration,
-  Extension,
   GenerateSessionTokenFn,
   GetterSetter,
   InternalClientConfiguration,
   User,
 } from '../common/data_structures';
+import { Extension } from '../common/data_structures/extension';
 import { SCENE_HAS_INVALID_FORMAT } from '../common/errors';
 import { Logger } from '../common/logger';
 import { Capability } from '../entities/capability.entity';

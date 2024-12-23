@@ -16,7 +16,8 @@ import {
 } from '@proto/ai/inworld/packets/packets_pb';
 import { v4 } from 'uuid';
 
-import { Capabilities, Extension, User } from '../src/common/data_structures';
+import { Capabilities, User } from '../src/common/data_structures';
+import { Extension } from '../src/common/data_structures/extension';
 import { protoTimestamp } from '../src/common/helpers';
 import { Character } from '../src/entities/character.entity';
 import {
