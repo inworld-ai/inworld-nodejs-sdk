@@ -4,15 +4,15 @@ import { v4 } from 'uuid';
 import {
   InworlControlAction,
   InworldPacketType,
-} from '../../src/common/data_structures';
-import { AudioEvent } from '../../src/entities/packets/audio.entity';
-import { ControlEvent } from '../../src/entities/packets/control.entity';
-import { InworldPacket } from '../../src/entities/packets/inworld_packet.entity';
-import { PacketId } from '../../src/entities/packets/packet_id.entity';
-import { Routing } from '../../src/entities/packets/routing.entity';
-import { TextEvent } from '../../src/entities/packets/text.entity';
-import { TriggerEvent } from '../../src/entities/packets/trigger.entity';
-import { characters } from '../helpers';
+} from '../../../src/common/data_structures';
+import { AudioEvent } from '../../../src/entities/packets/audio.entity';
+import { ControlEvent } from '../../../src/entities/packets/control.entity';
+import { InworldPacket } from '../../../src/entities/packets/inworld_packet.entity';
+import { PacketId } from '../../../src/entities/packets/packet_id.entity';
+import { Routing } from '../../../src/entities/packets/routing.entity';
+import { TextEvent } from '../../../src/entities/packets/text.entity';
+import { TriggerEvent } from '../../../src/entities/packets/trigger.entity';
+import { characters } from '../../helpers';
 
 const packetId: PacketId = new PacketId({
   packetId: v4(),

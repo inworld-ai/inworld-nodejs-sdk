@@ -1,7 +1,7 @@
 import { CustomEvent as ProtoTaskEvent } from '@proto/ai/inworld/packets/packets_pb';
 import { v4 } from 'uuid';
 
-import { TaskEvent } from '../../src/entities/packets/task.entity';
+import { TaskEvent } from '../../../src/entities/packets/task.entity';
 
 const name = v4();
 const parameters = [

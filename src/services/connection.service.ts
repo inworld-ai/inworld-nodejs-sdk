@@ -12,6 +12,7 @@ import {
   ApiKey,
   Awaitable,
   ChangeSceneProps,
+  ClientConfiguration,
   ConnectionState,
   ConversationMapItem,
   ConversationState,
@@ -43,7 +44,7 @@ interface ConnectionProps<
   name?: string;
   user?: User;
   client?: ClientRequest;
-  config?: InternalClientConfiguration;
+  config?: ClientConfiguration;
   sessionGetterSetter?: GetterSetter<Session>;
   sessionContinuation?: SessionContinuation;
   onDisconnect?: () => Awaitable<void>;
@@ -63,6 +64,7 @@ export class ConnectionService<
 > {
   private state: ConnectionState = ConnectionState.INACTIVE;
 
+  private config: InternalClientConfiguration;
   private scene: Scene;
   private sceneIsLoaded = false;
   private sessionToken: SessionToken;
@@ -95,6 +97,7 @@ export class ConnectionService<
     this.scene = new Scene({
       name: this.connectionProps.name,
     });
+    this.config = this.buildConfiguration(this.connectionProps.config);
 
     this.initializeHandlers();
     this.initializeExtension();
@@ -105,11 +108,15 @@ export class ConnectionService<
   }
 
   isAutoReconnected() {
-    return this.connectionProps.config?.connection?.autoReconnect ?? true;
+    return this.config.connection?.autoReconnect ?? true;
   }
 
   getSceneName() {
     return this.scene.name;
+  }
+
+  getClientConfig() {
+    return this.connectionProps.config;
   }
 
   async generateSessionToken() {
@@ -227,7 +234,7 @@ export class ConnectionService<
           sessionContinuation,
           user,
           name: this.getSceneName(),
-          config: this.connectionProps.config,
+          config: this.config,
           extension: this.extension,
           sessionToken: this.sessionToken,
           onError: this.onError,
@@ -259,7 +266,7 @@ export class ConnectionService<
       config: {
         ...this.connectionProps.config,
         ...(props?.capabilities && {
-          capabilities: Capability.toProto(props.capabilities),
+          capabilities: props.capabilities,
         }),
         ...(props?.gameSessionId && {
           gameSessionId: props.gameSessionId,
@@ -269,6 +276,8 @@ export class ConnectionService<
         ? new SessionContinuation(props.sessionContinuation)
         : undefined,
     };
+
+    this.config = this.buildConfiguration(this.connectionProps.config);
 
     if (!this.isActive()) {
       this.stream = this.engineService.reopenSession({
@@ -280,18 +289,19 @@ export class ConnectionService<
     }
 
     const [, sessionProto] = await this.engineService.updateSession({
-      name,
+      name: name !== this.getSceneName() ? name : undefined,
       sessionToken: this.sessionToken,
       connection: this.stream,
-      capabilities:
-        props?.capabilities && this.connectionProps.config.capabilities,
+      capabilities: props?.capabilities && this.config.capabilities,
       gameSessionId: props?.gameSessionId,
       extension: this.extension,
       sessionContinuation: this.connectionProps.sessionContinuation,
       onMessage: this.onMessage,
     });
 
-    this.setSceneFromProtoEvent(sessionProto);
+    if (sessionProto) {
+      this.setSceneFromProtoEvent(sessionProto);
+    }
   }
 
   async send(getPacket: () => ProtoPacket) {
@@ -439,11 +449,11 @@ export class ConnectionService<
   }
 
   private scheduleDisconnect() {
-    if (this.connectionProps.config?.connection?.disconnectTimeout) {
+    if (this.config?.connection?.disconnectTimeout) {
       this.cancelScheduler();
       this.disconnectTimeoutId = setTimeout(
         () => this.close(),
-        this.connectionProps.config.connection.disconnectTimeout,
+        this.config.connection.disconnectTimeout,
       );
     }
   }
@@ -614,6 +624,18 @@ export class ConnectionService<
       convertPacketFromProto: (proto: ProtoPacket) =>
         InworldPacket.fromProto(proto) as InworldPacketT,
       ...this.connectionProps.extension,
+    };
+  }
+
+  private buildConfiguration(
+    clientConfig: ClientConfiguration = {},
+  ): InternalClientConfiguration {
+    const { connection = {}, capabilities = {}, ...restConfig } = clientConfig;
+
+    return {
+      ...restConfig,
+      connection,
+      capabilities: Capability.toProto(capabilities),
     };
   }
 }

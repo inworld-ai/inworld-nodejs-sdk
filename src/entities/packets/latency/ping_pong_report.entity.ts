@@ -13,7 +13,7 @@ export enum PingPongType {
 }
 
 export class PingPongReport {
-  readonly packeId: PacketId | null;
+  readonly packetId: PacketId | null;
   readonly pingTimestamp: Timestamp;
   readonly type: PingPongType;
 
@@ -26,7 +26,7 @@ export class PingPongReport {
     pingTimestamp: Timestamp;
     type: PingPongType;
   }) {
-    this.packeId = packetId;
+    this.packetId = packetId;
     this.pingTimestamp = pingTimestamp;
     this.type = type;
   }

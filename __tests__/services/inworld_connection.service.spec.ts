@@ -844,4 +844,22 @@ describe('send', () => {
       await service.sendText(v4());
     }).rejects.toThrow('Current character is not set');
   });
+
+  test('should get provided capabilities', async () => {
+    const capabilities = {
+      audio: false,
+      emotions: true,
+      debugInfo: true,
+      phonemes: true,
+    };
+    const connection = new ConnectionService({
+      apiKey: { key: KEY, secret: SECRET },
+      onError: jest.fn(),
+      name: SCENE,
+      config: { capabilities },
+    });
+    const service = new InworldConnectionService(connection);
+
+    expect(service.getCapabilities()).toEqual(capabilities);
+  });
 });
