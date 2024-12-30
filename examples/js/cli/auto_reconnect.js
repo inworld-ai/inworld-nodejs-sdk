@@ -31,7 +31,6 @@ const client = new Client({
       narratedActions: true,
       silence: true,
       debugInfo: true,
-      logs: true,
       logsWarning: true,
       logsInfo: true,
       logsDebug: true,

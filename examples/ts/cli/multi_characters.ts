@@ -29,7 +29,6 @@ const client = new Client({
       debugInfo: true,
       emotions: true,
       silence: true,
-      logs: true,
       logsWarning: true,
       logsInfo: true,
       logsDebug: true,
