@@ -6,9 +6,9 @@ import {
   ChangeSceneProps,
   ConversationIntializeState,
   ConversationParticipant,
-  ConversationState,
   TriggerParameter,
 } from '../common/data_structures';
+import { ConversationState } from '../common/data_structures';
 import {
   CHARACTER_HAS_INVALID_FORMAT,
   CURRENT_CHARACTER_NOT_SET,

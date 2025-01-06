@@ -6,19 +6,22 @@ import {
 } from '@proto/ai/inworld/engine/configuration/configuration_pb';
 import {
   Continuation,
-  CurrentSceneStatus,
   InworldPacket as ProtoPacket,
 } from '@proto/ai/inworld/packets/packets_pb';
-import { Character } from 'entities/character.entity';
 
-import { SessionContinuationProps } from '../entities/continuation/session_continuation.entity';
-import { InworldPacket } from '../entities/packets/inworld_packet.entity';
-import { SessionToken } from '../entities/session_token.entity';
-import { ConversationService } from '../services/conversation.service';
+import { Character } from '../../entities/character.entity';
+import { SessionContinuationProps } from '../../entities/continuation/session_continuation.entity';
+import { SessionToken } from '../../entities/session_token.entity';
 
 export interface ApiKey {
   key: string;
   secret: string;
+}
+
+export enum ConversationState {
+  ACTIVE = 'ACTIVE',
+  PROCESSING = 'PROCESSING',
+  INACTIVE = 'INACTIVE',
 }
 
 export interface Capabilities {
@@ -90,13 +93,6 @@ export interface CancelResponsesProps {
   utteranceId?: string[];
 }
 
-export interface SessionTokenProps {
-  token: string;
-  type: string;
-  expirationTime: Date;
-  sessionId: string;
-}
-
 export interface GetterSetter<T> {
   get: () => Awaitable<T | undefined>;
   set: (entity: T) => Awaitable<any>;
@@ -106,14 +102,6 @@ export enum ConnectionState {
   ACTIVE = 'ACTIVE',
   ACTIVATING = 'ACTIVATING',
   INACTIVE = 'INACTIVE',
-}
-
-export interface Extension<
-  InworldPacketT extends InworldPacket = InworldPacket,
-> {
-  convertPacketFromProto?: (proto: ProtoPacket) => InworldPacketT;
-  beforeLoadScene?: (packets: ProtoPacket[]) => ProtoPacket[];
-  afterLoadScene?: (res: CurrentSceneStatus) => void;
 }
 
 export interface CustomParameter {
@@ -166,12 +154,6 @@ export enum InworldLatencyReportType {
   PING_PONG = 'PING_PONG',
 }
 
-export enum ConversationState {
-  ACTIVE = 'ACTIVE',
-  PROCESSING = 'PROCESSING',
-  INACTIVE = 'INACTIVE',
-}
-
 export enum ConversationIntializeState {
   ACTIVE = 'ACTIVE',
   PROCESSING = 'PROCESSING',
@@ -205,13 +187,6 @@ export interface SendAudioSessionStartPacketParams extends SendPacketParams {
 export interface AudioSessionStartPacketParams {
   mode?: MicrophoneMode;
   understandingMode?: UnderstandingMode;
-}
-
-export interface ConversationMapItem<
-  InworldPacketT extends InworldPacket = InworldPacket,
-> {
-  service: ConversationService<InworldPacketT>;
-  state: ConversationState;
 }
 
 export enum ConversationParticipant {

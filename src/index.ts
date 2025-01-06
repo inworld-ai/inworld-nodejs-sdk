@@ -29,7 +29,6 @@ import {
   LogsEventLogDetail,
   MicrophoneMode,
   ProtobufValue,
-  SessionTokenProps,
   TaskParameter,
   TriggerParameter,
   UnderstandingMode,
@@ -37,6 +36,7 @@ import {
   UserProfile,
   UserProfileField,
 } from './common/data_structures';
+import { Extension } from './common/data_structures/extension';
 import * as InworldTriggers from './common/inworld_triggers';
 import { Character } from './entities/character.entity';
 import {
@@ -73,7 +73,10 @@ import { TextEvent } from './entities/packets/text.entity';
 import { TriggerEvent } from './entities/packets/trigger.entity';
 import { Scene } from './entities/scene.entity';
 import { Session } from './entities/session.entity';
-import { SessionToken } from './entities/session_token.entity';
+import {
+  SessionToken,
+  SessionTokenProps,
+} from './entities/session_token.entity';
 import { ConversationService } from './services/conversation.service';
 import {
   FeedbackDislikeProps,
@@ -109,6 +112,7 @@ export {
   ErrorReconnectionType,
   ErrorResourceType,
   ErrorType,
+  Extension,
   Feedback,
   FeedbackDislikeProps,
   FeedbackLikeProps,
