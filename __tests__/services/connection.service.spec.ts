@@ -33,7 +33,7 @@ import { StateSerializationClientGrpcService } from '../../src/services/gprc/sta
 import { WorldEngineClientGrpcService } from '../../src/services/gprc/world_engine_client_grpc.service';
 import {
   agents,
-  capabilities,
+  capabilitiesProps,
   characters,
   conversationId,
   createAgent,
@@ -105,7 +105,7 @@ describe('message', () => {
     const onMessage = jest.fn();
     const connection = new ConnectionService({
       apiKey: { key: KEY, secret: SECRET },
-      config: { capabilities },
+      config: { capabilities: capabilitiesProps },
       name: SCENE,
       user,
       onError: onErrorLog,
@@ -147,7 +147,7 @@ describe('message', () => {
     const onMessage = jest.fn();
     const connection = new ConnectionService({
       apiKey: { key: KEY, secret: SECRET },
-      config: { capabilities },
+      config: { capabilities: capabilitiesProps },
       name: SCENE,
       user,
       onError: onErrorLog,
@@ -202,7 +202,7 @@ describe('message', () => {
 
     const connection = new ConnectionService({
       apiKey: { key: KEY, secret: SECRET },
-      config: { capabilities },
+      config: { capabilities: capabilitiesProps },
       name: SCENE,
       user,
       onError: onErrorLog,
@@ -287,7 +287,7 @@ describe('message', () => {
 
     const connection = new ConnectionService({
       apiKey: { key: KEY, secret: SECRET },
-      config: { capabilities },
+      config: { capabilities: capabilitiesProps },
       name: SCENE,
       user,
       onError: onErrorLog,
@@ -347,7 +347,7 @@ describe('message', () => {
       apiKey: { key: KEY, secret: SECRET },
       config: {
         connection: { disconnectTimeout: DISCONNECT_TIMEOUT },
-        capabilities,
+        capabilities: capabilitiesProps,
       },
       name: SCENE,
       user,
@@ -402,7 +402,7 @@ describe('message', () => {
       apiKey: { key: KEY, secret: SECRET },
       config: {
         connection: { disconnectTimeout: DISCONNECT_TIMEOUT },
-        capabilities,
+        capabilities: capabilitiesProps,
       },
       name: SCENE,
       user,
@@ -529,7 +529,7 @@ describe('open', () => {
     connection = new ConnectionService({
       apiKey: { key: KEY, secret: SECRET },
       name: SCENE,
-      config: { capabilities },
+      config: { capabilities: capabilitiesProps },
       user,
       onError: onErrorLog,
       onMessage,
@@ -565,7 +565,7 @@ describe('open', () => {
     const connection = new ConnectionService({
       apiKey: { key: KEY, secret: SECRET },
       name: SCENE,
-      config: { capabilities },
+      config: { capabilities: capabilitiesProps },
       user,
       onError: onErrorLog,
       onMessage,
@@ -603,7 +603,7 @@ describe('open', () => {
     const connection = new ConnectionService({
       apiKey: { key: KEY, secret: SECRET },
       name: SCENE,
-      config: { capabilities },
+      config: { capabilities: capabilitiesProps },
       user,
       onError: onErrorLog,
       onMessage,
@@ -629,7 +629,7 @@ describe('open', () => {
     connection = new ConnectionService({
       apiKey: { key: KEY, secret: SECRET },
       name: SCENE,
-      config: { capabilities },
+      config: { capabilities: capabilitiesProps },
       user,
       onError,
       onMessage,
@@ -652,7 +652,7 @@ describe('open', () => {
     connection = new ConnectionService({
       apiKey: { key: KEY, secret: SECRET },
       name: SCENE,
-      config: { capabilities },
+      config: { capabilities: capabilitiesProps },
       user,
       onError,
       onMessage,
@@ -719,7 +719,7 @@ describe('open', () => {
     const connection = new ConnectionService({
       apiKey: { key: KEY, secret: SECRET },
       name: SCENE,
-      config: { capabilities },
+      config: { capabilities: capabilitiesProps },
       user,
       onError,
       onMessage,
@@ -795,7 +795,7 @@ describe('open', () => {
       apiKey: { key: KEY, secret: SECRET },
       config: {
         connection: { disconnectTimeout: DISCONNECT_TIMEOUT },
-        capabilities,
+        capabilities: capabilitiesProps,
       },
       name: SCENE,
       user,
@@ -858,7 +858,10 @@ describe('open manually', () => {
     connection = new ConnectionService({
       apiKey: { key: KEY, secret: SECRET },
       name: SCENE,
-      config: { connection: { autoReconnect: false }, capabilities },
+      config: {
+        connection: { autoReconnect: false },
+        capabilities: capabilitiesProps,
+      },
       user,
       onError,
       onMessage,
@@ -882,7 +885,10 @@ describe('open manually', () => {
     connection = new ConnectionService({
       apiKey: { key: KEY, secret: SECRET },
       name: SCENE,
-      config: { connection: { autoReconnect: false }, capabilities },
+      config: {
+        connection: { autoReconnect: false },
+        capabilities: capabilitiesProps,
+      },
       user,
       onError: onErrorLog,
       onMessage,
@@ -915,7 +921,7 @@ describe('change scene', () => {
     connection = new ConnectionService({
       apiKey: { key: KEY, secret: SECRET },
       name: SCENE,
-      config: { capabilities },
+      config: { capabilities: capabilitiesProps },
       user,
       onError: onErrorLog,
       onMessage,
@@ -1004,7 +1010,7 @@ describe('close', () => {
     const connection = new ConnectionService({
       apiKey: { key: KEY, secret: SECRET },
       name: SCENE,
-      config: { capabilities },
+      config: { capabilities: capabilitiesProps },
       user,
       onError: onErrorLog,
       onMessage,
@@ -1057,7 +1063,7 @@ describe('send', () => {
     const connection = new ConnectionService({
       apiKey: { key: KEY, secret: SECRET },
       name: SCENE,
-      config: { capabilities },
+      config: { capabilities: capabilitiesProps },
       user,
       onError: onErrorLog,
       onMessage,
@@ -1084,7 +1090,10 @@ describe('send', () => {
   test('should throw error in case of connection is inactive on send call', async () => {
     const connection = new ConnectionService({
       apiKey: { key: KEY, secret: SECRET },
-      config: { connection: { autoReconnect: false }, capabilities },
+      config: {
+        connection: { autoReconnect: false },
+        capabilities: capabilitiesProps,
+      },
       onError,
     });
     const isActive = jest
@@ -1107,7 +1116,7 @@ describe('send', () => {
       apiKey: { key: KEY, secret: SECRET },
       config: {
         connection: { disconnectTimeout: DISCONNECT_TIMEOUT },
-        capabilities,
+        capabilities: capabilitiesProps,
       },
       name: SCENE,
       user,
@@ -1141,7 +1150,7 @@ describe('send', () => {
       apiKey: { key: KEY, secret: SECRET },
       config: {
         connection: { disconnectTimeout: DISCONNECT_TIMEOUT },
-        capabilities,
+        capabilities: capabilitiesProps,
       },
       name: SCENE,
       user,
@@ -1186,7 +1195,7 @@ describe('getCharactersList', () => {
     connection = new ConnectionService({
       apiKey: { key: KEY, secret: SECRET },
       name: SCENE,
-      config: { capabilities },
+      config: { capabilities: capabilitiesProps },
       user,
       onError: onErrorLog,
       onMessage,
@@ -1233,7 +1242,7 @@ describe('character', () => {
     connection = new ConnectionService({
       apiKey: { key: KEY, secret: SECRET },
       name: SCENE,
-      config: { capabilities },
+      config: { capabilities: capabilitiesProps },
       user,
       onError: onErrorLog,
       onMessage,

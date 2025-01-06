@@ -7,13 +7,11 @@ import {
   ClientConfiguration,
   GenerateSessionTokenFn,
   GetterSetter,
-  InternalClientConfiguration,
   User,
 } from '../common/data_structures';
 import { Extension } from '../common/data_structures/extension';
 import { SCENE_HAS_INVALID_FORMAT } from '../common/errors';
 import { Logger } from '../common/logger';
-import { Capability } from '../entities/capability.entity';
 import {
   SessionContinuation,
   SessionContinuationProps,
@@ -73,6 +71,14 @@ export class InworldClient<
 
   setConfiguration(config: ClientConfiguration) {
     this.config = config;
+
+    const { capabilities } = this.config;
+
+    if (capabilities?.logs !== undefined) {
+      console.warn(
+        'logs capability is deprecated. Please use logsDebug, logsInfo, logsWarning instead',
+      );
+    }
 
     return this;
   }
@@ -146,7 +152,7 @@ export class InworldClient<
       name: this.scene,
       user: this.user,
       client: this.client,
-      config: this.buildConfiguration(),
+      config: this.config,
       onError: this.onError,
       onMessage: this.onMessage,
       onDisconnect: this.onDisconnect,
@@ -157,16 +163,6 @@ export class InworldClient<
     });
 
     return new InworldConnectionService<InworldPacketT>(connection);
-  }
-
-  private buildConfiguration(): InternalClientConfiguration {
-    const { connection = {}, capabilities = {}, ...restConfig } = this.config;
-
-    return {
-      ...restConfig,
-      connection,
-      capabilities: Capability.toProto(capabilities),
-    };
   }
 
   private validateApiKey() {

@@ -18,7 +18,6 @@ const client = new Client({
       audio: true,
       interruptions: true,
       debugInfo: true,
-      logs: true,
       logsWarning: true,
       logsInfo: true,
       logsDebug: true,

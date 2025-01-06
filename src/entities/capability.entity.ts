@@ -4,16 +4,23 @@ import { Capabilities } from '../common/data_structures';
 
 export class Capability {
   static toProto(capabilities: Capabilities) {
+    const {
+      logsWarning = true,
+      logsInfo = true,
+      logsDebug = false,
+      logsInternal = false,
+    } = capabilities;
+
     return new CapabilitiesConfiguration()
       .setAudio(capabilities.audio ?? true)
       .setDebugInfo(capabilities.debugInfo ?? false)
       .setEmotions(capabilities.emotions ?? false)
       .setInterruptions(capabilities.interruptions ?? false)
-      .setLogs(capabilities.logs ?? false)
-      .setLogsWarning(capabilities.logsWarning ?? true)
-      .setLogsInfo(capabilities.logsInfo ?? true)
-      .setLogsDebug(capabilities.logsDebug ?? false)
-      .setLogsInternal(capabilities.logsInternal ?? false)
+      .setLogs(logsWarning || logsInfo || logsDebug || logsInternal)
+      .setLogsWarning(logsWarning)
+      .setLogsInfo(logsInfo)
+      .setLogsDebug(logsDebug)
+      .setLogsInternal(logsInternal)
       .setMultiAgent(true)
       .setMultiModalActionPlanning(
         capabilities.multiModalActionPlanning ?? false,

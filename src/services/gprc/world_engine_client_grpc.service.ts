@@ -71,7 +71,7 @@ interface UpdateSessionProps<
 > {
   sessionToken: SessionToken;
   connection: ClientDuplexStream<ProtoPacket, ProtoPacket>;
-  name: string;
+  name?: string;
   extension: Extension<InworldPacketT>;
   gameSessionId?: string;
   capabilities?: CapabilitiesConfiguration;
@@ -176,7 +176,7 @@ export class WorldEngineClientGrpcService<
     return new Promise((resolve) => {
       connection.on(
         'data',
-        this.onLoadScene({
+        this.onLoad({
           connection,
           resolve,
           onMessage,
@@ -238,8 +238,6 @@ export class WorldEngineClientGrpcService<
       sessionId: sessionToken.sessionId,
     });
 
-    connection.removeAllListeners('data');
-
     this.writeInitialPackets({
       extension: props.extension,
       capabilities: props.capabilities,
@@ -250,10 +248,14 @@ export class WorldEngineClientGrpcService<
       connection,
     });
 
+    if (!props.name) return;
+
+    connection.removeAllListeners('data');
+
     return new Promise((resolve) => {
       connection.on(
         'data',
-        this.onLoadScene({
+        this.onLoad({
           connection,
           resolve,
           onMessage,
@@ -262,7 +264,7 @@ export class WorldEngineClientGrpcService<
     });
   }
 
-  private onLoadScene(props: {
+  private onLoad(props: {
     connection: ClientDuplexStream<ProtoPacket, ProtoPacket>;
     resolve: (
       value: [ClientDuplexStream<ProtoPacket, ProtoPacket>, CurrentSceneStatus],
@@ -400,8 +402,11 @@ export class WorldEngineClientGrpcService<
         }),
         ...(continuation && { continuation }),
       }),
-      EventFactory.loadScene(props.name),
     ];
+
+    if (props.name) {
+      packets.push(EventFactory.loadScene(props.name));
+    }
 
     const finalPackets = props.extension.beforeLoadScene?.(packets) || packets;
 

@@ -11,7 +11,7 @@ import { ConnectionService } from '../../src/services/connection.service';
 import { ConversationService } from '../../src/services/conversation.service';
 import { WorldEngineClientGrpcService } from '../../src/services/gprc/world_engine_client_grpc.service';
 import {
-  capabilities,
+  capabilitiesProps,
   conversationId,
   conversationUpdated,
   convertAgentsToCharacters,
@@ -36,7 +36,7 @@ beforeEach(() => {
       secret: SECRET,
     },
     config: {
-      capabilities,
+      capabilities: capabilitiesProps,
     },
     name: SCENE,
     onError,

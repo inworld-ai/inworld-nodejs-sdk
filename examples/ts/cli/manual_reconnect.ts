@@ -23,7 +23,6 @@ const props: ClientProps = {
       emotions: true,
       narratedActions: true,
       silence: true,
-      logs: true,
       logsWarning: true,
       logsInfo: true,
       logsDebug: true,
