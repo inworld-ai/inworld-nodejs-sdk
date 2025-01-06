@@ -74,7 +74,7 @@ test.each([
   ItemsInEntitiesOperationType.ADD,
   ItemsInEntitiesOperationType.REMOVE,
   ItemsInEntitiesOperationType.REPLACE,
-])('shout execute $type', async (type) => {
+])('should execute $type', async (type) => {
   const itemIds = [v4(), v4()];
   const entityNames = [v4(), v4()];
 

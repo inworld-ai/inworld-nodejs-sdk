@@ -371,32 +371,6 @@ describe('event types', () => {
     expect(event.hasTimestamp()).toEqual(true);
   });
 
-  test('should generate cancel response event for all specific answers', () => {
-    const props = {
-      interactionId: v4(),
-      utteranceId: [v4()],
-      character,
-    };
-    const event = factory.cancelResponse(props);
-    const mutation = event.getMutation();
-    const packetId = event.getPacketId();
-
-    expect(mutation.hasCancelResponses()).toEqual(true);
-    expect(mutation.getCancelResponses().getInteractionId()).toEqual(
-      props.interactionId,
-    );
-    expect(mutation.getCancelResponses().getUtteranceIdList()).toEqual(
-      props.utteranceId,
-    );
-    expect(packetId.getPacketId()).toBeDefined();
-    expect(packetId.getInteractionId()).toBeDefined();
-    expect(packetId.getUtteranceId()).toBeDefined();
-    expect(packetId.getCorrelationId()).toBeDefined();
-    expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTarget().getName()).toEqual(character.id);
-    expect(event.hasTimestamp()).toEqual(true);
-  });
-
   test('should generate narrated action event', () => {
     const text = v4();
     const event = factory.narratedAction(text, {

@@ -5,6 +5,7 @@ import { Any } from 'google-protobuf/google/protobuf/any_pb';
 import { v4 } from 'uuid';
 
 import {
+  calculateTimeDifference,
   deserializeGrpcStatusDetails,
   protoTimestamp,
 } from '../../src/common/helpers';
@@ -40,4 +41,30 @@ test('should deserialize status details', () => {
 
   expect(result?.status).toEqual(status);
   expect(result?.details).toEqual(errors);
+});
+
+test('should calculate time difference when seconds < 0 and nanos > 0', () => {
+  const today = new Date();
+  const from = protoTimestamp(today);
+  const to = protoTimestamp(today);
+  to.setSeconds(to.getSeconds() - 1);
+  to.setNanos(to.getNanos() + 1);
+
+  const result = calculateTimeDifference(from, to);
+
+  expect(result.getSeconds()).toEqual(0);
+  expect(result.getNanos()).toEqual(-999999999);
+});
+
+test('should calculate time difference when seconds > 0 and nanos < 0', () => {
+  const today = new Date();
+  const from = protoTimestamp(today);
+  const to = protoTimestamp(today);
+  to.setSeconds(to.getSeconds() + 1);
+  to.setNanos(to.getNanos() - 1);
+
+  const result = calculateTimeDifference(from, to);
+
+  expect(result.getSeconds()).toEqual(0);
+  expect(result.getNanos()).toEqual(999999999);
 });

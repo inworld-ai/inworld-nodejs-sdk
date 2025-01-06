@@ -73,6 +73,37 @@ describe('should finish with success', () => {
       .setConfiguration({ capabilities: { emotions: true } });
     expect(() => client.build()).not.toThrow();
   });
+
+  test('shoud print a warning if logs capability is set', async () => {
+    const consoleWarn = jest
+      .spyOn(console, 'warn')
+      .mockImplementation(() => {});
+
+    const client = new InworldClient()
+      .setApiKey({ key: KEY, secret: SECRET })
+      .setScene(SCENE)
+      .setConfiguration({ capabilities: { logs: true } });
+
+    expect(() => client.build()).not.toThrow();
+    expect(consoleWarn).toHaveBeenCalledTimes(1);
+    expect(consoleWarn).toHaveBeenCalledWith(
+      'logs capability is deprecated. Please use logsDebug, logsInfo, logsWarning instead',
+    );
+  });
+
+  test('should disable latency capabilities', async () => {
+    const client = new InworldClient()
+      .setApiKey({ key: KEY, secret: SECRET })
+      .setScene(SCENE)
+      .setConfiguration({
+        capabilities: { perceivedLatencyReport: false, pingPongReport: false },
+      });
+
+    const result = client.build();
+
+    expect(result.getCapabilities()?.perceivedLatencyReport).toBeFalsy();
+    expect(result.getCapabilities()?.pingPongReport).toBeFalsy();
+  });
 });
 
 describe('should throw error', () => {
