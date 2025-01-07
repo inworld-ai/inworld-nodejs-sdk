@@ -1,12 +1,15 @@
 import { ClientDuplexStreamImpl } from '@grpc/grpc-js/build/src/call';
 import { WorldEngineClient } from '@proto/ai/inworld/engine/world-engine_grpc_pb';
 import {
+  ActionEvent,
   Actor,
   ControlEvent,
   CurrentSceneStatus,
+  CustomEvent,
   InworldPacket as ProtoPacket,
   LatencyReportEvent,
   LoadedScene,
+  NarratedAction,
   PacketId,
   PerceivedLatencyReport,
   PingPongReport,
@@ -188,7 +191,7 @@ describe('message', () => {
     });
   });
 
-  test('should send perceived latency event', async () => {
+  test('should send perceived latency event for text', async () => {
     jest
       .spyOn(ConversationService.prototype, 'getConversationId')
       .mockImplementation(() => conversationId);
@@ -213,10 +216,8 @@ describe('message', () => {
 
     const routing = new Routing().setSource(new Actor()).setTarget(new Actor());
 
-    const text = v4();
-
     const message = new TextEvent();
-    message.setText(JSON.stringify(text));
+    message.setText(JSON.stringify(v4()));
 
     jest
       .spyOn(connection, 'generateSessionToken')
@@ -231,11 +232,11 @@ describe('message', () => {
 
     await connection.open();
 
-    const correlationId = v4();
+    const interactionId = v4();
 
     const packetIDRequest = new PacketId()
       .setPacketId(v4())
-      .setCorrelationId(correlationId);
+      .setInteractionId(interactionId);
 
     const packetRequest = new ProtoPacket()
       .setPacketId(packetIDRequest)
@@ -249,7 +250,7 @@ describe('message', () => {
 
     const packetIDResponse = new PacketId()
       .setPacketId(v4())
-      .setCorrelationId(correlationId);
+      .setInteractionId(interactionId);
 
     const packetResponse = new ProtoPacket()
       .setPacketId(packetIDResponse)
@@ -261,6 +262,7 @@ describe('message', () => {
 
     const resultReport =
       write.mock.calls[write.mock.calls.length - 1][0].toObject();
+    const perceivedLatency = resultReport.latencyReport.perceivedLatency;
 
     const duration = calculateTimeDifference(
       packetRequest.getTimestamp(),
@@ -271,14 +273,201 @@ describe('message', () => {
     expect(onMessage).toHaveBeenCalledWith(
       InworldPacket.fromProto(packetResponse),
     );
-    expect(duration.getSeconds()).toEqual(
-      resultReport.latencyReport.perceivedLatency.latency.seconds,
-    );
-    expect(duration.getNanos()).toEqual(
-      resultReport.latencyReport.perceivedLatency.latency.nanos,
-    );
-    expect(resultReport.latencyReport.perceivedLatency.precision).toEqual(
+    expect(perceivedLatency.latency.seconds).toEqual(duration.getSeconds());
+    expect(perceivedLatency.latency.nanos).toEqual(duration.getNanos());
+    expect(perceivedLatency.precision).toEqual(
       PerceivedLatencyReport.Precision.NON_SPEECH,
+    );
+    expect(resultReport.packetId.interactionId).toEqual(
+      packetResponse.getPacketId().getInteractionId(),
+    );
+  });
+
+  test('should send perceived latency event for trigger', async () => {
+    jest
+      .spyOn(ConversationService.prototype, 'getConversationId')
+      .mockImplementation(() => conversationId);
+
+    const stream = getStream();
+
+    const write = jest
+      .spyOn(ClientDuplexStreamImpl.prototype, 'write')
+      .mockImplementation(jest.fn());
+
+    const onMessage = jest.fn();
+
+    const connection = new ConnectionService({
+      apiKey: { key: KEY, secret: SECRET },
+      config: { capabilities: capabilitiesProps },
+      name: SCENE,
+      user,
+      onError: onErrorLog,
+      onMessage,
+      onDisconnect,
+    });
+
+    const routing = new Routing().setSource(new Actor()).setTarget(new Actor());
+
+    const message = new CustomEvent();
+    message.setName(JSON.stringify(v4())).setType(CustomEvent.Type.TRIGGER);
+
+    jest
+      .spyOn(connection, 'generateSessionToken')
+      .mockImplementationOnce(() => Promise.resolve(sessionToken));
+
+    jest
+      .spyOn(WorldEngineClient.prototype, 'openSession')
+      .mockImplementationOnce(() => {
+        setTimeout(() => new Promise(emitSceneStatusEvent(stream)), 0);
+        return stream;
+      });
+
+    await connection.open();
+
+    const interactionId = v4();
+
+    const packetIDRequest = new PacketId()
+      .setPacketId(v4())
+      .setInteractionId(interactionId);
+
+    const packetRequest = new ProtoPacket()
+      .setPacketId(packetIDRequest)
+      .setCustom(message)
+      .setRouting(routing)
+      .setTimestamp(protoTimestamp());
+
+    await connection.send(() => packetRequest);
+
+    expect(write).toHaveBeenCalled();
+
+    const packetIDResponse = new PacketId()
+      .setPacketId(v4())
+      .setInteractionId(interactionId);
+
+    const packetResponse = new ProtoPacket()
+      .setPacketId(packetIDResponse)
+      .setControl(
+        new ControlEvent().setAction(ControlEvent.Action.INTERACTION_END),
+      )
+      .setRouting(routing)
+      .setTimestamp(protoTimestamp());
+
+    stream.emit('data', packetResponse);
+
+    const resultReport =
+      write.mock.calls[write.mock.calls.length - 1][0].toObject();
+    const perceivedLatency = resultReport.latencyReport.perceivedLatency;
+
+    const duration = calculateTimeDifference(
+      packetRequest.getTimestamp(),
+      packetResponse.getTimestamp(),
+    );
+
+    expect(onMessage).toHaveBeenCalledTimes(2);
+    expect(onMessage).toHaveBeenCalledWith(
+      InworldPacket.fromProto(packetResponse),
+    );
+    expect(perceivedLatency.latency.seconds).toEqual(duration.getSeconds());
+    expect(perceivedLatency.latency.nanos).toEqual(duration.getNanos());
+    expect(perceivedLatency.precision).toEqual(
+      PerceivedLatencyReport.Precision.NON_SPEECH,
+    );
+    expect(resultReport.packetId.interactionId).toEqual(
+      packetResponse.getPacketId().getInteractionId(),
+    );
+  });
+
+  test('should send perceived latency event for narrated action', async () => {
+    jest
+      .spyOn(ConversationService.prototype, 'getConversationId')
+      .mockImplementation(() => conversationId);
+
+    const stream = getStream();
+
+    const write = jest
+      .spyOn(ClientDuplexStreamImpl.prototype, 'write')
+      .mockImplementation(jest.fn());
+
+    const onMessage = jest.fn();
+
+    const connection = new ConnectionService({
+      apiKey: { key: KEY, secret: SECRET },
+      config: { capabilities: capabilitiesProps },
+      name: SCENE,
+      user,
+      onError: onErrorLog,
+      onMessage,
+      onDisconnect,
+    });
+
+    const routing = new Routing().setSource(new Actor()).setTarget(new Actor());
+
+    const message = new ActionEvent();
+    message.setNarratedAction(new NarratedAction().setContent(v4()));
+
+    jest
+      .spyOn(connection, 'generateSessionToken')
+      .mockImplementationOnce(() => Promise.resolve(sessionToken));
+
+    jest
+      .spyOn(WorldEngineClient.prototype, 'openSession')
+      .mockImplementationOnce(() => {
+        setTimeout(() => new Promise(emitSceneStatusEvent(stream)), 0);
+        return stream;
+      });
+
+    await connection.open();
+
+    const interactionId = v4();
+
+    const packetIDRequest = new PacketId()
+      .setPacketId(v4())
+      .setInteractionId(interactionId);
+
+    const packetRequest = new ProtoPacket()
+      .setPacketId(packetIDRequest)
+      .setAction(message)
+      .setRouting(routing)
+      .setTimestamp(protoTimestamp());
+
+    await connection.send(() => packetRequest);
+
+    expect(write).toHaveBeenCalled();
+
+    const packetIDResponse = new PacketId()
+      .setPacketId(v4())
+      .setInteractionId(interactionId);
+
+    const packetResponse = new ProtoPacket()
+      .setPacketId(packetIDResponse)
+      .setControl(
+        new ControlEvent().setAction(ControlEvent.Action.INTERACTION_END),
+      )
+      .setRouting(routing)
+      .setTimestamp(protoTimestamp());
+
+    stream.emit('data', packetResponse);
+
+    const resultReport =
+      write.mock.calls[write.mock.calls.length - 1][0].toObject();
+    const perceivedLatency = resultReport.latencyReport.perceivedLatency;
+
+    const duration = calculateTimeDifference(
+      packetRequest.getTimestamp(),
+      packetResponse.getTimestamp(),
+    );
+
+    expect(onMessage).toHaveBeenCalledTimes(2);
+    expect(onMessage).toHaveBeenCalledWith(
+      InworldPacket.fromProto(packetResponse),
+    );
+    expect(perceivedLatency.latency.seconds).toEqual(duration.getSeconds());
+    expect(perceivedLatency.latency.nanos).toEqual(duration.getNanos());
+    expect(perceivedLatency.precision).toEqual(
+      PerceivedLatencyReport.Precision.NON_SPEECH,
+    );
+    expect(resultReport.packetId.interactionId).toEqual(
+      packetResponse.getPacketId().getInteractionId(),
     );
   });
 

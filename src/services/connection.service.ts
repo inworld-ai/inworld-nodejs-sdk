@@ -370,7 +370,11 @@ export class ConnectionService<
   private writeToStream(getPacket: () => ProtoPacket) {
     const packet = getPacket();
 
-    if (!!packet.getText()) {
+    if (
+      packet.hasText() ||
+      packet.hasCustom() ||
+      packet.getAction()?.hasNarratedAction()
+    ) {
       this.packetQueuePercievedLatency.push(packet);
     }
 
@@ -537,32 +541,23 @@ export class ConnectionService<
 
       // Handle percieved latency
       if (this.packetQueuePercievedLatency.length > 0) {
-        let packetQueuePercievedLatencyIndex: number = -1;
-        for (let i = 0; i < this.packetQueuePercievedLatency.length; i++) {
-          const packetSent: ProtoPacket = this.packetQueuePercievedLatency[i];
-          if (
-            packet.getPacketId().getCorrelationId() &&
-            packet.getPacketId().getCorrelationId() ===
-              packetSent.getPacketId().getCorrelationId()
-          ) {
-            packetQueuePercievedLatencyIndex = i;
-            break;
-          }
-        }
-        if (packetQueuePercievedLatencyIndex > -1) {
-          const packetSent: ProtoPacket =
-            this.packetQueuePercievedLatency[packetQueuePercievedLatencyIndex];
+        const sentIndex = this.packetQueuePercievedLatency.findIndex((sent) => {
+          const packetId = sent.getPacketId();
+          return (
+            packetId.getInteractionId() &&
+            packetId.getInteractionId() ===
+              packet.getPacketId().getInteractionId()
+          );
+        });
 
+        if (sentIndex > -1) {
           this.send(() =>
             this.getEventFactory().perceivedLatency({
-              sent: packetSent,
+              sent: this.packetQueuePercievedLatency[sentIndex],
               received: packet,
             }),
           );
-          this.packetQueuePercievedLatency.splice(
-            packetQueuePercievedLatencyIndex,
-            1,
-          );
+          this.packetQueuePercievedLatency.splice(sentIndex, 1);
         }
       }
 

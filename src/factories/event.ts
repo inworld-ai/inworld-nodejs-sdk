@@ -124,7 +124,11 @@ export class EventFactory {
     );
     let precision = PerceivedLatencyReport.Precision.UNSPECIFIED;
 
-    if (sent.hasText()) {
+    if (
+      sent.hasText() ||
+      sent.hasCustom() ||
+      sent.getAction()?.hasNarratedAction()
+    ) {
       precision = PerceivedLatencyReport.Precision.NON_SPEECH;
     }
 
@@ -132,10 +136,22 @@ export class EventFactory {
       new PerceivedLatencyReport().setLatency(duration).setPrecision(precision),
     );
 
-    return this.baseProtoPacket({
+    const basePacket = this.baseProtoPacket({
       utteranceId: false,
       interactionId: false,
-    }).setLatencyReport(event);
+    });
+    const basePacketId = basePacket.getPacketId();
+
+    return basePacket
+      .setPacketId(
+        new PacketId()
+          .setPacketId(basePacketId.getPacketId())
+          .setConversationId(basePacketId.getConversationId())
+          .setInteractionId(received.getPacketId().getInteractionId())
+          .setCorrelationId(basePacketId.getCorrelationId())
+          .setUtteranceId(basePacketId.getUtteranceId()),
+      )
+      .setLatencyReport(event);
   }
 
   mutePlayback(isMuted: boolean, params: SendPacketParams): ProtoPacket {
