@@ -8,6 +8,7 @@ import {
   LatencyReportEvent,
   LoadedScene,
   PacketId,
+  PerceivedLatencyReport,
   PingPongReport,
   Routing,
   TextEvent,
@@ -212,7 +213,7 @@ describe('message', () => {
 
     const routing = new Routing().setSource(new Actor()).setTarget(new Actor());
 
-    const text = 'Hi';
+    const text = v4();
 
     const message = new TextEvent();
     message.setText(JSON.stringify(text));
@@ -275,6 +276,9 @@ describe('message', () => {
     );
     expect(duration.getNanos()).toEqual(
       resultReport.latencyReport.perceivedLatency.latency.nanos,
+    );
+    expect(resultReport.latencyReport.perceivedLatency.precision).toEqual(
+      PerceivedLatencyReport.Precision.NON_SPEECH,
     );
   });
 

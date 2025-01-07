@@ -22,7 +22,6 @@ import {
   TextEvent,
   UnloadCharacters,
 } from '@proto/ai/inworld/packets/packets_pb';
-import { Duration } from 'google-protobuf/google/protobuf/duration_pb';
 import { v4 } from 'uuid';
 
 import {
@@ -35,7 +34,7 @@ import {
   SessionControlProps,
   UnderstandingMode,
 } from '../common/data_structures';
-import { protoTimestamp } from '../common/helpers';
+import { calculateTimeDifference, protoTimestamp } from '../common/helpers';
 import { Character } from '../entities/character.entity';
 import { EntityItem } from '../entities/entities/entity_item';
 import { ItemOperation } from '../entities/entities/item_operation';
@@ -112,15 +111,25 @@ export class EventFactory {
     }).setLatencyReport(event);
   }
 
-  perceivedLatency(
-    latencyPerceived: Duration,
-    precisionToSend: PerceivedLatencyReport.Precision = PerceivedLatencyReport
-      .Precision.FINE,
-  ): ProtoPacket {
+  perceivedLatency({
+    sent,
+    received,
+  }: {
+    sent: ProtoPacket;
+    received: ProtoPacket;
+  }): ProtoPacket {
+    const duration = calculateTimeDifference(
+      sent.getTimestamp(),
+      received.getTimestamp(),
+    );
+    let precision = PerceivedLatencyReport.Precision.UNSPECIFIED;
+
+    if (sent.hasText()) {
+      precision = PerceivedLatencyReport.Precision.NON_SPEECH;
+    }
+
     const event = new LatencyReportEvent().setPerceivedLatency(
-      new PerceivedLatencyReport()
-        .setLatency(latencyPerceived)
-        .setPrecision(precisionToSend),
+      new PerceivedLatencyReport().setLatency(duration).setPrecision(precision),
     );
 
     return this.baseProtoPacket({

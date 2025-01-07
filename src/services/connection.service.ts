@@ -6,7 +6,6 @@ import {
   InworldPacket as ProtoPacket,
   LoadedScene,
 } from '@proto/ai/inworld/packets/packets_pb';
-import { Duration } from 'google-protobuf/google/protobuf/duration_pb';
 
 import {
   ApiKey,
@@ -25,7 +24,6 @@ import {
   ConvesationInterface,
   Extension,
 } from '../common/data_structures/extension';
-import { calculateTimeDifference } from '../common/helpers';
 import { Logger } from '../common/logger';
 import { Capability } from '../entities/capability.entity';
 import { Character } from '../entities/character.entity';
@@ -555,12 +553,12 @@ export class ConnectionService<
           const packetSent: ProtoPacket =
             this.packetQueuePercievedLatency[packetQueuePercievedLatencyIndex];
 
-          const duration = calculateTimeDifference(
-            packetSent.getTimestamp(),
-            packet.getTimestamp(),
+          this.send(() =>
+            this.getEventFactory().perceivedLatency({
+              sent: packetSent,
+              received: packet,
+            }),
           );
-
-          this.sendPerceivedLatencyReport(duration);
           this.packetQueuePercievedLatency.splice(
             packetQueuePercievedLatencyIndex,
             1,
@@ -591,7 +589,7 @@ export class ConnectionService<
 
       // Handle latency ping pong.
       if (inworldPacket.isPingPongReport()) {
-        this.sendPingPongResponse(packet);
+        this.send(() => this.getEventFactory().pong(packet));
         // Don't pass text packet outside.
         return;
       }
@@ -616,14 +614,6 @@ export class ConnectionService<
         });
       }
     };
-  }
-
-  private sendPingPongResponse(packet: ProtoPacket) {
-    this.send(() => this.getEventFactory().pong(packet));
-  }
-
-  private sendPerceivedLatencyReport(latencyPerceived: Duration) {
-    this.send(() => this.getEventFactory().perceivedLatency(latencyPerceived));
   }
 
   private initializeExtension() {
