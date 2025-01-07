@@ -223,9 +223,11 @@ export class WorldEngineClientGrpcService<
 
   updateSession(
     props: UpdateSessionProps<InworldPacketT>,
-  ): Promise<
-    [ClientDuplexStream<ProtoPacket, ProtoPacket>, CurrentSceneStatus]
-  > {
+  ):
+    | Promise<
+        [ClientDuplexStream<ProtoPacket, ProtoPacket>, CurrentSceneStatus]
+      >
+    | [] {
     const { connection, onMessage, sessionToken } = props;
 
     this.logger.debug({
@@ -248,7 +250,7 @@ export class WorldEngineClientGrpcService<
       connection,
     });
 
-    if (!props.name) return;
+    if (!props.name) return [];
 
     connection.removeAllListeners('data');
 
