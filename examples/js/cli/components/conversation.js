@@ -113,7 +113,7 @@ class Conversation {
     }
   }
 
-  displayText(packet) {
+  displayText(packet, props = {}) {
     if (packet.text && packet.text.final) {
       if (this.cancelResponses[packet.packetId.interactionId]) {
         return;
@@ -128,7 +128,7 @@ class Conversation {
           item.packet.packetId.utteranceId === utteranceId,
       );
 
-      if (audioIsApplied) {
+      if (audioIsApplied || props.force) {
         this.renderPacket(packet);
       } else {
         this.queue.push({ packet, isApplied: false });

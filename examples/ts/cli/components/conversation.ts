@@ -117,15 +117,15 @@ export class Conversation {
         (item: ConversationQueueItem) =>
           item.packet.packetId.interactionId !== interactionId,
       );
-      delete this.cancelResponses[interactionId];
+      delete this.cancelResponses[interactionId!];
     } else {
       this.queue.push({ packet, isApplied: true });
     }
   }
 
-  displayText(packet: InworldPacket) {
+  displayText(packet: InworldPacket, props: { force?: boolean } = {}) {
     if (packet.text && packet.text.final) {
-      if (this.cancelResponses[packet.packetId.interactionId]) {
+      if (this.cancelResponses[packet.packetId.interactionId!]) {
         return;
       }
 
@@ -138,7 +138,7 @@ export class Conversation {
           item.packet.packetId.utteranceId === utteranceId,
       );
 
-      if (audioIsApplied) {
+      if (audioIsApplied || props.force) {
         this.renderPacket(packet);
       } else {
         this.queue.push({ packet, isApplied: false });

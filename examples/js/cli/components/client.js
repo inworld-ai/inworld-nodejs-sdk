@@ -100,6 +100,7 @@ class Client {
         this.conversationProcess.send({
           action: CONVERSATION_ACTION.DISPLAY_TEXT,
           packet,
+          force: !this.connection?.getCapabilities().audio,
         });
       }
     }

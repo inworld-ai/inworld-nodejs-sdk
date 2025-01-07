@@ -4,11 +4,11 @@ const { CLIENT_ACTION, CONVERSATION_ACTION } = require('./types');
 const conversation = new Conversation();
 
 process.on('message', async (props) => {
-  const { action, packet, order, multiCharacters } = props;
+  const { action, packet, order, multiCharacters, force } = props;
 
   switch (action) {
     case CONVERSATION_ACTION.DISPLAY_TEXT:
-      conversation.displayText(packet);
+      conversation.displayText(packet, { force });
       break;
     case CONVERSATION_ACTION.NARRATED_ACTION:
       conversation.displayAction(packet);
