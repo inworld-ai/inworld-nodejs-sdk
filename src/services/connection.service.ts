@@ -309,7 +309,7 @@ export class ConnectionService<
     }
   }
 
-  async send(getPacket: () => ProtoPacket) {
+  async send(getPacket: () => ProtoPacket, props: { force?: boolean } = {}) {
     try {
       this.cancelScheduler();
 
@@ -317,13 +317,16 @@ export class ConnectionService<
         throw Error('Unable to send data due inactive connection');
       }
 
-      return this.write(getPacket);
+      return this.write(getPacket, props);
     } catch (err) {
       this.onError(err);
     }
   }
 
-  private async write(getPacket: () => ProtoPacket) {
+  private async write(
+    getPacket: () => ProtoPacket,
+    props: { force?: boolean } = {},
+  ) {
     let packet: ProtoPacket;
 
     const resolvePacket = () =>
@@ -354,12 +357,18 @@ export class ConnectionService<
     if (this.isActive()) {
       packet = this.writeToStream(getPacket);
     } else {
-      this.packetQueue.push({
+      const item = {
         getPacket,
         afterWriting: (protoPacket: ProtoPacket) => {
           packet = protoPacket;
         },
-      });
+      };
+
+      if (props.force) {
+        this.packetQueue.unshift(item);
+      } else {
+        this.packetQueue.push(item);
+      }
 
       await this.open();
     }
@@ -551,11 +560,13 @@ export class ConnectionService<
         });
 
         if (sentIndex > -1) {
-          this.send(() =>
-            this.getEventFactory().perceivedLatency({
-              sent: this.packetQueuePercievedLatency[sentIndex],
-              received: packet,
-            }),
+          this.send(
+            () =>
+              this.getEventFactory().perceivedLatency({
+                sent: this.packetQueuePercievedLatency[sentIndex],
+                received: packet,
+              }),
+            { force: true },
           );
           this.packetQueuePercievedLatency.splice(sentIndex, 1);
         }
@@ -584,7 +595,7 @@ export class ConnectionService<
 
       // Handle latency ping pong.
       if (inworldPacket.isPingPongReport()) {
-        this.send(() => this.getEventFactory().pong(packet));
+        this.send(() => this.getEventFactory().pong(packet), { force: true });
         // Don't pass text packet outside.
         return;
       }
