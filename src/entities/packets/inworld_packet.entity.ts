@@ -9,6 +9,7 @@ import {
 import {
   InworlControlAction,
   InworldPacketType,
+  InworldTextPacketType,
 } from '../../common/data_structures';
 import { Character } from '../character.entity';
 import { ItemOperation } from '../entities/item_operation';
@@ -243,6 +244,27 @@ export class InworldPacket {
 
   isPerceivedLatencyReport() {
     return this.isLatencyReport() && !!this.latencyReport.perceivedLatency;
+  }
+
+  isSpeechRecognitionResult() {
+    return (
+      this.isText() &&
+      this.routing.source.isPlayer &&
+      this.text.final &&
+      this.text.type === InworldTextPacketType.SPEECH_TO_TEXT
+    );
+  }
+
+  isPlayerTypeInText() {
+    return (
+      this.isText() &&
+      this.routing.source.isPlayer &&
+      this.text.type === InworldTextPacketType.TYPED_IN
+    );
+  }
+
+  isNonSpeechPacket() {
+    return this.isTrigger() || this.isNarratedAction();
   }
 
   shouldHaveConversationId() {

@@ -16,7 +16,7 @@ test('should convert empty capabilities to proto', () => {
     multiAgent: true,
     multiModalActionPlanning: false,
     narratedActions: false,
-    perceivedLatencyReport: true,
+    perceivedLatencyReport: false,
     phonemeInfo: false,
     pingPongReport: true,
     silenceEvents: false,

@@ -298,6 +298,10 @@ export class InworldConnectionService<
     return this.connection.getEventFactory().baseProtoPacket(props);
   }
 
+  markPacketAsHandled(packet: InworldPacketT) {
+    return this.connection.markPacketAsHandled(packet);
+  }
+
   private async ensureOneToOneConversation() {
     if (
       this.oneToOneConversationIntializeState ===

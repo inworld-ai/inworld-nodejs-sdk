@@ -38,6 +38,7 @@ import { calculateTimeDifference, protoTimestamp } from '../common/helpers';
 import { Character } from '../entities/character.entity';
 import { EntityItem } from '../entities/entities/entity_item';
 import { ItemOperation } from '../entities/entities/item_operation';
+import { InworldPacket } from '../entities/packets/inworld_packet.entity';
 
 export interface SendCancelResponsePacketParams {
   interactionId?: string;
@@ -115,20 +116,21 @@ export class EventFactory {
     sent,
     received,
   }: {
-    sent: ProtoPacket;
-    received: ProtoPacket;
+    sent: InworldPacket;
+    received: InworldPacket;
   }): ProtoPacket {
     const duration = calculateTimeDifference(
-      sent.getTimestamp(),
-      received.getTimestamp(),
+      protoTimestamp(new Date(sent.date)),
+      protoTimestamp(new Date()),
     );
     let precision = PerceivedLatencyReport.Precision.UNSPECIFIED;
 
     if (
-      sent.hasText() ||
-      sent.hasCustom() ||
-      sent.getAction()?.hasNarratedAction()
+      (sent.isPlayerTypeInText() || sent.isSpeechRecognitionResult()) &&
+      received.isAudio()
     ) {
+      precision = PerceivedLatencyReport.Precision.ESTIMATED;
+    } else if (sent.isNonSpeechPacket() || sent.isPlayerTypeInText()) {
       precision = PerceivedLatencyReport.Precision.NON_SPEECH;
     }
 
@@ -147,7 +149,7 @@ export class EventFactory {
         new PacketId()
           .setPacketId(basePacketId.getPacketId())
           .setConversationId(basePacketId.getConversationId())
-          .setInteractionId(received.getPacketId().getInteractionId())
+          .setInteractionId(received.packetId.interactionId)
           .setCorrelationId(basePacketId.getCorrelationId())
           .setUtteranceId(basePacketId.getUtteranceId()),
       )

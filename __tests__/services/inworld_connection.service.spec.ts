@@ -78,6 +78,17 @@ test('should get session state', async () => {
   expect(getSessionState).toHaveBeenCalledTimes(1);
 });
 
+test('should mark packet as handled', () => {
+  const service = new InworldConnectionService(connection);
+  const markPacketAsHandled = jest
+    .spyOn(ConnectionService.prototype, 'markPacketAsHandled')
+    .mockImplementationOnce(jest.fn());
+
+  service.markPacketAsHandled({} as InworldPacket);
+
+  expect(markPacketAsHandled).toHaveBeenCalledTimes(1);
+});
+
 describe('character', () => {
   let service: InworldConnectionService;
 

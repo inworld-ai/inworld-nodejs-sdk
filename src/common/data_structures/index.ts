@@ -132,6 +132,14 @@ export enum InworldPacketType {
   LATENCY_REPORT = 'LATENCY_REPORT',
 }
 
+export enum InworldTextPacketType {
+  UNKNOWN = 'UNKNOWN',
+  SPEECH_TO_TEXT = 'SPEECH_TO_TEXT',
+  TYPED_IN = 'TYPED_IN',
+  GENERATED = 'GENERATED',
+  FILLER = 'FILLER',
+}
+
 export enum InworlControlAction {
   UNKNOWN = 'UNKNOWN',
   INTERACTION_END = 'INTERACTION_END',

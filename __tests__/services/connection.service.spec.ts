@@ -6,6 +6,7 @@ import {
   ControlEvent,
   CurrentSceneStatus,
   CustomEvent,
+  DataChunk,
   InworldPacket as ProtoPacket,
   LatencyReportEvent,
   LoadedScene,
@@ -18,11 +19,11 @@ import {
 } from '@proto/ai/inworld/packets/packets_pb';
 import { v4 } from 'uuid';
 
-import { ConversationState } from '../../src/common/data_structures';
 import {
-  calculateTimeDifference,
-  protoTimestamp,
-} from '../../src/common/helpers';
+  Capabilities,
+  ConversationState,
+} from '../../src/common/data_structures';
+import { protoTimestamp } from '../../src/common/helpers';
 import { Logger } from '../../src/common/logger';
 import { Character } from '../../src/entities/character.entity';
 import { InworldError } from '../../src/entities/error.entity';
@@ -191,62 +192,25 @@ describe('message', () => {
     });
   });
 
-  test('should send perceived latency event for text', async () => {
-    jest
-      .spyOn(ConversationService.prototype, 'getConversationId')
-      .mockImplementation(() => conversationId);
-
-    const stream = getStream();
-
-    const write = jest
-      .spyOn(ClientDuplexStreamImpl.prototype, 'write')
-      .mockImplementation(jest.fn());
-
-    const onMessage = jest.fn();
-
-    const connection = new ConnectionService({
-      apiKey: { key: KEY, secret: SECRET },
-      config: { capabilities: capabilitiesProps },
-      name: SCENE,
-      user,
-      onError: onErrorLog,
-      onMessage,
-      onDisconnect,
-    });
-
-    const routing = new Routing().setSource(new Actor()).setTarget(new Actor());
-
-    const message = new TextEvent();
-    message.setText(JSON.stringify(v4()));
-
-    jest
-      .spyOn(connection, 'generateSessionToken')
-      .mockImplementationOnce(() => Promise.resolve(sessionToken));
-
-    jest
-      .spyOn(WorldEngineClient.prototype, 'openSession')
-      .mockImplementationOnce(() => {
-        setTimeout(() => new Promise(emitSceneStatusEvent(stream)), 0);
-        return stream;
-      });
-
-    await connection.open();
-
+  test('should send perceived latency event for text with disabled audio', (done) => {
     const interactionId = v4();
-
     const packetIDRequest = new PacketId()
       .setPacketId(v4())
       .setInteractionId(interactionId);
-
     const packetRequest = new ProtoPacket()
       .setPacketId(packetIDRequest)
-      .setText(message)
-      .setRouting(routing)
+      .setText(
+        new TextEvent()
+          .setText(JSON.stringify(v4()))
+          .setSourceType(TextEvent.SourceType.TYPED_IN)
+          .setFinal(true),
+      )
+      .setRouting(
+        new Routing()
+          .setSource(new Actor().setType(Actor.Type.PLAYER))
+          .setTarget(new Actor()),
+      )
       .setTimestamp(protoTimestamp());
-
-    await connection.send(() => packetRequest);
-
-    expect(write).toHaveBeenCalled();
 
     const packetIDResponse = new PacketId()
       .setPacketId(v4())
@@ -254,91 +218,137 @@ describe('message', () => {
 
     const packetResponse = new ProtoPacket()
       .setPacketId(packetIDResponse)
-      .setText(message)
-      .setRouting(routing)
+      .setText(
+        new TextEvent()
+          .setText(JSON.stringify(v4()))
+          .setSourceType(TextEvent.SourceType.SPEECH_TO_TEXT),
+      )
+      .setRouting(
+        new Routing()
+          .setSource(new Actor().setType(Actor.Type.AGENT))
+          .setTarget(new Actor()),
+      )
       .setTimestamp(protoTimestamp());
 
-    stream.emit('data', packetResponse);
-
-    const resultReport =
-      write.mock.calls[write.mock.calls.length - 1][0].toObject();
-    const perceivedLatency = resultReport.latencyReport.perceivedLatency;
-
-    const duration = calculateTimeDifference(
-      packetRequest.getTimestamp(),
-      packetResponse.getTimestamp(),
-    );
-
-    expect(onMessage).toHaveBeenCalledTimes(2);
-    expect(onMessage).toHaveBeenCalledWith(
-      InworldPacket.fromProto(packetResponse),
-    );
-    expect(perceivedLatency.latency.seconds).toEqual(duration.getSeconds());
-    expect(perceivedLatency.latency.nanos).toEqual(duration.getNanos());
-    expect(perceivedLatency.precision).toEqual(
+    sendPerceivedLatency(
+      { ...capabilitiesProps, audio: false, perceivedLatencyReport: true },
+      packetRequest,
+      packetResponse,
       PerceivedLatencyReport.Precision.NON_SPEECH,
-    );
-    expect(resultReport.packetId.interactionId).toEqual(
-      packetResponse.getPacketId().getInteractionId(),
+      2,
+      done,
     );
   });
 
-  test('should send perceived latency event for trigger', async () => {
-    jest
-      .spyOn(ConversationService.prototype, 'getConversationId')
-      .mockImplementation(() => conversationId);
-
-    const stream = getStream();
-
-    const write = jest
-      .spyOn(ClientDuplexStreamImpl.prototype, 'write')
-      .mockImplementation(jest.fn());
-
-    const onMessage = jest.fn();
-
-    const connection = new ConnectionService({
-      apiKey: { key: KEY, secret: SECRET },
-      config: { capabilities: capabilitiesProps },
-      name: SCENE,
-      user,
-      onError: onErrorLog,
-      onMessage,
-      onDisconnect,
-    });
-
-    const routing = new Routing().setSource(new Actor()).setTarget(new Actor());
-
-    const message = new CustomEvent();
-    message.setName(JSON.stringify(v4())).setType(CustomEvent.Type.TRIGGER);
-
-    jest
-      .spyOn(connection, 'generateSessionToken')
-      .mockImplementationOnce(() => Promise.resolve(sessionToken));
-
-    jest
-      .spyOn(WorldEngineClient.prototype, 'openSession')
-      .mockImplementationOnce(() => {
-        setTimeout(() => new Promise(emitSceneStatusEvent(stream)), 0);
-        return stream;
-      });
-
-    await connection.open();
-
+  test('should send perceived latency event for text with enabled audio', (done) => {
     const interactionId = v4();
+    const packetIDRequest = new PacketId()
+      .setPacketId(v4())
+      .setInteractionId(interactionId);
+    const packetRequest = new ProtoPacket()
+      .setPacketId(packetIDRequest)
+      .setText(
+        new TextEvent()
+          .setText(JSON.stringify(v4()))
+          .setSourceType(TextEvent.SourceType.TYPED_IN)
+          .setFinal(true),
+      )
+      .setRouting(
+        new Routing()
+          .setSource(new Actor().setType(Actor.Type.PLAYER))
+          .setTarget(new Actor()),
+      )
+      .setTimestamp(protoTimestamp());
 
+    const packetIDResponse = new PacketId()
+      .setPacketId(v4())
+      .setInteractionId(interactionId);
+
+    const packetResponse = new ProtoPacket()
+      .setPacketId(packetIDResponse)
+      .setDataChunk(
+        new DataChunk().setType(DataChunk.DataType.AUDIO).setChunk(v4()),
+      )
+      .setRouting(
+        new Routing()
+          .setSource(new Actor().setType(Actor.Type.AGENT))
+          .setTarget(new Actor()),
+      )
+      .setTimestamp(protoTimestamp());
+
+    sendPerceivedLatency(
+      { ...capabilitiesProps, perceivedLatencyReport: true },
+      packetRequest,
+      packetResponse,
+      PerceivedLatencyReport.Precision.ESTIMATED,
+      2,
+      done,
+    );
+  });
+
+  test('should send perceived latency event for audio with enabled audio', (done) => {
+    // We don't need to send audio in test, we can just send a packet with speech to text
+    const interactionId = v4();
+    const packetIDRequest = new PacketId()
+      .setPacketId(v4())
+      .setInteractionId(interactionId);
+    const packetRecognitionResponse = new ProtoPacket()
+      .setPacketId(packetIDRequest)
+      .setText(
+        new TextEvent()
+          .setText(JSON.stringify(v4()))
+          .setSourceType(TextEvent.SourceType.SPEECH_TO_TEXT)
+          .setFinal(true),
+      )
+      .setRouting(
+        new Routing()
+          .setSource(new Actor().setType(Actor.Type.PLAYER))
+          .setTarget(new Actor()),
+      )
+      .setTimestamp(protoTimestamp());
+
+    const packetIDResponse = new PacketId()
+      .setPacketId(v4())
+      .setInteractionId(interactionId);
+
+    const packetResponse = new ProtoPacket()
+      .setPacketId(packetIDResponse)
+      .setDataChunk(
+        new DataChunk().setType(DataChunk.DataType.AUDIO).setChunk(v4()),
+      )
+      .setRouting(
+        new Routing()
+          .setSource(new Actor().setType(Actor.Type.AGENT))
+          .setTarget(new Actor()),
+      )
+      .setTimestamp(protoTimestamp());
+
+    sendPerceivedLatency(
+      { ...capabilitiesProps, perceivedLatencyReport: true },
+      null,
+      [packetRecognitionResponse, packetResponse],
+      PerceivedLatencyReport.Precision.ESTIMATED,
+      3,
+      done,
+    );
+  });
+
+  test('should send perceived latency event for trigger', (done) => {
+    const interactionId = v4();
+    const routing = new Routing().setSource(new Actor()).setTarget(new Actor());
     const packetIDRequest = new PacketId()
       .setPacketId(v4())
       .setInteractionId(interactionId);
 
     const packetRequest = new ProtoPacket()
       .setPacketId(packetIDRequest)
-      .setCustom(message)
+      .setCustom(
+        new CustomEvent()
+          .setName(JSON.stringify(v4()))
+          .setType(CustomEvent.Type.TRIGGER),
+      )
       .setRouting(routing)
       .setTimestamp(protoTimestamp());
-
-    await connection.send(() => packetRequest);
-
-    expect(write).toHaveBeenCalled();
 
     const packetIDResponse = new PacketId()
       .setPacketId(v4())
@@ -352,87 +362,32 @@ describe('message', () => {
       .setRouting(routing)
       .setTimestamp(protoTimestamp());
 
-    stream.emit('data', packetResponse);
-
-    const resultReport =
-      write.mock.calls[write.mock.calls.length - 1][0].toObject();
-    const perceivedLatency = resultReport.latencyReport.perceivedLatency;
-
-    const duration = calculateTimeDifference(
-      packetRequest.getTimestamp(),
-      packetResponse.getTimestamp(),
-    );
-
-    expect(onMessage).toHaveBeenCalledTimes(2);
-    expect(onMessage).toHaveBeenCalledWith(
-      InworldPacket.fromProto(packetResponse),
-    );
-    expect(perceivedLatency.latency.seconds).toEqual(duration.getSeconds());
-    expect(perceivedLatency.latency.nanos).toEqual(duration.getNanos());
-    expect(perceivedLatency.precision).toEqual(
+    sendPerceivedLatency(
+      { ...capabilitiesProps, perceivedLatencyReport: true },
+      packetRequest,
+      packetResponse,
       PerceivedLatencyReport.Precision.NON_SPEECH,
-    );
-    expect(resultReport.packetId.interactionId).toEqual(
-      packetResponse.getPacketId().getInteractionId(),
+      2,
+      done,
     );
   });
 
-  test('should send perceived latency event for narrated action', async () => {
-    jest
-      .spyOn(ConversationService.prototype, 'getConversationId')
-      .mockImplementation(() => conversationId);
-
-    const stream = getStream();
-
-    const write = jest
-      .spyOn(ClientDuplexStreamImpl.prototype, 'write')
-      .mockImplementation(jest.fn());
-
-    const onMessage = jest.fn();
-
-    const connection = new ConnectionService({
-      apiKey: { key: KEY, secret: SECRET },
-      config: { capabilities: capabilitiesProps },
-      name: SCENE,
-      user,
-      onError: onErrorLog,
-      onMessage,
-      onDisconnect,
-    });
-
-    const routing = new Routing().setSource(new Actor()).setTarget(new Actor());
-
-    const message = new ActionEvent();
-    message.setNarratedAction(new NarratedAction().setContent(v4()));
-
-    jest
-      .spyOn(connection, 'generateSessionToken')
-      .mockImplementationOnce(() => Promise.resolve(sessionToken));
-
-    jest
-      .spyOn(WorldEngineClient.prototype, 'openSession')
-      .mockImplementationOnce(() => {
-        setTimeout(() => new Promise(emitSceneStatusEvent(stream)), 0);
-        return stream;
-      });
-
-    await connection.open();
-
+  test('should send perceived latency event for narrated action', (done) => {
     const interactionId = v4();
-
+    const routing = new Routing().setSource(new Actor()).setTarget(new Actor());
     const packetIDRequest = new PacketId()
       .setPacketId(v4())
       .setInteractionId(interactionId);
 
     const packetRequest = new ProtoPacket()
       .setPacketId(packetIDRequest)
-      .setAction(message)
+      .setAction(
+        new ActionEvent().setNarratedAction(
+          new NarratedAction().setContent(v4()),
+        ),
+      )
       .setRouting(routing)
       .setTimestamp(protoTimestamp());
-
-    await connection.send(() => packetRequest);
-
-    expect(write).toHaveBeenCalled();
 
     const packetIDResponse = new PacketId()
       .setPacketId(v4())
@@ -446,28 +401,13 @@ describe('message', () => {
       .setRouting(routing)
       .setTimestamp(protoTimestamp());
 
-    stream.emit('data', packetResponse);
-
-    const resultReport =
-      write.mock.calls[write.mock.calls.length - 1][0].toObject();
-    const perceivedLatency = resultReport.latencyReport.perceivedLatency;
-
-    const duration = calculateTimeDifference(
-      packetRequest.getTimestamp(),
-      packetResponse.getTimestamp(),
-    );
-
-    expect(onMessage).toHaveBeenCalledTimes(2);
-    expect(onMessage).toHaveBeenCalledWith(
-      InworldPacket.fromProto(packetResponse),
-    );
-    expect(perceivedLatency.latency.seconds).toEqual(duration.getSeconds());
-    expect(perceivedLatency.latency.nanos).toEqual(duration.getNanos());
-    expect(perceivedLatency.precision).toEqual(
+    sendPerceivedLatency(
+      { ...capabilitiesProps, perceivedLatencyReport: true },
+      packetRequest,
+      packetResponse,
       PerceivedLatencyReport.Precision.NON_SPEECH,
-    );
-    expect(resultReport.packetId.interactionId).toEqual(
-      packetResponse.getPacketId().getInteractionId(),
+      2,
+      done,
     );
   });
 
@@ -547,6 +487,7 @@ describe('message', () => {
       onError: onErrorLog,
       onMessage: async (packet) => {
         count++;
+        connection.markPacketAsHandled(packet);
 
         if (count === 2) {
           const newCharacters = await connection.getCharactersList();
@@ -1507,3 +1448,82 @@ describe('character', () => {
     expect(connection.getCharactersByResourceNames([v4()])).toEqual([]);
   });
 });
+
+async function sendPerceivedLatency(
+  capabilities: Capabilities,
+  packetRequest: ProtoPacket | null,
+  packetResponse: ProtoPacket | ProtoPacket[],
+  expectedType: PerceivedLatencyReport.Precision,
+  totalCalls: number,
+  done: jest.DoneCallback,
+) {
+  const packetResponses = Array.isArray(packetResponse)
+    ? packetResponse
+    : [packetResponse];
+
+  jest
+    .spyOn(ConversationService.prototype, 'getConversationId')
+    .mockImplementation(() => conversationId);
+
+  const stream = getStream();
+
+  const write = jest
+    .spyOn(ClientDuplexStreamImpl.prototype, 'write')
+    .mockImplementation(jest.fn());
+  let called = 0;
+
+  const onMessage = jest.fn((packet) => {
+    called++;
+    connection.markPacketAsHandled(packet);
+
+    if (called === totalCalls) {
+      const resultReport =
+        write.mock.calls[write.mock.calls.length - 1][0].toObject();
+      const perceivedLatency = resultReport.latencyReport.perceivedLatency;
+      expect(perceivedLatency.precision).toEqual(expectedType);
+
+      for (const packetResponse of packetResponses) {
+        expect(resultReport.packetId.interactionId).toEqual(
+          packetResponse.getPacketId().getInteractionId(),
+        );
+      }
+
+      done();
+    }
+  });
+
+  const connection = new ConnectionService({
+    apiKey: { key: KEY, secret: SECRET },
+    config: { capabilities },
+    name: SCENE,
+    user,
+    onError: onErrorLog,
+    onMessage,
+    onDisconnect,
+  });
+
+  jest
+    .spyOn(connection, 'generateSessionToken')
+    .mockImplementationOnce(() => Promise.resolve(sessionToken));
+
+  jest
+    .spyOn(WorldEngineClient.prototype, 'openSession')
+    .mockImplementationOnce(() => {
+      setTimeout(() => new Promise(emitSceneStatusEvent(stream)), 0);
+      return stream;
+    });
+
+  await connection.open();
+
+  if (packetRequest) {
+    await connection.send(() => packetRequest);
+  }
+
+  expect(write).toHaveBeenCalled();
+
+  for (const packetResponse of packetResponses) {
+    stream.emit('data', packetResponse);
+  }
+
+  expect(onMessage).toHaveBeenCalledTimes(totalCalls);
+}

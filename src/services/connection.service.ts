@@ -77,13 +77,15 @@ export class ConnectionService<
 
   private intervals: NodeJS.Timeout[] = [];
   private packetQueue: QueueItem[] = [];
-  private packetQueuePercievedLatency: ProtoPacket[] = [];
+  private packetQueuePercievedLatency: InworldPacket[] = [];
 
   private engineService = new WorldEngineClientGrpcService<InworldPacketT>();
   private stateService = new StateSerializationClientGrpcService();
 
   private logger = Logger.getInstance();
   private extension: Extension<InworldPacketT>;
+
+  private MAX_LATENCY_QUEUE_SIZE = 50;
 
   onDisconnect: () => Awaitable<void>;
   onError: (err: InworldError) => Awaitable<void>;
@@ -378,13 +380,13 @@ export class ConnectionService<
 
   private writeToStream(getPacket: () => ProtoPacket) {
     const packet = getPacket();
+    const inworldPacket = InworldPacket.fromProto(packet);
 
     if (
-      packet.hasText() ||
-      packet.hasCustom() ||
-      packet.getAction()?.hasNarratedAction()
+      inworldPacket.isNonSpeechPacket() ||
+      inworldPacket.isPlayerTypeInText()
     ) {
-      this.packetQueuePercievedLatency.push(packet);
+      this.pushToPerceivedLatencyQueue(inworldPacket);
     }
 
     this.stream?.write(packet);
@@ -464,6 +466,39 @@ export class ConnectionService<
 
   removeInterval(interval: NodeJS.Timeout) {
     this.intervals = this.intervals.filter((i) => i !== interval);
+  }
+
+  // Handle percieved latency
+  markPacketAsHandled(packet: InworldPacket) {
+    if (!this.config.capabilities.getPerceivedLatencyReport()) {
+      return;
+    }
+
+    const sentIndex = this.packetQueuePercievedLatency.findIndex((item) => {
+      const { packetId } = item;
+      const relyOnSpeech =
+        this.config.capabilities.getAudio() &&
+        packet.isAudio() &&
+        (item.isSpeechRecognitionResult() || item.isPlayerTypeInText());
+      const relyOnNonSpeech =
+        item.isNonSpeechPacket() || !this.config.capabilities.getAudio();
+
+      return (
+        (relyOnSpeech || relyOnNonSpeech) &&
+        packetId.interactionId &&
+        packetId.interactionId === packet.packetId.interactionId
+      );
+    });
+
+    if (sentIndex > -1) {
+      this.send(() =>
+        this.getEventFactory().perceivedLatency({
+          sent: this.packetQueuePercievedLatency[sentIndex],
+          received: packet,
+        }),
+      );
+      this.packetQueuePercievedLatency.splice(sentIndex, 1);
+    }
   }
 
   private scheduleDisconnect() {
@@ -548,28 +583,8 @@ export class ConnectionService<
 
       const sceneStatus = packet.getControl()?.getCurrentSceneStatus();
 
-      // Handle percieved latency
-      if (this.packetQueuePercievedLatency.length > 0) {
-        const sentIndex = this.packetQueuePercievedLatency.findIndex((sent) => {
-          const packetId = sent.getPacketId();
-          return (
-            packetId.getInteractionId() &&
-            packetId.getInteractionId() ===
-              packet.getPacketId().getInteractionId()
-          );
-        });
-
-        if (sentIndex > -1) {
-          this.send(
-            () =>
-              this.getEventFactory().perceivedLatency({
-                sent: this.packetQueuePercievedLatency[sentIndex],
-                received: packet,
-              }),
-            { force: true },
-          );
-          this.packetQueuePercievedLatency.splice(sentIndex, 1);
-        }
+      if (inworldPacket.isSpeechRecognitionResult()) {
+        this.pushToPerceivedLatencyQueue(inworldPacket);
       }
 
       if (
@@ -640,5 +655,17 @@ export class ConnectionService<
       connection,
       capabilities: Capability.toProto(capabilities),
     };
+  }
+
+  private pushToPerceivedLatencyQueue(packet: InworldPacket) {
+    if (!this.config.capabilities.getPerceivedLatencyReport()) {
+      return;
+    }
+
+    this.packetQueuePercievedLatency.push(packet);
+
+    if (this.packetQueuePercievedLatency.length > this.MAX_LATENCY_QUEUE_SIZE) {
+      this.packetQueuePercievedLatency.shift();
+    }
   }
 }
