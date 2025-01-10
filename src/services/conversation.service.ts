@@ -8,6 +8,7 @@ import {
   AudioSessionStartPacketParams,
   CancelResponsesProps,
   ConversationParticipant,
+  PerceivedLatencyReportProps,
   SendPacketParams,
   TriggerParameter,
 } from '../common/data_structures';
@@ -222,6 +223,12 @@ export class ConversationService<
       getPacket({
         conversationId: this.getConversationId(),
       }),
+    );
+  }
+
+  async sendPerceivedLatenctReport(props: PerceivedLatencyReportProps) {
+    return this.ensureConversation(() =>
+      this.connection.getEventFactory().perceivedLatency(props),
     );
   }
 

@@ -504,7 +504,7 @@ export class ConnectionService<
 
     if (sentIndex > -1) {
       this.send(() =>
-        this.getEventFactory().perceivedLatency({
+        this.getEventFactory().perceivedLatencyWithTypeDetection({
           sent: this.packetQueuePercievedLatency[sentIndex],
           received: packet,
         }),

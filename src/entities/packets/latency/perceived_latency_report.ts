@@ -47,4 +47,21 @@ export class PerceivedLatencyReport {
         return PerceivedLatencyReportPrecisionType.UNSPECIFIED;
     }
   }
+
+  static getProtoPerceivedLatencyReportPrecision(
+    precision: PerceivedLatencyReportPrecisionType,
+  ) {
+    switch (precision) {
+      case PerceivedLatencyReportPrecisionType.FINE:
+        return ProtoPerceivedLatencyReport.Precision.FINE;
+      case PerceivedLatencyReportPrecisionType.ESTIMATED:
+        return ProtoPerceivedLatencyReport.Precision.ESTIMATED;
+      case PerceivedLatencyReportPrecisionType.PUSH_TO_TALK:
+        return ProtoPerceivedLatencyReport.Precision.PUSH_TO_TALK;
+      case PerceivedLatencyReportPrecisionType.NON_SPEECH:
+        return ProtoPerceivedLatencyReport.Precision.NON_SPEECH;
+      default:
+        return ProtoPerceivedLatencyReport.Precision.UNSPECIFIED;
+    }
+  }
 }

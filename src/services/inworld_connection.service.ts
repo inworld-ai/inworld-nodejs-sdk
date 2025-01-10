@@ -6,6 +6,7 @@ import {
   ChangeSceneProps,
   ConversationIntializeState,
   ConversationParticipant,
+  PerceivedLatencyReportProps,
   TriggerParameter,
 } from '../common/data_structures';
 import { ConversationState } from '../common/data_structures';
@@ -189,6 +190,12 @@ export class InworldConnectionService<
     await this.ensureOneToOneConversation();
 
     return this.oneToOneConversation.sendNarratedAction(text);
+  }
+
+  async sendPerceivedLatenctReport(props: PerceivedLatencyReportProps) {
+    await this.ensureOneToOneConversation();
+
+    return this.oneToOneConversation.sendPerceivedLatenctReport(props);
   }
 
   async reloadScene() {

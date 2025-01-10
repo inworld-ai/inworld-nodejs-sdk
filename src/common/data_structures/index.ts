@@ -11,6 +11,7 @@ import {
 
 import { Character } from '../../entities/character.entity';
 import { SessionContinuationProps } from '../../entities/continuation/session_continuation.entity';
+import { PerceivedLatencyReportPrecisionType } from '../../entities/packets/latency/perceived_latency_report';
 import { SessionToken } from '../../entities/session_token.entity';
 
 export interface ApiKey {
@@ -197,6 +198,13 @@ export interface SendAudioSessionStartPacketParams extends SendPacketParams {
 export interface AudioSessionStartPacketParams {
   mode?: MicrophoneMode;
   understandingMode?: UnderstandingMode;
+}
+
+export interface PerceivedLatencyReportProps {
+  precision: PerceivedLatencyReportPrecisionType;
+  interactionId: string;
+  startDate: Date;
+  endDate: Date;
 }
 
 export enum ConversationParticipant {
