@@ -125,7 +125,9 @@ export class EventFactory {
     );
     let precision = PerceivedLatencyReport.Precision.UNSPECIFIED;
 
-    if (
+    if (sent.isAudioSessionEnd()) {
+      precision = PerceivedLatencyReport.Precision.PUSH_TO_TALK;
+    } else if (
       (sent.isPlayerTypeInText() || sent.isSpeechRecognitionResult()) &&
       received.isAudio()
     ) {

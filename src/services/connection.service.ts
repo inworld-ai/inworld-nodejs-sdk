@@ -1,7 +1,7 @@
 import { ClientDuplexStream } from '@grpc/grpc-js';
 import { ClientRequest } from '@proto/ai/inworld/engine/world-engine_pb';
 import {
-  ControlEvent,
+  ControlEvent as ProtoControlEvent,
   CurrentSceneStatus,
   InworldPacket as ProtoPacket,
   LoadedScene,
@@ -17,7 +17,9 @@ import {
   GenerateSessionTokenFn,
   GetterSetter,
   InternalClientConfiguration,
+  InworlControlAction,
   InworldConversationEventType,
+  InworldPacketType,
   User,
 } from '../common/data_structures';
 import {
@@ -29,6 +31,7 @@ import { Capability } from '../entities/capability.entity';
 import { Character } from '../entities/character.entity';
 import { SessionContinuation } from '../entities/continuation/session_continuation.entity';
 import { InworldError } from '../entities/error.entity';
+import { ControlEvent } from '../entities/packets/control.entity';
 import { InworldPacket } from '../entities/packets/inworld_packet.entity';
 import { Scene } from '../entities/scene.entity';
 import { Session } from '../entities/session.entity';
@@ -384,9 +387,16 @@ export class ConnectionService<
 
     if (
       inworldPacket.isNonSpeechPacket() ||
-      inworldPacket.isPlayerTypeInText()
+      inworldPacket.isPlayerTypeInText() ||
+      inworldPacket.isPushToTalkAudioSessionStart()
     ) {
-      this.pushToPerceivedLatencyQueue(inworldPacket);
+      this.pushToPerceivedLatencyQueue([inworldPacket]);
+    } else if (inworldPacket.isAudioSessionEnd()) {
+      const { indexStart, indexEnd } = this.findLastAudioSessionIndexes();
+
+      if (indexStart >= 0 && indexEnd < indexStart) {
+        this.pushToPerceivedLatencyQueue([inworldPacket]);
+      }
     }
 
     this.stream?.write(packet);
@@ -479,7 +489,9 @@ export class ConnectionService<
       const relyOnSpeech =
         this.config.capabilities.getAudio() &&
         packet.isAudio() &&
-        (item.isSpeechRecognitionResult() || item.isPlayerTypeInText());
+        (item.isSpeechRecognitionResult() ||
+          item.isPlayerTypeInText() ||
+          item.isAudioSessionEnd());
       const relyOnNonSpeech =
         item.isNonSpeechPacket() || !this.config.capabilities.getAudio();
 
@@ -584,12 +596,62 @@ export class ConnectionService<
       const sceneStatus = packet.getControl()?.getCurrentSceneStatus();
 
       if (inworldPacket.isSpeechRecognitionResult()) {
-        this.pushToPerceivedLatencyQueue(inworldPacket);
+        const { indexStart, indexEnd } = this.findLastAudioSessionIndexes();
+
+        if (indexStart >= 0) {
+          const audioSessionEnd = this.packetQueuePercievedLatency?.[indexEnd];
+          const upatedAudioSessionEnd = new InworldPacket({
+            packetId: {
+              ...audioSessionEnd?.packetId,
+              interactionId: inworldPacket.packetId.interactionId,
+            },
+            control: new ControlEvent({
+              action: InworlControlAction.AUDIO_SESSION_END,
+            }),
+            routing: audioSessionEnd?.routing,
+            date: audioSessionEnd?.date,
+            type: InworldPacketType.CONTROL,
+            proto: new ProtoPacket(),
+          });
+
+          this.pushToPerceivedLatencyQueue([upatedAudioSessionEnd]);
+        } else {
+          this.pushToPerceivedLatencyQueue([inworldPacket]);
+        }
+
+        // const audioSessionEnds = this.packetQueuePercievedLatency.filter(
+        //   // Find last audio session end packet without interaction id.
+        //   // If interaction id is present, we already have a pair.
+        //   (p) => p.isAudioSessionEnd() && !p.packetId.interactionId,
+        // );
+        // const audioSessionEnd = audioSessionEnds?.[audioSessionEnds.length - 1];
+
+        // if (
+        //   audioSessionEnd &&
+        //   InworldPacket.closeEnough(audioSessionEnd, inworldPacket)
+        // ) {
+        //   const upatedAudioSessionEnd = new InworldPacket({
+        //     packetId: {
+        //       ...audioSessionEnd.packetId,
+        //       interactionId: inworldPacket.packetId.interactionId,
+        //     },
+        //     control: new ControlEvent({
+        //       action: InworlControlAction.AUDIO_SESSION_END,
+        //     }),
+        //     routing: audioSessionEnd.routing,
+        //     date: audioSessionEnd.date,
+        //     type: InworldPacketType.CONTROL,
+        //   });
+
+        //   this.pushToPerceivedLatencyQueue([upatedAudioSessionEnd]);
+        // } else {
+        //   this.pushToPerceivedLatencyQueue([inworldPacket]);
+        // }
       }
 
       if (
         packet.getControl()?.getAction() ===
-          ControlEvent.Action.CURRENT_SCENE_STATUS &&
+          ProtoControlEvent.Action.CURRENT_SCENE_STATUS &&
         sceneStatus
       ) {
         this.setSceneFromProtoEvent(sceneStatus);
@@ -657,15 +719,42 @@ export class ConnectionService<
     };
   }
 
-  private pushToPerceivedLatencyQueue(packet: InworldPacket) {
+  private pushToPerceivedLatencyQueue(packets: InworldPacket[]) {
     if (!this.config.capabilities.getPerceivedLatencyReport()) {
       return;
     }
 
-    this.packetQueuePercievedLatency.push(packet);
+    this.packetQueuePercievedLatency.push(...packets);
 
     if (this.packetQueuePercievedLatency.length > this.MAX_LATENCY_QUEUE_SIZE) {
       this.packetQueuePercievedLatency.shift();
     }
+  }
+
+  private findLastAudioSessionIndexes() {
+    let indexStart = -1;
+    let indexEnd = -1;
+
+    for (
+      let i = this.packetQueuePercievedLatency.length - 1;
+      i >= 0 && indexStart < 0;
+      i--
+    ) {
+      if (this.packetQueuePercievedLatency[i].isPushToTalkAudioSessionStart()) {
+        indexStart = i;
+      }
+    }
+
+    for (
+      let i = this.packetQueuePercievedLatency.length - 1;
+      i >= 0 && indexEnd < 0;
+      i--
+    ) {
+      if (this.packetQueuePercievedLatency[i].isAudioSessionEnd()) {
+        indexEnd = i;
+      }
+    }
+
+    return { indexStart, indexEnd };
   }
 }

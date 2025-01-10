@@ -10,6 +10,7 @@ import {
   InworlControlAction,
   InworldPacketType,
   InworldTextPacketType,
+  MicrophoneMode,
 } from '../../common/data_structures';
 import { Character } from '../character.entity';
 import { ItemOperation } from '../entities/item_operation';
@@ -265,6 +266,21 @@ export class InworldPacket {
 
   isNonSpeechPacket() {
     return this.isTrigger() || this.isNarratedAction();
+  }
+
+  isPushToTalkAudioSessionStart() {
+    return (
+      this.isControl() &&
+      this.control.action === InworlControlAction.AUDIO_SESSION_START &&
+      this.control.audioSessionStart.mode === MicrophoneMode.EXPECT_AUDIO_END
+    );
+  }
+
+  isAudioSessionEnd() {
+    return (
+      this.isControl() &&
+      this.control.action === InworlControlAction.AUDIO_SESSION_END
+    );
   }
 
   shouldHaveConversationId() {

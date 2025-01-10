@@ -3,6 +3,7 @@ import { WorldEngineClient } from '@proto/ai/inworld/engine/world-engine_grpc_pb
 import {
   ActionEvent,
   Actor,
+  AudioSessionStartPayload,
   ControlEvent,
   CurrentSceneStatus,
   CustomEvent,
@@ -287,7 +288,7 @@ describe('message', () => {
   });
 
   test('should send perceived latency event for audio with enabled audio', (done) => {
-    // We don't need to send audio in test, we can just send a packet with speech to text
+    // We don't need to send player's audio in test, we can just send a packet with speech to text
     const interactionId = v4();
     const packetIDRequest = new PacketId()
       .setPacketId(v4())
@@ -325,7 +326,7 @@ describe('message', () => {
 
     sendPerceivedLatency(
       { ...capabilitiesProps, perceivedLatencyReport: true },
-      null,
+      [],
       [packetRecognitionResponse, packetResponse],
       PerceivedLatencyReport.Precision.ESTIMATED,
       3,
@@ -407,6 +408,69 @@ describe('message', () => {
       packetResponse,
       PerceivedLatencyReport.Precision.NON_SPEECH,
       2,
+      done,
+    );
+  });
+
+  test('should send perceived latency event for push-to-talk case', (done) => {
+    const routing = new Routing().setSource(new Actor()).setTarget(new Actor());
+    const packetIDRequest = new PacketId().setPacketId(v4());
+
+    const audioSessionStart = new ProtoPacket()
+      .setPacketId(packetIDRequest)
+      .setControl(
+        new ControlEvent()
+          .setAction(ControlEvent.Action.AUDIO_SESSION_START)
+          .setAudioSessionStart(
+            new AudioSessionStartPayload().setMode(
+              AudioSessionStartPayload.MicrophoneMode.EXPECT_AUDIO_END,
+            ),
+          ),
+      )
+      .setRouting(routing)
+      .setTimestamp(protoTimestamp());
+
+    const interactionId = v4();
+    const packetIDRecognition = new PacketId()
+      .setPacketId(v4())
+      .setInteractionId(interactionId);
+    const packetRecognitionResponse = new ProtoPacket()
+      .setPacketId(packetIDRecognition)
+      .setText(
+        new TextEvent()
+          .setText(JSON.stringify(v4()))
+          .setSourceType(TextEvent.SourceType.SPEECH_TO_TEXT)
+          .setFinal(true),
+      )
+      .setRouting(
+        new Routing()
+          .setSource(new Actor().setType(Actor.Type.PLAYER))
+          .setTarget(new Actor()),
+      )
+      .setTimestamp(protoTimestamp());
+
+    const packetIDResponse = new PacketId()
+      .setPacketId(v4())
+      .setInteractionId(interactionId);
+
+    const packetResponse = new ProtoPacket()
+      .setPacketId(packetIDResponse)
+      .setDataChunk(
+        new DataChunk().setType(DataChunk.DataType.AUDIO).setChunk(v4()),
+      )
+      .setRouting(
+        new Routing()
+          .setSource(new Actor().setType(Actor.Type.AGENT))
+          .setTarget(new Actor()),
+      )
+      .setTimestamp(protoTimestamp());
+
+    sendPerceivedLatency(
+      { ...capabilitiesProps, perceivedLatencyReport: true },
+      audioSessionStart,
+      [packetRecognitionResponse, packetResponse],
+      PerceivedLatencyReport.Precision.PUSH_TO_TALK,
+      3,
       done,
     );
   });
@@ -1451,12 +1515,15 @@ describe('character', () => {
 
 async function sendPerceivedLatency(
   capabilities: Capabilities,
-  packetRequest: ProtoPacket | null,
+  packetRequest: ProtoPacket | ProtoPacket[],
   packetResponse: ProtoPacket | ProtoPacket[],
   expectedType: PerceivedLatencyReport.Precision,
   totalCalls: number,
   done: jest.DoneCallback,
 ) {
+  const packetRequests = Array.isArray(packetRequest)
+    ? packetRequest
+    : [packetRequest];
   const packetResponses = Array.isArray(packetResponse)
     ? packetResponse
     : [packetResponse];
@@ -1480,6 +1547,7 @@ async function sendPerceivedLatency(
       const resultReport =
         write.mock.calls[write.mock.calls.length - 1][0].toObject();
       const perceivedLatency = resultReport.latencyReport.perceivedLatency;
+
       expect(perceivedLatency.precision).toEqual(expectedType);
 
       for (const packetResponse of packetResponses) {
@@ -1515,8 +1583,10 @@ async function sendPerceivedLatency(
 
   await connection.open();
 
-  if (packetRequest) {
-    await connection.send(() => packetRequest);
+  if (packetRequests.length) {
+    for (const packetRequest of packetRequests) {
+      await connection.send(() => packetRequest);
+    }
   }
 
   expect(write).toHaveBeenCalled();
