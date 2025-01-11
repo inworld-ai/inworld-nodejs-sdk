@@ -392,10 +392,30 @@ export class ConnectionService<
     ) {
       this.pushToPerceivedLatencyQueue([inworldPacket]);
     } else if (inworldPacket.isAudioSessionEnd()) {
-      const { indexStart, indexEnd } = this.findLastAudioSessionIndexes();
+      const found = this.packetQueuePercievedLatency.filter((item) => {
+        return item.isPushToTalkAudioSessionStart() || item.isAudioSessionEnd();
+      });
 
-      if (indexStart >= 0 && indexEnd < indexStart) {
-        this.pushToPerceivedLatencyQueue([inworldPacket]);
+      if (found?.[found.length - 1]?.isPushToTalkAudioSessionStart()) {
+        const interactionId = found[found.length - 1].packetId.interactionId;
+
+        if (interactionId) {
+          const updatedAudioSessionEnd = new InworldPacket({
+            packetId: {
+              ...inworldPacket.packetId,
+              interactionId,
+            },
+            control: new ControlEvent({
+              action: InworlControlAction.AUDIO_SESSION_END,
+            }),
+            routing: inworldPacket.routing,
+            date: inworldPacket.date,
+            type: InworldPacketType.CONTROL,
+            proto: new ProtoPacket(),
+          });
+
+          this.pushToPerceivedLatencyQueue([updatedAudioSessionEnd]);
+        }
       }
     }
 
@@ -598,55 +618,23 @@ export class ConnectionService<
       if (inworldPacket.isSpeechRecognitionResult()) {
         const { indexStart, indexEnd } = this.findLastAudioSessionIndexes();
 
-        if (indexStart >= 0) {
-          const audioSessionEnd = this.packetQueuePercievedLatency?.[indexEnd];
-          const upatedAudioSessionEnd = new InworldPacket({
+        if (indexStart >= 0 && indexEnd < indexStart) {
+          const audioSessionStart =
+            this.packetQueuePercievedLatency[indexStart];
+          this.packetQueuePercievedLatency[indexStart] = new InworldPacket({
             packetId: {
-              ...audioSessionEnd?.packetId,
+              ...audioSessionStart?.packetId,
               interactionId: inworldPacket.packetId.interactionId,
             },
-            control: new ControlEvent({
-              action: InworlControlAction.AUDIO_SESSION_END,
-            }),
-            routing: audioSessionEnd?.routing,
-            date: audioSessionEnd?.date,
+            control: new ControlEvent(audioSessionStart.control),
+            routing: audioSessionStart.routing,
+            date: audioSessionStart?.date,
             type: InworldPacketType.CONTROL,
             proto: new ProtoPacket(),
           });
-
-          this.pushToPerceivedLatencyQueue([upatedAudioSessionEnd]);
         } else {
           this.pushToPerceivedLatencyQueue([inworldPacket]);
         }
-
-        // const audioSessionEnds = this.packetQueuePercievedLatency.filter(
-        //   // Find last audio session end packet without interaction id.
-        //   // If interaction id is present, we already have a pair.
-        //   (p) => p.isAudioSessionEnd() && !p.packetId.interactionId,
-        // );
-        // const audioSessionEnd = audioSessionEnds?.[audioSessionEnds.length - 1];
-
-        // if (
-        //   audioSessionEnd &&
-        //   InworldPacket.closeEnough(audioSessionEnd, inworldPacket)
-        // ) {
-        //   const upatedAudioSessionEnd = new InworldPacket({
-        //     packetId: {
-        //       ...audioSessionEnd.packetId,
-        //       interactionId: inworldPacket.packetId.interactionId,
-        //     },
-        //     control: new ControlEvent({
-        //       action: InworlControlAction.AUDIO_SESSION_END,
-        //     }),
-        //     routing: audioSessionEnd.routing,
-        //     date: audioSessionEnd.date,
-        //     type: InworldPacketType.CONTROL,
-        //   });
-
-        //   this.pushToPerceivedLatencyQueue([upatedAudioSessionEnd]);
-        // } else {
-        //   this.pushToPerceivedLatencyQueue([inworldPacket]);
-        // }
       }
 
       if (

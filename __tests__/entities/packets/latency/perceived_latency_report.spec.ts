@@ -27,14 +27,47 @@ test.each([
     input: undefined,
     expected: PerceivedLatencyReportPrecisionType.UNSPECIFIED,
   },
-])('should convert perceived latency for $expected', ({ input, expected }) => {
-  const duration = new Duration().setSeconds(1).setNanos(1);
-  const proto = new ProtoPerceivedLatencyReport()
-    .setPrecision(input)
-    .setLatency(duration);
+])(
+  'should convert proto perceived latency for $expected',
+  ({ input, expected }) => {
+    const duration = new Duration().setSeconds(1).setNanos(1);
+    const proto = new ProtoPerceivedLatencyReport()
+      .setPrecision(input)
+      .setLatency(duration);
 
-  expect(PerceivedLatencyReport.fromProto(proto)).toEqual({
-    latency: duration,
-    precision: expected,
-  });
-});
+    expect(PerceivedLatencyReport.fromProto(proto)).toEqual({
+      latency: duration,
+      precision: expected,
+    });
+  },
+);
+
+test.each([
+  {
+    input: PerceivedLatencyReportPrecisionType.FINE,
+    expected: ProtoPerceivedLatencyReport.Precision.FINE,
+  },
+  {
+    input: PerceivedLatencyReportPrecisionType.ESTIMATED,
+    expected: ProtoPerceivedLatencyReport.Precision.ESTIMATED,
+  },
+  {
+    input: PerceivedLatencyReportPrecisionType.PUSH_TO_TALK,
+    expected: ProtoPerceivedLatencyReport.Precision.PUSH_TO_TALK,
+  },
+  {
+    input: PerceivedLatencyReportPrecisionType.NON_SPEECH,
+    expected: ProtoPerceivedLatencyReport.Precision.NON_SPEECH,
+  },
+  {
+    input: undefined,
+    expected: ProtoPerceivedLatencyReport.Precision.UNSPECIFIED,
+  },
+])(
+  'should convert perceived latency persicion to proto one for $expected',
+  ({ input, expected }) => {
+    expect(
+      PerceivedLatencyReport.getProtoPerceivedLatencyReportPrecision(input),
+    ).toEqual(expected);
+  },
+);

@@ -233,8 +233,10 @@ describe('message', () => {
 
     sendPerceivedLatency(
       { ...capabilitiesProps, audio: false, perceivedLatencyReport: true },
-      packetRequest,
-      packetResponse,
+      [
+        { type: 'request', packet: packetRequest },
+        { type: 'response', packet: packetResponse },
+      ],
       PerceivedLatencyReport.Precision.NON_SPEECH,
       2,
       done,
@@ -279,8 +281,10 @@ describe('message', () => {
 
     sendPerceivedLatency(
       { ...capabilitiesProps, perceivedLatencyReport: true },
-      packetRequest,
-      packetResponse,
+      [
+        { type: 'request', packet: packetRequest },
+        { type: 'response', packet: packetResponse },
+      ],
       PerceivedLatencyReport.Precision.ESTIMATED,
       2,
       done,
@@ -312,7 +316,7 @@ describe('message', () => {
       .setPacketId(v4())
       .setInteractionId(interactionId);
 
-    const packetResponse = new ProtoPacket()
+    const packetAudioResponse = new ProtoPacket()
       .setPacketId(packetIDResponse)
       .setDataChunk(
         new DataChunk().setType(DataChunk.DataType.AUDIO).setChunk(v4()),
@@ -326,8 +330,10 @@ describe('message', () => {
 
     sendPerceivedLatency(
       { ...capabilitiesProps, perceivedLatencyReport: true },
-      [],
-      [packetRecognitionResponse, packetResponse],
+      [
+        { type: 'response', packet: packetRecognitionResponse },
+        { type: 'response', packet: packetAudioResponse },
+      ],
       PerceivedLatencyReport.Precision.ESTIMATED,
       3,
       done,
@@ -365,8 +371,10 @@ describe('message', () => {
 
     sendPerceivedLatency(
       { ...capabilitiesProps, perceivedLatencyReport: true },
-      packetRequest,
-      packetResponse,
+      [
+        { type: 'request', packet: packetRequest },
+        { type: 'response', packet: packetResponse },
+      ],
       PerceivedLatencyReport.Precision.NON_SPEECH,
       2,
       done,
@@ -404,8 +412,10 @@ describe('message', () => {
 
     sendPerceivedLatency(
       { ...capabilitiesProps, perceivedLatencyReport: true },
-      packetRequest,
-      packetResponse,
+      [
+        { type: 'request', packet: packetRequest },
+        { type: 'response', packet: packetResponse },
+      ],
       PerceivedLatencyReport.Precision.NON_SPEECH,
       2,
       done,
@@ -414,10 +424,9 @@ describe('message', () => {
 
   test('should send perceived latency event for push-to-talk case', (done) => {
     const routing = new Routing().setSource(new Actor()).setTarget(new Actor());
-    const packetIDRequest = new PacketId().setPacketId(v4());
 
     const audioSessionStart = new ProtoPacket()
-      .setPacketId(packetIDRequest)
+      .setPacketId(new PacketId().setPacketId(v4()))
       .setControl(
         new ControlEvent()
           .setAction(ControlEvent.Action.AUDIO_SESSION_START)
@@ -431,11 +440,10 @@ describe('message', () => {
       .setTimestamp(protoTimestamp());
 
     const interactionId = v4();
-    const packetIDRecognition = new PacketId()
-      .setPacketId(v4())
-      .setInteractionId(interactionId);
     const packetRecognitionResponse = new ProtoPacket()
-      .setPacketId(packetIDRecognition)
+      .setPacketId(
+        new PacketId().setPacketId(v4()).setInteractionId(interactionId),
+      )
       .setText(
         new TextEvent()
           .setText(JSON.stringify(v4()))
@@ -448,13 +456,17 @@ describe('message', () => {
           .setTarget(new Actor()),
       )
       .setTimestamp(protoTimestamp());
-
-    const packetIDResponse = new PacketId()
-      .setPacketId(v4())
-      .setInteractionId(interactionId);
-
-    const packetResponse = new ProtoPacket()
-      .setPacketId(packetIDResponse)
+    const audioSessionEnd = new ProtoPacket()
+      .setPacketId(new PacketId().setPacketId(v4()))
+      .setControl(
+        new ControlEvent().setAction(ControlEvent.Action.AUDIO_SESSION_END),
+      )
+      .setRouting(routing)
+      .setTimestamp(protoTimestamp());
+    const packetAudioResponse = new ProtoPacket()
+      .setPacketId(
+        new PacketId().setPacketId(v4()).setInteractionId(interactionId),
+      )
       .setDataChunk(
         new DataChunk().setType(DataChunk.DataType.AUDIO).setChunk(v4()),
       )
@@ -467,8 +479,12 @@ describe('message', () => {
 
     sendPerceivedLatency(
       { ...capabilitiesProps, perceivedLatencyReport: true },
-      audioSessionStart,
-      [packetRecognitionResponse, packetResponse],
+      [
+        { type: 'request', packet: audioSessionStart },
+        { type: 'response', packet: packetRecognitionResponse },
+        { type: 'request', packet: audioSessionEnd },
+        { type: 'response', packet: packetAudioResponse },
+      ],
       PerceivedLatencyReport.Precision.PUSH_TO_TALK,
       3,
       done,
@@ -1515,19 +1531,11 @@ describe('character', () => {
 
 async function sendPerceivedLatency(
   capabilities: Capabilities,
-  packetRequest: ProtoPacket | ProtoPacket[],
-  packetResponse: ProtoPacket | ProtoPacket[],
+  packets: { type: string; packet: ProtoPacket }[],
   expectedType: PerceivedLatencyReport.Precision,
   totalCalls: number,
   done: jest.DoneCallback,
 ) {
-  const packetRequests = Array.isArray(packetRequest)
-    ? packetRequest
-    : [packetRequest];
-  const packetResponses = Array.isArray(packetResponse)
-    ? packetResponse
-    : [packetResponse];
-
   jest
     .spyOn(ConversationService.prototype, 'getConversationId')
     .mockImplementation(() => conversationId);
@@ -1550,10 +1558,12 @@ async function sendPerceivedLatency(
 
       expect(perceivedLatency.precision).toEqual(expectedType);
 
-      for (const packetResponse of packetResponses) {
-        expect(resultReport.packetId.interactionId).toEqual(
-          packetResponse.getPacketId().getInteractionId(),
-        );
+      for (const { type, packet } of packets) {
+        if (type === 'response') {
+          expect(resultReport.packetId.interactionId).toEqual(
+            packet.getPacketId().getInteractionId(),
+          );
+        }
       }
 
       done();
@@ -1583,16 +1593,12 @@ async function sendPerceivedLatency(
 
   await connection.open();
 
-  if (packetRequests.length) {
-    for (const packetRequest of packetRequests) {
-      await connection.send(() => packetRequest);
+  for (const { packet, type } of packets) {
+    if (type === 'request') {
+      await connection.send(() => packet);
+    } else {
+      stream.emit('data', packet);
     }
-  }
-
-  expect(write).toHaveBeenCalled();
-
-  for (const packetResponse of packetResponses) {
-    stream.emit('data', packetResponse);
   }
 
   expect(onMessage).toHaveBeenCalledTimes(totalCalls);

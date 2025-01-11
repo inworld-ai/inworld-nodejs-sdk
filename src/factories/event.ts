@@ -193,10 +193,7 @@ export class EventFactory {
       .setPacketId(
         new PacketId()
           .setPacketId(basePacketId.getPacketId())
-          .setConversationId(basePacketId.getConversationId())
-          .setInteractionId(interactionId)
-          .setCorrelationId(basePacketId.getCorrelationId())
-          .setUtteranceId(basePacketId.getUtteranceId()),
+          .setInteractionId(interactionId),
       )
       .setLatencyReport(event);
   }
