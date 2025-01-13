@@ -15,30 +15,32 @@ import {
   MutationEvent,
   NarratedAction,
   PacketId,
-  PerceivedLatencyReport,
+  PerceivedLatencyReport as ProtoPerceivedLatencyReport,
   PingPongReport,
   Routing,
   SessionConfigurationPayload,
   TextEvent,
   UnloadCharacters,
 } from '@proto/ai/inworld/packets/packets_pb';
-import { Duration } from 'google-protobuf/google/protobuf/duration_pb';
 import { v4 } from 'uuid';
 
 import {
   ConversationParticipant,
   ItemsInEntitiesOperationType,
   MicrophoneMode,
+  PerceivedLatencyReportProps,
   SendAudioSessionStartPacketParams,
   SendCustomPacketParams,
   SendPacketParams,
   SessionControlProps,
   UnderstandingMode,
 } from '../common/data_structures';
-import { protoTimestamp } from '../common/helpers';
+import { calculateTimeDifference, protoTimestamp } from '../common/helpers';
 import { Character } from '../entities/character.entity';
 import { EntityItem } from '../entities/entities/entity_item';
 import { ItemOperation } from '../entities/entities/item_operation';
+import { InworldPacket } from '../entities/packets/inworld_packet.entity';
+import { PerceivedLatencyReport } from '../entities/packets/latency/perceived_latency_report';
 
 export interface SendCancelResponsePacketParams {
   interactionId?: string;
@@ -112,21 +114,88 @@ export class EventFactory {
     }).setLatencyReport(event);
   }
 
-  perceivedLatency(
-    latencyPerceived: Duration,
-    precisionToSend: PerceivedLatencyReport.Precision = PerceivedLatencyReport
-      .Precision.FINE,
-  ): ProtoPacket {
+  perceivedLatencyWithTypeDetection({
+    sent,
+    received,
+  }: {
+    sent: InworldPacket;
+    received: InworldPacket;
+  }): ProtoPacket {
+    const duration = calculateTimeDifference(
+      protoTimestamp(new Date(sent.date)),
+      protoTimestamp(new Date()),
+    );
+    let precision = ProtoPerceivedLatencyReport.Precision.UNSPECIFIED;
+
+    if (sent.isAudioSessionEnd()) {
+      precision = ProtoPerceivedLatencyReport.Precision.PUSH_TO_TALK;
+    } else if (
+      (sent.isPlayerTypeInText() || sent.isSpeechRecognitionResult()) &&
+      received.isAudio()
+    ) {
+      precision = ProtoPerceivedLatencyReport.Precision.ESTIMATED;
+    } else if (sent.isNonSpeechPacket() || sent.isPlayerTypeInText()) {
+      precision = ProtoPerceivedLatencyReport.Precision.NON_SPEECH;
+    }
+
     const event = new LatencyReportEvent().setPerceivedLatency(
-      new PerceivedLatencyReport()
-        .setLatency(latencyPerceived)
-        .setPrecision(precisionToSend),
+      new ProtoPerceivedLatencyReport()
+        .setLatency(duration)
+        .setPrecision(precision),
     );
 
-    return this.baseProtoPacket({
+    const basePacket = this.baseProtoPacket({
       utteranceId: false,
       interactionId: false,
-    }).setLatencyReport(event);
+    });
+    const basePacketId = basePacket.getPacketId();
+
+    return basePacket
+      .setPacketId(
+        new PacketId()
+          .setPacketId(basePacketId.getPacketId())
+          .setConversationId(basePacketId.getConversationId())
+          .setInteractionId(received.packetId.interactionId)
+          .setCorrelationId(basePacketId.getCorrelationId())
+          .setUtteranceId(basePacketId.getUtteranceId()),
+      )
+      .setLatencyReport(event);
+  }
+
+  perceivedLatency({
+    precision,
+    interactionId,
+    startDate,
+    endDate,
+  }: PerceivedLatencyReportProps): ProtoPacket {
+    const duration = calculateTimeDifference(
+      protoTimestamp(startDate),
+      protoTimestamp(endDate),
+    );
+
+    const event = new LatencyReportEvent().setPerceivedLatency(
+      new ProtoPerceivedLatencyReport()
+        .setLatency(duration)
+        .setPrecision(
+          PerceivedLatencyReport.getProtoPerceivedLatencyReportPrecision(
+            precision,
+          ),
+        ),
+    );
+
+    const basePacket = this.baseProtoPacket({
+      utteranceId: false,
+      interactionId: false,
+    });
+    const basePacketId = basePacket.getPacketId();
+
+    return basePacket
+      .setPacketId(
+        new PacketId()
+          .setPacketId(basePacketId.getPacketId())
+          .setInteractionId(interactionId),
+      )
+      .setLatencyReport(event);
   }
 
   mutePlayback(isMuted: boolean, params: SendPacketParams): ProtoPacket {

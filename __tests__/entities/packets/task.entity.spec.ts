@@ -9,7 +9,7 @@ const parameters = [
   new ProtoTaskEvent.Parameter().setName(v4()).setValue(v4()),
 ];
 
-test('should convert from task with parameters', () => {
+test('should convert task with parameters from proto', () => {
   const proto = new ProtoTaskEvent()
     .setName(name)
     .setParametersList(parameters);
@@ -23,7 +23,7 @@ test('should convert from task with parameters', () => {
   });
 });
 
-test('should convert from task with no parameters', () => {
+test('should converttask with no parameters from proto', () => {
   const proto = new ProtoTaskEvent().setName(name);
 
   expect(TaskEvent.fromProto(proto)).toEqual({

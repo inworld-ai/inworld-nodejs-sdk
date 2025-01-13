@@ -1,12 +1,11 @@
 import { ClientDuplexStream } from '@grpc/grpc-js';
 import { ClientRequest } from '@proto/ai/inworld/engine/world-engine_pb';
 import {
-  ControlEvent,
+  ControlEvent as ProtoControlEvent,
   CurrentSceneStatus,
   InworldPacket as ProtoPacket,
   LoadedScene,
 } from '@proto/ai/inworld/packets/packets_pb';
-import { Duration } from 'google-protobuf/google/protobuf/duration_pb';
 
 import {
   ApiKey,
@@ -18,19 +17,21 @@ import {
   GenerateSessionTokenFn,
   GetterSetter,
   InternalClientConfiguration,
+  InworlControlAction,
   InworldConversationEventType,
+  InworldPacketType,
   User,
 } from '../common/data_structures';
 import {
   ConvesationInterface,
   Extension,
 } from '../common/data_structures/extension';
-import { calculateTimeDifference } from '../common/helpers';
 import { Logger } from '../common/logger';
 import { Capability } from '../entities/capability.entity';
 import { Character } from '../entities/character.entity';
 import { SessionContinuation } from '../entities/continuation/session_continuation.entity';
 import { InworldError } from '../entities/error.entity';
+import { ControlEvent } from '../entities/packets/control.entity';
 import { InworldPacket } from '../entities/packets/inworld_packet.entity';
 import { Scene } from '../entities/scene.entity';
 import { Session } from '../entities/session.entity';
@@ -79,13 +80,15 @@ export class ConnectionService<
 
   private intervals: NodeJS.Timeout[] = [];
   private packetQueue: QueueItem[] = [];
-  private packetQueuePercievedLatency: ProtoPacket[] = [];
+  private packetQueuePercievedLatency: InworldPacket[] = [];
 
   private engineService = new WorldEngineClientGrpcService<InworldPacketT>();
   private stateService = new StateSerializationClientGrpcService();
 
   private logger = Logger.getInstance();
   private extension: Extension<InworldPacketT>;
+
+  private MAX_LATENCY_QUEUE_SIZE = 50;
 
   onDisconnect: () => Awaitable<void>;
   onError: (err: InworldError) => Awaitable<void>;
@@ -311,7 +314,7 @@ export class ConnectionService<
     }
   }
 
-  async send(getPacket: () => ProtoPacket) {
+  async send(getPacket: () => ProtoPacket, props: { force?: boolean } = {}) {
     try {
       this.cancelScheduler();
 
@@ -319,13 +322,16 @@ export class ConnectionService<
         throw Error('Unable to send data due inactive connection');
       }
 
-      return this.write(getPacket);
+      return this.write(getPacket, props);
     } catch (err) {
       this.onError(err);
     }
   }
 
-  private async write(getPacket: () => ProtoPacket) {
+  private async write(
+    getPacket: () => ProtoPacket,
+    props: { force?: boolean } = {},
+  ) {
     let packet: ProtoPacket;
 
     const resolvePacket = () =>
@@ -356,12 +362,18 @@ export class ConnectionService<
     if (this.isActive()) {
       packet = this.writeToStream(getPacket);
     } else {
-      this.packetQueue.push({
+      const item = {
         getPacket,
         afterWriting: (protoPacket: ProtoPacket) => {
           packet = protoPacket;
         },
-      });
+      };
+
+      if (props.force) {
+        this.packetQueue.unshift(item);
+      } else {
+        this.packetQueue.push(item);
+      }
 
       await this.open();
     }
@@ -371,9 +383,40 @@ export class ConnectionService<
 
   private writeToStream(getPacket: () => ProtoPacket) {
     const packet = getPacket();
+    const inworldPacket = InworldPacket.fromProto(packet);
 
-    if (!!packet.getText()) {
-      this.packetQueuePercievedLatency.push(packet);
+    if (
+      inworldPacket.isNonSpeechPacket() ||
+      inworldPacket.isPlayerTypeInText() ||
+      inworldPacket.isPushToTalkAudioSessionStart()
+    ) {
+      this.pushToPerceivedLatencyQueue([inworldPacket]);
+    } else if (inworldPacket.isAudioSessionEnd()) {
+      const found = this.packetQueuePercievedLatency.filter((item) => {
+        return item.isPushToTalkAudioSessionStart() || item.isAudioSessionEnd();
+      });
+
+      if (found?.[found.length - 1]?.isPushToTalkAudioSessionStart()) {
+        const interactionId = found[found.length - 1].packetId.interactionId;
+
+        if (interactionId) {
+          const updatedAudioSessionEnd = new InworldPacket({
+            packetId: {
+              ...inworldPacket.packetId,
+              interactionId,
+            },
+            control: new ControlEvent({
+              action: InworlControlAction.AUDIO_SESSION_END,
+            }),
+            routing: inworldPacket.routing,
+            date: inworldPacket.date,
+            type: InworldPacketType.CONTROL,
+            proto: new ProtoPacket(),
+          });
+
+          this.pushToPerceivedLatencyQueue([updatedAudioSessionEnd]);
+        }
+      }
     }
 
     this.stream?.write(packet);
@@ -453,6 +496,41 @@ export class ConnectionService<
 
   removeInterval(interval: NodeJS.Timeout) {
     this.intervals = this.intervals.filter((i) => i !== interval);
+  }
+
+  // Handle percieved latency
+  markPacketAsHandled(packet: InworldPacket) {
+    if (!this.config.capabilities.getPerceivedLatencyReport()) {
+      return;
+    }
+
+    const sentIndex = this.packetQueuePercievedLatency.findIndex((item) => {
+      const { packetId } = item;
+      const relyOnSpeech =
+        this.config.capabilities.getAudio() &&
+        packet.isAudio() &&
+        (item.isSpeechRecognitionResult() ||
+          item.isPlayerTypeInText() ||
+          item.isAudioSessionEnd());
+      const relyOnNonSpeech =
+        item.isNonSpeechPacket() || !this.config.capabilities.getAudio();
+
+      return (
+        (relyOnSpeech || relyOnNonSpeech) &&
+        packetId.interactionId &&
+        packetId.interactionId === packet.packetId.interactionId
+      );
+    });
+
+    if (sentIndex > -1) {
+      this.send(() =>
+        this.getEventFactory().perceivedLatencyWithTypeDetection({
+          sent: this.packetQueuePercievedLatency[sentIndex],
+          received: packet,
+        }),
+      );
+      this.packetQueuePercievedLatency.splice(sentIndex, 1);
+    }
   }
 
   private scheduleDisconnect() {
@@ -537,40 +615,31 @@ export class ConnectionService<
 
       const sceneStatus = packet.getControl()?.getCurrentSceneStatus();
 
-      // Handle percieved latency
-      if (this.packetQueuePercievedLatency.length > 0) {
-        let packetQueuePercievedLatencyIndex: number = -1;
-        for (let i = 0; i < this.packetQueuePercievedLatency.length; i++) {
-          const packetSent: ProtoPacket = this.packetQueuePercievedLatency[i];
-          if (
-            packet.getPacketId().getCorrelationId() &&
-            packet.getPacketId().getCorrelationId() ===
-              packetSent.getPacketId().getCorrelationId()
-          ) {
-            packetQueuePercievedLatencyIndex = i;
-            break;
-          }
-        }
-        if (packetQueuePercievedLatencyIndex > -1) {
-          const packetSent: ProtoPacket =
-            this.packetQueuePercievedLatency[packetQueuePercievedLatencyIndex];
+      if (inworldPacket.isSpeechRecognitionResult()) {
+        const { indexStart, indexEnd } = this.findLastAudioSessionIndexes();
 
-          const duration = calculateTimeDifference(
-            packetSent.getTimestamp(),
-            packet.getTimestamp(),
-          );
-
-          this.sendPerceivedLatencyReport(duration);
-          this.packetQueuePercievedLatency.splice(
-            packetQueuePercievedLatencyIndex,
-            1,
-          );
+        if (indexStart >= 0 && indexEnd < indexStart) {
+          const audioSessionStart =
+            this.packetQueuePercievedLatency[indexStart];
+          this.packetQueuePercievedLatency[indexStart] = new InworldPacket({
+            packetId: {
+              ...audioSessionStart?.packetId,
+              interactionId: inworldPacket.packetId.interactionId,
+            },
+            control: new ControlEvent(audioSessionStart.control),
+            routing: audioSessionStart.routing,
+            date: audioSessionStart?.date,
+            type: InworldPacketType.CONTROL,
+            proto: new ProtoPacket(),
+          });
+        } else {
+          this.pushToPerceivedLatencyQueue([inworldPacket]);
         }
       }
 
       if (
         packet.getControl()?.getAction() ===
-          ControlEvent.Action.CURRENT_SCENE_STATUS &&
+          ProtoControlEvent.Action.CURRENT_SCENE_STATUS &&
         sceneStatus
       ) {
         this.setSceneFromProtoEvent(sceneStatus);
@@ -591,7 +660,7 @@ export class ConnectionService<
 
       // Handle latency ping pong.
       if (inworldPacket.isPingPongReport()) {
-        this.sendPingPongResponse(packet);
+        this.send(() => this.getEventFactory().pong(packet), { force: true });
         // Don't pass text packet outside.
         return;
       }
@@ -618,14 +687,6 @@ export class ConnectionService<
     };
   }
 
-  private sendPingPongResponse(packet: ProtoPacket) {
-    this.send(() => this.getEventFactory().pong(packet));
-  }
-
-  private sendPerceivedLatencyReport(latencyPerceived: Duration) {
-    this.send(() => this.getEventFactory().perceivedLatency(latencyPerceived));
-  }
-
   private initializeExtension() {
     this.extension = {
       convertPacketFromProto: (proto: ProtoPacket) =>
@@ -644,5 +705,44 @@ export class ConnectionService<
       connection,
       capabilities: Capability.toProto(capabilities),
     };
+  }
+
+  private pushToPerceivedLatencyQueue(packets: InworldPacket[]) {
+    if (!this.config.capabilities.getPerceivedLatencyReport()) {
+      return;
+    }
+
+    this.packetQueuePercievedLatency.push(...packets);
+
+    if (this.packetQueuePercievedLatency.length > this.MAX_LATENCY_QUEUE_SIZE) {
+      this.packetQueuePercievedLatency.shift();
+    }
+  }
+
+  private findLastAudioSessionIndexes() {
+    let indexStart = -1;
+    let indexEnd = -1;
+
+    for (
+      let i = this.packetQueuePercievedLatency.length - 1;
+      i >= 0 && indexStart < 0;
+      i--
+    ) {
+      if (this.packetQueuePercievedLatency[i].isPushToTalkAudioSessionStart()) {
+        indexStart = i;
+      }
+    }
+
+    for (
+      let i = this.packetQueuePercievedLatency.length - 1;
+      i >= 0 && indexEnd < 0;
+      i--
+    ) {
+      if (this.packetQueuePercievedLatency[i].isAudioSessionEnd()) {
+        indexEnd = i;
+      }
+    }
+
+    return { indexStart, indexEnd };
   }
 }

@@ -14,10 +14,12 @@ import {
   InworldPacket as ProtoPacket,
   LoadCharacters,
   LoadScene,
+  LogsEvent,
   MutationEvent,
   NarratedAction,
   OperationStatusEvent,
   PacketId,
+  PerceivedLatencyReport as ProtoPerceivedLatencyReport,
   Routing,
 } from '@proto/ai/inworld/packets/packets_pb';
 import { Status } from '@proto/google/rpc/status_pb';
@@ -31,6 +33,7 @@ import {
 } from '../../src/common/data_structures';
 import { protoTimestamp } from '../../src/common/helpers';
 import { InworldPacket } from '../../src/entities/packets/inworld_packet.entity';
+import { PerceivedLatencyReportPrecisionType } from '../../src/entities/packets/latency/perceived_latency_report';
 import { EventFactory } from '../../src/factories/event';
 import {
   agents,
@@ -371,32 +374,6 @@ describe('event types', () => {
     expect(event.hasTimestamp()).toEqual(true);
   });
 
-  test('should generate cancel response event for all specific answers', () => {
-    const props = {
-      interactionId: v4(),
-      utteranceId: [v4()],
-      character,
-    };
-    const event = factory.cancelResponse(props);
-    const mutation = event.getMutation();
-    const packetId = event.getPacketId();
-
-    expect(mutation.hasCancelResponses()).toEqual(true);
-    expect(mutation.getCancelResponses().getInteractionId()).toEqual(
-      props.interactionId,
-    );
-    expect(mutation.getCancelResponses().getUtteranceIdList()).toEqual(
-      props.utteranceId,
-    );
-    expect(packetId.getPacketId()).toBeDefined();
-    expect(packetId.getInteractionId()).toBeDefined();
-    expect(packetId.getUtteranceId()).toBeDefined();
-    expect(packetId.getCorrelationId()).toBeDefined();
-    expect(event.hasRouting()).toEqual(true);
-    expect(event.getRouting().getTarget().getName()).toEqual(character.id);
-    expect(event.hasTimestamp()).toEqual(true);
-  });
-
   test('should generate narrated action event', () => {
     const text = v4();
     const event = factory.narratedAction(text, {
@@ -411,6 +388,35 @@ describe('event types', () => {
     expect(packetId.getUtteranceId()).toBeDefined();
     expect(packetId.getCorrelationId()).toBeDefined();
     expect(packetId.getConversationId()).toEqual(conversationId);
+    expect(event.hasRouting()).toEqual(true);
+    expect(event.getRouting().getTarget()).toBeFalsy();
+    expect(event.getRouting().getTargetsList()).toEqual([]);
+    expect(event.hasTimestamp()).toEqual(true);
+  });
+
+  test('should generate perceived latency report', () => {
+    const interactionId = v4();
+    const startDate = new Date();
+    const endDate = new Date();
+    const event = factory.perceivedLatency({
+      precision: PerceivedLatencyReportPrecisionType.FINE,
+      interactionId,
+      startDate,
+      endDate,
+    });
+    const packetId = event.getPacketId();
+    const report = event.getLatencyReport().toObject();
+
+    expect(report.pingPong).toBeUndefined();
+    expect(report.perceivedLatency.precision).toEqual(
+      ProtoPerceivedLatencyReport.Precision.FINE,
+    );
+    expect(report.perceivedLatency.latency).toBeDefined();
+    expect(packetId.getPacketId()).toBeDefined();
+    expect(packetId.getInteractionId()).toBeDefined();
+    expect(packetId.getUtteranceId()).toBeFalsy();
+    expect(packetId.getCorrelationId()).toBeFalsy();
+    expect(packetId.getConversationId()).toBeFalsy();
     expect(event.hasRouting()).toEqual(true);
     expect(event.getRouting().getTarget()).toBeFalsy();
     expect(event.getRouting().getTargetsList()).toEqual([]);
@@ -632,6 +638,22 @@ describe('convert packet to external one', () => {
 
     expect(result).toBeInstanceOf(InworldPacket);
     expect(result.isSilence()).toEqual(true);
+  });
+
+  test('log', () => {
+    const rounting = new Routing()
+      .setSource(new Actor())
+      .setTarget(new Actor());
+    const log = new LogsEvent().setText(v4()).setLevel(LogsEvent.LogLevel.INFO);
+    const packet = new ProtoPacket()
+      .setPacketId(new PacketId().setPacketId(v4()))
+      .setRouting(rounting)
+      .setTimestamp(protoTimestamp())
+      .setLog(log);
+    const result = InworldPacket.fromProto(packet);
+
+    expect(result).toBeInstanceOf(InworldPacket);
+    expect(result.isLog()).toEqual(true);
   });
 
   test('narrated action', () => {

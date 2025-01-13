@@ -1,13 +1,16 @@
 import { InworldPacket as ProtoPacket } from '@proto/ai/inworld/packets/packets_pb';
+import { Duration } from 'google-protobuf/google/protobuf/duration_pb';
 import { v4 } from 'uuid';
 
 import {
   InworlControlAction,
   InworldPacketType,
+  LogLevel,
 } from '../../../src/common/data_structures';
 import { AudioEvent } from '../../../src/entities/packets/audio.entity';
 import { ControlEvent } from '../../../src/entities/packets/control.entity';
 import { InworldPacket } from '../../../src/entities/packets/inworld_packet.entity';
+import { PerceivedLatencyReportPrecisionType } from '../../../src/entities/packets/latency/perceived_latency_report';
 import { PacketId } from '../../../src/entities/packets/packet_id.entity';
 import { Routing } from '../../../src/entities/packets/routing.entity';
 import { TextEvent } from '../../../src/entities/packets/text.entity';
@@ -164,6 +167,57 @@ test('should get narracted action packet fields', () => {
   expect(packet.date).toEqual(date);
   expect(packet.packetId).toEqual(packetId);
   expect(packet.narratedAction.text).toEqual(text);
+  expect(packet.getProto()).toEqual(proto.toObject());
+});
+
+test('should get log fields', () => {
+  const text = v4();
+  const proto = new ProtoPacket();
+  const packet = new InworldPacket({
+    proto,
+    packetId,
+    routing,
+    date,
+    type: InworldPacketType.LOG,
+    log: { text, level: LogLevel.INFO, metadata: {}, details: [] },
+  });
+
+  expect(packet.isLog()).toEqual(true);
+  expect(packet.shouldHaveConversationId()).toEqual(false);
+  expect(packet.routing).toEqual(routing);
+  expect(packet.date).toEqual(date);
+  expect(packet.packetId).toEqual(packetId);
+  expect(packet.log.text).toEqual(text);
+  expect(packet.log.level).toEqual(LogLevel.INFO);
+  expect(packet.getProto()).toEqual(proto.toObject());
+});
+
+test('should get perceived latency report fields', () => {
+  const proto = new ProtoPacket();
+  const duration = new Duration();
+  const packet = new InworldPacket({
+    proto,
+    packetId,
+    routing,
+    date,
+    type: InworldPacketType.LATENCY_REPORT,
+    latencyReport: {
+      perceivedLatency: {
+        latency: duration,
+        precision: PerceivedLatencyReportPrecisionType.ESTIMATED,
+      },
+    },
+  });
+
+  expect(packet.isPerceivedLatencyReport()).toEqual(true);
+  expect(packet.shouldHaveConversationId()).toEqual(false);
+  expect(packet.routing).toEqual(routing);
+  expect(packet.date).toEqual(date);
+  expect(packet.packetId).toEqual(packetId);
+  expect(packet.latencyReport.perceivedLatency?.latency).toEqual(duration);
+  expect(packet.latencyReport.perceivedLatency?.precision).toEqual(
+    PerceivedLatencyReportPrecisionType.ESTIMATED,
+  );
   expect(packet.getProto()).toEqual(proto.toObject());
 });
 

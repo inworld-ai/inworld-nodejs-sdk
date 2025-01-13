@@ -1,6 +1,6 @@
 import { AccessToken } from '@proto/ai/inworld/engine/world-engine_pb';
 
-const TIME_DIFF_MS = 50 * 60 * 1000; // 5 minutes
+const TIME_DIFF_MS = 5 * 60 * 1000; // 5 minutes
 
 export interface SessionTokenProps {
   token: string;

@@ -6,6 +6,7 @@ import {
   ChangeSceneProps,
   ConversationIntializeState,
   ConversationParticipant,
+  PerceivedLatencyReportProps,
   TriggerParameter,
 } from '../common/data_structures';
 import { ConversationState } from '../common/data_structures';
@@ -191,6 +192,12 @@ export class InworldConnectionService<
     return this.oneToOneConversation.sendNarratedAction(text);
   }
 
+  async sendPerceivedLatenctReport(props: PerceivedLatencyReportProps) {
+    await this.ensureOneToOneConversation();
+
+    return this.oneToOneConversation.sendPerceivedLatenctReport(props);
+  }
+
   async reloadScene() {
     // TODO: Remove this deprecation warning in the next major release.
     console.warn('Reload scene is deprecated. Please use changeScene instead.');
@@ -296,6 +303,10 @@ export class InworldConnectionService<
     characters?: Character[];
   }) {
     return this.connection.getEventFactory().baseProtoPacket(props);
+  }
+
+  markPacketAsHandled(packet: InworldPacketT) {
+    return this.connection.markPacketAsHandled(packet);
   }
 
   private async ensureOneToOneConversation() {

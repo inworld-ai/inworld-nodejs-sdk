@@ -26,7 +26,7 @@ export class Capability {
         capabilities.multiModalActionPlanning ?? false,
       )
       .setNarratedActions(capabilities.narratedActions ?? false)
-      .setPerceivedLatencyReport(capabilities.perceivedLatencyReport ?? true)
+      .setPerceivedLatencyReport(capabilities.perceivedLatencyReport ?? false)
       .setPhonemeInfo(capabilities.phonemes ?? false)
       .setPingPongReport(capabilities.pingPongReport ?? true)
       .setSilenceEvents(capabilities.silence ?? false);
