@@ -4,6 +4,7 @@ import {
   DislikeType,
   Feedback,
   MicrophoneMode,
+  PerceivedLatencyReportPrecisionType,
   UnderstandingMode,
 } from '@inworld/nodejs-sdk';
 
@@ -36,6 +37,7 @@ const client = new Client({
       logsInfo: true,
       logsDebug: true,
       logsInternal: true,
+      perceivedLatencyReport: true,
     },
   },
   onDisconnect: () => {
@@ -73,6 +75,12 @@ const run = async function () {
        If you want to disable capability, set it to false.)
     |- /add-characters %characters% - list of characters to be loaded: workspaces/{workspace}/characters/{character}. Use comma to separate characters.
     |- c - cancel current response.
+    |- /send-latency-report %precision% %interaction-id% %start-date% %end-date% - send perceived latency report.
+      Precision can be one of the following: ${Object.keys(
+        PerceivedLatencyReportPrecisionType,
+      )
+        .sort()
+        .join(', ')}.
     |- <any other text> - sends text event to server.
   `);
 
@@ -179,6 +187,32 @@ const run = async function () {
           }
         } else {
           console.log('/change-capabilities requires capabilities');
+        }
+        break;
+
+      case '/send-latency-report':
+        if (args.length) {
+          try {
+            await connection.sendPerceivedLatenctReport({
+              precision:
+                PerceivedLatencyReportPrecisionType[
+                  args[0] as keyof typeof PerceivedLatencyReportPrecisionType
+                ],
+              interactionId: args[1],
+              startDate: new Date(args[2]),
+              endDate: new Date(args[3]),
+            });
+            console.log('Latency report sent');
+          } catch (e) {
+            console.log(
+              'Latency report was not sent successfully: ',
+              e.message,
+            );
+          }
+        } else {
+          console.log(
+            '/send-latency-report requires precision, interactionId, startDate and endDate',
+          );
         }
         break;
 

@@ -3,7 +3,12 @@ import { InworldPacket } from '@inworld/nodejs-sdk';
 import { Conversation } from './conversation';
 import { CLIENT_ACTION, CONVERSATION_ACTION, DISPLAY_WHEN } from './types';
 
-const conversation = new Conversation();
+const conversation = new Conversation((packet: InworldPacket) => {
+  process.send?.({
+    action: CLIENT_ACTION.MARK_PACKET_AS_HANDLED,
+    data: packet,
+  });
+});
 
 process.on(
   'message',

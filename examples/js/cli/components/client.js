@@ -11,6 +11,7 @@ class Client {
   connection = null;
   conversationProcess;
   interactionIsEnded = false;
+  notHandledPackets = [];
 
   constructor(props) {
     this.conversationProcess = fork(`${__dirname}/conversation_process.js`);
@@ -84,6 +85,13 @@ class Client {
 
   onMessage = (packet) => {
     this.interactionIsEnded = false;
+
+    // These packets will be handled later in the conversation process.
+    if (!packet.isAudio() && !packet.isText() && !packet.isNarratedAction()) {
+      this.connection?.markPacketAsHandled(packet);
+    } else {
+      this.notHandledPackets.push(packet);
+    }
 
     // TEXT
     if (packet.isText()) {
@@ -181,6 +189,15 @@ class Client {
     switch (props.action) {
       case CLIENT_ACTION.SEND_CANCEL_RESPONSES:
         this.getConnection().sendCancelResponse(props.data);
+        break;
+      case CLIENT_ACTION.MARK_PACKET_AS_HANDLED:
+        const found = this.notHandledPackets.filter(
+          (packet) => packet.packetId.packetId === props.data.packetId.packetId,
+        );
+
+        if (found[0]) {
+          this.getConnection().markPacketAsHandled(found[0]);
+        }
         break;
     }
   };

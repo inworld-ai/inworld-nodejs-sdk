@@ -9,9 +9,11 @@ class Conversation {
   queue = [];
   cancelResponses = {};
   multiCharacters = false;
+  markPacketAsHandled;
 
-  constructor() {
+  constructor(markPacketAsHandled) {
     this.player = new Player();
+    this.markPacketAsHandled = markPacketAsHandled;
   }
 
   setDisplayOrder(order) {
@@ -66,6 +68,7 @@ class Conversation {
         }
       },
       onBeforePlaying: (packet) => {
+        this.markPacketAsHandled(packet);
         if (this.order === DISPLAY_WHEN.BEFORE_AUDIO_PLAYING) {
           const text = this.markAsApplied(
             ({ text, packetId }) =>
