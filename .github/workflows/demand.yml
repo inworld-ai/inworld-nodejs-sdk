@@ -23,7 +23,7 @@ on:
         - 'PROD'
         - 'STAGE'
         - 'DEV'
-
+        - 'DEV-AZURE'
 run-name: On Demand Test Run - ${{ github.event.inputs.environment }} - ${{ github.event.inputs.os }}
 
 jobs:
