@@ -16,14 +16,10 @@ on:
         - windows-latest
         - macos-latest
       environment:
-        type: choice
+        type: environment
         description: Choose environment to run on
-        default: 'PROD'
-        options:
-        - 'PROD'
-        - 'STAGE'
-        - 'DEV'
-        - 'DEV-AZURE'
+        default: 'DEV'
+
 run-name: On Demand Test Run - ${{ github.event.inputs.environment }} - ${{ github.event.inputs.os }}
 
 jobs:
@@ -31,17 +27,6 @@ jobs:
     runs-on: ${{ github.event.inputs.os }}
     environment: ${{ github.event.inputs.environment }}
     env:
-      INWORLD_E2E_KEY: ${{ secrets.INWORLD_E2E_KEY }}
-      INWORLD_E2E_SECRET: ${{ secrets.INWORLD_E2E_SECRET }}
-      INWORLD_E2E_SCENE_HOUSE: ${{ vars.INWORLD_E2E_SCENE_HOUSE }}
-      INWORLD_E2E_SCENE_MOVIESET: ${{ vars.INWORLD_E2E_SCENE_MOVIESET }}
-      INWORLD_E2E_SCENE_CASTLE: ${{ vars.INWORLD_E2E_SCENE_CASTLE }}
-      INWORLD_E2E_SCENE_STUDIO: ${{ vars.INWORLD_E2E_SCENE_STUDIO }}
-      INWORLD_E2E_CHARACTER_AUDIO: ${{ vars.INWORLD_E2E_CHARACTER_AUDIO }}
-      INWORLD_E2E_CHARACTER_SCENE: ${{ vars.INWORLD_E2E_CHARACTER_SCENE }}
-      INWORLD_E2E_CHARACTER_TEXT: ${{ vars.INWORLD_E2E_CHARACTER_TEXT }}
-      INWORLD_E2E_CHARACTER_VERB: ${{ vars.INWORLD_E2E_CHARACTER_VERB }}
-      INWORLD_E2E_CHARACTER_NARRATOR: ${{ vars.INWORLD_E2E_CHARACTER_NARRATOR }}
       ALLURE_ENDPOINT: 'https://inworld.testops.cloud/'
       ALLURE_PROJECT_ID: '35'
       ALLURE_JOB_RUN_ID: ''
@@ -50,7 +35,6 @@ jobs:
       AUTH_SERVICE_ACCOUNT: ${{ vars.AUTH_SERVICE_ACCOUNT }}
       ENV: ${{ github.event.inputs.environment }}
       OS: ${{ github.event.inputs.os }}
-      PROJECT_ID: ${{ vars.PROJECT_ID }}
       NODE_SDK_INWORLD_ENGINE_HOST:  ${{ secrets.NODE_SDK_INWORLD_ENGINE_HOST }}
     permissions:
         contents: 'read'
@@ -73,7 +57,9 @@ jobs:
         uses: 'google-github-actions/get-secretmanager-secrets@v2'
         with:
           secrets: |-
-            ALLURE_TOKEN:${{env.PROJECT_ID}}/allure-token
+            STUDIO_INTEGRATIONS_API_KEY:${{vars.GOOGLE_PROJECT_ID}}/nodejs-sdk-integration-studio-key
+            STUDIO_INTEGRATIONS_API_SECRET:${{vars.GOOGLE_PROJECT_ID}}/nodejs-sdk-integration-studio-secret
+            ALLURE_TOKEN:${{vars.GOOGLE_PROJECT_ID}}/allure-token
       - name: Install Packages
         run: yarn install
       - name: Install inworld/nodejs-sdk
@@ -90,6 +76,8 @@ jobs:
         run: yarn jest "${{ github.event.inputs.test_suite }}"     
       - name: Upload Allure Results
         env:
+          STUDIO_INTEGRATIONS_API_KEY: '${{ steps.secrets.outputs.STUDIO_INTEGRATIONS_API_KEY }}'
+          STUDIO_INTEGRATIONS_API_SECRET: '${{ steps.secrets.outputs.STUDIO_INTEGRATIONS_API_SECRET }}'
           ALLURE_TOKEN: '${{ steps.secrets.outputs.ALLURE_TOKEN }}'
         if: always()
         run: allurectl upload ${{ env.ALLURE_RESULTS }}
