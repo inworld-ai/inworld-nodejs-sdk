@@ -35,8 +35,6 @@ jobs:
       AUTH_SERVICE_ACCOUNT: ${{ vars.AUTH_SERVICE_ACCOUNT }}
       ENV: ${{ github.event.inputs.environment }}
       OS: ${{ github.event.inputs.os }}
-      PROJECT_ID: ${{ vars.PROJECT_ID }}
-      NODE_SDK_INWORLD_ENGINE_HOST:  ${{ vars.NODE_SDK_INWORLD_ENGINE_HOST }}
     permissions:
         contents: 'read'
         id-token: 'write'
@@ -58,9 +56,9 @@ jobs:
         uses: 'google-github-actions/get-secretmanager-secrets@v2'
         with:
           secrets: |-
-            STUDIO_INTEGRATIONS_API_KEY:${{env.PROJECT_ID}}/nodejs-sdk-integration-studio-key
-            STUDIO_INTEGRATIONS_API_SECRET:${{env.PROJECT_ID}}/nodejs-sdk-integration-studio-secret
-            ALLURE_TOKEN:${{env.PROJECT_ID}}/allure-token
+            STUDIO_INTEGRATIONS_API_KEY:${{env.GOOGLE_CLOUD_PROJECT}}/nodejs-sdk-integration-studio-key
+            STUDIO_INTEGRATIONS_API_SECRET:${{env.GOOGLE_CLOUD_PROJECT}}/nodejs-sdk-integration-studio-secret
+            ALLURE_TOKEN:${{env.GOOGLE_CLOUD_PROJECT}}/allure-token
       - name: Install Packages
         run: yarn install
       - name: Install inworld/nodejs-sdk
