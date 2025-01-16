@@ -74,11 +74,12 @@ jobs:
           allure-project-id: ${{ env.ALLURE_PROJECT_ID }}
         continue-on-error: true
       - name: Run Tests
-        run: yarn jest "${{ github.event.inputs.test_suite }}"     
-      - name: Upload Allure Results
         env:
           STUDIO_INTEGRATIONS_API_KEY: '${{ steps.secrets.outputs.STUDIO_INTEGRATIONS_API_KEY }}'
           STUDIO_INTEGRATIONS_API_SECRET: '${{ steps.secrets.outputs.STUDIO_INTEGRATIONS_API_SECRET }}'
+        run: yarn jest "${{ github.event.inputs.test_suite }}"     
+      - name: Upload Allure Results
+        env:
           ALLURE_TOKEN: '${{ steps.secrets.outputs.ALLURE_TOKEN }}'
         if: always()
         run: allurectl upload ${{ env.ALLURE_RESULTS }}
