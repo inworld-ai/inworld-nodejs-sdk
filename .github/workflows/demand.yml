@@ -35,7 +35,7 @@ jobs:
       AUTH_SERVICE_ACCOUNT: ${{ vars.AUTH_SERVICE_ACCOUNT }}
       ENV: ${{ github.event.inputs.environment }}
       OS: ${{ github.event.inputs.os }}
-      NODE_SDK_INWORLD_ENGINE_HOST:  ${{ secrets.NODE_SDK_INWORLD_ENGINE_HOST }}
+      NODE_SDK_INWORLD_ENGINE_HOST:  ${{ vars.NODE_SDK_INWORLD_ENGINE_HOST }}
     permissions:
         contents: 'read'
         id-token: 'write'
