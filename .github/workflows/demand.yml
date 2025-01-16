@@ -40,6 +40,7 @@ jobs:
         contents: 'read'
         id-token: 'write'
     steps:
+      - run: echo "PROJECT_NAME=$(echo inworld-ai-${{ inputs.environment_name }} | awk '{print tolower($0)}')" >> $GITHUB_ENV
       - name: Setup node
         uses: actions/setup-node@v3
         with:
@@ -57,9 +58,9 @@ jobs:
         uses: 'google-github-actions/get-secretmanager-secrets@v2'
         with:
           secrets: |-
-            STUDIO_INTEGRATIONS_API_KEY:${{vars.GOOGLE_PROJECT_ID}}/nodejs-sdk-integration-studio-key
-            STUDIO_INTEGRATIONS_API_SECRET:${{vars.GOOGLE_PROJECT_ID}}/nodejs-sdk-integration-studio-secret
-            ALLURE_TOKEN:${{vars.GOOGLE_PROJECT_ID}}/allure-token
+            STUDIO_INTEGRATIONS_API_KEY:${{vars.PROJECT_ID}}/nodejs-sdk-integration-studio-key
+            STUDIO_INTEGRATIONS_API_SECRET:${{vars.PROJECT_ID}}/nodejs-sdk-integration-studio-secret
+            ALLURE_TOKEN:${{vars.PROJECT_ID}}/allure-token
       - name: Install Packages
         run: yarn install
       - name: Install inworld/nodejs-sdk
