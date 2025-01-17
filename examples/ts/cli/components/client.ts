@@ -30,6 +30,7 @@ export class Client {
   private connection: InworldConnectionService | null = null;
   private conversationProcess: ChildProcess;
   private interactionIsEnded: boolean = false;
+  private notHandledPackets: InworldPacket[] = [];
 
   constructor(props: ClientProps) {
     this.conversationProcess = fork(`${__dirname}/conversation_process.ts`);
@@ -108,6 +109,13 @@ export class Client {
   private onMessage = (packet: InworldPacket) => {
     this.interactionIsEnded = false;
 
+    // These packets will be handled later in the conversation process.
+    if (!packet.isAudio() && !packet.isText() && !packet.isNarratedAction()) {
+      this.connection?.markPacketAsHandled(packet);
+    } else {
+      this.notHandledPackets.push(packet);
+    }
+
     // TEXT
     if (packet.isText()) {
       if (packet.routing.source.isPlayer) {
@@ -123,6 +131,7 @@ export class Client {
         this.conversationProcess.send({
           action: CONVERSATION_ACTION.DISPLAY_TEXT,
           packet,
+          force: !this.connection?.getCapabilities().audio,
         });
       }
     }
@@ -204,6 +213,15 @@ export class Client {
         this.getConnection().sendCancelResponse(
           props.data as unknown as CancelResponsesProps,
         );
+        break;
+      case CLIENT_ACTION.MARK_PACKET_AS_HANDLED:
+        const found = this.notHandledPackets.filter(
+          (packet) => packet.packetId.packetId === props.data.packetId.packetId,
+        );
+
+        if (found[0]) {
+          this.getConnection().markPacketAsHandled(found[0]);
+        }
         break;
     }
   };

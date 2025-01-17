@@ -4,6 +4,7 @@ import {
   DislikeType,
   Feedback,
   MicrophoneMode,
+  PerceivedLatencyReportPrecisionType,
   UnderstandingMode,
 } from '@inworld/nodejs-sdk';
 
@@ -36,6 +37,7 @@ const client = new Client({
       logsInfo: true,
       logsDebug: true,
       logsInternal: true,
+      perceivedLatencyReport: true,
     },
   },
   onDisconnect: () => {
@@ -56,22 +58,33 @@ const run = async function () {
     |- /start-push-to-talk - starts audio capturing in push-to-talk mode. Send /end to stop.
     |- /start-recognition-only - starts audio capturing in recognition-only mode. Send /end to stop.
     |- /end - ends audio capturing.
-    |- /trigger %name% %params%  - send trigger with name and params. (Params should be in JSON format such as [{"name":"value","value":"invalid"}]. Params are optional.)
+    |- /trigger %name% %params%  - send trigger with name and params.
+       (Params should be in JSON format such as [{"name":"value","value":"invalid"}]. Params are optional.)
     |- /narration - send narrated action.
     |- /info - shows current character.
     |- /list-all - shows available characters (created within the scene).
     |- /character %character-id% - id of the target character (Get full list using /list-all command).
     |- /like %interaction-id% %correlation-id% - send feedback for the interaction (%correlation-id% is optional).
     |- /dislike %interaction-id% %type% %correlation-id% - send feedback for the interaction (%correlation-id% is optional).
-        Type can be one of the following: ${Object.keys(DislikeType).join(
-          ', ',
-        )}.
+       Type can be one of the following: ${Object.keys(DislikeType).join(', ')}.
     |- /undo-feedback %name% - undo like or dislike.
     |- /change-scene %scene% - scene resource name to be loaded: workspaces/{workspace}/scenes/{scene}
+    |- /change-capabilities %capabilities% - Change scene capabilties.
+       (Capabilities should be in JSON format such as {"audio":false,"emotions":false}.
+       You need to provide all capabilities you want to have.
+       If you want to disable capability, set it to false.)
     |- /add-characters %characters% - list of characters to be loaded: workspaces/{workspace}/characters/{character}. Use comma to separate characters.
     |- c - cancel current response.
+    |- /send-latency-report %precision% %interaction-id% %start-date% %end-date% - send perceived latency report.
+      Precision can be one of the following: ${Object.keys(
+        PerceivedLatencyReportPrecisionType,
+      )
+        .sort()
+        .join(', ')}.
     |- <any other text> - sends text event to server.
   `);
+
+  let sceneName = process.env.INWORLD_SCENE;
 
   process.stdin.pipe(split()).on('data', async (line: string) => {
     const [command, ...args] = line.trim().split(' ');
@@ -152,7 +165,55 @@ const run = async function () {
         break;
 
       case '/change-scene':
-        changeScene(connection, args[0]);
+        try {
+          await changeScene(connection, args[0]);
+          sceneName = args[0];
+        } catch (e) {
+          console.log('Scene was not changed successfully: ', e.message);
+        }
+        break;
+
+      case '/change-capabilities':
+        if (args.length) {
+          try {
+            await connection.changeScene(sceneName!, {
+              capabilities: JSON.parse(args[0]),
+            });
+          } catch (e) {
+            console.log(
+              'Capabilities were not changed successfully: ',
+              e.message,
+            );
+          }
+        } else {
+          console.log('/change-capabilities requires capabilities');
+        }
+        break;
+
+      case '/send-latency-report':
+        if (args.length) {
+          try {
+            await connection.sendPerceivedLatenctReport({
+              precision:
+                PerceivedLatencyReportPrecisionType[
+                  args[0] as keyof typeof PerceivedLatencyReportPrecisionType
+                ],
+              interactionId: args[1],
+              startDate: new Date(args[2]),
+              endDate: new Date(args[3]),
+            });
+            console.log('Latency report sent');
+          } catch (e) {
+            console.log(
+              'Latency report was not sent successfully: ',
+              e.message,
+            );
+          }
+        } else {
+          console.log(
+            '/send-latency-report requires precision, interactionId, startDate and endDate',
+          );
+        }
         break;
 
       case '/add-characters':

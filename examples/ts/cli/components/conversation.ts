@@ -18,9 +18,11 @@ export class Conversation {
   private queue: ConversationQueueItem[] = [];
   private cancelResponses: CancelResponses = {};
   private multiCharacters = false;
+  private markPacketAsHandled: (packet: InworldPacket) => void;
 
-  constructor() {
+  constructor(markPacketAsHandled: (packet: InworldPacket) => void) {
     this.player = new Player();
+    this.markPacketAsHandled = markPacketAsHandled;
   }
 
   setDisplayOrder(order: DISPLAY_WHEN) {
@@ -75,6 +77,7 @@ export class Conversation {
         }
       },
       onBeforePlaying: (packet: InworldPacket) => {
+        this.markPacketAsHandled(packet);
         if (this.order === DISPLAY_WHEN.BEFORE_AUDIO_PLAYING) {
           const text = this.markAsApplied(
             ({ text, packetId }: InworldPacket) =>
@@ -117,15 +120,15 @@ export class Conversation {
         (item: ConversationQueueItem) =>
           item.packet.packetId.interactionId !== interactionId,
       );
-      delete this.cancelResponses[interactionId];
+      delete this.cancelResponses[interactionId!];
     } else {
       this.queue.push({ packet, isApplied: true });
     }
   }
 
-  displayText(packet: InworldPacket) {
+  displayText(packet: InworldPacket, props: { force?: boolean } = {}) {
     if (packet.text && packet.text.final) {
-      if (this.cancelResponses[packet.packetId.interactionId]) {
+      if (this.cancelResponses[packet.packetId.interactionId!]) {
         return;
       }
 
@@ -138,7 +141,7 @@ export class Conversation {
           item.packet.packetId.utteranceId === utteranceId,
       );
 
-      if (audioIsApplied) {
+      if (audioIsApplied || props.force) {
         this.renderPacket(packet);
       } else {
         this.queue.push({ packet, isApplied: false });
@@ -263,6 +266,7 @@ export class Conversation {
     const wrapper = packet.narratedAction?.text ? '*' : '';
 
     if (text) {
+      this.markPacketAsHandled(packet);
       console.log(
         `${this.renderEventRouting(packet)} (${info.join()}): ${wrapper}${text}${wrapper}`,
       );

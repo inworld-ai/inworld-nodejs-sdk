@@ -9,9 +9,11 @@ class Conversation {
   queue = [];
   cancelResponses = {};
   multiCharacters = false;
+  markPacketAsHandled;
 
-  constructor() {
+  constructor(markPacketAsHandled) {
     this.player = new Player();
+    this.markPacketAsHandled = markPacketAsHandled;
   }
 
   setDisplayOrder(order) {
@@ -66,6 +68,7 @@ class Conversation {
         }
       },
       onBeforePlaying: (packet) => {
+        this.markPacketAsHandled(packet);
         if (this.order === DISPLAY_WHEN.BEFORE_AUDIO_PLAYING) {
           const text = this.markAsApplied(
             ({ text, packetId }) =>
@@ -113,7 +116,7 @@ class Conversation {
     }
   }
 
-  displayText(packet) {
+  displayText(packet, props = {}) {
     if (packet.text && packet.text.final) {
       if (this.cancelResponses[packet.packetId.interactionId]) {
         return;
@@ -128,7 +131,7 @@ class Conversation {
           item.packet.packetId.utteranceId === utteranceId,
       );
 
-      if (audioIsApplied) {
+      if (audioIsApplied || props.force) {
         this.renderPacket(packet);
       } else {
         this.queue.push({ packet, isApplied: false });

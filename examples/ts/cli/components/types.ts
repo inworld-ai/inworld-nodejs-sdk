@@ -16,6 +16,7 @@ export enum CONVERSATION_ACTION {
 
 export enum CLIENT_ACTION {
   SEND_CANCEL_RESPONSES = 'SEND_CANCEL_RESPONSES',
+  MARK_PACKET_AS_HANDLED = 'MARK_PACKET_AS_HANDLED',
 }
 
 export enum MapSimulatorTriggers {
