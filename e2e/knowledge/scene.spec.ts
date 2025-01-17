@@ -3,12 +3,12 @@ import * as allure from 'allure-js-commons';
 import { openConnectionManually } from '../e2e_helpers';
 
 let key: [string, string] = [
-  process.env.INWORLD_E2E_KEY!,
-  process.env.INWORLD_E2E_SECRET!,
+  process.env.STUDIO_INTEGRATIONS_API_KEY!,
+  process.env.STUDIO_INTEGRATIONS_API_SECRET!,
 ];
 let name: string = 'Tester';
-let npc: string = process.env.INWORLD_E2E_CHARACTER_SCENE!;
-let scene: string = process.env.INWORLD_E2E_SCENE_MOVIESET!;
+let npc: string = 'workspaces/integrations_testing/characters/scene';
+let scene: string = 'workspaces/integrations_testing/scenes/movie_set';
 
 const config = {
   capabilities: { emotions: false },
