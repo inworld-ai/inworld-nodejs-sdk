@@ -3,13 +3,13 @@ import * as allure from 'allure-js-commons';
 import { openConnectionManually } from '../e2e_helpers';
 
 let key: [string, string] = [
-  process.env.INWORLD_E2E_KEY!,
-  process.env.INWORLD_E2E_SECRET!,
+  process.env.STUDIO_INTEGRATIONS_API_KEY!,
+  process.env.STUDIO_INTEGRATIONS_API_SECRET!,
 ];
 let name: string = 'Tester';
-let npc: string = process.env.INWORLD_E2E_CHARACTER_TEXT!;
-let npc2: string = process.env.INWORLD_E2E_CHARACTER_NARRATOR!;
-let npc3: string = process.env.INWORLD_E2E_CHARACTER_VERB!;
+let npc: string = 'workspaces/integrations_testing/characters/text';
+let npc2: string = 'workspaces/integrations_testing/characters/narrator';
+let npc3: string = 'workspaces/integrations_testing/characters/verb';
 
 const config = {
   capabilities: { emotions: true },
