@@ -23,6 +23,8 @@ var global = (function() {
 
 var ai_inworld_language_codes_language_codes_pb = require('../../../ai/inworld/language_codes/language_codes_pb.js');
 goog.object.extend(proto, ai_inworld_language_codes_language_codes_pb);
+var google_protobuf_struct_pb = require('google-protobuf/google/protobuf/struct_pb.js');
+goog.object.extend(proto, google_protobuf_struct_pb);
 goog.exportSymbol('proto.ai.inworld.voices.Accent', null, global);
 goog.exportSymbol('proto.ai.inworld.voices.Age', null, global);
 goog.exportSymbol('proto.ai.inworld.voices.Gender', null, global);
@@ -838,7 +840,9 @@ proto.ai.inworld.voices.Voice.ElevenLabsMetadata.prototype.toObject = function(o
 proto.ai.inworld.voices.Voice.ElevenLabsMetadata.toObject = function(includeInstance, msg) {
   var f, obj = {
     voiceId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    highQualityBaseModelIdsList: (f = jspb.Message.getRepeatedField(msg, 2)) == null ? undefined : f
+    highQualityBaseModelIdsList: (f = jspb.Message.getRepeatedField(msg, 2)) == null ? undefined : f,
+    queryParams: (f = msg.getQueryParams()) && google_protobuf_struct_pb.Struct.toObject(includeInstance, f),
+    requestParams: (f = msg.getRequestParams()) && google_protobuf_struct_pb.Struct.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -883,6 +887,16 @@ proto.ai.inworld.voices.Voice.ElevenLabsMetadata.deserializeBinaryFromReader = f
       var value = /** @type {string} */ (reader.readString());
       msg.addHighQualityBaseModelIds(value);
       break;
+    case 3:
+      var value = new google_protobuf_struct_pb.Struct;
+      reader.readMessage(value,google_protobuf_struct_pb.Struct.deserializeBinaryFromReader);
+      msg.setQueryParams(value);
+      break;
+    case 4:
+      var value = new google_protobuf_struct_pb.Struct;
+      reader.readMessage(value,google_protobuf_struct_pb.Struct.deserializeBinaryFromReader);
+      msg.setRequestParams(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -924,6 +938,22 @@ proto.ai.inworld.voices.Voice.ElevenLabsMetadata.serializeBinaryToWriter = funct
     writer.writeRepeatedString(
       2,
       f
+    );
+  }
+  f = message.getQueryParams();
+  if (f != null) {
+    writer.writeMessage(
+      3,
+      f,
+      google_protobuf_struct_pb.Struct.serializeBinaryToWriter
+    );
+  }
+  f = message.getRequestParams();
+  if (f != null) {
+    writer.writeMessage(
+      4,
+      f,
+      google_protobuf_struct_pb.Struct.serializeBinaryToWriter
     );
   }
 };
@@ -981,6 +1011,80 @@ proto.ai.inworld.voices.Voice.ElevenLabsMetadata.prototype.addHighQualityBaseMod
  */
 proto.ai.inworld.voices.Voice.ElevenLabsMetadata.prototype.clearHighQualityBaseModelIdsList = function() {
   return this.setHighQualityBaseModelIdsList([]);
+};
+
+
+/**
+ * optional google.protobuf.Struct query_params = 3;
+ * @return {?proto.google.protobuf.Struct}
+ */
+proto.ai.inworld.voices.Voice.ElevenLabsMetadata.prototype.getQueryParams = function() {
+  return /** @type{?proto.google.protobuf.Struct} */ (
+    jspb.Message.getWrapperField(this, google_protobuf_struct_pb.Struct, 3));
+};
+
+
+/**
+ * @param {?proto.google.protobuf.Struct|undefined} value
+ * @return {!proto.ai.inworld.voices.Voice.ElevenLabsMetadata} returns this
+*/
+proto.ai.inworld.voices.Voice.ElevenLabsMetadata.prototype.setQueryParams = function(value) {
+  return jspb.Message.setWrapperField(this, 3, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.ai.inworld.voices.Voice.ElevenLabsMetadata} returns this
+ */
+proto.ai.inworld.voices.Voice.ElevenLabsMetadata.prototype.clearQueryParams = function() {
+  return this.setQueryParams(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.ai.inworld.voices.Voice.ElevenLabsMetadata.prototype.hasQueryParams = function() {
+  return jspb.Message.getField(this, 3) != null;
+};
+
+
+/**
+ * optional google.protobuf.Struct request_params = 4;
+ * @return {?proto.google.protobuf.Struct}
+ */
+proto.ai.inworld.voices.Voice.ElevenLabsMetadata.prototype.getRequestParams = function() {
+  return /** @type{?proto.google.protobuf.Struct} */ (
+    jspb.Message.getWrapperField(this, google_protobuf_struct_pb.Struct, 4));
+};
+
+
+/**
+ * @param {?proto.google.protobuf.Struct|undefined} value
+ * @return {!proto.ai.inworld.voices.Voice.ElevenLabsMetadata} returns this
+*/
+proto.ai.inworld.voices.Voice.ElevenLabsMetadata.prototype.setRequestParams = function(value) {
+  return jspb.Message.setWrapperField(this, 4, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.ai.inworld.voices.Voice.ElevenLabsMetadata} returns this
+ */
+proto.ai.inworld.voices.Voice.ElevenLabsMetadata.prototype.clearRequestParams = function() {
+  return this.setRequestParams(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.ai.inworld.voices.Voice.ElevenLabsMetadata.prototype.hasRequestParams = function() {
+  return jspb.Message.getField(this, 4) != null;
 };
 
 
