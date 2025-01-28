@@ -6,6 +6,7 @@
 
 import * as jspb from "google-protobuf";
 import * as ai_inworld_language_codes_language_codes_pb from "../../../ai/inworld/language_codes/language_codes_pb";
+import * as google_protobuf_struct_pb from "google-protobuf/google/protobuf/struct_pb";
 
 export class InworldV2Metadata extends jspb.Message { 
     getVoiceId(): string;
@@ -137,6 +138,16 @@ export namespace Voice {
         setHighQualityBaseModelIdsList(value: Array<string>): ElevenLabsMetadata;
         addHighQualityBaseModelIds(value: string, index?: number): string;
 
+        hasQueryParams(): boolean;
+        clearQueryParams(): void;
+        getQueryParams(): google_protobuf_struct_pb.Struct | undefined;
+        setQueryParams(value?: google_protobuf_struct_pb.Struct): ElevenLabsMetadata;
+
+        hasRequestParams(): boolean;
+        clearRequestParams(): void;
+        getRequestParams(): google_protobuf_struct_pb.Struct | undefined;
+        setRequestParams(value?: google_protobuf_struct_pb.Struct): ElevenLabsMetadata;
+
         serializeBinary(): Uint8Array;
         toObject(includeInstance?: boolean): ElevenLabsMetadata.AsObject;
         static toObject(includeInstance: boolean, msg: ElevenLabsMetadata): ElevenLabsMetadata.AsObject;
@@ -151,6 +162,8 @@ export namespace Voice {
         export type AsObject = {
             voiceId: string,
             highQualityBaseModelIdsList: Array<string>,
+            queryParams?: google_protobuf_struct_pb.Struct.AsObject,
+            requestParams?: google_protobuf_struct_pb.Struct.AsObject,
         }
     }
 
