@@ -71,6 +71,8 @@ export class CapabilitiesRequest extends jspb.Message {
     setLogsDebug(value: boolean): CapabilitiesRequest;
     getLogsInternal(): boolean;
     setLogsInternal(value: boolean): CapabilitiesRequest;
+    getTtsStreaming(): boolean;
+    setTtsStreaming(value: boolean): CapabilitiesRequest;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): CapabilitiesRequest.AsObject;
@@ -113,6 +115,7 @@ export namespace CapabilitiesRequest {
         logsInfo: boolean,
         logsDebug: boolean,
         logsInternal: boolean,
+        ttsStreaming: boolean,
     }
 }
 
