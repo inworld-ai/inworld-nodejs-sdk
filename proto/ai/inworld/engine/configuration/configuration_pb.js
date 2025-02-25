@@ -231,7 +231,8 @@ proto.configuration.CapabilitiesConfiguration.toObject = function(includeInstanc
     logsWarning: jspb.Message.getBooleanFieldWithDefault(msg, 27, false),
     logsInfo: jspb.Message.getBooleanFieldWithDefault(msg, 28, false),
     logsDebug: jspb.Message.getBooleanFieldWithDefault(msg, 29, false),
-    logsInternal: jspb.Message.getBooleanFieldWithDefault(msg, 30, false)
+    logsInternal: jspb.Message.getBooleanFieldWithDefault(msg, 30, false),
+    ttsStreaming: jspb.Message.getBooleanFieldWithDefault(msg, 31, false)
   };
 
   if (includeInstance) {
@@ -367,6 +368,10 @@ proto.configuration.CapabilitiesConfiguration.deserializeBinaryFromReader = func
     case 30:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setLogsInternal(value);
+      break;
+    case 31:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setTtsStreaming(value);
       break;
     default:
       reader.skipField();
@@ -569,6 +574,13 @@ proto.configuration.CapabilitiesConfiguration.serializeBinaryToWriter = function
   if (f) {
     writer.writeBool(
       30,
+      f
+    );
+  }
+  f = message.getTtsStreaming();
+  if (f) {
+    writer.writeBool(
+      31,
       f
     );
   }
@@ -1022,6 +1034,24 @@ proto.configuration.CapabilitiesConfiguration.prototype.getLogsInternal = functi
  */
 proto.configuration.CapabilitiesConfiguration.prototype.setLogsInternal = function(value) {
   return jspb.Message.setProto3BooleanField(this, 30, value);
+};
+
+
+/**
+ * optional bool tts_streaming = 31;
+ * @return {boolean}
+ */
+proto.configuration.CapabilitiesConfiguration.prototype.getTtsStreaming = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 31, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.configuration.CapabilitiesConfiguration} returns this
+ */
+proto.configuration.CapabilitiesConfiguration.prototype.setTtsStreaming = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 31, value);
 };
 
 
