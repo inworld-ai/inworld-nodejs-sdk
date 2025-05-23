@@ -6,6 +6,7 @@
 
 import * as jspb from "google-protobuf";
 import * as ai_inworld_language_codes_language_codes_pb from "../../../ai/inworld/language_codes/language_codes_pb";
+import * as google_protobuf_struct_pb from "google-protobuf/google/protobuf/struct_pb";
 
 export class InworldV2Metadata extends jspb.Message { 
     getVoiceId(): string;
@@ -36,6 +37,62 @@ export namespace InworldV2Metadata {
         accent: Accent,
         custom: boolean,
         voiceAdjectives?: InworldV2Metadata.VoiceAdjectives.AsObject,
+    }
+
+
+    export class VoiceAdjectives extends jspb.Message { 
+        clearAdjectivesList(): void;
+        getAdjectivesList(): Array<string>;
+        setAdjectivesList(value: Array<string>): VoiceAdjectives;
+        addAdjectives(value: string, index?: number): string;
+
+        serializeBinary(): Uint8Array;
+        toObject(includeInstance?: boolean): VoiceAdjectives.AsObject;
+        static toObject(includeInstance: boolean, msg: VoiceAdjectives): VoiceAdjectives.AsObject;
+        static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+        static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+        static serializeBinaryToWriter(message: VoiceAdjectives, writer: jspb.BinaryWriter): void;
+        static deserializeBinary(bytes: Uint8Array): VoiceAdjectives;
+        static deserializeBinaryFromReader(message: VoiceAdjectives, reader: jspb.BinaryReader): VoiceAdjectives;
+    }
+
+    export namespace VoiceAdjectives {
+        export type AsObject = {
+            adjectivesList: Array<string>,
+        }
+    }
+
+}
+
+export class InworldV3Metadata extends jspb.Message { 
+    getVoiceId(): string;
+    setVoiceId(value: string): InworldV3Metadata;
+    getAccent(): Accent;
+    setAccent(value: Accent): InworldV3Metadata;
+    getCustom(): boolean;
+    setCustom(value: boolean): InworldV3Metadata;
+
+    hasVoiceAdjectives(): boolean;
+    clearVoiceAdjectives(): void;
+    getVoiceAdjectives(): InworldV3Metadata.VoiceAdjectives | undefined;
+    setVoiceAdjectives(value?: InworldV3Metadata.VoiceAdjectives): InworldV3Metadata;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): InworldV3Metadata.AsObject;
+    static toObject(includeInstance: boolean, msg: InworldV3Metadata): InworldV3Metadata.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: InworldV3Metadata, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): InworldV3Metadata;
+    static deserializeBinaryFromReader(message: InworldV3Metadata, reader: jspb.BinaryReader): InworldV3Metadata;
+}
+
+export namespace InworldV3Metadata {
+    export type AsObject = {
+        voiceId: string,
+        accent: Accent,
+        custom: boolean,
+        voiceAdjectives?: InworldV3Metadata.VoiceAdjectives.AsObject,
     }
 
 
@@ -98,6 +155,11 @@ export class Voice extends jspb.Message {
     getInworldV2Metadata(): InworldV2Metadata | undefined;
     setInworldV2Metadata(value?: InworldV2Metadata): Voice;
 
+    hasInworldV3Metadata(): boolean;
+    clearInworldV3Metadata(): void;
+    getInworldV3Metadata(): InworldV3Metadata | undefined;
+    setInworldV3Metadata(value?: InworldV3Metadata): Voice;
+
     getTtsMetadataCase(): Voice.TtsMetadataCase;
 
     serializeBinary(): Uint8Array;
@@ -126,6 +188,7 @@ export namespace Voice {
         accent: Accent,
         elevenlabsMetadata?: Voice.ElevenLabsMetadata.AsObject,
         inworldV2Metadata?: InworldV2Metadata.AsObject,
+        inworldV3Metadata?: InworldV3Metadata.AsObject,
     }
 
 
@@ -136,6 +199,16 @@ export namespace Voice {
         getHighQualityBaseModelIdsList(): Array<string>;
         setHighQualityBaseModelIdsList(value: Array<string>): ElevenLabsMetadata;
         addHighQualityBaseModelIds(value: string, index?: number): string;
+
+        hasQueryParams(): boolean;
+        clearQueryParams(): void;
+        getQueryParams(): google_protobuf_struct_pb.Struct | undefined;
+        setQueryParams(value?: google_protobuf_struct_pb.Struct): ElevenLabsMetadata;
+
+        hasRequestParams(): boolean;
+        clearRequestParams(): void;
+        getRequestParams(): google_protobuf_struct_pb.Struct | undefined;
+        setRequestParams(value?: google_protobuf_struct_pb.Struct): ElevenLabsMetadata;
 
         serializeBinary(): Uint8Array;
         toObject(includeInstance?: boolean): ElevenLabsMetadata.AsObject;
@@ -151,6 +224,8 @@ export namespace Voice {
         export type AsObject = {
             voiceId: string,
             highQualityBaseModelIdsList: Array<string>,
+            queryParams?: google_protobuf_struct_pb.Struct.AsObject,
+            requestParams?: google_protobuf_struct_pb.Struct.AsObject,
         }
     }
 
@@ -159,6 +234,7 @@ export namespace Voice {
         TTS_METADATA_NOT_SET = 0,
         ELEVENLABS_METADATA = 100,
         INWORLD_V2_METADATA = 101,
+        INWORLD_V3_METADATA = 102,
     }
 
 }
@@ -182,6 +258,8 @@ export enum TTSType {
     TTS_TYPE_ADVANCED = 1,
     TTS_TYPE_ELEVEN_LABS = 2,
     TTS_TYPE_ADVANCED_V2 = 3,
+    TTS_TYPE_ADVANCED_V3 = 4,
+    TTS_TYPE_VLLM = 5,
 }
 
 export enum Accent {

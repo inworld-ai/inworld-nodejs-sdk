@@ -57,6 +57,8 @@ export class CapabilitiesConfiguration extends jspb.Message {
     setLogsDebug(value: boolean): CapabilitiesConfiguration;
     getLogsInternal(): boolean;
     setLogsInternal(value: boolean): CapabilitiesConfiguration;
+    getTtsStreaming(): boolean;
+    setTtsStreaming(value: boolean): CapabilitiesConfiguration;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): CapabilitiesConfiguration.AsObject;
@@ -95,6 +97,7 @@ export namespace CapabilitiesConfiguration {
         logsInfo: boolean,
         logsDebug: boolean,
         logsInternal: boolean,
+        ttsStreaming: boolean,
     }
 }
 
