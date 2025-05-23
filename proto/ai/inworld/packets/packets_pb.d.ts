@@ -1803,6 +1803,8 @@ export namespace DialogHistory {
         setActor(value?: Actor): HistoryItem;
         getText(): string;
         setText(value: string): HistoryItem;
+        getTalkerDisplayName(): string;
+        setTalkerDisplayName(value: string): HistoryItem;
 
         serializeBinary(): Uint8Array;
         toObject(includeInstance?: boolean): HistoryItem.AsObject;
@@ -1818,6 +1820,7 @@ export namespace DialogHistory {
         export type AsObject = {
             actor?: Actor.AsObject,
             text: string,
+            talkerDisplayName: string,
         }
     }
 

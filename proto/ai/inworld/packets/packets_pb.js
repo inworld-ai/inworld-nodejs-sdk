@@ -13067,7 +13067,8 @@ proto.DialogHistory.HistoryItem.prototype.toObject = function(opt_includeInstanc
 proto.DialogHistory.HistoryItem.toObject = function(includeInstance, msg) {
   var f, obj = {
     actor: (f = msg.getActor()) && proto.Actor.toObject(includeInstance, f),
-    text: jspb.Message.getFieldWithDefault(msg, 2, "")
+    text: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    talkerDisplayName: jspb.Message.getFieldWithDefault(msg, 3, "")
   };
 
   if (includeInstance) {
@@ -13113,6 +13114,10 @@ proto.DialogHistory.HistoryItem.deserializeBinaryFromReader = function(msg, read
       var value = /** @type {string} */ (reader.readString());
       msg.setText(value);
       break;
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setTalkerDisplayName(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -13154,6 +13159,13 @@ proto.DialogHistory.HistoryItem.serializeBinaryToWriter = function(message, writ
   if (f.length > 0) {
     writer.writeString(
       2,
+      f
+    );
+  }
+  f = message.getTalkerDisplayName();
+  if (f.length > 0) {
+    writer.writeString(
+      3,
       f
     );
   }
@@ -13212,6 +13224,24 @@ proto.DialogHistory.HistoryItem.prototype.getText = function() {
  */
 proto.DialogHistory.HistoryItem.prototype.setText = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+/**
+ * optional string talker_display_name = 3;
+ * @return {string}
+ */
+proto.DialogHistory.HistoryItem.prototype.getTalkerDisplayName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.DialogHistory.HistoryItem} returns this
+ */
+proto.DialogHistory.HistoryItem.prototype.setTalkerDisplayName = function(value) {
+  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
