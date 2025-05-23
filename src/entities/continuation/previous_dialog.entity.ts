@@ -7,6 +7,7 @@ export enum DialogParticipant {
 }
 export interface DialogPhrase {
   talker: DialogParticipant;
+  talkerDisplayName: string;
   phrase: string;
 }
 
@@ -45,7 +46,8 @@ export class PreviousDialog {
     const phrases = this.phrases.map((item: DialogPhrase) =>
       new DialogHistory.HistoryItem()
         .setText(item.phrase)
-        .setActor(DialogActor.toProto(item.talker)),
+        .setActor(DialogActor.toProto(item.talker))
+        .setTalkerDisplayName(item.talkerDisplayName),
     );
     return new DialogHistory().setHistoryList(phrases);
   }
@@ -57,6 +59,7 @@ export class PreviousDialog {
           ({
             talker: DialogActor.fromProto(item.getActor()),
             phrase: item.getText(),
+            talkerDisplayName: item.getTalkerDisplayName(),
           }) as DialogPhrase,
       ),
     );
