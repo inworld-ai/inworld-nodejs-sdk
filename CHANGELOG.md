@@ -1,3 +1,9 @@
+## [Unreleased]
+
+### Changed
+
+- Add talker display name to previous dialog
+
 ## [1.17.0] - 2025-01-22
 
 ### Fixed

@@ -186,18 +186,23 @@ export const simpleExtension: Extension<ExtendedInworldPacket> = {
   convertPacketFromProto,
 };
 
+const characterDisplayName = v4();
+const playerDisplayName = v4();
 export const phrases = [
   {
     talker: DialogParticipant.CHARACTER,
     phrase: v4(),
+    talkerDisplayName: characterDisplayName,
   },
   {
     talker: DialogParticipant.PLAYER,
     phrase: v4(),
+    talkerDisplayName: playerDisplayName,
   },
   {
     talker: DialogParticipant.UNKNOWN,
     phrase: v4(),
+    talkerDisplayName: '',
   },
 ];
 export const previousDialog = new PreviousDialog(phrases);
